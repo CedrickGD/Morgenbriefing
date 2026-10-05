@@ -54,6 +54,6 @@ jobs:
       - name: Hilfe der Skripte lässt sich aufrufen
         run: |
           set -euo pipefail
-          for script in validate-brief find-image assemble-brief publish-brief; do
+          for script in validate-brief find-image assemble-brief publish-brief email-config render-email; do
             node "routine/${script}.mjs" --help > /dev/null
           done
