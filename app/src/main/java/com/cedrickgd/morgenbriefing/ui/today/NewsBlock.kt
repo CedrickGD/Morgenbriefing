@@ -36,6 +36,15 @@ sealed interface NewsBlock {
     data class Problem(val notice: Notice, val brief: Brief?, val stale: Boolean) : NewsBlock
 }
 
+/** The brief shown on screen for this block (below its notice, if any); null while loading. */
+internal val NewsBlock.shownBrief: Brief?
+    get() = when (this) {
+        NewsBlock.Loading -> null
+        is NewsBlock.Demo -> brief
+        is NewsBlock.Ready -> brief
+        is NewsBlock.Problem -> brief
+    }
+
 internal val DemoNotice = Notice(
     emoji = "🔑",
     title = "Demo-Briefing",

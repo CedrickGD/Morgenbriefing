@@ -1,0 +1,504 @@
+{
+  "schema": 2,
+  "date": "2026-10-05",
+  "generatedAt": "2026-10-05T05:07:12+02:00",
+  "teaser": "Testdaten für die Layout-Prüfung: erfundene Beispielmeldungen mit ganzen Artikeln, Quellen, freien Bildern und gezeichneten Covern.",
+  "sections": [
+    {
+      "id": "ki",
+      "title": "KI & Tech",
+      "emoji": "🤖",
+      "items": [
+        {
+          "id": "ki-rechenzentren-transparenz",
+          "headline": "Rechenzentren sollen Strom- und Wasserverbrauch offenlegen",
+          "summary": "Ein Entwurf sieht jährliche Berichte für große Rechenzentren vor. Neue Standorte in Sachsen wären direkt betroffen.",
+          "body": "Betreiber großer Rechenzentren sollen künftig jedes Jahr offenlegen, wie viel Strom und Wasser ihre Anlagen verbrauchen. So steht es in einem Entwurf, über den in dieser Testmeldung berichtet wird.\n\nHintergrund ist der schnell wachsende Bedarf an Rechenleistung für KI-Anwendungen. Netzbetreiber planen bereits zusätzliche Leitungen, Kommunen fragen nach den Folgen für ihre Wasserversorgung.\n\n## Was der Entwurf vorsieht\n\n- einen jährlichen Bericht zu Energie- und Wasserverbrauch\n- Angaben dazu, wie viel Abwärme weitergenutzt wird\n- eine öffentliche Übersicht aller großen Standorte\n\n## Was das für die Region bedeutet\n\nIn Sachsen sind mehrere neue Standorte in Planung. Die Berichtspflicht würde dort ab dem ersten Betriebsjahr gelten. Befürworter sehen darin mehr Planungssicherheit für Netze und Wärmeversorger, Kritiker warnen vor zusätzlichem Aufwand für kleinere Betreiber.\n\nOb der Entwurf in dieser Form kommt, ist offen. Die Abstimmung ist für das Frühjahr angesetzt.",
+          "source": "Musterzeitung",
+          "url": "https://example.org/musterzeitung/rechenzentren",
+          "sources": [
+            { "name": "Musterzeitung", "url": "https://example.org/musterzeitung/rechenzentren" },
+            { "name": "Beispiel-Agentur", "url": "https://example.org/agentur/rechenzentren" },
+            { "name": "Demo-Rundfunk", "url": "https://example.org/rundfunk/rechenzentren" }
+          ],
+          "publishedAt": "2026-10-04T18:20:00+02:00",
+          "importance": 8,
+          "tier": "top",
+          "readingMinutes": 3
+        },
+        {
+          "id": "ki-offline-uebersetzung",
+          "headline": "Smartphone-Update bringt Übersetzung ohne Netz",
+          "summary": "Die Funktion läuft komplett auf dem Gerät und unterstützt zum Start zwölf Sprachen.",
+          "body": "Ein großes Smartphone-Update bringt eine Übersetzungsfunktion, die ohne Internetverbindung auskommt. Die Sprachmodelle laufen dabei direkt auf dem Gerät.\n\nZum Start werden zwölf Sprachen unterstützt, darunter Deutsch, Polnisch und Tschechisch. Weitere sollen folgen.\n\nVorteil laut Hersteller: Gespräche verlassen das Telefon nicht. Nachteil: Die Sprachpakete belegen je nach Sprache mehrere hundert Megabyte Speicher.",
+          "source": "Technik-Blog",
+          "url": "https://example.org/technik/offline-uebersetzung",
+          "sources": [
+            { "name": "Technik-Blog", "url": "https://example.org/technik/offline-uebersetzung" }
+          ],
+          "publishedAt": "2026-10-05T04:55:00+02:00",
+          "importance": 6,
+          "tier": "top",
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://example.org/press/foto.jpg",
+            "credit": "Pressefoto",
+            "license": "alle Rechte vorbehalten",
+            "sourceUrl": "https://example.org/press",
+            "alt": "Dieses Bild liegt nicht auf Wikimedia Commons und darf nicht geladen werden."
+          }
+        },
+        {
+          "id": "ki-chipwerk-dresden",
+          "headline": "Chipwerk in Dresden sucht 300 neue Fachkräfte",
+          "summary": "Die Erweiterung soll bis zum Frühjahr fertig sein.",
+          "body": "Ein Chiphersteller in Dresden will für seine Erweiterung rund 300 Fachkräfte einstellen. Gesucht werden vor allem Technikerinnen und Techniker für den Reinraum.\n\nDie neue Halle soll im Frühjahr in Betrieb gehen.",
+          "source": "Beispiel-Agentur",
+          "url": "https://example.org/agentur/chipwerk",
+          "publishedAt": "2026-10-04T12:00:00+02:00",
+          "importance": 5,
+          "tier": "more",
+          "readingMinutes": 1
+        },
+        {
+          "id": "ki-open-source-modell",
+          "headline": "Offenes Sprachmodell aus Europa veröffentlicht",
+          "summary": "Das Modell darf auch kommerziell genutzt werden.",
+          "body": "Ein europäisches Forschungskonsortium hat ein offenes Sprachmodell veröffentlicht. Es steht unter einer freien Lizenz und darf auch in Firmenprodukten verwendet werden.\n\nDas Modell wurde mit Texten in allen EU-Amtssprachen trainiert.",
+          "source": "Demo-Rundfunk",
+          "url": "https://example.org/rundfunk/sprachmodell",
+          "publishedAt": "2026-10-04T16:40:00+02:00",
+          "importance": 5,
+          "tier": "more",
+          "readingMinutes": 2
+        },
+        {
+          "id": "ki-passkeys",
+          "headline": "Mehr Onlinedienste setzen auf Passkeys statt Passwörter",
+          "summary": "Banken und Händler stellen die Anmeldung schrittweise um.",
+          "body": "Immer mehr Onlinedienste bieten Passkeys an. Die Anmeldung läuft dann über Fingerabdruck oder Gesichtserkennung am eigenen Gerät.\n\n- kein Passwort mehr, das gestohlen werden kann\n- Schutz vor gefälschten Anmeldeseiten\n- Wiederherstellung über ein zweites Gerät",
+          "source": "Technik-Blog",
+          "url": "https://example.org/technik/passkeys",
+          "publishedAt": "2026-10-04T09:15:00+02:00",
+          "importance": 4,
+          "tier": "more",
+          "readingMinutes": 2
+        }
+      ]
+    },
+    {
+      "id": "wirtschaft",
+      "title": "Wirtschaft & Märkte",
+      "emoji": "📈",
+      "items": [
+        {
+          "id": "wirtschaft-dax-ruhig",
+          "headline": "Dax startet ruhig in die Woche, Euro gibt nach",
+          "summary": "Anleger warten auf neue Inflationsdaten. Der schwächere Euro macht Reisen außerhalb der Eurozone etwas teurer.",
+          "body": "Der deutsche Leitindex ist in dieser Beispielmeldung ruhig in die Woche gestartet. Viele Anleger halten sich vor den neuen Inflationsdaten am Donnerstag zurück.\n\nDer Euro gab gegenüber dem Dollar leicht nach. Für Verbraucherinnen und Verbraucher heißt das: Urlaub und Einkäufe außerhalb der Eurozone werden etwas teurer.\n\n## Worauf es diese Woche ankommt\n\n- Inflationszahlen für den Euroraum\n- Quartalszahlen mehrerer Autobauer\n- Aussagen der Notenbanken zu den Zinsen\n\nMarktbeobachter rechnen bis dahin mit wenig Bewegung.",
+          "source": "Musterzeitung",
+          "url": "https://example.org/musterzeitung/dax",
+          "sources": [
+            { "name": "Musterzeitung", "url": "https://example.org/musterzeitung/dax" },
+            { "name": "Börsen-Beispiel", "url": "https://example.org/boerse/dax" }
+          ],
+          "publishedAt": "2026-10-05T05:00:00+02:00",
+          "importance": 7,
+          "tier": "top",
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Frankfurt_Stock_Exchange_%28Ank_Kumar%29_01.jpg/1280px-Frankfurt_Stock_Exchange_%28Ank_Kumar%29_01.jpg",
+            "credit": "Ank Kumar",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Frankfurt_Stock_Exchange_(Ank_Kumar)_01.jpg",
+            "alt": "Gebäude der Frankfurter Wertpapierbörse"
+          }
+        },
+        {
+          "id": "wirtschaft-mittelstand-energie",
+          "headline": "Mittelstand investiert wieder mehr in eigene Solaranlagen",
+          "summary": "Sinkende Modulpreise machen Dachanlagen für Betriebe attraktiver.",
+          "body": "Kleine und mittlere Unternehmen investieren wieder stärker in eigene Solaranlagen. Ein Grund sind die gesunkenen Preise für Module und Speicher.\n\nViele Betriebe nutzen den Strom direkt selbst und senken so ihre Energiekosten.",
+          "source": "Beispiel-Agentur",
+          "url": "https://example.org/agentur/mittelstand-solar",
+          "publishedAt": "2026-10-04T14:10:00+02:00",
+          "importance": 5,
+          "tier": "top",
+          "readingMinutes": 1
+        },
+        {
+          "id": "wirtschaft-bahn-tarif",
+          "headline": "Tarifgespräche bei der Bahn gehen weiter",
+          "summary": "Beide Seiten wollen bis Monatsende eine Einigung.",
+          "body": "Die Tarifgespräche sollen in der kommenden Woche fortgesetzt werden. Streiks sind während der Verhandlungen nicht geplant.",
+          "source": "Demo-Rundfunk",
+          "url": "https://example.org/rundfunk/bahn",
+          "publishedAt": "2026-10-04T19:30:00+02:00",
+          "importance": 5,
+          "tier": "more",
+          "readingMinutes": 1
+        },
+        {
+          "id": "wirtschaft-baugeld",
+          "headline": "Bauzinsen leicht gesunken",
+          "summary": "Für zehnjährige Kredite verlangen Banken etwas weniger als im Vormonat.",
+          "body": "Die Zinsen für Baukredite sind leicht gesunken. Fachleute erwarten für die nächsten Monate keine großen Sprünge.",
+          "source": "Musterzeitung",
+          "url": "https://example.org/musterzeitung/bauzinsen",
+          "publishedAt": "2026-10-04T11:00:00+02:00",
+          "importance": 4,
+          "tier": "more",
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "politik",
+      "title": "Politik",
+      "emoji": "🏛️",
+      "items": [
+        {
+          "id": "politik-haushalt",
+          "headline": "Bundestag streitet über den Haushalt für das kommende Jahr",
+          "summary": "Die Koalition will die Beratungen bis Ende November abschließen. Umstritten sind vor allem Ausgaben für Verkehr und Bildung.",
+          "body": "Im Bundestag beginnt diese Woche die Beratung über den Haushalt des kommenden Jahres. Die Koalition will den Etat bis Ende November beschließen.\n\nUmstritten sind vor allem die Ausgaben für Verkehr und Bildung. Die Opposition kritisiert, dass wichtige Investitionen verschoben würden.\n\n## Die wichtigsten Streitpunkte\n\n- Sanierung von Brücken und Schienen\n- Mittel für Schulen und Kitas\n- Zuschüsse für Wärmepumpen\n\nEine Einigung in allen Punkten gilt als unwahrscheinlich. Im Haushaltsausschuss dürfte es noch mehrere lange Sitzungen geben.",
+          "source": "Demo-Rundfunk",
+          "url": "https://example.org/rundfunk/haushalt",
+          "sources": [
+            { "name": "Demo-Rundfunk", "url": "https://example.org/rundfunk/haushalt" },
+            { "name": "Musterzeitung", "url": "https://example.org/musterzeitung/haushalt" },
+            { "name": "Beispiel-Agentur", "url": "https://example.org/agentur/haushalt" },
+            { "name": "Hauptstadt-Beispiel", "url": "https://example.org/hauptstadt/haushalt" }
+          ],
+          "publishedAt": "2026-10-05T04:30:00+02:00",
+          "importance": 9,
+          "tier": "top",
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Reichstagsgeb%C3%A4ude_und_Paul-L%C3%B6be-Haus%2C_Berlin-Mitte%2C_170327%2C_ako.jpg/1280px-Reichstagsgeb%C3%A4ude_und_Paul-L%C3%B6be-Haus%2C_Berlin-Mitte%2C_170327%2C_ako.jpg",
+            "credit": "Ansgar Koreng",
+            "license": "CC BY-SA 3.0 de",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reichstagsgeb%C3%A4ude_und_Paul-L%C3%B6be-Haus,_Berlin-Mitte,_170327,_ako.jpg",
+            "alt": "Reichstagsgebäude und Paul-Löbe-Haus in Berlin"
+          }
+        },
+        {
+          "id": "politik-wahlrecht-16",
+          "headline": "Länder diskutieren Wahlalter 16 bei Landtagswahlen",
+          "summary": "Mehrere Länder prüfen, Jugendliche schon mit 16 wählen zu lassen.",
+          "body": "In mehreren Bundesländern wird darüber diskutiert, das Wahlalter bei Landtagswahlen auf 16 Jahre zu senken.\n\nBefürworter verweisen auf gute Erfahrungen bei Kommunalwahlen. Gegner halten die Altersgrenze von 18 Jahren für sinnvoll.",
+          "source": "Beispiel-Agentur",
+          "url": "https://example.org/agentur/wahlalter",
+          "publishedAt": "2026-10-04T15:45:00+02:00",
+          "importance": 6,
+          "tier": "top",
+          "readingMinutes": 1
+        },
+        {
+          "id": "politik-buergergeld",
+          "headline": "Neue Regeln für Jobcenter-Termine geplant",
+          "summary": "Termine sollen öfter auch online möglich sein.",
+          "body": "Jobcenter sollen Beratungstermine häufiger per Video anbieten. Ein entsprechender Entwurf liegt vor.",
+          "source": "Musterzeitung",
+          "url": "https://example.org/musterzeitung/jobcenter",
+          "publishedAt": "2026-10-04T10:20:00+02:00",
+          "importance": 4,
+          "tier": "more",
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "welt",
+      "title": "Welt",
+      "emoji": "🌍",
+      "items": [
+        {
+          "id": "welt-klimakonferenz-vorbereitung",
+          "headline": "Vorbereitungen für die Klimakonferenz laufen an",
+          "summary": "Delegationen aus fast 200 Ländern treffen sich zu Vorgesprächen.",
+          "body": "Delegationen aus fast 200 Ländern kommen diese Woche zu Vorgesprächen für die nächste Klimakonferenz zusammen.\n\nIm Mittelpunkt steht die Frage, wie ärmere Staaten bei der Anpassung an den Klimawandel unterstützt werden können.",
+          "source": "Beispiel-Agentur",
+          "url": "https://example.org/agentur/klimakonferenz",
+          "publishedAt": "2026-10-04T21:00:00+02:00",
+          "importance": 7,
+          "tier": "top",
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/20201230_Windkraftanlage_Freimann_01.jpg/1280px-20201230_Windkraftanlage_Freimann_01.jpg",
+            "credit": "Flocci Nivis",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:20201230_Windkraftanlage_Freimann_01.jpg",
+            "alt": "Windkraftanlage (falscher Host – die App zeichnet ein Cover)"
+          }
+        },
+        {
+          "id": "welt-wahlen-suedamerika",
+          "headline": "Knappes Ergebnis bei Präsidentschaftswahl erwartet",
+          "summary": "Umfragen sehen zwei Kandidaten gleichauf.",
+          "body": "Bei der Präsidentschaftswahl in einem südamerikanischen Beispielland zeichnet sich ein knappes Ergebnis ab. Eine Stichwahl gilt als wahrscheinlich.",
+          "source": "Demo-Rundfunk",
+          "url": "https://example.org/rundfunk/wahl",
+          "publishedAt": "2026-10-05T03:10:00+02:00",
+          "importance": 5,
+          "tier": "more",
+          "readingMinutes": 1
+        },
+        {
+          "id": "welt-hafenstreik",
+          "headline": "Hafenstreik verzögert Lieferungen",
+          "summary": "Händler rechnen mit späteren Lieferungen vor dem Weihnachtsgeschäft.",
+          "body": "Ein Streik in mehreren Häfen verzögert Lieferungen. Händler rechnen mit Engpässen bei einzelnen Produkten.",
+          "source": "Musterzeitung",
+          "url": "https://example.org/musterzeitung/hafen",
+          "publishedAt": "2026-10-04T17:00:00+02:00",
+          "importance": 4,
+          "tier": "more",
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "region",
+      "title": "Leipzig & Region",
+      "emoji": "📍",
+      "items": [
+        {
+          "id": "region-strassenbahn-augustusplatz",
+          "headline": "Neue Gleise am Augustusplatz: Straßenbahnen fahren Umleitung",
+          "summary": "Drei Wochen lang fahren mehrere Linien andere Wege. Ersatzhaltestellen sind ausgeschildert.",
+          "body": "Am Augustusplatz werden in dieser Testmeldung die Gleise erneuert. Drei Wochen lang fahren mehrere Straßenbahnlinien deshalb Umleitungen.\n\nErsatzhaltestellen sind ausgeschildert. Wer in die Innenstadt will, sollte etwas mehr Zeit einplanen.\n\n## Was du wissen musst\n\n- die Arbeiten laufen auch am Wochenende\n- nachts fahren Busse statt Bahnen\n- Fahrpläne gibt es in der Verkehrs-App",
+          "source": "Lokal-Beispiel",
+          "url": "https://example.org/lokal/augustusplatz",
+          "sources": [
+            { "name": "Lokal-Beispiel", "url": "https://example.org/lokal/augustusplatz" },
+            { "name": "Verkehrsbetriebe (Beispiel)", "url": "https://example.org/verkehr/umleitung" }
+          ],
+          "publishedAt": "2026-10-04T20:15:00+02:00",
+          "importance": 7,
+          "tier": "top",
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/L01_366_Augustusplatz%2C_%C2%BBPostkurve%C2%AB.jpg/1280px-L01_366_Augustusplatz%2C_%C2%BBPostkurve%C2%AB.jpg",
+            "credit": "Falk2",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:L01_366_Augustusplatz,_%C2%BBPostkurve%C2%AB.jpg",
+            "alt": "Straßenbahn am Augustusplatz in Leipzig"
+          }
+        },
+        {
+          "id": "region-bad-dueben-kurpark",
+          "headline": "Bad Düben: Kurpark bekommt neue Beleuchtung",
+          "summary": "Sparsame LED-Leuchten ersetzen die alten Laternen.",
+          "body": "Im Kurpark werden die alten Laternen durch sparsame LED-Leuchten ersetzt. Die Arbeiten sollen bis November dauern.",
+          "source": "Lokal-Beispiel",
+          "url": "https://example.org/lokal/kurpark",
+          "publishedAt": "2026-10-04T13:30:00+02:00",
+          "importance": 4,
+          "tier": "more",
+          "readingMinutes": 1
+        },
+        {
+          "id": "region-buchmesse-vorschau",
+          "headline": "Vorverkauf für die Buchmesse beginnt",
+          "summary": "Tickets gibt es ab heute online.",
+          "body": "Der Ticketverkauf für die Buchmesse startet heute. Familien bekommen einen Rabatt.",
+          "source": "Lokal-Beispiel",
+          "url": "https://example.org/lokal/buchmesse",
+          "publishedAt": "2026-10-05T00:30:00+02:00",
+          "importance": 4,
+          "tier": "more",
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "sport",
+      "title": "Sport",
+      "emoji": "⚽",
+      "items": [
+        {
+          "id": "sport-leipzig-heimsieg",
+          "headline": "Leipzig gewinnt Heimspiel nach Rückstand",
+          "summary": "Zwei späte Tore drehen die Partie. Die Mannschaft rückt in der Tabelle nach oben.",
+          "body": "Nach einem frühen Rückstand hat Leipzig sein Heimspiel in dieser Testmeldung noch gewonnen. Zwei Tore in der Schlussphase drehten die Partie.\n\nDer Trainer lobte nach dem Spiel die Geduld seiner Mannschaft. Mit dem Sieg rückt das Team in der Tabelle nach oben.\n\nAm kommenden Wochenende steht ein Auswärtsspiel an.",
+          "source": "Sport-Beispiel",
+          "url": "https://example.org/sport/leipzig",
+          "sources": [
+            { "name": "Sport-Beispiel", "url": "https://example.org/sport/leipzig" },
+            { "name": "Demo-Rundfunk", "url": "https://example.org/rundfunk/sport" }
+          ],
+          "publishedAt": "2026-10-04T22:10:00+02:00",
+          "importance": 6,
+          "tier": "top",
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Leipzig_stadium.jpg/1280px-Leipzig_stadium.jpg",
+            "credit": "Arne Müseler",
+            "license": "CC BY-SA 3.0 de",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Leipzig_stadium.jpg",
+            "alt": "Stadion in Leipzig von außen"
+          }
+        },
+        {
+          "id": "sport-handball",
+          "headline": "Handballer starten mit Sieg in die Saison",
+          "summary": "Der Auftakt vor heimischem Publikum gelingt.",
+          "body": "Die Handballer haben ihr erstes Saisonspiel gewonnen. Rund 5.000 Fans waren in der Halle.",
+          "source": "Sport-Beispiel",
+          "url": "https://example.org/sport/handball",
+          "publishedAt": "2026-10-04T20:45:00+02:00",
+          "importance": 4,
+          "tier": "more",
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "wissenschaft",
+      "title": "Wissenschaft & Raumfahrt",
+      "emoji": "🔭",
+      "items": [
+        {
+          "id": "wissenschaft-raumstation-experiment",
+          "headline": "Neues Experiment auf der Raumstation untersucht Pflanzenwachstum",
+          "summary": "Forschende wollen herausfinden, wie Salat in Schwerelosigkeit besser wächst.",
+          "body": "Auf der Internationalen Raumstation startet in dieser Testmeldung ein Experiment zum Pflanzenwachstum. Es soll zeigen, wie Licht und Wasser in Schwerelosigkeit am besten verteilt werden.\n\n## Warum das wichtig ist\n\nFür lange Missionen müssen Crews einen Teil ihrer Nahrung selbst anbauen. Die Ergebnisse könnten auch Gewächshäusern auf der Erde helfen.\n\nErste Daten werden im Frühjahr erwartet.",
+          "source": "Wissenschafts-Beispiel",
+          "url": "https://example.org/wissen/raumstation",
+          "sources": [
+            { "name": "Wissenschafts-Beispiel", "url": "https://example.org/wissen/raumstation" }
+          ],
+          "publishedAt": "2026-10-04T16:00:00+02:00",
+          "importance": 5,
+          "tier": "top",
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/STS-134_International_Space_Station_after_undocking.jpg/1280px-STS-134_International_Space_Station_after_undocking.jpg",
+            "credit": "NASA",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:STS-134_International_Space_Station_after_undocking.jpg",
+            "alt": "Die Internationale Raumstation über der Erde"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gesundheit",
+      "title": "Gesundheit",
+      "emoji": "🩺",
+      "items": [
+        {
+          "headline": "Grippeimpfung: Praxen haben genug Impfstoff",
+          "summary": "Ältere Menschen und chronisch Kranke sollten sich jetzt impfen lassen. Diese Meldung hat absichtlich keinen ganzen Artikel (wie im alten Format).",
+          "source": "Gesundheits-Beispiel",
+          "url": "https://example.org/gesundheit/grippe",
+          "publishedAt": "2026-10-04T08:00:00+02:00",
+          "importance": 6
+        }
+      ]
+    },
+    {
+      "id": "klima",
+      "title": "Klima & Umwelt",
+      "emoji": "🌱",
+      "items": [
+        {
+          "id": "klima-solarpark-borna",
+          "headline": "Solarpark bei Borna liefert Strom für tausende Haushalte",
+          "summary": "Auf einer ehemaligen Tagebaufläche entsteht eine große Freiflächenanlage.",
+          "body": "Auf einer ehemaligen Tagebaufläche südlich von Leipzig liefert ein Solarpark in dieser Testmeldung Strom für mehrere tausend Haushalte.\n\nDie Fläche war früher für den Braunkohleabbau genutzt worden. Zwischen den Modulreihen sollen Schafe weiden.\n\n- Leistung: im zweistelligen Megawattbereich\n- Fläche: rund 40 Fußballfelder\n- Betrieb: seit dem Sommer",
+          "source": "Lokal-Beispiel",
+          "url": "https://example.org/lokal/solarpark",
+          "sources": [
+            { "name": "Lokal-Beispiel", "url": "https://example.org/lokal/solarpark" },
+            { "name": "Energie-Beispiel", "url": "https://example.org/energie/solarpark" }
+          ],
+          "publishedAt": "2026-10-04T11:30:00+02:00",
+          "importance": 5,
+          "tier": "top",
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Solarpark_Borna_2021.jpg/1280px-Solarpark_Borna_2021.jpg",
+            "credit": "Tom-bna",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Solarpark_Borna_2021.jpg",
+            "alt": "Solarmodule auf einer Freifläche bei Borna"
+          }
+        },
+        {
+          "id": "klima-herbst-trocken",
+          "headline": "Herbst bisher zu trocken",
+          "summary": "Böden in Sachsen brauchen dringend Regen.",
+          "body": "Der Herbst war bisher deutlich zu trocken. Besonders junge Bäume leiden darunter.",
+          "source": "Wetter-Beispiel",
+          "url": "https://example.org/wetter/trocken",
+          "publishedAt": "2026-10-04T07:30:00+02:00",
+          "importance": 4,
+          "tier": "more",
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "entertainment",
+      "title": "Games & Entertainment",
+      "emoji": "🎮",
+      "items": [
+        {
+          "id": "entertainment-spielemesse",
+          "headline": "Spielemesse meldet Besucherrekord",
+          "summary": "Mehr Aussteller, längere Schlangen: Die Messe war an allen Tagen ausverkauft.",
+          "body": "Die Spielemesse in Köln meldet in dieser Testmeldung einen Besucherrekord. An allen Tagen waren die Tickets ausverkauft.\n\nBesonders gefragt waren Anspielstationen für neue Konsolenspiele und kleine Studios aus Europa.",
+          "source": "Games-Beispiel",
+          "url": "https://example.org/games/messe",
+          "sources": [
+            { "name": "Games-Beispiel", "url": "https://example.org/games/messe" }
+          ],
+          "publishedAt": "2026-10-04T18:00:00+02:00",
+          "importance": 5,
+          "tier": "top",
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Gamescom_2009_-_Koelnmesse_S%C3%BCdeingang_%285473%29.jpg/1280px-Gamescom_2009_-_Koelnmesse_S%C3%BCdeingang_%285473%29.jpg",
+            "credit": "Raimond Spekking",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gamescom_2009_-_Koelnmesse_S%C3%BCdeingang_(5473).jpg",
+            "alt": "Eingang der Koelnmesse während einer Spielemesse"
+          }
+        },
+        {
+          "id": "entertainment-serie",
+          "headline": "Deutsche Serie für internationalen Preis nominiert",
+          "summary": "Die Dramaserie ist in der Kategorie Drehbuch nominiert.",
+          "body": "Eine deutsche Dramaserie ist für einen internationalen Fernsehpreis nominiert. Die Verleihung ist im November.",
+          "source": "Kultur-Beispiel",
+          "url": "https://example.org/kultur/serie",
+          "publishedAt": "2026-10-04T15:00:00+02:00",
+          "importance": 3,
+          "tier": "more",
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "kultur",
+      "title": "Kultur",
+      "emoji": "🎭",
+      "items": [
+        {
+          "id": "kultur-oper",
+          "headline": "Oper startet mit ausverkaufter Premiere in die Saison",
+          "summary": "Ein Thema, das die App noch nicht kennt – es erscheint mit neutraler Farbe am Ende.",
+          "body": "Die Oper hat ihre Saison mit einer ausverkauften Premiere eröffnet.\n\nDas Publikum feierte das Ensemble mit langem Applaus.",
+          "source": "Kultur-Beispiel",
+          "url": "https://example.org/kultur/oper",
+          "publishedAt": "2026-10-04T23:00:00+02:00",
+          "importance": 3,
+          "tier": "top",
+          "readingMinutes": 1
+        }
+      ]
+    }
+  ]
+}

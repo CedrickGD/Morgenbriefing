@@ -12,13 +12,18 @@ import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.Brief
+import com.cedrickgd.morgenbriefing.ui.news.TopicPrefs
+import com.cedrickgd.morgenbriefing.ui.news.topicPrefs
 import com.cedrickgd.morgenbriefing.util.attempt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -52,6 +57,11 @@ class DayDetailViewModel(
 
     private val _state = MutableStateFlow(DayDetailUiState(loading = date != null))
     val state: StateFlow<DayDetailUiState> = _state.asStateFlow()
+
+    /** Topic order and switched-off topics, applied like on the Today screen. */
+    val topicPrefs: StateFlow<TopicPrefs> = container.settings.topicPrefs()
+        .catch { e -> Log.w(TAG, "Settings unavailable for topics", e) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, TopicPrefs())
 
     private var loadJob: Job? = null
 

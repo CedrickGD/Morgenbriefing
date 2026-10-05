@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ui.components
 
+import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.CurrentConditions
 import com.cedrickgd.morgenbriefing.data.model.DayWeather
 import com.cedrickgd.morgenbriefing.data.model.HomeWeather
@@ -7,6 +8,7 @@ import com.cedrickgd.morgenbriefing.data.model.HourPoint
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
 import com.cedrickgd.morgenbriefing.data.model.NewsSection
 import com.cedrickgd.morgenbriefing.data.model.Place
+import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import com.cedrickgd.morgenbriefing.domain.ClothingAdvice
 import com.cedrickgd.morgenbriefing.domain.ClothingItem
@@ -107,29 +109,69 @@ internal object PreviewData {
         WeatherWarning(WarningLevel.INFO, "🌦️", "Schauer am Nachmittag", "Zwischen 15 und 17 Uhr kann es kurz regnen."),
     )
 
+    private const val ARTICLE_BODY = "Betreiber großer Rechenzentren sollen künftig offenlegen, wie viel Strom " +
+        "und Wasser ihre Anlagen verbrauchen. Darauf haben sich die Verhandler in Brüssel in der Nacht geeinigt.\n\n" +
+        "## Was sich ändert\n\n" +
+        "- Jährlicher Bericht zu Energie- und Wasserverbrauch\n" +
+        "- Abwärme soll, wo möglich, in Wärmenetze fließen\n\n" +
+        "Für neue Standorte in Sachsen heißt das: Genehmigungen werden an die Berichtspflicht gekoppelt."
+
+    /** A schema-2 section: two top articles with full text and sources, one behind "+ Mehr". */
     val section = NewsSection(
         id = "ki",
         title = "KI & Tech",
         emoji = "🤖",
         items = listOf(
             NewsItem(
+                id = "ki-rechenzentren",
                 headline = "EU einigt sich auf Regeln für KI-Rechenzentren",
                 summary = "Betreiber großer Rechenzentren müssen künftig Strom- und Wasserverbrauch offenlegen. " +
                     "Das betrifft auch neue Standorte in Sachsen.",
+                body = ARTICLE_BODY,
                 source = "Handelsblatt",
                 url = "https://example.com/ki-1",
+                sources = listOf(
+                    SourceRef("Handelsblatt", "https://example.com/ki-1"),
+                    SourceRef("tagesschau.de", "https://example.com/ki-1b"),
+                    SourceRef("heise online", "https://example.com/ki-1c"),
+                ),
                 publishedAt = "2026-10-05T18:20:00+02:00",
                 importance = 8,
+                readingMinutes = 3,
             ),
             NewsItem(
+                id = "offline-uebersetzung",
                 headline = "Neues Smartphone-Update bringt Offline-Übersetzung",
                 summary = "Die Funktion läuft komplett auf dem Gerät und unterstützt zum Start zwölf Sprachen.",
+                body = "Die Übersetzung läuft ohne Netz direkt auf dem Gerät.\n\nZum Start gibt es zwölf Sprachen.",
                 source = "heise online",
                 url = "https://example.com/ki-2",
                 publishedAt = "2026-10-06T04:55:00+02:00",
                 importance = 6,
+                readingMinutes = 2,
+            ),
+            NewsItem(
+                id = "chip-fabrik",
+                headline = "Chipwerk in Dresden stellt 300 Leute ein",
+                summary = "Die Erweiterung soll bis Frühjahr fertig sein.",
+                body = "Das Werk wächst weiter.",
+                source = "MDR",
+                url = "https://example.com/ki-3",
+                publishedAt = "2026-10-05T12:00:00+02:00",
+                importance = 5,
+                tier = NewsItem.TIER_MORE,
+                readingMinutes = 2,
             ),
         ),
+    )
+
+    /** A small schema-2 brief for previews of the feed. */
+    val brief = Brief(
+        schema = 2,
+        date = "2026-10-06",
+        generatedAt = "2026-10-06T05:07:12+02:00",
+        teaser = "EU zieht bei KI-Rechenzentren die Zügel an, der DAX startet ruhig.",
+        sections = listOf(section),
     )
 
     const val TEASER = "EU zieht bei KI-Rechenzentren die Zügel an, der DAX startet ruhig, " +
