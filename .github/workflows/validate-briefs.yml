@@ -1,12 +1,13 @@
 name: Briefs prüfen
 
-# Validates the data branch `briefs` with routine/validate-brief.mjs from `main`.
+# Validates the data branch `briefs` with routine/validate-brief.mjs from `main` (schema 1 and 2,
+# the validator detects the schema per file).
 #
 # Note: for `push` events GitHub reads the workflow file from the pushed commit. The orphan
 # `briefs` branch contains only data, so the push trigger below only fires if this file is ever
-# added to that branch. What actually runs it is the daily schedule (defined on `main`, shortly
-# after the 05:00 routine) and the manual trigger. The scheduled run also fails when today's brief
-# is missing, so GitHub's "workflow failed" e-mail doubles as a heads-up.
+# added to that branch. What actually runs it is the daily schedule (defined on `main`, after the
+# 04:00 routine and its retry window) and the manual trigger. The scheduled run also fails when
+# today's brief is missing, so GitHub's "workflow failed" e-mail doubles as a heads-up.
 on:
   push:
     branches: [briefs]
@@ -83,6 +84,15 @@ jobs:
           fi
           echo "Geänderte Briefings: ${changed[*]:-keine}"
           node tools/routine/validate-brief.mjs latest.json index.json "${changed[@]}" --max-age-hours 36
+
+      - name: Überschriften in die Zusammenfassung
+        if: steps.branch.outputs.exists == 'true' && !cancelled()
+        run: |
+          {
+            echo '### Neuestes Briefing'
+            echo
+            node tools/routine/assemble-brief.mjs --overview latest.json || echo 'latest.json ist nicht lesbar.'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Ist das heutige Briefing da?
         if: steps.branch.outputs.exists == 'true' && github.event_name != 'push'

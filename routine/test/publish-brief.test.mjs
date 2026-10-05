@@ -184,7 +184,7 @@ describe('publish CLI', () => {
         encoding: 'utf8',
       });
       assert.equal(bad.status, 1);
-      assert.match(bad.stderr, /schema: muss 1 sein/);
+      assert.match(bad.stderr, /schema: muss 1 oder 2 sein/);
 
       const usage = spawnSync(process.execPath, [PUBLISH, '--brief', briefFile], { encoding: 'utf8' });
       assert.equal(usage.status, 2);

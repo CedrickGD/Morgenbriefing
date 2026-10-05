@@ -90,11 +90,13 @@ describe('validateBrief', () => {
     const result = validateFile(SAMPLE_BRIEF, { maxAgeHours: 36 });
     assert.equal(result.kind, 'brief');
     assert.deepEqual(result.errors, []);
+    assert.deepEqual(result.warnings, []);
+    assert.equal(result.doc.schema, 2, 'the demo brief shows the full-article format');
   });
 
   it('rejects wrong schema, date and generatedAt', () => {
     const brief = makeBrief();
-    brief.schema = 2;
+    brief.schema = 3;
     brief.date = '2026-02-30';
     brief.generatedAt = '2026-10-06T05:07:12';
     const result = validateBrief(brief);

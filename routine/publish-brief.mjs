@@ -3,15 +3,18 @@
  * Publishes a daily brief into a checkout of the `briefs` data branch
  * (contract: docs/brief-format.md). Zero dependencies, Node >= 18, ESM.
  *
- *   node routine/publish-brief.mjs --brief <pfad> --data-dir <checkout> [--max-age-hours <h>] [--dry-run]
+ *   node routine/publish-brief.mjs --brief <pfad> --data-dir <checkout> [--max-age-hours <h>] [--merge] [--dry-run]
  *
  * 1. validates the brief (validate-brief.mjs) and refuses to publish an invalid one,
- * 2. writes `briefs/<date>.json` (2-space JSON + trailing newline),
+ * 2. writes `briefs/<date>.json` (2-space JSON + trailing newline) – with `--merge` the brief's
+ *    sections are upserted by id into an existing day file instead of replacing it (for setups
+ *    where several routines each contribute some topics to the same day),
  * 3. replaces `latest.json` only if the brief's date is >= the date currently in it,
- * 4. upserts `{ date, teaser, itemCount }` into `index.json` (newest first, max. 400 days) and
- *    sets `updatedAt` to the brief's `generatedAt` – unless the index already carries a later
- *    one (backfilling an older day must not move `updatedAt` backwards). A missing or broken
- *    `index.json` is rebuilt from the files in `briefs/`.
+ * 4. upserts `{ date, teaser, itemCount }` into `index.json` (newest first, max. 400 days;
+ *    `itemCount` counts every article, "top" and "more") and sets `updatedAt` to the brief's
+ *    `generatedAt` – unless the index already carries a later one (backfilling an older day must
+ *    not move `updatedAt` backwards). A missing or broken `index.json` is rebuilt from the files
+ *    in `briefs/`.
  *
  * Idempotent: files whose content would not change are not touched, so running it twice
  * leaves a clean `git status`. Git itself (commit/push) is the caller's job.
@@ -37,6 +40,7 @@ import {
   parseHours,
   parseOffsetDateTime,
   readJsonFile,
+  topicRank,
   validateBrief,
   validateIndex,
 } from './validate-brief.mjs';
@@ -104,7 +108,7 @@ function writeIfChanged(file, text, dryRun) {
   return before === null ? 'neu' : 'aktualisiert';
 }
 
-/** Index entry for a brief. */
+/** Index entry for a brief; `itemCount` counts every article ("top" and "more"). */
 export function indexEntryFor(brief) {
   return { date: brief.date, teaser: brief.teaser, itemCount: countItems(brief) };
 }
@@ -149,6 +153,108 @@ function laterTimestamp(a, b) {
   return pb.epochMs >= pa.epochMs ? b : a;
 }
 
+function isPlainObject(value) {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Upserts the sections of `incoming` into `existing` (same day): sections with the same id are
+ * replaced, new ones added, the others kept. Schema-2 briefs end up in catalogue order (unknown
+ * topics after the known ones, in their previous order); schema-1 briefs keep the existing order
+ * with new sections appended. The teaser of `incoming` wins unless it is empty; `generatedAt` is
+ * the later of both.
+ *
+ * @param {object} existing the current day file (structurally a brief)
+ * @param {object} incoming the brief being published
+ * @returns {{ brief: object, replaced: string[], added: string[], kept: string[] }}
+ * @throws {PublishError} if the schemas or dates differ
+ */
+export function mergeBriefs(existing, incoming) {
+  if (existing.schema !== incoming.schema) {
+    throw new PublishError(
+      `Zusammenführen nicht möglich: briefs/${incoming.date}.json hat Schema ${existing.schema}, das neue Briefing Schema ${incoming.schema}.`,
+    );
+  }
+  if (existing.date !== incoming.date) {
+    throw new PublishError(
+      `Zusammenführen nicht möglich: briefs/${incoming.date}.json enthält das Datum ${existing.date}.`,
+    );
+  }
+  const incomingById = new Map(incoming.sections.map((s) => [s.id, s]));
+  const existingIds = new Set();
+  const replaced = [];
+  const kept = [];
+  const sections = [];
+  for (const section of existing.sections) {
+    if (!isPlainObject(section)) continue;
+    existingIds.add(section.id);
+    if (incomingById.has(section.id)) {
+      sections.push(incomingById.get(section.id));
+      replaced.push(section.id);
+    } else {
+      sections.push(section);
+      kept.push(section.id);
+    }
+  }
+  const added = [];
+  for (const section of incoming.sections) {
+    if (!existingIds.has(section.id)) {
+      sections.push(section);
+      added.push(section.id);
+    }
+  }
+  const ordered =
+    incoming.schema === 2
+      ? sections
+          .map((s, i) => ({ s, i }))
+          .sort((a, b) => topicRank(a.s.id) - topicRank(b.s.id) || a.i - b.i)
+          .map((x) => x.s)
+      : sections;
+
+  const teaser =
+    typeof incoming.teaser === 'string' && incoming.teaser.trim() !== '' ? incoming.teaser : existing.teaser;
+  return {
+    brief: {
+      ...existing,
+      ...incoming,
+      generatedAt: laterTimestamp(existing.generatedAt, incoming.generatedAt),
+      teaser: typeof teaser === 'string' ? teaser : '',
+      sections: ordered,
+    },
+    replaced,
+    added,
+    kept,
+  };
+}
+
+/**
+ * Resolves what goes into `briefs/<date>.json` in merge mode. A missing day file means there is
+ * nothing to merge with; an unreadable one is replaced (with a note).
+ */
+function resolveMerge(brief, dayFile, notes) {
+  const state = readJsonState(dayFile);
+  if (!state.exists) {
+    notes.push(`--merge: briefs/${brief.date}.json gibt es noch nicht – das Briefing wird unverändert geschrieben`);
+    return { brief, merge: null };
+  }
+  const doc = state.doc;
+  if (state.problem !== null || !isPlainObject(doc) || !Array.isArray(doc.sections)) {
+    notes.push(`--merge: briefs/${brief.date}.json war unlesbar und wird ersetzt`);
+    return { brief, merge: null };
+  }
+  const merged = mergeBriefs(doc, brief);
+  // Freshness was checked on the incoming brief; sections from earlier runs are only checked
+  // structurally (their age relative to the new generatedAt says nothing about this run).
+  const check = validateBrief(merged.brief);
+  if (check.errors.length > 0) {
+    throw new PublishError(
+      `Das zusammengeführte Briefing für ${brief.date} wäre ungültig – nichts veröffentlicht.`,
+      check.errors,
+    );
+  }
+  return { brief: merged.brief, merge: { replaced: merged.replaced, added: merged.added, kept: merged.kept } };
+}
+
 /**
  * Publishes `brief` into `dataDir` (a checkout of the `briefs` branch).
  *
@@ -156,12 +262,15 @@ function laterTimestamp(a, b) {
  * @param {unknown} params.brief parsed brief JSON
  * @param {string} params.dataDir existing directory
  * @param {number} [params.maxAgeHours] freshness policy passed to the validator
+ * @param {boolean} [params.merge] upsert the sections into an existing day file instead of replacing it
  * @param {boolean} [params.dryRun] compute the changes without writing anything
- * @returns {{ date: string, itemCount: number, warnings: string[], notes: string[],
+ * @returns {{ date: string, itemCount: number, brief: object, warnings: string[], notes: string[],
+ *   merge: { replaced: string[], added: string[], kept: string[] } | null,
  *   changes: { file: string, status: 'neu'|'aktualisiert'|'unverändert'|'behalten', note?: string }[] }}
+ *   `brief` is what was written to `briefs/<date>.json` (the merged brief in merge mode)
  * @throws {PublishError} if the brief is invalid or a file cannot be read/written
  */
-export function publishBrief({ brief, dataDir, maxAgeHours, dryRun = false }) {
+export function publishBrief({ brief, dataDir, maxAgeHours, merge = false, dryRun = false }) {
   const { errors, warnings } = validateBrief(brief, { maxAgeHours });
   if (errors.length > 0) {
     throw new PublishError('Das Briefing ist ungültig – nichts veröffentlicht.', errors);
@@ -176,20 +285,25 @@ export function publishBrief({ brief, dataDir, maxAgeHours, dryRun = false }) {
 
   const notes = [];
   const changes = [];
-  const briefText = toJsonText(brief);
   const briefsDir = path.join(dataDir, 'briefs');
+  const dayFile = path.join(briefsDir, `${brief.date}.json`);
+
+  const resolved = merge ? resolveMerge(brief, dayFile, notes) : { brief, merge: null };
+  const final = resolved.brief;
+  const briefText = toJsonText(final);
 
   // 1. briefs/<date>.json
   changes.push({
-    file: `briefs/${brief.date}.json`,
-    status: writeIfChanged(path.join(briefsDir, `${brief.date}.json`), briefText, dryRun),
+    file: `briefs/${final.date}.json`,
+    status: writeIfChanged(dayFile, briefText, dryRun),
+    ...(resolved.merge ? { note: 'zusammengeführt' } : {}),
   });
 
   // 2. latest.json — never replace a newer day with an older one (e.g. when backfilling).
   const latestFile = path.join(dataDir, 'latest.json');
   const latest = readJsonState(latestFile);
   const latestDate = latest.doc && typeof latest.doc === 'object' ? latest.doc.date : undefined;
-  if (latest.exists && latest.problem === null && isCalendarDate(latestDate) && brief.date < latestDate) {
+  if (latest.exists && latest.problem === null && isCalendarDate(latestDate) && final.date < latestDate) {
     changes.push({ file: 'latest.json', status: 'behalten', note: `enthält schon den neueren ${latestDate}` });
   } else {
     const status = writeIfChanged(latestFile, briefText, dryRun);
@@ -203,20 +317,20 @@ export function publishBrief({ brief, dataDir, maxAgeHours, dryRun = false }) {
   const indexFile = path.join(dataDir, 'index.json');
   const current = readJsonState(indexFile);
   let days;
-  let updatedAt = brief.generatedAt;
+  let updatedAt = final.generatedAt;
   if (current.exists && current.problem === null && validateIndex(current.doc).errors.length === 0) {
     days = current.doc.days;
-    updatedAt = laterTimestamp(current.doc.updatedAt, brief.generatedAt);
+    updatedAt = laterTimestamp(current.doc.updatedAt, final.generatedAt);
   } else {
     if (current.exists) {
       notes.push('index.json war ungültig und wurde aus den Dateien unter briefs/ neu aufgebaut');
     }
     days = entriesFromDisk(briefsDir, notes);
   }
-  const merged = [indexEntryFor(brief), ...days.filter((d) => d.date !== brief.date)]
+  const mergedDays = [indexEntryFor(final), ...days.filter((d) => d.date !== final.date)]
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
     .slice(0, LIMITS.indexMaxDays);
-  const index = { updatedAt, days: merged };
+  const index = { updatedAt, days: mergedDays };
   const indexCheck = validateIndex(index);
   if (indexCheck.errors.length > 0) {
     throw new PublishError('Interner Fehler: der neue Index wäre ungültig.', indexCheck.errors);
@@ -224,10 +338,18 @@ export function publishBrief({ brief, dataDir, maxAgeHours, dryRun = false }) {
   changes.push({
     file: 'index.json',
     status: writeIfChanged(indexFile, toJsonText(index), dryRun),
-    note: `${merged.length} ${merged.length === 1 ? 'Tag' : 'Tage'}`,
+    note: `${mergedDays.length} ${mergedDays.length === 1 ? 'Tag' : 'Tage'}`,
   });
 
-  return { date: brief.date, itemCount: countItems(brief), warnings, notes, changes };
+  return {
+    date: final.date,
+    itemCount: countItems(final),
+    brief: final,
+    merge: resolved.merge,
+    warnings,
+    notes,
+    changes,
+  };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -243,6 +365,8 @@ Optionen:
   --brief <pfad>          Das Briefing (JSON, Format: docs/brief-format.md).
   --data-dir <pfad>       Checkout des Branches "briefs" (muss existieren).
   --max-age-hours <h>     Zusätzlich die Frische-Regel prüfen (wie validate-brief.mjs).
+  --merge                 Rubriken nach id in ein schon vorhandenes Briefing desselben Tages
+                          einfügen bzw. ersetzen, statt es komplett zu überschreiben.
   --dry-run               Nur anzeigen, was sich ändern würde.
   -h, --help              Diese Hilfe.
 
@@ -250,7 +374,7 @@ Schreibt briefs/<datum>.json, latest.json (nur wenn nicht schon ein neuerer Tag 
 und index.json. Mehrfaches Ausführen ändert nichts weiter (idempotent).`;
 
 function parseCliArgs(argv) {
-  const args = { dryRun: false };
+  const args = { dryRun: false, merge: false };
   const valueOf = (i, name) => {
     const raw = argv[i];
     if (raw.includes('=')) return { value: raw.slice(raw.indexOf('=') + 1), next: i };
@@ -263,6 +387,8 @@ function parseCliArgs(argv) {
     if (arg === '-h' || arg === '--help') return { help: true };
     if (arg === '--dry-run') {
       args.dryRun = true;
+    } else if (arg === '--merge') {
+      args.merge = true;
     } else if (name === '--brief' || name === '--data-dir' || name === '--max-age-hours') {
       const r = valueOf(i, name);
       if (r.problem) return { problem: r.problem };
@@ -310,11 +436,18 @@ export function main(argv = process.argv.slice(2), out = console.log, err = cons
       brief,
       dataDir: args.dataDir,
       maxAgeHours: args.maxAgeHours,
+      merge: args.merge,
       dryRun: args.dryRun,
     });
 
-    out(`${describe('brief', brief)}`);
+    out(`${describe('brief', result.brief)}`);
     out(`Ziel: ${path.resolve(args.dataDir)}${args.dryRun ? '  (Probelauf – nichts geschrieben)' : ''}`);
+    if (result.merge) {
+      const list = (ids) => (ids.length > 0 ? ids.join(', ') : '–');
+      out(
+        `Zusammengeführt: ersetzt ${list(result.merge.replaced)} · neu ${list(result.merge.added)} · behalten ${list(result.merge.kept)}`,
+      );
+    }
     const width = Math.max(...result.changes.map((c) => c.status.length));
     for (const change of result.changes) {
       out(`  ${change.status.padEnd(width)}  ${change.file}${change.note ? ` · ${change.note}` : ''}`);
