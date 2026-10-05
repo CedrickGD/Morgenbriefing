@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
 import com.cedrickgd.morgenbriefing.ui.theme.OverlineLetterSpacing
 import java.util.Locale
 
@@ -37,7 +37,10 @@ fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-/** Generic friendly card for empty/error/setup states. */
+/**
+ * Generic friendly glass card for empty/error/setup states: emoji, title, text and an optional
+ * glass action pill.
+ */
 @Composable
 fun InfoCard(
     emoji: String,
@@ -48,13 +51,8 @@ fun InfoCard(
     onAction: (() -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        color = colors.surfaceContainer,
-        contentColor = colors.onSurface,
-    ) {
-        Column(Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
+    GlassCard(modifier = modifier.fillMaxWidth()) {
+        Column {
             if (emoji.isNotBlank()) {
                 Emoji(emoji, size = 34.sp)
                 Spacer(Modifier.height(10.dp))
@@ -74,9 +72,7 @@ fun InfoCard(
             }
             if (actionLabel != null && onAction != null) {
                 Spacer(Modifier.height(16.dp))
-                FilledTonalButton(onClick = onAction) {
-                    Text(actionLabel)
-                }
+                GlassPillButton(text = actionLabel, onClick = onAction, filled = true)
             }
         }
     }

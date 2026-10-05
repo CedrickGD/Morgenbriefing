@@ -19,6 +19,7 @@ import kotlin.math.min
  * @property coverStart / [coverEnd] gradient of the generated cover; always dark enough for
  *   white headlines on top.
  * @property coverGlow a lighter, warmer tone for the soft shapes on the cover.
+ * @property strong deep tone for the selected topic chip; white text on it is ≥ 4.5:1.
  */
 @Immutable
 data class TopicColors(
@@ -27,6 +28,7 @@ data class TopicColors(
     val coverStart: Color,
     val coverEnd: Color,
     val coverGlow: Color,
+    val strong: Color,
 )
 
 /** Pure: perceptual (OkLCH) derivation from the seed, so every hue looks equally calm. */
@@ -41,6 +43,7 @@ internal fun topicColors(seed: Long, dark: Boolean): TopicColors {
             coverStart = ColorMath.fromOkLch(0.50, min(c * 0.90, 0.13), h - 14),
             coverEnd = ColorMath.fromOkLch(0.29, min(c * 0.80, 0.10), h + 24),
             coverGlow = ColorMath.fromOkLch(0.72, min(c * 0.70, 0.12), h - 30),
+            strong = ColorMath.fromOkLch(0.47, min(c * 0.90, 0.13), h),
         )
     } else {
         TopicColors(
@@ -49,6 +52,7 @@ internal fun topicColors(seed: Long, dark: Boolean): TopicColors {
             coverStart = ColorMath.fromOkLch(0.66, min(c * 1.00, 0.16), h - 14),
             coverEnd = ColorMath.fromOkLch(0.44, min(c * 1.00, 0.15), h + 24),
             coverGlow = ColorMath.fromOkLch(0.86, min(c * 0.60, 0.11), h - 30),
+            strong = ColorMath.fromOkLch(0.45, min(c * 1.00, 0.15), h),
         )
     }
 }

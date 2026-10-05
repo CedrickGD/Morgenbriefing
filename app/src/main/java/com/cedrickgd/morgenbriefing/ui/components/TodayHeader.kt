@@ -19,7 +19,7 @@ import java.time.LocalDate
 /**
  * Overline date + greeting + serif headline.
  *
- * Usually sits directly on the [WeatherBackdrop] sky, so the overline uses a slightly deepened
+ * Sits directly on the AmbientSky (docs/DESIGN.md §7), so the overline uses a slightly deepened
  * `onSurfaceVariant` to stay readable on the pastel/dusky sky tones. Fades and slides in once.
  */
 @Composable

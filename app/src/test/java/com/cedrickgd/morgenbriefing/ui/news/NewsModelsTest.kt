@@ -80,7 +80,7 @@ class NewsModelsTest {
     // --- top stories -----------------------------------------------------------------------
 
     @Test
-    fun `top stories are the five most important, ties in brief order`() {
+    fun `top stories are the most important, ties in topic order`() {
         val feed = buildNewsFeed(
             brief(
                 2,
@@ -89,8 +89,16 @@ class NewsModelsTest {
             ),
             TopicPrefs(order = listOf("ki", "politik")),
         )
-        assertEquals(listOf("k2", "p1", "p2", "k1", "k3"), feed.topStories.map { it.item.id })
+        assertEquals(listOf("k2", "p1", "p2", "k1", "k3", "p3"), feed.topStories.map { it.item.id })
         assertEquals("ki", feed.topStories.first().topic.id)
+    }
+
+    @Test
+    fun `top stories stop at ten`() {
+        val items = (1..14).map { item("a$it", importance = it % 10 + 1) }.toTypedArray()
+        val feed = buildNewsFeed(brief(2, section("ki", *items)), TopicPrefs())
+        assertEquals(TOP_STORY_COUNT, feed.topStories.size)
+        assertEquals(10, feed.topStories.first().item.importance)
     }
 
     @Test
@@ -103,17 +111,24 @@ class NewsModelsTest {
         )
         val feed = buildNewsFeed(b, TopicPrefs(order = listOf("politik", "ki", "sport"), hidden = setOf("sport")))
         assertEquals(listOf("politik", "ki"), feed.sections.map { it.id })
-        assertEquals(listOf("p1", "k1", "p2", "p3", "k2"), feed.topStories.map { it.item.id })
+        assertEquals(listOf("p1", "k1", "p2", "p3", "k2", "k3"), feed.topStories.map { it.item.id })
     }
 
     @Test
-    fun `no pager when the brief has no more stories than it would show`() {
+    fun `small briefs still have top stories`() {
         val feed = buildNewsFeed(
             brief(2, section("ki", item("a"), item("b"), item("c")), section("politik", item("d"), item("e"))),
             TopicPrefs(),
         )
-        assertTrue(feed.topStories.isEmpty())
+        assertEquals(5, feed.topStories.size)
         assertEquals(2, feed.sections.size)
+    }
+
+    @Test
+    fun `feed meta is age and source`() {
+        val it = item("a", source = "Handelsblatt", publishedAt = "2026-10-06T04:00:00+02:00")
+        assertEquals("vor 3 Std. · Handelsblatt", feedMeta(it, now))
+        assertEquals("Quelle", feedMeta(item("b"), now))
     }
 
     @Test

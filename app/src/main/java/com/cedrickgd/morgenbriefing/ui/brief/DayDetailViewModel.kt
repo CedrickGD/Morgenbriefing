@@ -14,6 +14,7 @@ import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.ui.news.TopicPrefs
 import com.cedrickgd.morgenbriefing.ui.news.topicPrefs
+import com.cedrickgd.morgenbriefing.ui.news.withTopicVisible
 import com.cedrickgd.morgenbriefing.util.attempt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -86,6 +87,18 @@ class DayDetailViewModel(
                 failed = bundle == null,
                 now = ZonedDateTime.now(BERLIN),
             )
+        }
+    }
+
+    /** Shows or hides a topic in every feed (same setting as in Einstellungen → Themen). */
+    fun setTopicVisible(topicId: String, visible: Boolean) {
+        viewModelScope.launch {
+            attempt {
+                container.settings.update { settings ->
+                    val next = TopicPrefs(settings).withTopicVisible(topicId, visible) ?: return@update settings
+                    settings.copy(hiddenTopics = next.hidden)
+                }
+            }.onFailure { Log.w(TAG, "Could not store topic visibility", it) }
         }
     }
 

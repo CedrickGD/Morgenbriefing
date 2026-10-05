@@ -10,6 +10,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
+import com.cedrickgd.morgenbriefing.ai.AiSupport
+import com.cedrickgd.morgenbriefing.ai.LiveNewsService
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Brief
@@ -21,6 +23,7 @@ import com.cedrickgd.morgenbriefing.ui.brief.isBriefFor
 import com.cedrickgd.morgenbriefing.ui.brief.toWeatherUi
 import com.cedrickgd.morgenbriefing.ui.news.TopicPrefs
 import com.cedrickgd.morgenbriefing.ui.news.topicPrefs
+import com.cedrickgd.morgenbriefing.ui.news.withTopicVisible
 import com.cedrickgd.morgenbriefing.util.AppSignals
 import com.cedrickgd.morgenbriefing.util.attempt
 import com.cedrickgd.morgenbriefing.util.flatten
@@ -29,14 +32,18 @@ import com.cedrickgd.morgenbriefing.util.isWithin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
@@ -74,11 +81,27 @@ data class OnboardingUi(val hasToken: Boolean)
  * Today: shows cached weather and the last brief instantly, then refreshes both in parallel.
  * Weather is refreshed again on resume once it is older than 10 minutes; the brief whenever
  * the one on screen is not today's (e.g. the app stayed open overnight or the routine was late).
+ * Also drives "⚡ Live" (docs/AI.md §2) and showing/hiding topics from the feed.
+ *
+ * @param liveService the live research service; null below Android 8 (no AI there).
  */
 class TodayViewModel(
     private val container: AppContainer,
     private val clock: () -> ZonedDateTime = { ZonedDateTime.now(BERLIN) },
+    liveService: () -> LiveNewsService? = { null },
 ) : ViewModel() {
+
+    /** Resolved once; a service that cannot be created (should not happen) disables Live quietly. */
+    private val live: LiveNewsService? = try {
+        liveService()
+    } catch (e: Exception) {
+        Log.w(TAG, "Live news unavailable", e)
+        null
+    } catch (e: LinkageError) {
+        // An SDK class that does not load on this device must never take the Today page down.
+        Log.w(TAG, "Live news unavailable on this device", e)
+        null
+    }
 
     private val _state = MutableStateFlow(TodayUiState(now = clock()))
     val state: StateFlow<TodayUiState> = _state.asStateFlow()
@@ -94,6 +117,10 @@ class TodayViewModel(
     val topicPrefs: StateFlow<TopicPrefs> = container.settings.topicPrefs()
         .catch { e -> Log.w(TAG, "Settings unavailable for topics", e) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, TopicPrefs())
+
+    /** "⚡ Live": service state, today's live articles and the AI settings in one. */
+    val liveUi: StateFlow<LiveUi> = liveUiFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), if (live == null) LiveUi.Unsupported else LiveUi())
 
     private var weatherJob: Job? = null
     private var briefJob: Job? = null
@@ -147,6 +174,42 @@ class TodayViewModel(
 
     fun retryBrief() {
         refreshBrief(force = true)
+    }
+
+    /** "Jetzt aktualisieren": live research for [topicIds] (the visible topics). */
+    fun refreshLive(topicIds: List<String>) {
+        val service = live ?: return
+        if (!liveUi.value.canRefresh || topicIds.isEmpty()) return
+        try {
+            service.refresh(topicIds)
+        } catch (e: Exception) {
+            Log.w(TAG, "Live refresh could not start", e)
+        }
+    }
+
+    fun cancelLive() {
+        try {
+            live?.cancel()
+        } catch (e: Exception) {
+            Log.w(TAG, "Live refresh could not be cancelled", e)
+        }
+    }
+
+    /** "⚡ Live" was opened: refresh by itself when the user allowed it and the last run is old. */
+    fun onLiveOpened(topicIds: List<String>) {
+        if (shouldAutoRefresh(liveUi.value, clock().toInstant())) refreshLive(topicIds)
+    }
+
+    /** Shows or hides a topic in the feed (same setting as in Einstellungen → Themen). */
+    fun setTopicVisible(topicId: String, visible: Boolean) {
+        viewModelScope.launch {
+            attempt {
+                container.settings.update { settings ->
+                    val next = TopicPrefs(settings).withTopicVisible(topicId, visible) ?: return@update settings
+                    settings.copy(hiddenTopics = next.hidden)
+                }
+            }.onFailure { Log.w(TAG, "Could not store topic visibility", it) }
+        }
     }
 
     fun finishOnboarding() {
@@ -263,6 +326,29 @@ class TodayViewModel(
         }
     }
 
+    private fun liveUiFlow(): Flow<LiveUi> {
+        val service = live ?: return flowOf(LiveUi.Unsupported)
+        val aiSettings = container.settings.settings
+            .map { it.hasAiKey to it.liveAutoRefresh }
+            .distinctUntilChanged()
+            .catch { e ->
+                Log.w(TAG, "Settings unavailable for live news", e)
+                emit(false to false)
+            }
+        val articles = service.todayArticles
+            .onStart { emit(emptyList()) }
+            .catch { e ->
+                Log.w(TAG, "Live articles unavailable", e)
+                emit(emptyList())
+            }
+        return combine(service.state, articles, aiSettings) { state, list, (hasKey, auto) ->
+            liveUi(state, list, hasKey, auto)
+        }.catch { e ->
+            Log.w(TAG, "Live state unavailable", e)
+            emit(LiveUi())
+        }
+    }
+
     /** The settings that change what the weather call returns. */
     private data class WeatherInputs(val home: Place, val day: Place, val start: Int, val end: Int) {
         constructor(settings: AppSettings) :
@@ -279,7 +365,11 @@ class TodayViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as MorgenbriefingApp
-                TodayViewModel(app.container)
+                TodayViewModel(
+                    container = app.container,
+                    // Below Android 8 nothing of ai/ beyond the support check is touched.
+                    liveService = { if (AiSupport.isSupported) app.ai.live else null },
+                )
             }
         }
     }

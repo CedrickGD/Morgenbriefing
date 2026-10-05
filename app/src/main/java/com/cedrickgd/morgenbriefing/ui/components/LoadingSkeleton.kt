@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableFloatStateOf
@@ -31,15 +29,19 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
 
-/** Shimmering placeholder shaped like hero + curve + news while the first load runs. */
+/**
+ * Shimmering glass placeholders shaped like hero + curve + news while the first load runs.
+ * The page header is real text already, so the skeleton starts with the hero.
+ */
 @Composable
 fun LoadingSkeleton(modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     val dark = colors.background.luminance() < 0.5f
     val shimmer = Shimmer(
-        base = colors.surfaceContainerHigh,
-        highlight = if (dark) colors.surfaceContainerHighest else colors.surfaceContainerLowest,
+        base = colors.onSurface.copy(alpha = if (dark) 0.08f else 0.07f),
+        highlight = colors.onSurface.copy(alpha = if (dark) 0.16f else 0.13f),
         progress = rememberShimmerProgress(),
     )
     val shapes = MaterialTheme.shapes
@@ -53,15 +55,16 @@ fun LoadingSkeleton(modifier: Modifier = Modifier) {
             },
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        // Header: overline, greeting, headline.
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Bone(shimmer, widthFraction = 0.42f, height = 12.dp, shape = shapes.extraSmall)
-            Bone(shimmer, widthFraction = 0.3f, height = 16.dp, shape = shapes.extraSmall)
-            Bone(shimmer, widthFraction = 0.86f, height = 28.dp, shape = shapes.small)
+        // Hero: overline, big temperature, chips.
+        CardBone {
+            Bone(shimmer, widthFraction = 0.55f, height = 12.dp, shape = shapes.extraSmall)
+            Spacer(Modifier.height(18.dp))
+            Bone(shimmer, widthFraction = 0.38f, height = 64.dp, shape = shapes.medium)
+            Spacer(Modifier.height(14.dp))
+            Bone(shimmer, widthFraction = 0.62f, height = 14.dp, shape = shapes.extraSmall)
+            Spacer(Modifier.height(18.dp))
+            Bone(shimmer, widthFraction = 0.9f, height = 30.dp, shape = shapes.large)
         }
-
-        // Hero.
-        Bone(shimmer, widthFraction = 1f, height = 236.dp, shape = shapes.extraLarge)
 
         // Day curve card with a hint of the chart inside.
         CardBone {
@@ -105,13 +108,7 @@ private fun rememberShimmerProgress(): State<Float> =
 
 @Composable
 private fun CardBone(content: @Composable () -> Unit) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-    ) {
-        Column(Modifier.padding(20.dp)) { content() }
-    }
+    GlassCard(Modifier.fillMaxWidth()) { content() }
 }
 
 @Composable

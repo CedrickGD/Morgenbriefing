@@ -25,6 +25,17 @@ class TopicColorsTest {
     }
 
     @Test
+    fun `white text is readable on the selected topic chip`() {
+        for (seed in seeds) {
+            for (dark in listOf(false, true)) {
+                val ratio = ColorMath.contrastRatio(Color.White, topicColors(seed, dark).strong)
+                assertTrue("seed ${seed.toString(16)} dark=$dark: $ratio", ratio >= MIN_TEXT_CONTRAST)
+            }
+        }
+        assertTrue(ColorMath.contrastRatio(Color.White, LiveColors.fill) >= MIN_TEXT_CONTRAST)
+    }
+
+    @Test
     fun `white headlines stay readable on the darker end of every cover`() {
         for (seed in seeds) {
             for (dark in listOf(false, true)) {

@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -9,9 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
@@ -21,24 +23,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.domain.ClothingAdvice
 import com.cedrickgd.morgenbriefing.domain.ClothingItem
+import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
+import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
 import com.cedrickgd.morgenbriefing.ui.theme.OverlineLetterSpacing
 
 /**
- * "ANZIEHEN": tonal accent card with pictogram tiles (🧥 Jacke, ☂️ Schirm …) and the friendly
- * advice text below.
+ * "ANZIEHEN": glass card tinted with the accent container, pictogram tiles (🧥 Jacke,
+ * ☂️ Schirm …) and the friendly advice text below.
  */
 @Composable
 fun ClothingCard(advice: ClothingAdvice, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
-    Surface(
+    GlassCard(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        color = colors.primaryContainer,
-        contentColor = colors.onPrimaryContainer,
+        tint = colors.primaryContainer,
     ) {
-        Column(Modifier.padding(horizontal = 20.dp, vertical = 18.dp)) {
+        CompositionLocalProvider(LocalContentColor provides colors.onPrimaryContainer) {
             Text(
                 text = "ANZIEHEN",
                 style = typography.labelMedium.copy(letterSpacing = OverlineLetterSpacing),
@@ -64,16 +66,13 @@ fun ClothingCard(advice: ClothingAdvice, modifier: Modifier = Modifier) {
 @Composable
 private fun ClothingTile(item: ClothingItem) {
     val tint = MaterialTheme.colorScheme.onPrimaryContainer
-    Surface(
-        shape = MaterialTheme.shapes.medium,
-        color = tint.copy(alpha = 0.08f),
-        contentColor = tint,
-        modifier = Modifier.semantics(mergeDescendants = true) { },
-    ) {
+    CompositionLocalProvider(LocalContentColor provides tint) {
         Column(
             modifier = Modifier
-                .defaultMinSize(minWidth = 76.dp)
-                .padding(horizontal = 12.dp, vertical = 10.dp),
+                .semantics(mergeDescendants = true) { }
+                .background(tint.copy(alpha = 0.08f), GlassShapes.chip)
+                .defaultMinSize(minWidth = 78.dp)
+                .padding(horizontal = 12.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Emoji(item.emoji, size = 28.sp)
