@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.chrisbanes.haze.HazeInputScale
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
@@ -83,8 +84,12 @@ fun glassStyle(level: GlassLevel = GlassLevel.Regular, tint: Color? = null): Haz
     )
 }
 
-/** Below Android 12 there is no blur: a denser tint keeps text readable. */
-private fun fallbackAlpha(alpha: Float): Float = (alpha + 0.3f).coerceAtMost(0.94f)
+/**
+ * Below Android 12 there is no blur, so whatever lies under the glass (scrolling text under the
+ * page indicator or a top bar) would show through: a milky, denser tint keeps text on the glass
+ * readable while the sky's color still glows through a little.
+ */
+private fun fallbackAlpha(alpha: Float): Float = (alpha + 0.36f).coerceAtMost(0.96f)
 
 /** Light catching the top-left edge, fading towards the bottom-right. */
 @Composable
@@ -98,6 +103,13 @@ fun glassEdgeBrush(): Brush {
         end = Offset.Infinite,
     )
 }
+
+/**
+ * The sky is blurred at half resolution: with 20–36 dp of blur the result looks the same, but
+ * the GPU blurs a quarter of the pixels – it matters because the living sky re-blurs every
+ * glass surface on every frame. (Haze's `Auto` picks ⅓, which makes the grain visibly blocky.)
+ */
+private val GlassInputScale: HazeInputScale = HazeInputScale.Fixed(0.5f)
 
 /**
  * Turns any element into frosted glass: blurred sky behind, tint, grain, a soft inner sheen
@@ -118,7 +130,11 @@ fun Modifier.glass(
         .copy(alpha = fallbackAlpha(if (dark) level.tintDark else level.tintLight))
 
     val surface = clip(shape).then(
-        if (state != null) Modifier.hazeEffect(state = state, style = style) else Modifier.background(fallback),
+        if (state != null) {
+            Modifier.hazeEffect(state = state, style = style) { inputScale = GlassInputScale }
+        } else {
+            Modifier.background(fallback)
+        },
     )
     val withSheen = surface.drawBehind {
         drawRect(

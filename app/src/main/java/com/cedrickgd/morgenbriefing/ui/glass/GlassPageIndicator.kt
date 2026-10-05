@@ -10,6 +10,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,9 +25,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
@@ -34,6 +37,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.PI
 import kotlin.math.abs
@@ -58,6 +62,13 @@ fun GlassPageIndicator(
     val accent = MaterialTheme.colorScheme.primary
     val onAccent = MaterialTheme.colorScheme.onPrimary
     val idle = MaterialTheme.colorScheme.onSurfaceVariant
+    // A drop of colored glass: lit from above, with a bright rim along its top edge.
+    val capsuleFill = remember(accent) {
+        Brush.verticalGradient(listOf(lerp(accent, Color.White, 0.16f), accent, lerp(accent, Color.Black, 0.06f)))
+    }
+    val capsuleEdge = remember {
+        Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.38f), Color.White.copy(alpha = 0.04f)))
+    }
 
     AnimatedVisibility(
         visible = visible,
@@ -71,7 +82,13 @@ fun GlassPageIndicator(
     ) {
         Box(
             Modifier
-                .shadow(elevation = 14.dp, shape = CircleShape, ambientColor = Color.Black.copy(alpha = 0.18f), spotColor = Color.Black.copy(alpha = 0.18f))
+                // A very soft ambient shadow only (docs/DESIGN.md §2: floating, never heavy).
+                .shadow(
+                    elevation = 12.dp,
+                    shape = CircleShape,
+                    ambientColor = Color.Black.copy(alpha = 0.10f),
+                    spotColor = Color.Black.copy(alpha = 0.10f),
+                )
                 .glass(shape = GlassShapes.pill, level = GlassLevel.Thin)
                 .height(PILL_HEIGHT)
                 .padding(horizontal = PILL_PADDING),
@@ -90,7 +107,8 @@ fun GlassPageIndicator(
                         scaleX = stretch
                         scaleY = 1f - 0.1f * sin(PI.toFloat() * between)
                     }
-                    .background(accent, CircleShape),
+                    .background(capsuleFill, CircleShape)
+                    .border(1.dp, capsuleEdge, CircleShape),
             )
             Row(Modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
                 pages.forEachIndexed { index, page ->
@@ -108,19 +126,32 @@ fun GlassPageIndicator(
                             .semantics { contentDescription = page.label },
                         contentAlignment = Alignment.Center,
                     ) {
-                        Icon(
-                            imageVector = page.icon,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(22.dp)
-                                .graphicsLayer {
-                                    val distance = abs(pagerState.currentPage + pagerState.currentPageOffsetFraction - index)
-                                    val t = (1f - distance).coerceIn(0f, 1f)
-                                    scaleX = 0.92f + 0.12f * t
-                                    scaleY = scaleX
-                                },
-                            tint = lerp(idle, onAccent, iconEmphasis(pagerState, index)),
-                        )
+                        // Two tints cross-faded in the draw phase (no recomposition while swiping).
+                        Box(
+                            Modifier.graphicsLayer {
+                                val distance = abs(pagerState.currentPage + pagerState.currentPageOffsetFraction - index)
+                                val t = (1f - distance).coerceIn(0f, 1f)
+                                scaleX = 0.92f + 0.12f * t
+                                scaleY = scaleX
+                            },
+                        ) {
+                            Icon(
+                                imageVector = page.icon,
+                                contentDescription = null,
+                                tint = idle,
+                                modifier = Modifier
+                                    .size(22.dp)
+                                    .graphicsLayer { alpha = 1f - iconEmphasis(pagerState, index) },
+                            )
+                            Icon(
+                                imageVector = page.icon,
+                                contentDescription = null,
+                                tint = onAccent,
+                                modifier = Modifier
+                                    .size(22.dp)
+                                    .graphicsLayer { alpha = iconEmphasis(pagerState, index) },
+                            )
+                        }
                     }
                 }
             }
@@ -134,6 +165,9 @@ private fun iconEmphasis(pagerState: PagerState, index: Int): Float {
     return (1f - distance * 1.6f).coerceIn(0f, 1f)
 }
 
-private val PILL_HEIGHT = 48.dp
+/** Height of the [GlassPageIndicator] pill (layout room the shell keeps free below content). */
+val GlassPageIndicatorHeight: Dp = 48.dp
+
+private val PILL_HEIGHT = GlassPageIndicatorHeight
 private val PILL_PADDING = 6.dp
 private val ITEM_WIDTH = 58.dp
