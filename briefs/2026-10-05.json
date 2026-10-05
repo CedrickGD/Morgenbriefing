@@ -1,0 +1,574 @@
+{
+  "schema": 2,
+  "date": "2026-10-05",
+  "generatedAt": "2026-10-05T20:43:22+02:00",
+  "teaser": "Merz sagt der Ukraine in Kyjiw Drohnen und Geld zu, Geheimdienste warnen vor Russlands Schattenkrieg, Spanien wählt neu.",
+  "sections": [
+    {
+      "id": "ki",
+      "title": "KI & Tech",
+      "emoji": "🤖",
+      "items": [
+        {
+          "id": "ki-telekom-ki-investorentag-milliarden",
+          "tier": "top",
+          "headline": "Telekom beziffert KI-Effekt auf Milliarden Euro",
+          "summary": "Auf dem KI-Investorentag in Bonn nennt die Telekom erstmals konkrete Zahlen: 1,1 Milliarden Euro Einsparung bis 2027, rund 2,5 Milliarden bis 2030. Die Prognose bleibt unverändert.",
+          "body": "Die Deutsche Telekom hat am Montag auf ihrem KI-Investorentag in Bonn vorgerechnet, was künstliche Intelligenz für die Bilanz bringen soll. Nach Angaben des Konzerns sollen KI und Automatisierung im kommenden Jahr Bruttoeinsparungen von rund 1,1 Milliarden Euro gegenüber 2023 bringen. Das sind laut Handelsblatt 300 Millionen Euro mehr als bisher angekündigt.\n\nBis 2030 soll die Kombination aus KI und Automatisierung die indirekten Kosten außerhalb der USA um etwa 2,5 Milliarden Euro senken. Die bestehende Finanzprognose und die mittelfristigen Ziele bestätigte das Unternehmen.\n\n## Neue Umsätze mit Geschäftskunden\n\nAuch auf der Einnahmenseite nennt die Telekom Zahlen. Mit KI-Angeboten für Unternehmenskunden außerhalb der USA soll der Umsatz bis 2030 auf rund 800 Millionen Euro wachsen. Insgesamt sieht der Konzern ein zusätzliches Umsatzpotenzial von etwa einer Milliarde Euro, wie das Handelsblatt berichtet.\n\nIm Privatkundengeschäft setzt die Telekom auf den Magenta AI Assistant, der live übersetzt und Telefonate zusammenfasst. Daraus sollen Premiumangebote und neue Tarife entstehen. Details zu Preisen nannte die Telekom in ihrer Mitteilung nicht.\n\n## Netz und Kundendienst als Praxisbeispiele\n\nAls Beleg für den praktischen Nutzen führt die Telekom zwei Anwendungen an. Der „RAN Guardian Agent“ überwacht die Kapazität im Mobilfunknetz und soll die Reaktionszeit bei Überlastung von mehreren Stunden auf etwa eine Minute drücken. Im Kundendienst habe KI-gestützte Problemerkennung in ersten Einführungen die Zahl der Beschwerden um 30 Prozent gesenkt, teilte der Konzern mit.\n\nCEO Timotheus Höttges verwies laut Handelsblatt darauf, dass die Telekom anders als die großen US-Konzerne schon lange Erfahrung im Betrieb riesiger Infrastrukturen habe. Zum Vergleich: Amazon, Microsoft, Alphabet und Meta investieren 2026 nach der Schätzung, die das Blatt nennt, zusammen rund 772 Milliarden Dollar in KI-Infrastruktur.\n\n## Einordnung\n\nVor dem Termin hatten Analysten wie Bank of America laut Börse Express dem Konzern eine vergleichsweise geringe Gefährdung durch KI-getriebenen Preisdruck bescheinigt. Investoren wollten dennoch handfeste Belege, dass KI Kosten senkt und Kunden bindet, statt nur Technik zu zeigen.\n\nFür Deutschland ist das mehr als eine Börsenmeldung. Die Telekom betreibt seit Februar 2026 gemeinsam mit Nvidia eine Industrial AI Cloud in München für europäische Industriekunden, mit bis zu 10.000 Blackwell-Grafikprozessoren. Sie ist damit einer der wenigen Anbieter, die KI-Rechenleistung für Mittelstand und Industrie auch in Sachsen auf deutschem Boden bereitstellen können. Ob die Einsparungen am Ende auch Stellen kosten, ließ die Telekom in den vorliegenden Mitteilungen offen.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/technik/it-internet/telekom-hoettges-verspricht-investoren-milliarden-effekt-durch-ki/100259677.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/technik/it-internet/telekom-hoettges-verspricht-investoren-milliarden-effekt-durch-ki/100259677.html"
+            },
+            {
+              "name": "Deutsche Telekom",
+              "url": "https://www.telekom.com/de/newsroom/aktuelles/medieninformationen/2026/10/telekom-steigert-wachstum-effizienz-und-qualitaet-durch-einsatz"
+            },
+            {
+              "name": "Börse Express",
+              "url": "https://www.boerse-express.com/news/articles/deutsche-telekom-aktie-ki-check-vor-investor-day-950205"
+            },
+            {
+              "name": "MS Aktuell",
+              "url": "https://ms-aktuell.de/welt/telekom-ki-investorentag-04-10-2026/"
+            }
+          ],
+          "publishedAt": "2026-10-05T14:55:00+02:00",
+          "importance": 6,
+          "readingMinutes": 3,
+          "image": null
+        },
+        {
+          "id": "ki-netscaler-zero-day-saml",
+          "tier": "top",
+          "headline": "Citrix NetScaler: Neue Zero-Day-Lücke wird aktiv ausgenutzt",
+          "summary": "Eine Pufferüberlauf-Lücke in NetScaler mit SAML-Konfiguration legt Geräte lahm. Citrix bestätigt gezielte Angriffe, Patches liegen vor, die US-Behörde CISA hat die Lücke gelistet.",
+          "body": "Administratoren von Citrix NetScaler müssen erneut schnell handeln. Seit dem Abend des 2. Oktober kursiert nach Angaben von heise ein Exploit für eine neue Sicherheitslücke, Forscher und Admins berichten von massenhaften spontanen Neustarts betroffener Geräte. Am frühen Morgen des 4. Oktober veröffentlichte Citrix eine Sicherheitsmitteilung mit Updates.\n\nDie Lücke trägt die Kennung CVE-2026-88779 und wird mit 8,7 von 10 Punkten (CVSS 4.0) als hoch eingestuft. Es handelt sich um einen Speicherüberlauf. Betroffen sind NetScaler ADC und NetScaler Gateway, wenn sie als SAML Service Provider oder SAML Identity Provider konfiguriert sind, also bei Einträgen wie „add authentication samlAction“ oder „add authentication samlIdPProfile“.\n\n## Was Admins jetzt tun sollten\n\nFehlerbereinigt sind laut Citrix die Versionen 14.1-73.41 und neuer sowie 13.1-64.28 und neuer. Für FIPS-Varianten gelten 14.1-73.41 beziehungsweise bei 13.1-FIPS und NDcPP 13.1-37.282 oder neuer. Citrix bestätigt „gezielte Angriffe auf nicht abgesicherte NetScaler-Installationen“, wie The Hacker News aus der Mitteilung zitiert. Eine Beeinträchtigung der Datenintegrität habe Citrix nicht festgestellt.\n\nNach heise-Angaben sind Fernausführung von Code und Schadcode-Einschleusung möglich, The Hacker News beschreibt vor allem Dienstausfälle durch manipulierte SAML-Anfragen. Beide Quellen stimmen darin überein, dass Exploits bereits im Umlauf sind. Entdeckt wurde die Lücke laut The Hacker News von Bishop Fox und watchTowr.\n\n## Hintergrund: Serie von Notfall-Patches\n\nDie Meldung folgt auf zwei bereits ausgenutzte Zero-Days, CVE-2026-88771 und CVE-2026-88772, vor denen Admins eine Woche zuvor gewarnt worden waren. Der britische Sicherheitsforscher Kevin Beaumont hält es laut heise für möglich, dass der neue Angriff den Fix der früheren Lücken umgeht. Einige Kunden berichten zudem von wiederholten Abstürzen nach dem damaligen Notfall-Update.\n\nDie US-Behörde CISA hat die Lücke am 4. Oktober in ihren Katalog ausgenutzter Schwachstellen aufgenommen. Für US-Bundesbehörden gilt eine Frist bis zum 7. Oktober, wie The Hacker News berichtet. Zusammen mit einer Lücke in der Helpdesk-Software Zammad warnte CISA, so heise, vor Angriffen.\n\nFür Unternehmen und Verwaltungen in Sachsen ist das relevant, weil NetScaler häufig als Zugangstor für Fernzugriff und Single Sign-on dient. Wer SAML nutzt, sollte die genannten Versionen umgehend einspielen und die Geräte auf Auffälligkeiten prüfen.",
+          "source": "heise online",
+          "url": "https://www.heise.de/en/news/Netscaler-admins-beware-Zero-day-causes-crashes-and-code-execution-11474996.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/en/news/Netscaler-admins-beware-Zero-day-causes-crashes-and-code-execution-11474996.html"
+            },
+            {
+              "name": "heise online (CISA-Warnung)",
+              "url": "https://heise.de/news/Warnung-vor-Angriffen-auf-Zammad-und-Citrix-NetScaler-11475555.html"
+            },
+            {
+              "name": "The Hacker News",
+              "url": "https://thehackernews.com/2026/10/new-netscaler-zero-day-exploited-in.html"
+            }
+          ],
+          "publishedAt": "2026-10-04T10:35:00+02:00",
+          "importance": 7,
+          "readingMinutes": 3,
+          "image": null
+        },
+        {
+          "id": "ki-exchange-server-rechteausweitung",
+          "tier": "more",
+          "headline": "Microsoft schließt Exchange-Lücke mit Zugriff auf fremde Postfächer",
+          "summary": "Ein Update für Exchange Server behebt eine Rechteausweitung (CVE-2026-96940), mit der Angreifer fremde Mails lesen könnten; Betreiber lokaler Server müssen selbst patchen.",
+          "body": "Microsoft hat ein Sicherheitsupdate für den Exchange Server veröffentlicht, das eine Rechteausweitung behebt. Die Lücke mit der Kennung CVE-2026-96940 wird mit 8,8 von 10 Punkten bewertet und knapp unterhalb der Einstufung „kritisch“ geführt, berichtet heise online.\n\nAufgrund schwacher Autorisierung können Angreifer, die sich bereits über das Netzwerk authentifiziert haben, ihre Rechte ausweiten. Sie könnten dann auf Postfächer anderer Nutzer zugreifen und E-Mails samt Anhängen lesen. Die Grenzen zwischen Mandanten in der Cloud bleiben nach der Darstellung geschützt.\n\nBetroffen sind Exchange Server 2016 CU23, Exchange Server 2019 CU14 und CU15 sowie die RTM-Version. Cloud-Instanzen hat Microsoft bereits selbst abgesichert, Betreiber lokaler Server müssen das Update manuell einspielen. Das gilt laut heise auch für Server, die nur als Verwaltungswerkzeug in hybriden Umgebungen laufen.\n\nDas Update bringt Nebenwirkungen mit: Veröffentlichte Kalender können HTTP-Fehler 500 liefern, und bei koreanischer Spracherkennung kann es zu Blockaden kommen. Microsoft will beides später beheben. Für Firmen und Behörden in Sachsen mit eigenem Exchange gilt: Das Update zügig testen und einspielen, da Exchange-Server ein häufiges Angriffsziel sind.",
+          "source": "heise online",
+          "url": "https://www.heise.de/en/news/Microsoft-pushes-Exchange-update-11475574.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/en/news/Microsoft-pushes-Exchange-update-11475574.html"
+            }
+          ],
+          "publishedAt": "2026-10-05T09:20:00+02:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "ki-trump-super-intelligence-force",
+          "tier": "more",
+          "headline": "Trump gründet „Super Intelligence Force“ für KI-Politik",
+          "summary": "Das Weiße Haus kündigt eine KI-Taskforce an, die US-Führung bei KI sichern soll. Details zur Umsetzung fehlen bisher.",
+          "body": "US-Präsident Donald Trump hat die Gründung einer „Super Intelligence Force“ angekündigt. Die KI-Taskforce soll nach Angaben von ABC News die amerikanische Führungsrolle bei künstlicher Intelligenz sichern und zugleich die Interessen der Bürger schützen.\n\nZur Leitung gehören Geheimdienstkoordinator Jay Clayton, der als KI-Beauftragter fungiert, FTC-Chef Andrew Ferguson, der Verteidigungs-Staatssekretär Emil Michael und der Chef der Personalbehörde OPM, Scott Kupor. Die Gruppe soll sich mit Verbrauchern, Interessengruppen, religiösen Organisationen, Infrastrukturbetreibern und KI-Firmen abstimmen.\n\nDer Schritt folgt auf ein Treffen im Weißen Haus am 29. September mit Tech-Chefs. Dabei unterzeichneten sechs Unternehmen eine KI-„Verfassung“ zur Selbstregulierung. Clayton sagte laut ABC, das Risiko, nicht Erster zu sein, sei hoch.\n\nDie Ankündigung enthielt nur wenige Angaben zur Umsetzung, das Weiße Haus beantwortete eine Anfrage von ABC zunächst nicht. Für Europa bleibt der Kurs relevant: Er setzt auf Selbstverpflichtung der Konzerne statt auf verbindliche Regeln wie den europäischen AI Act, an dem sich Firmen in Deutschland orientieren müssen.",
+          "source": "ABC News",
+          "url": "https://abcnews.com/Politics/president-donald-trump-announces-creation-super-intelligence-force/story?id=136986122",
+          "sources": [
+            {
+              "name": "ABC News",
+              "url": "https://abcnews.com/Politics/president-donald-trump-announces-creation-super-intelligence-force/story?id=136986122"
+            }
+          ],
+          "publishedAt": "2026-10-04T17:53:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "wirtschaft",
+      "title": "Wirtschaft & Märkte",
+      "emoji": "📈",
+      "items": [
+        {
+          "id": "wirtschaft-tankrabatt-verpufft-spritpreise-steigen",
+          "tier": "top",
+          "headline": "Tankrabatt verpufft: Spritpreise steigen binnen Tagen wieder",
+          "summary": "Vier Tage nach dem Start des Tankrabatts liegen Benzin und Diesel laut ADAC wieder über dem Startniveau. Der Automobilclub findet für den Anstieg bei E10 keine offensichtliche Erklärung.",
+          "body": "Die Entlastung an den Zapfsäulen schmilzt schneller als erwartet. Nach Angaben des ADAC kostete ein Liter Super E10 am Sonntag im bundesweiten Schnitt 2,137 Euro und damit 2,3 Cent mehr als am Donnerstag, dem ersten Tag des Tankrabatts. Diesel stieg im selben Zeitraum um 0,9 Cent auf 2,253 Euro je Liter.\n\nZum Start der Maßnahme am 1. Oktober waren die Preise zunächst spürbar gefallen. Laut Reuters sank der Tagesschnitt um rund 13 Cent: E10 kostete 2,114 Euro, Diesel 2,262 Euro. Preise unter zwei Euro für E10 gab es anfangs vielerorts. Am Montagmorgen waren solche Angebote in größeren Städten laut ADAC kaum noch zu finden.\n\n## Ungeklärter Preisanstieg\n\nBesonders rätselhaft ist dem ADAC der Aufschlag bei E10: Weder der Ölpreis noch der Euro-Dollar-Kurs hätten sich in dieser Zeit nennenswert verändert. Der Club sprach nach einigen Tagen von einem bereits teilweise aufgezehrten Entlastungseffekt.\n\nÜber die Weitergabe der Steuersenkung wird gestritten. Der Branchenverband en2x erklärte, seine Mitgliedsunternehmen hätten die Senkung sofort vollständig an die Kunden weitergegeben. Verbraucherschützer und Forscher kamen bei früheren Entlastungen dagegen zu dem Ergebnis, dass viele Tankstellen Vorteile nicht komplett weiterreichten.\n\n## Was der Rabatt umfasst\n\nDer Tankrabatt gilt von Oktober bis Dezember 2026 und soll Sprit um knapp 17 Cent je Liter verbilligen. Das setzt sich nach Reuters-Angaben aus rund 14 Cent weniger Energiesteuer und etwa 3 Cent eingesparter Mehrwertsteuer zusammen. Bund und Länder teilen sich die Kosten von etwa 2,5 Milliarden Euro je zur Hälfte. Spätestens Anfang 2027 sollen Direktüberweisungen und ein Preisdeckel nach dem Vorbild Luxemburgs und Belgiens folgen.\n\n## Einordnung\n\nHintergrund der hohen Preise ist der Krieg zwischen den USA und dem Iran, der Öltransporte vom Persischen Golf behindert. Brent notierte am Montagvormittag bei rund 102,6 US-Dollar je Barrel, etwas niedriger als am Freitag. Nach Angaben von finanzen.at drücken Freigaben von Notreserven der G7-Staaten, wieder anziehende Exporte aus der Golfregion und niedrigere Verkaufspreise des saudischen Konzerns Aramco den Preis. Angriffe auf Schiffe im Roten Meer und in der Straße von Hormus halten die Risiken aber hoch.\n\nFür Pendler zwischen Nordsachsen und Leipzig bedeutet das: Wer täglich tankt, sollte weiter Preise vergleichen. Nach Erfahrung des ADAC sind die Unterschiede innerhalb eines Tages oft groß, am Abend ist Tanken meist günstiger als am Morgen oder Mittag. Ob der Rabatt bis Jahresende spürbar bleibt, hängt neben der Ölpreisentwicklung auch davon ab, ob die Mineralölwirtschaft die Steuersenkung tatsächlich vollständig weitergibt.",
+          "source": "t-online",
+          "url": "https://www.t-online.de/mobilitaet/aktuelles/id_101466806/spritpreis-aktuell-tankrabatt-verpufft-diesel-und-benzin-steigen-wieder.html",
+          "sources": [
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/mobilitaet/aktuelles/id_101466806/spritpreis-aktuell-tankrabatt-verpufft-diesel-und-benzin-steigen-wieder.html"
+            },
+            {
+              "name": "AD HOC NEWS (dpa)",
+              "url": "https://www.ad-hoc-news.de/wirtschaft/spritpreise-nach-tankrabatt-wieder-gestiegen-adac-sieht-entlastung-schwinden/70234127"
+            },
+            {
+              "name": "onvista (Reuters)",
+              "url": "https://www.onvista.de/news/2026/10-02-adac-spritpreise-zum-start-des-tankrabatts-rund-13-cent-niedriger-0-20-26559848"
+            },
+            {
+              "name": "finanzen.at",
+              "url": "https://www.finanzen.at/nachrichten/aktien/rohstoffe-vormittag-brent-oelpreis-fallt-auf-102-58-us-dollar-1036596520"
+            }
+          ],
+          "publishedAt": "2026-10-05T16:29:00+02:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": null
+        },
+        {
+          "id": "wirtschaft-dax-stagniert-anleger-vorsichtig",
+          "tier": "more",
+          "headline": "Dax tritt auf der Stelle: Anleger bleiben vorsichtig",
+          "summary": "Der Dax schloss am Montag fast unverändert bei etwa 25.250 Punkten. Hohe Ölpreise, steigende Renditen in Frankreich und politische Unsicherheit bremsen.",
+          "body": "Der deutsche Leitindex hat den Wochenstart ohne klare Richtung beendet. Nach Angaben von finanzen.net schloss der Dax mit einem Plus von 0,06 Prozent bei 25.245,90 Punkten, im Xetra-Handel waren es laut dpa-AFX 0,09 Prozent auf 25.254,21 Punkte. Die Spanne des Tages reichte von 25.143 bis 25.325 Punkte. Vom Rekordhoch im August bei 26.618 Punkten ist der Index damit weiter entfernt.\n\nAls Gründe für die Zurückhaltung nannte dpa-AFX die hohen Ölpreise und steigende Anleiherenditen in Teilen Europas, vor allem in Frankreich. Auch politische Unsicherheit in Deutschland, Frankreich und Spanien belaste die Stimmung. Marktbeobachter Timo Emden beschrieb die Lage so, dass Anleger zwischen Inflationssorgen, geldpolitischen Fragezeichen und politischen Themen im Euroraum nach einem verlässlichen Orientierungspunkt suchten.\n\nAn der Spitze lagen Rheinmetall mit plus 2,4 Prozent, Fresenius Medical Care mit plus 1,8 Prozent und Volkswagen mit plus 1,6 Prozent. Am Ende standen Bayer mit minus 2,2 Prozent, Heidelberg Materials mit minus 1,8 Prozent und Infineon mit minus 1,8 Prozent. Softwarewerte profitierten von der Übernahme von PTC durch Schneider Electric: SAP gewann 0,6 Prozent, Nemetschek im MDax 4,3 Prozent.\n\nSeit Jahresbeginn steht der Dax rund 2,9 Prozent im Plus. Für Sparer und Anleger mit Fondssparplänen heißt das: Die Kurse bewegen sich seit Wochen deutlich unter dem Höchststand, und der Ölpreis um 100 US-Dollar je Barrel bleibt der wichtigste Unsicherheitsfaktor für Inflation und Zinsen.",
+          "source": "finanzen.ch (dpa-AFX)",
+          "url": "https://www.finanzen.ch/nachrichten/aktien/aktien-frankfurt-schluss-stagnation-anleger-sind-auf-der-hut-1036597864",
+          "sources": [
+            {
+              "name": "finanzen.ch (dpa-AFX)",
+              "url": "https://www.finanzen.ch/nachrichten/aktien/aktien-frankfurt-schluss-stagnation-anleger-sind-auf-der-hut-1036597864"
+            },
+            {
+              "name": "finanzen.net",
+              "url": "https://www.finanzen.net/nachricht/aktien/boerse-frankfurt-in-gruen-dax-verbucht-zum-handelsende-gewinne-15967973"
+            }
+          ],
+          "publishedAt": "2026-10-05T18:03:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "politik",
+      "title": "Politik",
+      "emoji": "🏛️",
+      "items": [
+        {
+          "id": "politik-merz-in-kyjiw",
+          "tier": "top",
+          "headline": "Merz sagt Ukraine in Kyjiw Drohnen und Geld zu",
+          "summary": "Der Kanzler ist überraschend in Kyjiw eingetroffen, während Russland die Stadt angriff. Er sagte Abfangdrohnen, Mittel für weitreichende Waffen und Hilfe für Kraftwerke zu.",
+          "body": "Bundeskanzler Friedrich Merz ist am Sonntag zu einem unangekündigten Besuch in Kyjiw gewesen und hat der Ukraine weitere militärische und energiepolitische Hilfe zugesagt. Nach Angaben der Deutschen Presse-Agentur reiste er mit einem Sonderzug an, begleitet von Wirtschaftsministerin Katherina Reiche und mehreren Unternehmern aus der Rüstungs- und Energiebranche. Kurz nach seiner Ankunft schlug eine russische Drohne auf der Nordbrücke über den Dnipro ein; nach dpa-Angaben gab es während des Besuchs sechsmal Alarm, mindestens zwei Menschen wurden verletzt.\n\nMerz kündigte die Lieferung von Tausenden Abfangdrohnen an. Sie sollen gegen die besonders schnellen, strahlgetriebenen russischen Kampfdrohnen helfen. Außerdem will Deutschland die Produktion von Waffen mit mehr als 1.000 Kilometern Reichweite vorantreiben, mit denen sich Nachschubwege hinter der Front in Russland treffen lassen. Dafür stellt die Bundesregierung laut dpa eine Milliarde Euro aus bereits vorhandenen Haushaltsmitteln bereit. Hinzu kommen 350 Millionen Euro für Reparatur und Wiederaufbau zerstörter Kraftwerke.\n\n## Wirtschaftsabkommen und Gesprächsangebot\n\nNach Darstellung von Präsident Wolodymyr Selenskyj, die die taz wiedergibt, wurden an dem Tag Vereinbarungen im Gesamtwert von 8,5 Milliarden Euro getroffen. Die dpa nennt 14 Unternehmensabkommen mit einem geschätzten Wert von 6,6 Milliarden Euro, vor allem für Rüstungsgüter. Die Zahlen unterscheiden sich, weil unterschiedliche Vereinbarungen gezählt werden; belastbar ist vor allem, dass es um gemeinsame Rüstungsproduktion, Drohnenabwehr, weitreichende Systeme und die Absicherung der Energieversorgung geht.\n\nAn Wladimir Putin gerichtet sagte Merz: „Herr Putin, hören Sie diesen sinnlosen Krieg auf!“ Er zeigte sich laut Berichten zugleich gesprächsbereit, forderte aber ein Ende der Angriffe auf Zivilisten. Selenskyj signalisierte nach taz-Angaben Bereitschaft zu direkten Gesprächen mit Putin und verwies auf mögliche Dreiergespräche mit den USA noch vor Ende Oktober. Gemeinsam besuchten Merz und Selenskyj die beschädigte Nationale Akademie der Wissenschaften.\n\n## Warum es für Deutschland zählt\n\nMerz begründete die Reise auch mit Blick auf die Sicherheit im eigenen Land. Wenn Russland nicht gestoppt werde, richte sich seine Kriegsmaschinerie früher oder später gegen Deutschland, sagte er laut dpa. Das knüpft an die Warnungen der deutschen Nachrichtendienste an, die am selben Tag vor dem Bundestag Russland als größte unmittelbare Bedrohung bezeichneten.\n\nFür Leser in Sachsen ist das nicht abstrakt. Der Sprengstoff-Drohnenfund am Flughafen Leipzig/Halle im August zeigte, dass hybride Angriffe auch die Region treffen. Die Zusage von einer Milliarde Euro stammt laut dpa aus bereits vorhandenen Haushaltsmitteln.",
+          "source": "Tagesspiegel (dpa)",
+          "url": "https://www.tagesspiegel.de/politik/dpa-herr-putin-horen-sie-diesen-sinnlosen-krieg-auf-kurz-nach-merz-ankunft-in-kyjiw-greift-russland-eine-brucke-an-16122366.html",
+          "sources": [
+            {
+              "name": "Tagesspiegel (dpa)",
+              "url": "https://www.tagesspiegel.de/politik/dpa-herr-putin-horen-sie-diesen-sinnlosen-krieg-auf-kurz-nach-merz-ankunft-in-kyjiw-greift-russland-eine-brucke-an-16122366.html"
+            },
+            {
+              "name": "Handelsblatt (dpa)",
+              "url": "https://www.handelsblatt.com/politik/deutschland/gefaehrliche-kiew-reise-merz-unterstuetzt-ukraine-und-appelliert-an-putin/100259542.html"
+            },
+            {
+              "name": "taz",
+              "url": "https://taz.de/Deutsche-Kooperation-mit-der-Ukraine/!6218648/"
+            }
+          ],
+          "publishedAt": "2026-10-04T16:33:00+02:00",
+          "importance": 8,
+          "readingMinutes": 3,
+          "image": null
+        },
+        {
+          "id": "politik-geheimdienste-warnen-vor-russland",
+          "tier": "top",
+          "headline": "Geheimdienstchefs warnen im Bundestag vor Russlands Schattenkrieg",
+          "summary": "BND, Verfassungsschutz und MAD sehen Russland als größte akute Gefahr. Der Drohnenfund am Flughafen Leipzig/Halle gilt ihnen als Beleg für gezielte Angriffe.",
+          "body": "Die Spitzen der drei deutschen Nachrichtendienste haben Russland in der jährlichen öffentlichen Anhörung des Parlamentarischen Kontrollgremiums als größte unmittelbare Bedrohung für Deutschland bezeichnet. BND-Präsident Martin Jäger sagte laut Handelsblatt, Russland führe einen „Schattenkrieg gegen uns“. Deutschland laufe Gefahr, in einen gewaltsamen Konflikt mit Russland zu geraten.\n\nÜblicherweise befragt das Gremium die Dienstchefs unter Ausschluss der Öffentlichkeit; eine öffentliche Sitzung ist einmal im Jahr vorgesehen. Neben Jäger sprachen Verfassungsschutzpräsident Sinan Selen und die Präsidentin des Militärischen Abschirmdienstes, Martina Rosenberg.\n\n## Leipzig/Halle als Beispiel\n\nSelen verwies auf den Fund einer mit Sprengstoff präparierten Drohne am Flughafen Leipzig/Halle Anfang August, in der Nähe ukrainischer Frachtmaschinen. Die Spuren führten „sehr klar nach Russland“, sagte er nach Angaben des Handelsblatts. Die Bundesregierung hatte Moskau am 1. September dafür verantwortlich gemacht und anschließend Russlands letztes verbliebenes Generalkonsulat sowie das Kulturzentrum in Berlin geschlossen.\n\nNach Darstellung der Behörden reicht das russische Vorgehen von Desinformation über Sabotage bis zu Tötungsplänen. Jäger warnte zudem vor Operationen unter falscher Flagge, mit denen andere Akteure belastet werden sollen. Selen sagte, Deutschland werde „jetzt angegriffen, nicht erst 2029“. Das Jahr gilt in Sicherheitskreisen als Zeitpunkt, zu dem Russland größere militärische Fähigkeiten aufgebaut haben könnte.\n\nEin Angriff auf NATO-Gebiet in großem Maßstab ist nach Einschätzung der Dienste derzeit nicht erkennbar. Erwartet werden aber militärische Aktivitäten unterhalb der Kriegsschwelle, etwa im Ostseeraum, wie der ORF berichtet.\n\n## Neue Befugnisse geplant\n\nDie Bundesregierung will den Diensten mehr Möglichkeiten geben. Geplant sind erweiterte Befugnisse bei der Datenerhebung sowie aktive Gegenmaßnahmen im Netz gegen Sabotage und Hackerangriffe. Wie weit diese Rechte gehen dürfen, wird im Bundestag voraussichtlich noch strittig sein. Kanzler Merz erklärte nach Angaben des Handelsblatts, Deutschland lasse sich weder einschüchtern noch spalten.\n\nFür Sachsen hat die Anhörung konkreten Bezug: Der Fall Leipzig/Halle zeigt, dass kritische Infrastruktur in der Region ein Ziel sein kann. Wer dort arbeitet oder pendelt, ist von Sicherheitsmaßnahmen an Flughäfen und Logistikknoten unmittelbar betroffen.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/politik/deutschland/anhoerung-im-bundestag-bnd-chef-sieht-deutschland-im-schattenkrieg-mit-russland/100259741.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/politik/deutschland/anhoerung-im-bundestag-bnd-chef-sieht-deutschland-im-schattenkrieg-mit-russland/100259741.html"
+            },
+            {
+              "name": "Handelsblatt (Hintergrund)",
+              "url": "https://www.handelsblatt.com/politik/deutschland/wir-werden-jetzt-angegriffen-deutsche-geheimdienste-warnen-vor-russland/100257696.html"
+            },
+            {
+              "name": "ORF",
+              "url": "https://orf.at/stories/3444139/"
+            }
+          ],
+          "publishedAt": "2026-10-05T11:36:00+02:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": null
+        },
+        {
+          "id": "politik-sachsen-anhalt-afd-landtagspraesident",
+          "tier": "top",
+          "headline": "Sachsen-Anhalt: BSW will AfD-Kandidaten zum Landtagspräsidenten wählen",
+          "summary": "Zur Konstituierung des Landtags am Dienstag steht erstmals ein AfD-Politiker vor der Wahl zum Parlamentspräsidenten. Die BSW-Stimmen sichern ihm laut Ankündigung die Mehrheit.",
+          "body": "Im Landtag von Sachsen-Anhalt zeichnet sich zum ersten Mal in Deutschland ein AfD-Landtagspräsident ab. Das BSW kündigte nach einer dpa-AFX-Meldung vom Montagmittag an, bei der konstituierenden Sitzung am Dienstag den AfD-Kandidaten Tobias Rausch mitzuwählen. Fraktionschef Thomas Schulze sagte, man wähle „morgen den Kandidaten der AfD“; die AfD sei mit rund 44 Prozent stärkste Kraft und habe nach parlamentarischem Brauch Anspruch auf das Amt.\n\nDie Sitzung beginnt laut Landtag am 6. Oktober um 11 Uhr und wird im Internet übertragen. Der neue Landtag hat 83 Sitze: AfD 39, CDU 15, SPD, Grüne und Linke je 8, BSW 5. Rausch benötigt als einfache Mehrheit mehr Ja- als Nein-Stimmen. Mit den 39 AfD- und 5 BSW-Stimmen kommt er auf 44. Die CDU empfiehlt ihren Abgeordneten Enthaltung, die zählt nicht als abgegebene Stimme. SPD, Grüne und Linke lehnen den Kandidaten ab.\n\n## Was sich dahinter verbirgt\n\nDie Abstimmung ist geheim. Wie viele Stimmen Rausch über die 44 hinaus bekommt, gilt deshalb als Gradmesser dafür, ob aus anderen Fraktionen Unterstützung kommt. Das könnte Hinweise darauf geben, wie sich Abgeordnete später bei der Wahl des Ministerpräsidenten verhalten, die nach Berichten im Dezember erwartet wird. AfD-Spitzenkandidat Ulrich Siegmund bräuchte dafür 42 Stimmen, also die absolute Mehrheit; die AfD liegt drei Sitze darunter.\n\nDie Sitzordnung wurde neu geordnet, die AfD sitzt künftig in der Mitte statt am rechten Rand. Politisch aufgeladen ist der Vorgang auch durch Äußerungen: Grünen-Fraktionschefin Susan Sziborra-Seidlitz zog laut Ostdeutscher Allgemeiner einen Vergleich zu Hermann Göring, was für Kritik sorgte. Der Verfassungsschutz stuft die AfD als gesichert rechtsextremistisch ein.\n\nFür den Nachbarn Sachsen ist der Fall ein Signal: Er zeigt, wie sich im Osten Mehrheiten jenseits der bisherigen Lager verschieben können, und wird deshalb auch bundesweit beobachtet.",
+          "source": "dpa-AFX (finanznachrichten.de)",
+          "url": "https://www.finanznachrichten.de/nachrichten-2026-10/69754953-sachsen-anhalt-bsw-waehlen-den-afd-kandidaten-zum-landtagspraesidenten-016.htm",
+          "sources": [
+            {
+              "name": "dpa-AFX (finanznachrichten.de)",
+              "url": "https://www.finanznachrichten.de/nachrichten-2026-10/69754953-sachsen-anhalt-bsw-waehlen-den-afd-kandidaten-zum-landtagspraesidenten-016.htm"
+            },
+            {
+              "name": "Ostdeutsche Allgemeine",
+              "url": "https://ostdeutscheallgemeine.com/article/sachsen-anhalt-waehlt-erstmals-afd-landtagspraesidenten-10459836"
+            },
+            {
+              "name": "Landtag Sachsen-Anhalt",
+              "url": "https://www.landtag.sachsen-anhalt.de/artikel/konstituierung-findet-am-6-oktober-statt"
+            }
+          ],
+          "publishedAt": "2026-10-05T12:46:00+02:00",
+          "importance": 6,
+          "readingMinutes": 2,
+          "image": null
+        },
+        {
+          "id": "politik-koalition-plant-plastiksteuer",
+          "tier": "more",
+          "headline": "Koalition plant Plastiksteuer ab Juli 2027",
+          "summary": "CDU/CSU und SPD wollen Kunststoffverpackungen mit 550 Euro je Tonne belasten. Der Bund erwartet Milliardeneinnahmen, die Industrie kritisiert das Vorhaben.",
+          "body": "Die Koalitionsfraktionen von CDU/CSU und SPD wollen ab Juli 2027 eine neue Abgabe auf Kunststoffverpackungen einführen. Nach einer Meldung vom Montagnachmittag soll sie 550 Euro je Tonne Kunststoff betragen. Erfasst werden unter anderem Folien, Transportmittel, Verschlüsse und Kapseln mit einem Kunststoffanteil von mehr als fünf Prozent. Verpackungen aus recyceltem Material können befreit werden.\n\nDer Bund rechnet für 2027 mit zusätzlichen Einnahmen von 805 Millionen Euro, ab 2028 mit rund 1,5 Milliarden Euro im Jahr. Besteuert werden sollen etwa drei Millionen Tonnen Kunststoffverpackungen jährlich.\n\nDie Deutsche Umwelthilfe begrüßt den Schritt grundsätzlich, fordert aber eine Ausweitung auf Papier, Pappe und Metalle. Der Verband Plastics Europe kritisiert das Vorhaben dagegen scharf. Geschäftsführerin Christine Bunte nannte es kein ausgereiftes Gesetz, sondern ein nationales Steuerexperiment.\n\nFür Verbraucher und Händler in Sachsen dürfte die Abgabe vor allem über höhere Verpackungskosten spürbar werden, wenn Hersteller sie weitergeben. Wie stark, hängt von der Ausgestaltung im Gesetzgebungsverfahren ab, das noch bevorsteht.",
+          "source": "ARIVA.DE (dpa-AFX)",
+          "url": "https://ariva.de/news/roundup-koalitionsfraktionen-planen-neue-plastiksteuer-12159117",
+          "sources": [
+            {
+              "name": "ARIVA.DE (dpa-AFX)",
+              "url": "https://ariva.de/news/roundup-koalitionsfraktionen-planen-neue-plastiksteuer-12159117"
+            }
+          ],
+          "publishedAt": "2026-10-05T16:59:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "welt",
+      "title": "Welt",
+      "emoji": "🌍",
+      "items": [
+        {
+          "id": "welt-spanien-neuwahl-wohnungskrise",
+          "tier": "top",
+          "headline": "Spaniens Sánchez kündigt Neuwahl für den 29. November an",
+          "summary": "Nach der Niederlage zweier Wohnungsdekrete im Parlament ruft Ministerpräsident Sánchez vorgezogene Wahlen aus. Umfragen sehen ein Lager aus PP und Vox vorn.",
+          "body": "Spaniens Ministerpräsident Pedro Sánchez hat vorgezogene Parlamentswahlen für den 29. November angekündigt. Auslöser ist eine Abstimmungsniederlage seiner Minderheitsregierung: Das Parlament lehnte zwei Dekrete gegen die Wohnungskrise ab. In Umfragen liegt ein Lager aus konservativer Volkspartei und rechtsextremer Vox vorn.\n\n## Zwei Dekrete scheitern knapp\n\nDie beiden Wohnungsdekrete der Regierung aus Sozialisten und dem Linksbündnis Sumar fielen am vergangenen Freitag durch, mit 172 zu 178 und 166 zu 184 Stimmen, wie deutsche Medien berichten. Die Maßnahmen sollten gefährdete Haushalte besser vor Zwangsräumungen schützen und Mietverträge verlängern. Die Abstimmung zeigte erneut, wie schwer es Sánchez fällt, ohne feste Mehrheit zu regieren.\n\nIn einer Fernsehansprache sagte Sánchez, man müsse „das Vertrauen der Menschen erneuern“. Er räumte nach Angaben von Al Jazeera ein, Fehler gemacht und frühere Versprechen nicht eingelöst zu haben. Oppositionsführer Alberto Núñez Feijóo von der Volkspartei (PP) fragte, ob die Wähler „vier weitere Jahre“ des Bisherigen wollten.\n\n## Wohnen als Reizthema\n\nDie Wohnungsfrage beschäftigt das Land seit Monaten. Laut Al Jazeera haben sich die Durchschnittsmieten binnen eines Jahrzehnts fast verdoppelt, die Kaufpreise stiegen um rund 90 Prozent. Zusätzliche Empörung löste die im Fernsehen übertragene Zwangsräumung einer 87-jährigen Frau in Madrid aus. Am Samstag gingen in der Hauptstadt nach Angaben des Senders mehr als 70.000 Menschen auf die Straße.\n\nSánchez will laut Tagesspiegel noch vor der Auflösung des Parlaments versuchen, Mieterschutz über den Ständigen Ausschuss durchzusetzen, eine Art Notparlament mit 68 Mitgliedern. Dort hat das Regierungslager demnach mit 35 zu 34 Stimmen eine hauchdünne Mehrheit. Das Kabinett soll am Dienstag darüber beraten.\n\n## Was die Wahl für Europa bedeutet\n\nDen Umfragen zufolge könnten PP und Vox zusammen auf rund 200 von 350 Sitzen kommen, die Sozialisten liegen zurück. Es wäre laut Al Jazeera das erste Mal seit dem Tod Francos, dass eine rechtsextreme Partei in Spaniens Zentralregierung einzieht.\n\nFür Deutschland ist das mehr als ein Randthema. Spanien ist die viertgrößte Volkswirtschaft der Eurozone und gehörte zuletzt zu den Ländern mit kräftigem Wachstum. Ein Regierungswechsel würde die Gewichte im Europäischen Rat verschieben, etwa bei Migration, Klimapolitik und Haushaltsregeln. Auch Zehntausende Deutsche, die in Spanien leben oder dort Urlaub machen, würden Veränderungen am Immobilien- und Mietmarkt spüren. Die Wohnungsnot, die Spanien nun politisch erschüttert, ist zudem ein Muster, das auch in Leipzig und anderen deutschen Großstädten bekannt ist: Wenn Mieten schneller steigen als Einkommen, wächst der Druck auf Regierungen, und Wahlen werden zum Ventil.",
+          "source": "Tagesspiegel",
+          "url": "https://www.tagesspiegel.de/internationales/inmitten-der-wohnungskrise-spaniens-ministerprasident-sanchez-kundigt-neuwahlen-an-16124817.html",
+          "sources": [
+            {
+              "name": "Tagesspiegel",
+              "url": "https://www.tagesspiegel.de/internationales/inmitten-der-wohnungskrise-spaniens-ministerprasident-sanchez-kundigt-neuwahlen-an-16124817.html"
+            },
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/5/spanish-prime-minister-pedro-sanchez-announces-snap-election"
+            }
+          ],
+          "publishedAt": "2026-10-05T17:57:00+02:00",
+          "importance": 6,
+          "readingMinutes": 2,
+          "image": null
+        },
+        {
+          "id": "welt-jemen-offensive-bab-al-mandab",
+          "tier": "top",
+          "headline": "Jemens Regierung startet Großoffensive gegen die Huthis",
+          "summary": "Mit saudischer Luftunterstützung meldet Jemens Regierung Geländegewinne an der Meerenge Bab al-Mandab. Die Route ist für den Handel zwischen Asien und Europa zentral.",
+          "body": "Jemens international anerkannte Regierung hat eine Großoffensive gegen die Huthi-Miliz gestartet und meldet erste Erfolge an der strategisch wichtigen Meerenge Bab al-Mandab. Unterstützt wird sie von einer saudisch geführten Koalition. Die Huthis drohen im Gegenzug Fluggesellschaften.\n\n## Was bekannt ist\n\nDer Präsidialrat unter Raschad al-Alimi kündigte die Operation „Morgenröte Jemens“ am Sonntag an. Sie umfasse „alle aktiven Frontlinien“, berichtet das ZDF. Al-Alimi sagte, Jemen werde „einer neuen Morgenröte der Freiheit, des Friedens und der Stabilität“ entgegengehen.\n\nAm Montag meldeten Regierungstruppen die Kontrolle über wichtige Gebiete an der Meerenge, über die Region Dhubab samt Flughafen sowie über die Hafenstadt Mokha. Nach ihren Angaben sind in Dhubab Hunderte Huthi-Kämpfer eingekesselt. Laut The National setzt die Koalition rund 100 Kampfflugzeuge ein und will 324 wichtige Huthi-Ziele zerstört haben. Armeesprecher nannten über 1.100 Angriffe mit Flugzeugen, Artillerie, Raketen und Drohnen. Parallel hat laut The National eine Offensive auf die von den Huthis gehaltene Hauptstadt Sanaa begonnen. Die Angaben stammen von den Konfliktparteien und lassen sich nicht unabhängig prüfen.\n\nDie Huthis warnten Airlines vor der Nutzung des saudischen Luftraums, solange die saudische „Aggression“ andauere.\n\n## Humanitäre Lage und Folgen\n\nDie Kämpfe treffen eine ohnehin verheerende Lage. Laut The National sind Zehntausende vertrieben, die Weltgesundheitsorganisation zählt seit dem 6. August mehr als 5.000 Opfer.\n\n## Warum das auch Deutschland betrifft\n\nDurch Bab al-Mandab, die Meerenge zwischen Jemen und Dschibuti, laufen große Teile des Schiffsverkehrs zwischen Asien und Europa. Wer die Küste kontrolliert, kann Handelsschiffe bedrohen. Für deutsche Importeure, auch für die Industrie in Sachsen, bedeuten Angriffe oder Umwege um Afrika längere Lieferzeiten und höhere Frachtkosten. Bundeskanzler Merz äußerte sich laut ZDF nur vorsichtig optimistisch zu den Erfolgsmeldungen Zugleich bleibt der Konflikt zwischen den USA und dem Iran, der die Huthis unterstützt, ungelöst, und die Region bleibt angespannt.",
+          "source": "The National",
+          "url": "https://www.thenationalnews.com/news/gulf/2026/10/05/yemen-government-forces-claim-bab-al-mandeb-gains-as-saudi-coalition-says-100-jets-join-houthi-offensive/",
+          "sources": [
+            {
+              "name": "The National",
+              "url": "https://www.thenationalnews.com/news/gulf/2026/10/05/yemen-government-forces-claim-bab-al-mandeb-gains-as-saudi-coalition-says-100-jets-join-houthi-offensive/"
+            },
+            {
+              "name": "ZDFheute Iran-Liveblog",
+              "url": "https://www.zdfheute.de/politik/ausland/iran-israel-usa-angriff-liveblog-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 6,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "region",
+      "title": "Leipzig & Region",
+      "emoji": "📍",
+      "items": [
+        {
+          "id": "region-covenant-eroeffnet-standort-leipzig",
+          "tier": "top",
+          "headline": "US-Rüstungsfirma Covenant eröffnet Marschflugkörper-Standort in Leipzig",
+          "summary": "Der US-Konzern Covenant hat im Leipziger Norden eine Produktionshalle für Marschflugkörper eröffnet. Die Serienfertigung soll 2027 beginnen, die Behörden müssen die Nutzungsänderung noch genehmigen.",
+          "body": "Das US-Rüstungsunternehmen Covenant hat am Montag seinen Standort im Norden Leipzigs eröffnet. In einer angemieteten Halle von mehr als 10.000 Quadratmetern will die Firma künftig Marschflugkörper des Typs Anthem herstellen. Nach Angaben von t-online soll Leipzig der größte Standort des Unternehmens weltweit werden.\n\nDie Zahlen aus der Planung sind groß. Im ersten Produktionsjahr sollen laut Unternehmen 1.000 Stück entstehen, im zweiten Jahr 5.000. Die Serienfertigung ist für 2027 vorgesehen. Die Leipziger Zeitung berichtet, dass das Unternehmen bis zu 250 Arbeitsplätze schaffen will. t-online spricht allgemeiner von mehreren hundert Beschäftigten.\n\n## Was produziert wird\n\nDie Anthem ist nach Firmenangaben ein Waffensystem für präzise Schläge tief im gegnerischen Gebiet und trägt einen Sprengkopf von 200 Kilogramm. Dieser Sprengkopf wird laut Unternehmen nicht in Leipzig eingebaut, sondern erst bei den Kunden. Die Halle selbst ist ein bestehendes Gewerbeobjekt, das Covenant gemietet hat. Neben Leipzig betreibt die Firma Standorte in Dallas im US-Bundesstaat Texas und in Israel.\n\nVon Leipzig aus sollen europäische Kunden beliefert werden. „Leipzig wird der weltweit größte Standort von Covenant“, sagte Firmenchef Michael Kaufman nach Angaben von t-online.\n\n## Genehmigung steht noch aus\n\nDass die Eröffnung bereits gemeldet wurde, bedeutet nicht, dass die Produktion sofort startet. Die örtlichen Behörden müssen die Umnutzung der Halle vom Lager zur Fertigungsstätte noch genehmigen, bevor dort gearbeitet werden darf. Die Leipziger Zeitung hält den Standort deshalb nur für „scheinbar“ schon eröffnet und verweist auf die offene Frage, wie weit die Anlage tatsächlich ist.\n\nGegen die Pläne gibt es Widerstand. Nach Angaben der Leipziger Zeitung richtet sich öffentlicher Protest in Form einer Petition und einer Demonstration gegen die geplante Rüstungsproduktion in der Stadt.\n\n## Einordnung\n\nFür Leipzig und die Region ist die Ansiedlung gleich in mehrfacher Hinsicht von Gewicht. Sie bringt Arbeitsplätze und eine Rüstungsproduktion mit europäischer Ausrichtung in eine Stadt, in der es bislang kaum Standorte dieser Art gab. Zugleich hat sie eine politische Debatte über Waffenfertigung in einer Großstadt ausgelöst. Wie sich Genehmigungsverfahren und Protest entwickeln, dürfte darüber entscheiden, ob der Zeitplan für 2027 hält.",
+          "source": "t-online",
+          "url": "https://leipzig.t-online.de/region/leipzig/id_101467310/leipzig-wird-groesster-standort-us-ruestungsfirma-eroeffnet-produktionsstaette.html",
+          "sources": [
+            {
+              "name": "t-online",
+              "url": "https://leipzig.t-online.de/region/leipzig/id_101467310/leipzig-wird-groesster-standort-us-ruestungsfirma-eroeffnet-produktionsstaette.html"
+            },
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/der-tag/2026/10/montag-der-5-oktober-2026-leipzig-schliesst-partnerschaft-mit-jerewan-linke-zieht-gegen-katherina-reiche-vor-gericht-und-leipziger-standort-von-ruestungskonzern-covenant-scheint-bereits-eroeffnet-672408"
+            }
+          ],
+          "publishedAt": "2026-10-05T16:56:00+02:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": null
+        },
+        {
+          "id": "region-leipzig-jerewan-partnerschaft",
+          "tier": "more",
+          "headline": "Leipzig besiegelt Städtepartnerschaft mit Jerewan",
+          "summary": "Leipzig und die armenische Hauptstadt Jerewan haben ihre Städtepartnerschaft besiegelt. Oberbürgermeister Burkhard Jung reiste mit einer Delegation von mehr als 30 Personen.",
+          "body": "Leipzig hat am Montag seine Partnerschaft mit Jerewan, der Hauptstadt Armeniens, besiegelt. Oberbürgermeister Burkhard Jung (SPD) reiste dafür mit einer Delegation von mehr als 30 Vertreterinnen und Vertretern aus Politik, Verwaltung, Wirtschaft und Kultur in den Südkaukasus, wie die Leipziger Zeitung berichtet.\n\nDer Leipziger Stadtrat hatte die Partnerschaft nach Angaben der Stadt am 27. Mai 2026 einstimmig beschlossen. Jerewan ist damit die 16. Partnerstadt Leipzigs.\n\nDie Verbindung ist nicht neu. Zwischen Einrichtungen in Leipzig und Armenien gibt es seit Jahrzehnten Austausch, vor allem in Wissenschaft und Kultur. Eine wichtige Rolle spielt der Verein Armenische Kulturgemeinde Leipzig, der seit 2018 besteht und Veranstaltungen sowie Bürgerreisen nach Jerewan organisiert. Im März 2025 hatten Jung und Jerewans Bürgermeister Tigran Awinjan zudem ein gemeinsames Kulturjahr 2025/2026 vereinbart.\n\nFür Leipzig ist die Partnerschaft ein außenpolitisches Signal auf kommunaler Ebene. Sie gibt dem bestehenden Austausch einen festen Rahmen und kann den Weg zu weiteren Projekten in Bildung, Wirtschaft und Kultur öffnen.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/der-tag/2026/10/montag-der-5-oktober-2026-leipzig-schliesst-partnerschaft-mit-jerewan-linke-zieht-gegen-katherina-reiche-vor-gericht-und-leipziger-standort-von-ruestungskonzern-covenant-scheint-bereits-eroeffnet-672408",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/der-tag/2026/10/montag-der-5-oktober-2026-leipzig-schliesst-partnerschaft-mit-jerewan-linke-zieht-gegen-katherina-reiche-vor-gericht-und-leipziger-standort-von-ruestungskonzern-covenant-scheint-bereits-eroeffnet-672408"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "sport",
+      "title": "Sport",
+      "emoji": "⚽",
+      "items": [
+        {
+          "id": "sport-dfb-team-remis-griechenland",
+          "tier": "top",
+          "headline": "DFB-Elf holt in Griechenland nur ein 0:0",
+          "summary": "Die deutsche Nationalmannschaft kommt in der Nations League in Thessaloniki nicht über ein torloses Remis hinaus. Für Bundestrainer Klopp wird die Lage in der Gruppe A2 enger.",
+          "body": "Die deutsche Fußball-Nationalmannschaft hat in der Nations League auch das Rückspiel gegen Griechenland nicht gewonnen. Am Sonntagabend trennten sich beide Teams im Stadion von Thessaloniki 0:0. Deutschland war über weite Strecken die bessere Mannschaft, belohnte sich aber nicht.\n\nDamit bleibt die Bilanz von Bundestrainer Jürgen Klopp nach vier Spielen durchwachsen: Nach Angaben von beIN Sports gewann die Mannschaft nur eine dieser Partien und holte fünf von zwölf möglichen Punkten.\n\n## Aberkanntes Tor und vergebene Chancen\n\nDie Griechen hatten die erste Möglichkeit: Schon in der zweiten Minute musste Torwart Jonas Urbig gegen einen Kopfball von Giorgos Masouras eingreifen, wie ORF berichtet. In der 32. Minute glaubte sich Deutschland durch Jonathan Burkardt in Führung, doch der Treffer wurde wegen eines Handspiels von Tom Bischof aberkannt.\n\nAuch danach blieb der Ertrag gering. Nach Zahlen von beIN Sports hatte Deutschland 70,1 Prozent Ballbesitz und gab 21 Schüsse ab, aber nur vier davon aufs Tor. Griechenland kam auf fünf Abschlüsse. In der Schlussphase scheiterten Philipp Treu und Derry Scherhant, ihre Versuche gingen am Tor vorbei oder darüber.\n\n„Wir haben am Ende einfach das Tor nicht gemacht“, sagte Kapitän Florian Wirtz laut ORF.\n\n## Enge Lage in der Gruppe\n\nIn der Gruppe A2 liegen die Niederlande und Griechenland nach vier Spieltagen mit jeweils acht Punkten vorn. Die Niederlande besiegten am selben Abend Serbien 2:1, die Tore erzielten Teun Koopmeiners und Joshua Zirkzee. Deutschland ist mit fünf Punkten Dritter und hat drei Zähler Rückstand auf die Spitze.\n\nZuvor hatte die Mannschaft bereits das Heimspiel gegen Griechenland mit 0:1 verloren. Die Revanche gelang also nicht, immerhin blieb eine zweite Niederlage gegen den Gegner aus.\n\nDie nächsten Aufgaben warten Mitte November gegen Serbien und die Niederlande. Beide Spiele sind für die Mannschaft nun von großer Bedeutung, wenn sie in der Tabelle noch nach oben kommen will. Für Fans in Sachsen und im Rest Deutschlands bedeutet das: Die Länderspielpause bringt dem Nationalteam keine Entspannung, sondern vor allem Druck für den Herbst.",
+          "source": "ORF",
+          "url": "https://sport.orf.at/stories/3163249",
+          "sources": [
+            {
+              "name": "ORF",
+              "url": "https://sport.orf.at/stories/3163249"
+            },
+            {
+              "name": "beIN Sports",
+              "url": "https://www.beinsports.com/en-us/soccer/uefa-nations-league/articles/greece-0-0-germany-klopps-men-frustrated-in-nations-league-draw-2026-10-04"
+            }
+          ],
+          "publishedAt": "2026-10-04T23:07:00+02:00",
+          "importance": 6,
+          "readingMinutes": 2,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "wissenschaft",
+      "title": "Wissenschaft & Raumfahrt",
+      "emoji": "🔭",
+      "items": [
+        {
+          "id": "wissenschaft-medizin-nobelpreis-optogenetik",
+          "tier": "top",
+          "headline": "Medizin-Nobelpreis geht für Optogenetik an zwei Deutsche und einen US-Forscher",
+          "summary": "Peter Hegemann, Georg Nagel und Karl Deisseroth werden für die Steuerung von Nervenzellen mit Licht geehrt. Zwei der drei Preisträger arbeiten an deutschen Universitäten.",
+          "body": "Der Nobelpreis für Physiologie oder Medizin 2026 geht an Peter Hegemann von der Humboldt-Universität zu Berlin, Georg Nagel von der Universität Würzburg und Karl Deisseroth von der Stanford University. Das Nobelkomitee des Karolinska-Instituts in Stockholm gab die Entscheidung am Montag bekannt. Ausgezeichnet werden die drei „für ihre Entdeckungen zu lichtgesteuerten Ionenkanälen und zur Optogenetik“.\n\nDer Preis ist mit zwölf Millionen schwedischen Kronen dotiert, nach Angaben der Berichterstatter rund eine Million Euro, und wird geteilt. Hegemann ist 71 Jahre alt, Nagel 73, Deisseroth 54.\n\n## Vom Algenprotein zum Werkzeug\n\nHegemann und Nagel entdeckten Anfang der 2000er-Jahre in einer einzelligen Alge das Protein Channelrhodopsin. Es macht Zellen empfindlich für Licht: Trifft ein Lichtreiz auf das Eiweiß, öffnet sich ein Kanal in der Zellmembran. Deisseroth baute das zugehörige Gen anschließend in Nervenzellen ein, zunächst bei Ratten, später auch in lebenden Mäusegehirnen. Damit ließen sich einzelne Nervenzellen gezielt per Lichtimpuls an- und abschalten.\n\nDas Nobelkomitee sieht darin den Beginn einer neuen Ära der Neurowissenschaft. Die Methode erlaube es, das Gehirn so zu kartieren, wie man es zuvor nur erträumen konnte. Forschende können damit erstmals ursächlich untersuchen, welche Nervenschaltkreise an Gedächtnis, Emotionen und Verhalten beteiligt sind, statt nur Korrelationen zu beobachten.\n\n## Therapeutische Perspektive\n\nNeben der Grundlagenforschung gibt es erste medizinische Anwendungen. Laut ORF wurde mit einer optogenetischen Therapie bei einem blinden Patienten das Sehvermögen teilweise wiederhergestellt: Er konnte mithilfe einer speziellen Brille Gegenstände erkennen und sich orientieren. Als Zielgruppe gelten Erkrankungen wie Retinitis pigmentosa. Auch für neurologische und psychiatrische Leiden wird der Ansatz erforscht, bislang überwiegend im präklinischen Stadium.\n\n## Einordnung für Deutschland\n\nDie Auszeichnung ist ein Erfolg für die deutsche Grundlagenforschung. Berlins Wissenschaftssenatorin Ina Czyborra sagte, der Preis zeige den grundlegenden Wert dauerhaft geförderter Grundlagenforschung für die Medizin. Bayerns Wissenschaftsminister würdigte Nagels Arbeit als „revolutionär“ und verwies auf die Stärke des Standorts Würzburg.\n\nDie Entdeckung entstand aus reiner Neugier an einer Alge, ohne dass ein medizinischer Nutzen absehbar war. Genau dieses Muster nutzen Forschungspolitiker gern als Argument für langfristige, ergebnisoffene Förderung. Für Sachsen, wo Universität Leipzig, Max-Planck-Institute und TU Dresden ebenfalls neurowissenschaftlich arbeiten, ist die Entscheidung ein Beleg dafür, dass auch Methoden aus der Grundlagenforschung die Hirnforschung prägen.\n\nAm Dienstag folgt die Bekanntgabe des Physik-Nobelpreises, die Verkündung der übrigen Preise zieht sich durch die Woche.",
+          "source": "Forschung & Lehre",
+          "url": "https://www.forschung-und-lehre.de/karriere/medizin-nobelpreis-geht-an-zwei-deutsche-und-einen-us-amerikaner-7937",
+          "sources": [
+            {
+              "name": "Forschung & Lehre",
+              "url": "https://www.forschung-und-lehre.de/karriere/medizin-nobelpreis-geht-an-zwei-deutsche-und-einen-us-amerikaner-7937"
+            },
+            {
+              "name": "science.ORF.at",
+              "url": "https://science.orf.at/stories/3237613/"
+            },
+            {
+              "name": "Lindau Nobel Laureate Meetings",
+              "url": "https://www.lindau-nobel.org/news-nobel-prize-in-physiology-or-medicine-2026/"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 7,
+          "readingMinutes": 3,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "klima",
+      "title": "Klima & Umwelt",
+      "emoji": "🌱",
+      "items": [
+        {
+          "id": "klima-pre-cop-fidschi-tuvalu",
+          "tier": "top",
+          "headline": "Pre-COP in Fidschi: Pazifik drängt vor COP31 auf 1,5 Grad",
+          "summary": "In Nadi hat die Vorkonferenz zum Weltklimagipfel COP31 begonnen. Die Pazifikstaaten fordern mehr Anpassungsgeld und das 1,5-Grad-Ziel, die Erwartungen gelten als gering.",
+          "body": "In Nadi auf Fidschi läuft von Montag bis Donnerstag (5. bis 8. Oktober) die Pazifik-Vorkonferenz zum Weltklimagipfel COP31. Parallel findet in Tuvalu am 5. und 6. Oktober ein Treffen von Staats- und Regierungschefs statt. Nach Angaben der australischen Regierung kommen mehr als 50 Länder sowie Tausende Fachleute und Aktivisten zusammen. Es ist die letzte größere Abstimmung vor dem Gipfel in Antalya, der vom 9. bis 20. November in der Türkei stattfindet.\n\nAustralien ist gemeinsam mit Fidschi und Tuvalu Gastgeber der Vorkonferenz und führt bei COP31 die Verhandlungen. Premierminister Anthony Albanese reist laut seinem Büro zum vierten Mal offiziell nach Fidschi und erstmals nach Tuvalu. Begleitet wird er von Klimaminister Chris Bowen und der Sondergesandten Kate Thwaites. Das Treffen solle es ermöglichen, direkt von den Menschen an der Frontlinie des Klimawandels zu hören, so die Regierung.\n\n## Was die Pazifikstaaten fordern\n\nDie Inselstaaten pochen auf drei Punkte: die Begrenzung der Erwärmung auf 1,5 Grad, besseren Zugang zu Anpassungsfinanzierung und den Schutz der Ozeane. Fidschis Klimaministerin Lynda Tabuya sagte laut TRT World, ihr Premier werde die Botschaft tragen: „keep 1.5 degrees within reach“. Der Meeresspiegel steigt im Pazifik demnach doppelt so schnell wie im globalen Mittel.\n\nBeim Geld klafft eine große Lücke. Entwicklungsländer brauchen laut den von TRT World genannten Zahlen jährlich 310 bis 365 Milliarden Dollar für Anpassung, 2023 standen ihnen aber nur 26 Milliarden Dollar zur Verfügung.\n\nAmnesty International verlangt von den Regierungen unter anderem ein Ende des Ausbaus fossiler Energien und deutlich mehr öffentliche Zuschüsse statt neuer Schulden. Die Organisation verweist darauf, dass Tuvalu weniger als 0,003 Prozent der weltweiten Treibhausgase verursacht, aber massiv betroffen ist.\n\n## Geringe Erwartungen\n\nDer Newsletter Climate Diplomacy Brief beschreibt die Erwartungen an das Treffen als niedrig. Zwar habe Australien viel Geld in die Veranstaltung gesteckt, doch kämen kaum tatsächliche Staats- und Regierungschefs nach Tuvalu. Substanzielle Ergebnisse vor COP31 seien deshalb unwahrscheinlich.\n\n## Einordnung\n\nFür Deutschland ist die Vorkonferenz vor allem ein Stimmungstest: Wie die Verhandlungen um Anpassungsfinanzierung ausgehen, entscheidet mit darüber, welche Beiträge von Industriestaaten wie Deutschland künftig erwartet werden. Die Pazifikstaaten setzen dabei auf Druck durch Sichtbarkeit, auch weil der August 2026 laut Amnesty zu den heißesten Monaten seit Beginn der Aufzeichnungen zählte und Europa von ausgedehnten Hitzewellen betroffen war.",
+          "source": "Premierminister Australiens",
+          "url": "https://www.pm.gov.au/media/pre-cop-leaders-event-fiji-and-tuvalu",
+          "sources": [
+            {
+              "name": "Premierminister Australiens",
+              "url": "https://www.pm.gov.au/media/pre-cop-leaders-event-fiji-and-tuvalu"
+            },
+            {
+              "name": "TRT World",
+              "url": "https://www.trtworld.com/article/1de20c217588"
+            },
+            {
+              "name": "Amnesty International",
+              "url": "https://www.amnesty.org/en/latest/news/2026/10/pre-cop31-pacific/"
+            },
+            {
+              "name": "Climate Diplomacy Brief",
+              "url": "https://climatediplobrief.substack.com/p/climate-diplomacy-brief-october-2026"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 5,
+          "readingMinutes": 3,
+          "image": null
+        },
+        {
+          "id": "klima-karlsruhe-grossbatteriespeicher",
+          "tier": "more",
+          "headline": "Stadtwerke Karlsruhe nehmen Großbatteriespeicher in Betrieb",
+          "summary": "Am Heizkraftwerk West steht ein neuer Speicher mit 12 Megawatt Leistung und 28 Megawattstunden Kapazität. Er soll Schwankungen von Wind- und Solarstrom ausgleichen.",
+          "body": "Die Stadtwerke Karlsruhe haben auf dem Gelände ihres Heizkraftwerks West einen Großbatteriespeicher in Betrieb genommen. Die Anlage besteht aus sechs Batteriecontainern und hat nach Angaben des Unternehmens eine Leistung von rund 12 Megawatt bei einer Speicherkapazität von 28 Megawattstunden.\n\nDer Speicher nimmt überschüssigen Strom aus erneuerbaren Quellen auf, wenn viel Wind und Sonne zur Verfügung stehen, und gibt ihn bei hoher Nachfrage wieder ab. Zusätzlich soll er am Strommarkt gehandelt werden, um die Anlage wirtschaftlich zu betreiben. Investiert haben die Stadtwerke nach eigenen Angaben einen Betrag im hohen einstelligen Millionenbereich.\n\nStadtwerke-Chef Michael Homann nannte den Speicher einen wichtigen Meilenstein für die Energiewende vor Ort. Mit dem Ausbau erneuerbarer Energien in der Region brauche das Netz zusätzliche Flexibilität.\n\nDass Speicher dieser Größe an bestehenden Kraftwerksstandorten entstehen, ist eine verbreitete Lösung, weil dort Netzanschlüsse schon vorhanden sind. Für Sachsen ist das Beispiel relevant, weil auch hier mit wachsendem Solar- und Windanteil Kurzzeitspeicher gebraucht werden, um Preisspitzen und Netzengpässe abzufedern.",
+          "source": "meinKA",
+          "url": "https://meinka.de/grossbatteriespeicher",
+          "sources": [
+            {
+              "name": "meinKA",
+              "url": "https://meinka.de/grossbatteriespeicher"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "entertainment",
+      "title": "Games & Entertainment",
+      "emoji": "🎮",
+      "items": [
+        {
+          "id": "entertainment-verity-schlaegt-digger-kinokasse",
+          "tier": "top",
+          "headline": "„Verity“ siegt an der US-Kinokasse, „Digger“ floppt",
+          "summary": "Der Thriller mit Anne Hathaway startet mit 32,6 Millionen Dollar. Tom Cruises „Digger“ spielt nur 8 Millionen ein und gilt als teurer Fehlstart.",
+          "body": "Der Kinostart-Freitag brachte eine klare Rangfolge: „Verity“, die Verfilmung eines Romans von Colleen Hoover, hat das Wochenende vom 2. bis 4. Oktober in den USA mit 32,6 Millionen Dollar angeführt. Tom Cruises neuer Film „Digger“ landete mit 8 Millionen Dollar nur auf Platz fünf und gilt als teure Enttäuschung.\n\n„Verity“ ist ein Psychothriller von Regisseur Michael Showalter mit Anne Hathaway, Dakota Johnson und Josh Hartnett. Der Film kam nach Angaben von Rotten Tomatoes auf eine weltweite Summe von mehr als 62 Millionen Dollar und kostete rund 40 Millionen Dollar. Er lag in den USA etwa 20 Millionen Dollar vor dem Zweitplatzierten, dem Horrorfilm „Resident Evil“, der in seiner dritten Woche 12,5 Millionen Dollar einspielte. Das Publikum nahm den Film an, obwohl die Kritik zurückhaltend blieb: Die Tomatometer-Wertung liegt bei 34 Prozent.\n\n## „Digger“ bleibt weit hinter den Erwartungen\n\nDie Satire „Digger“ ist die erste Zusammenarbeit von Cruise mit dem Regisseur Alejandro González Iñárritu. Mit 8 Millionen Dollar ist es laut Berichten der schwächste Start Cruises als Hauptdarsteller seit „Rain Man“ im Jahr 1988. Nach Angaben des Branchendiensts Gold Derby kamen international 12 Millionen Dollar aus 73 Märkten hinzu, weltweit also etwa 20 Millionen Dollar. Das Budget wuchs Berichten zufolge von ursprünglich 125 Millionen auf 140 bis 180 Millionen Dollar. Auf Rotten Tomatoes steht der Film bei 51 Prozent.\n\n## Weitere Platzierungen\n\nAuf Rang drei folgte „Heart of the Beast“ mit 11,0 Millionen Dollar, danach „Primetime“ mit etwa 8,0 Millionen Dollar. Die Wiederaufführung von „Avengers: Endgame“ rutschte vom ersten auf den siebten Platz ab und erzielte 4,4 Millionen Dollar. „The Odyssey“ verließ nach zwölf Wochen die Top Ten; der Film hat bis dahin 620,5 Millionen Dollar eingenommen.\n\n## Einordnung\n\nDie Zahlen gelten für den US-Markt, hiesige Starttermine und Ergebnisse können abweichen. Sie zeigen aber, wie schwer es teure Originalstoffe selbst mit großem Star haben, während günstig produzierte Buchverfilmungen mit treuem Publikum zuverlässig Gewinn bringen. Ob „Digger“ im Verlauf noch aufholt, wird sich erst in den kommenden Wochen zeigen; für einen Kassenerfolg fehlt nach Einschätzung von Branchenbeobachtern ein deutlich stärkerer Start.",
+          "source": "Rotten Tomatoes",
+          "url": "https://editorial.rottentomatoes.com/article/weekend-box-office-verity-week-1/",
+          "sources": [
+            {
+              "name": "Rotten Tomatoes",
+              "url": "https://editorial.rottentomatoes.com/article/weekend-box-office-verity-week-1/"
+            },
+            {
+              "name": "Cinemanerdz",
+              "url": "https://cinemanerdz.com/box-office-weekend-verity-does-very-well/"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 4,
+          "readingMinutes": 2,
+          "image": null
+        },
+        {
+          "id": "entertainment-arc-raiders-finals-adaption",
+          "tier": "more",
+          "headline": "Arc Raiders und The Finals bekommen Film- und Serienadaptionen",
+          "summary": "Chernin Entertainment produziert Adaptionen der Embark-Shooter. Ob Serie oder Kino, ist noch offen.",
+          "body": "Die Shooter „Arc Raiders“ und „The Finals“ vom schwedischen Studio Embark sollen als Serien und Filme adaptiert werden. Als federführende Produktionsfirma wurde Chernin Entertainment ausgewählt, wie Branchenmedien am 5. Oktober berichteten.\n\nChernin Entertainment gehört zur North Road Company und setzte sich laut den Berichten gegen mehrere Studios und Produktionsfirmen durch, die um die Rechte konkurrierten. Embark gehört zum Konzern Nexon. Zuerst hatte Variety über den Deal berichtet.\n\nOffen ist bislang, welches Projekt als Serie und welches als Kinofilm umgesetzt wird oder ob beide Spiele in beiden Formaten erscheinen. Auch Besetzung, Regie und Starttermine sind nicht bekannt. Zu den früheren Arbeiten von Chernin zählen die Netflix-Trilogie „Fear Street“ sowie die Mitproduktion von „Backrooms“.\n\n„Arc Raiders“ ist ein Third-Person-Extraction-Shooter, in dem Spielende gegen feindliche Roboter und andere Menschen um Beute kämpfen und sich dann in Sicherheit bringen müssen. Das Spiel erschien 2025, wurde laut Game Developer bei den Game Awards 2025 als bestes Multiplayer-Spiel ausgezeichnet und hat weltweit 14 Millionen Mal verkauft. „The Finals“ ist ein kostenloser Ego-Shooter mit zerstörbaren Umgebungen im Setting einer Spielshow und erschien 2023.\n\nFür Fans in Deutschland bedeutet die Ankündigung zunächst nur eine Absichtserklärung: Bis zu konkreten Produktionen vergeht erfahrungsgemäß viel Zeit, und viele Spieleadaptionen kommen nie über diese Phase hinaus. Sie zeigt aber, wie stark Hollywood derzeit auf Spielemarken setzt.",
+          "source": "Game Developer",
+          "url": "https://www.gamedeveloper.com/business/arc-raiders-and-the-finals-set-for-tv-and-film-adaptations-from-backrooms-co-producer",
+          "sources": [
+            {
+              "name": "Game Developer",
+              "url": "https://www.gamedeveloper.com/business/arc-raiders-and-the-finals-set-for-tv-and-film-adaptations-from-backrooms-co-producer"
+            },
+            {
+              "name": "Shacknews",
+              "url": "https://www.shacknews.com/article/150911/arc-raiders-the-finals-movie-tv-adaptations"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "entertainment-ps-plus-oktober-2026",
+          "tier": "more",
+          "headline": "PS Plus im Oktober: F1 25 und Hunt: Showdown 1896",
+          "summary": "Ab 6. Oktober gibt es drei Spiele für alle Mitglieder. Die Extra- und Premium-Titel folgen am 14. Oktober.",
+          "body": "Sony hat die PS-Plus-Spiele für Oktober bestätigt. Ab Dienstag, 6. Oktober, können alle Mitglieder drei Titel kostenlos zu ihrer Bibliothek hinzufügen: F1 25, Hunt: Showdown 1896 und Earth Defense Force: World Brothers 2.\n\nDie Spiele gehören zur Essential-Stufe, sind also ohne Aufpreis für alle Abonnenten verfügbar. F1 25 und Hunt: Showdown 1896 gibt es für die PS5, Earth Defense Force: World Brothers 2 für PS4 und PS5. Wer die Spiele aus dem September noch mitnehmen will, hat dafür laut NME nur bis zum 5. Oktober Zeit, also bis heute.\n\nDie Titel für die höheren Stufen Extra und Premium will Sony am 14. Oktober vorstellen. Das Medium NME nennt zudem Preise nach einer Erhöhung, allerdings in britischen Pfund: Essential kostet demnach 7,99 Pfund im Monat, Extra 11,99 Pfund und Premium 14,99 Pfund. Für Deutschland nennt der Artikel keine Beträge.\n\nWer PS-Plus-Spiele nutzt, sollte die Angebote rechtzeitig sichern: Sie bleiben nur so lange im Konto spielbar, wie das Abonnement läuft, und die Frist für den Vormonat endet jetzt.",
+          "source": "NME",
+          "url": "https://www.nme.com/news/gaming-news/ps-plus-games-october-2026-premium-extra-essential-3971968",
+          "sources": [
+            {
+              "name": "NME",
+              "url": "https://www.nme.com/news/gaming-news/ps-plus-games-october-2026-premium-extra-essential-3971968"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    }
+  ]
+}
