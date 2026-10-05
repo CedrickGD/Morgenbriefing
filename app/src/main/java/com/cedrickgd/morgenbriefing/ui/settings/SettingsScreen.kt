@@ -84,6 +84,7 @@ import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 import com.cedrickgd.morgenbriefing.data.model.Topics
 import com.cedrickgd.morgenbriefing.notify.AlarmScheduler
 import com.cedrickgd.morgenbriefing.notify.MorningWorker
+import com.cedrickgd.morgenbriefing.ui.settings.email.EmailBriefingSection
 import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
 import com.cedrickgd.morgenbriefing.util.LinkActions
 import com.cedrickgd.morgenbriefing.util.Links
@@ -449,7 +450,10 @@ private fun SettingsContent(
                 Block.READING_HEADER -> SettingsSectionHeader("Lesen")
                 Block.READING -> ReadingCard(scale = settings.readerTextScale, onCommit = actions.onReaderScale)
                 Block.NOTIFICATION_HEADER -> SettingsSectionHeader("Benachrichtigung")
-                Block.NOTIFICATION -> NotificationCard(settings, status, actions)
+                Block.NOTIFICATION -> Column {
+                    NotificationCard(settings, status, actions)
+                    EmailBriefingSection(Modifier.padding(top = 16.dp), onGoToToken = updateActions.onGoToToken)
+                }
                 Block.PLACES_HEADER -> SettingsSectionHeader("Orte")
                 Block.PLACES -> PlacesCard(settings, actions)
                 Block.SOURCE_HEADER -> SettingsSectionHeader("News-Quelle")
