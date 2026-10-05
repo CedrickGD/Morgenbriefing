@@ -80,9 +80,29 @@ für Android.
 
 **Heute** – Kopf (Datum, Gruß, Serif-Headline) direkt auf dem Himmel; darunter Glas-Karten:
 „Vor der Tür“ (große Temperatur), Warnungen (getönte Glas-Banner), Tageskurve, Anziehen
-(Kacheln), dann die News: Teaser-Glas, „Heute wichtig“-Karussell (Bildkarten mit großer
-Überschrift im Bild), Themen-Sektionen mit Glas-Kopf (Emoji in Themenfarbe) und „+ Mehr“.
-Unten ein ruhiger Ausklang (Stand, Quellen, kleines „Bis morgen ☀️“).
+(Kacheln). Danach der **News-Feed** im Stil der Nutzer-Referenz
+(`.claude/design-ref/news-feed-reference.jpg`, Google-Discover-artig, editorial):
+
+* **Themen-Chips** in einer horizontalen Reihe: „Für dich“ (alle Themen in Nutzer-Reihenfolge,
+  je Thema eine Sektion mit „+ Mehr zu …“), „Top“ (die wichtigsten Meldungen über alle Themen
+  nach Wichtigkeit), dann je ein Chip pro sichtbarem Thema (gefiltert, alle Artikel des Themas).
+  Glas-Pills; aktiver Chip gefüllt in Themen-/Akzentfarbe. Die Chip-Reihe bleibt beim Scrollen
+  unter der Glas-Kopfleiste kleben (sticky). Rechts daneben ein runder Glas-Button
+  „Themen“ (Herz-mit-Plus-Symbol) → Bottom-Sheet zum Ein-/Ausblenden und Sortieren.
+* **Feed-Eintrag ohne Kartenrahmen**, direkt auf dem Hintergrund: Bild in voller Breite,
+  22–24 dp Radius, ~16:10 (oder generiertes Cover in Themenfarbe); darunter die **Schlagzeile
+  groß in Serif** (headlineSmall, ~26 sp, 3 Zeilen max.); darunter der Lead in **Serif**
+  (bodyLarge ~18 sp, onSurfaceVariant, 3 Zeilen) mit angehängtem „… **Mehr anzeigen**“;
+  dann die Meta-Zeile: „vor 3 Std. · Quelle“ links, rechts **„🎧 Zuhören“**, Teilen, ⋮-Menü
+  (Thema ausblenden, Quellen anzeigen, Link kopieren). 24–32 dp Abstand zwischen Einträgen,
+  dezente Trennlinie optional. Antippen (Bild/Schlagzeile/Text) → Artikel-Leser.
+* **Zuhören**: Android TextToSpeech (Deutsch) liest Schlagzeile + Artikel vor; ein schwebender
+  Glas-Mini-Player (über dem Seitenindikator) zeigt Titel, Pause/Weiter, Stopp.
+* Unten ein ruhiger Ausklang (Stand, Quellen, kleines „Bis morgen ☀️“).
+
+**Artikel-Leser** – gleiche Typografie wie der Feed (Serif-Schlagzeile, Serif-Fließtext), großes
+Bild oben, Glas-Steuerleiste (Zurück, Zuhören, Textgröße, Teilen), Quellen am Ende, Wischen
+zum nächsten Artikel.
 
 **Verlauf** – Kopf „DEIN ARCHIV / Verlauf“. Eine **Zeitleiste**: dünne vertikale Linie links,
 pro Tag ein Punkt; Monatsüberschriften als Glas-Pills; jeder Tag eine Glas-Karte mit großer
