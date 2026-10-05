@@ -23,3 +23,6 @@ keystore.properties
 
 # Local routine scratch output
 routine/out/
+
+# Claude Code local state (agent worktrees etc.)
+.claude/
