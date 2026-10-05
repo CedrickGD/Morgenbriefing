@@ -1,5 +1,7 @@
 package com.cedrickgd.morgenbriefing.ui.shell
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,7 +64,32 @@ class ChromeController {
 
 val LocalChromeController = staticCompositionLocalOf { ChromeController() }
 
-/** Apply to a page's scrolling container so the floating chrome reacts to it. */
+/** True inside content whose scrolling the shell already reports (see [chromeScrollSource]). */
+private val LocalChromeScrollReported = staticCompositionLocalOf { false }
+
+/**
+ * Apply to a page's scrolling container so the floating chrome reacts to it. Inside the main
+ * pager the shell already reports every page's scrolling; there this is a no-op, so nothing is
+ * counted twice.
+ */
 fun Modifier.reportChromeScroll(): Modifier = composed {
-    nestedScroll(LocalChromeController.current.nestedScrollConnection)
+    if (LocalChromeScrollReported.current) {
+        Modifier
+    } else {
+        nestedScroll(LocalChromeController.current.nestedScrollConnection)
+    }
+}
+
+/**
+ * Shell only: reports all vertical scrolling inside this element to the chrome (so a page
+ * hides the indicator while scrolling down even without its own [reportChromeScroll]). Wrap
+ * the element's content in [ChromeScrollReported].
+ */
+internal fun Modifier.chromeScrollSource(chrome: ChromeController): Modifier =
+    nestedScroll(chrome.nestedScrollConnection)
+
+/** Marks [content] as already reported by an enclosing [chromeScrollSource]. */
+@Composable
+internal fun ChromeScrollReported(content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalChromeScrollReported provides true, content = content)
 }

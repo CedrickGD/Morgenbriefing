@@ -4,16 +4,15 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
@@ -21,129 +20,113 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.cedrickgd.morgenbriefing.ui.brief.DayDetailScreen
-import com.cedrickgd.morgenbriefing.ui.history.HistoryScreen
+import com.cedrickgd.morgenbriefing.ui.chat.ChatScreen
 import com.cedrickgd.morgenbriefing.ui.news.ArticleScreen
-import com.cedrickgd.morgenbriefing.ui.settings.SettingsScreen
-import com.cedrickgd.morgenbriefing.ui.today.TodayScreen
-
-private const val TAB_IN_MS = 220
-private const val TAB_IN_DELAY_MS = 70
-private const val TAB_OUT_MS = 90
-private const val DETAIL_MS = 320
+import com.cedrickgd.morgenbriefing.ui.shell.MainPage
+import com.cedrickgd.morgenbriefing.ui.shell.MainPager
+import com.cedrickgd.morgenbriefing.ui.shell.ShellNavigator
+import com.cedrickgd.morgenbriefing.ui.today.TodayViewModel
 
 /**
- * The app's navigation graph. Tabs cross-fade ("fade through"); the day detail and the article
- * reader slide in from the side over a slightly receding screen. Pop transitions are what
- * predictive back scrubs through while the user swipes.
+ * The navigation graph: [MainRoute] (the page pager) is the start destination and never left;
+ * the day detail, the article reader and the chat are pushed over it. Every screen is
+ * transparent over the shared sky, so a push slides the new screen in while the one beneath
+ * recedes and fades – the sky itself never moves. Pop transitions are what predictive back
+ * scrubs through while the user swipes.
  *
- * @param contentPadding the Scaffold's inner padding (bottom = navigation bar height).
- * @param openTodaySignal increments whenever a notification tap asks for the Today tab.
+ * @param pagePadding bottom room for the floating chrome, for the pager pages.
+ * @param pushedPadding bottom room on pushed screens (navigation bar + mini player).
+ * @param openTodaySignal increments whenever "Heute" should scroll back to the top.
  */
 @Composable
 internal fun AppNavHost(
     navController: NavHostController,
-    contentPadding: PaddingValues,
+    navigator: ShellNavigator,
+    pagePadding: PaddingValues,
+    pushedPadding: PaddingValues,
     openTodaySignal: Int,
+    todayViewModel: TodayViewModel,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navController,
-        startDestination = TodayRoute,
+        startDestination = MainRoute,
         modifier = modifier,
-        enterTransition = { tabEnter() },
-        exitTransition = { tabExit() },
-        popEnterTransition = { tabEnter() },
-        popExitTransition = { tabExit() },
+        enterTransition = { pushEnter() },
+        exitTransition = { underlayExit() },
+        popEnterTransition = { underlayReturn() },
+        popExitTransition = { popExit() },
     ) {
-        composable<TodayRoute>(
-            exitTransition = { if (targetState.isDetail()) detailUnderlayExit() else tabExit() },
-            popEnterTransition = { if (initialState.isDetail()) detailUnderlayEnter() else tabEnter() },
-        ) { entry ->
-            TodayScreen(
-                contentPadding = contentPadding,
+        composable<MainRoute> { entry ->
+            MainPager(
+                navigator = navigator,
+                entry = entry,
+                contentPadding = pagePadding,
                 openTodaySignal = openTodaySignal,
-                onOpenSettings = { navController.navigateToTopLevel(SettingsRoute) },
-                onOpenArticle = { date, key ->
-                    // Ignore double taps while the transition to the first article is running.
-                    if (entry.isResumed()) navController.navigate(ArticleRoute(date, key))
-                },
+                todayViewModel = todayViewModel,
             )
         }
 
-        composable<HistoryRoute>(
-            exitTransition = { if (targetState.isDetail()) detailUnderlayExit() else tabExit() },
-            popEnterTransition = { if (initialState.isDetail()) detailUnderlayEnter() else tabEnter() },
-        ) { entry ->
-            HistoryScreen(
-                contentPadding = contentPadding,
-                onOpenDay = { date ->
-                    // Ignore double taps while the transition to the first detail is running.
-                    if (entry.isResumed()) navController.navigate(DayRoute(date.toString()))
-                },
-            )
-        }
-
-        composable<SettingsRoute> {
-            SettingsScreen(contentPadding = contentPadding)
-        }
-
-        composable<DayRoute>(
-            enterTransition = { detailEnter() },
-            exitTransition = { if (targetState.isDetail()) detailUnderlayExit() else fadeOut(tween(TAB_OUT_MS)) },
-            popEnterTransition = { if (initialState.isDetail()) detailUnderlayEnter() else fadeIn(tween(TAB_IN_MS)) },
-            popExitTransition = { detailPopExit() },
-        ) { entry ->
+        composable<DayRoute> { entry ->
             val route = entry.toRoute<DayRoute>()
             DayDetailScreen(
                 date = route.date,
-                contentPadding = contentPadding,
-                onBack = { if (entry.isResumed()) navController.popBackStack() },
-                onOpenArticle = { date, key ->
-                    if (entry.isResumed()) navController.navigate(ArticleRoute(date, key))
-                },
+                contentPadding = pushedPadding,
+                onBack = { navigator.back(entry) },
+                onOpenArticle = { date, key -> navigator.push(entry, ArticleRoute(date, key)) },
             )
         }
 
-        composable<ArticleRoute>(
-            enterTransition = { detailEnter() },
-            exitTransition = { fadeOut(tween(TAB_OUT_MS)) },
-            popEnterTransition = { fadeIn(tween(TAB_IN_MS)) },
-            popExitTransition = { detailPopExit() },
-        ) { entry ->
+        composable<ArticleRoute> { entry ->
             val route = entry.toRoute<ArticleRoute>()
             ArticleScreen(
                 date = route.date,
                 articleKey = route.key,
-                onBack = { if (entry.isResumed()) navController.popBackStack() },
+                onBack = { navigator.back(entry) },
+                onAskAboutArticle = { date, key -> navigator.push(entry, ChatRoute(date, key)) },
+            )
+        }
+
+        composable<ChatRoute> { entry ->
+            val route = entry.toRoute<ChatRoute>()
+            ChatScreen(
+                date = route.date,
+                articleKey = route.key,
+                onBack = { navigator.back(entry) },
+                onOpenSettings = { navigator.showPage(MainPage.SETTINGS) },
             )
         }
     }
 }
 
-/** Screens that slide in over the current one (and hide the bottom bar). */
-internal fun NavBackStackEntry.isDetail(): Boolean =
-    destination.hasRoute<DayRoute>() || destination.hasRoute<ArticleRoute>()
+/** Screens with their own bottom controls, where the floating mini player would be in the way. */
+internal fun NavBackStackEntry.hasOwnBottomBar(): Boolean = destination.hasRoute<ChatRoute>()
 
-private fun NavBackStackEntry.isResumed(): Boolean = lifecycle.currentState == Lifecycle.State.RESUMED
+private const val PUSH_MS = 420
+private const val POP_MS = 340
+private const val UNDERLAY_FADE_MS = 180
 
-private fun tabEnter(): EnterTransition =
-    fadeIn(tween(TAB_IN_MS, delayMillis = TAB_IN_DELAY_MS, easing = LinearOutSlowInEasing)) +
-        scaleIn(tween(TAB_IN_MS, delayMillis = TAB_IN_DELAY_MS, easing = LinearOutSlowInEasing), initialScale = 0.97f)
+/** Material 3 "emphasized" curves: quick start, long gentle landing. */
+private val EmphasizedDecelerate = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
+private val EmphasizedAccelerate = CubicBezierEasing(0.3f, 0f, 0.8f, 0.15f)
+private val Standard = CubicBezierEasing(0.2f, 0f, 0f, 1f)
 
-private fun tabExit(): ExitTransition = fadeOut(tween(TAB_OUT_MS))
+/** A pushed screen glides in from the right (a fifth of the width) and fades up. */
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.pushEnter(): EnterTransition =
+    slideIntoContainer(SlideDirection.Start, tween(PUSH_MS, easing = EmphasizedDecelerate)) { it / 5 } +
+        fadeIn(tween(PUSH_MS / 2, delayMillis = 40, easing = Standard))
 
-private fun AnimatedContentTransitionScope<NavBackStackEntry>.detailEnter(): EnterTransition =
-    slideIntoContainer(SlideDirection.Start, tween(DETAIL_MS, easing = FastOutSlowInEasing)) { it / 4 } +
-        fadeIn(tween(DETAIL_MS))
+/** The screen underneath sinks back a little and fades into the sky. */
+private fun underlayExit(): ExitTransition =
+    fadeOut(tween(UNDERLAY_FADE_MS, easing = Standard)) +
+        scaleOut(tween(PUSH_MS, easing = EmphasizedDecelerate), targetScale = 0.94f)
 
-private fun AnimatedContentTransitionScope<NavBackStackEntry>.detailPopExit(): ExitTransition =
-    slideOutOfContainer(SlideDirection.End, tween(DETAIL_MS, easing = FastOutSlowInEasing)) { it / 4 } +
-        fadeOut(tween(DETAIL_MS))
+/** …and rises again when the pushed screen is closed. */
+private fun underlayReturn(): EnterTransition =
+    fadeIn(tween(POP_MS, delayMillis = 40, easing = Standard)) +
+        scaleIn(tween(POP_MS, easing = Standard), initialScale = 0.94f)
 
-private fun AnimatedContentTransitionScope<NavBackStackEntry>.detailUnderlayExit(): ExitTransition =
-    slideOutOfContainer(SlideDirection.Start, tween(DETAIL_MS, easing = FastOutSlowInEasing)) { it / 10 } +
-        fadeOut(tween(DETAIL_MS))
-
-private fun AnimatedContentTransitionScope<NavBackStackEntry>.detailUnderlayEnter(): EnterTransition =
-    slideIntoContainer(SlideDirection.End, tween(DETAIL_MS, easing = FastOutSlowInEasing)) { it / 10 } +
-        fadeIn(tween(DETAIL_MS))
+/** The closing screen slides back out to the right while it fades. */
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExit(): ExitTransition =
+    slideOutOfContainer(SlideDirection.End, tween(POP_MS, easing = EmphasizedAccelerate)) { it / 5 } +
+        fadeOut(tween(POP_MS, easing = Standard))

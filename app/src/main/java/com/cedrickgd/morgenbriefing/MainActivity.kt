@@ -7,19 +7,28 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.cedrickgd.morgenbriefing.ui.AppRoot
+import com.cedrickgd.morgenbriefing.ui.shell.AppLinks
+import com.cedrickgd.morgenbriefing.ui.shell.MainPage
+import com.cedrickgd.morgenbriefing.ui.shell.PageRequest
 
 /**
- * Single activity (launchMode singleTop). A tap on the morning notification while the app is
- * open arrives in [onNewIntent] and switches to the Today tab.
+ * Single activity (launchMode singleTop, notifications add SINGLE_TOP | CLEAR_TOP). A launch
+ * intent may carry [AppLinks.EXTRA_OPEN_PAGE] to open a page of the pager:
+ *
+ * * on a fresh start the pager simply opens on that page,
+ * * while the app is open the tap arrives in [onNewIntent]: pushed screens close and the pager
+ *   glides to the page. Without the extra (morning notification) that is "Heute", which also
+ *   scrolls back to the top.
  */
 class MainActivity : ComponentActivity() {
 
-    /** Bumped on every new intent; observed by [AppRoot]. Resets with the activity on purpose. */
-    private var openTodayRequests by mutableIntStateOf(0)
+    /** Latest unhandled request from [onNewIntent]; cleared by the shell once acted on. */
+    private var pageRequest by mutableStateOf<PageRequest?>(null)
+    private var nextRequestId = 0L
 
     /** Set once the settings are loaded; read by the splash screen on the UI thread. */
     @Volatile
@@ -36,9 +45,14 @@ class MainActivity : ComponentActivity() {
             !contentReady && SystemClock.uptimeMillis() - shownAt < MAX_SPLASH_MS
         }
 
+        // After a recreation the pager restores its own page; the old intent is history.
+        val initialPage = if (savedInstanceState == null) intent.requestedPage() else MainPage.Start
+
         setContent {
             AppRoot(
-                openTodayRequests = openTodayRequests,
+                initialPage = initialPage,
+                pageRequest = pageRequest,
+                onPageRequestHandled = { handled -> if (pageRequest == handled) pageRequest = null },
                 onReady = { contentReady = true },
             )
         }
@@ -47,7 +61,13 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        openTodayRequests++
+        pageRequest = PageRequest(intent.requestedPage(), id = ++nextRequestId)
+    }
+
+    /** The page an intent asks for; "Heute" when it names none (or its extras are unreadable). */
+    private fun Intent?.requestedPage(): MainPage {
+        val link = runCatching { this?.getStringExtra(AppLinks.EXTRA_OPEN_PAGE) }.getOrNull()
+        return MainPage.fromLink(link)
     }
 
     private companion object {
