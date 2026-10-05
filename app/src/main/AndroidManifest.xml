@@ -20,6 +20,13 @@
     <!-- In-app updater: installs new releases from the private GitHub repo. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
+    <!-- "Zuhören": since Android 11 TextToSpeech only sees engines the app declares it queries. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <application
         android:name=".MorgenbriefingApp"
         android:allowBackup="true"
