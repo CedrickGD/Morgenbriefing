@@ -1,5 +1,8 @@
 package com.cedrickgd.morgenbriefing.ui.settings
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,9 +15,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
@@ -24,7 +29,7 @@ import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.LocationCity
 import androidx.compose.material.icons.rounded.Notifications
@@ -57,12 +62,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -71,8 +81,10 @@ import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.AccentId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
+import com.cedrickgd.morgenbriefing.data.model.Topics
 import com.cedrickgd.morgenbriefing.notify.AlarmScheduler
 import com.cedrickgd.morgenbriefing.notify.MorningWorker
+import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
 import com.cedrickgd.morgenbriefing.util.LinkActions
 import com.cedrickgd.morgenbriefing.util.Links
 import com.cedrickgd.morgenbriefing.util.SystemIntents
@@ -88,9 +100,60 @@ import kotlin.math.roundToInt
 /** Dialogs of the settings screen; saveable so they survive rotation. */
 private enum class SettingsDialog { TIME, HOME_PLACE, DAY_PLACE, TOKEN, REMOVE_TOKEN }
 
+private const val TOPIC_KEY_PREFIX = "topic:"
+private const val WIKIMEDIA_COMMONS = "https://commons.wikimedia.org/"
+
+/** Lazy-list keys of the screen's fixed blocks (topic rows are `topic:<id>`). */
+private object Block {
+    const val APPEARANCE_HEADER = "h-appearance"
+    const val APPEARANCE = "appearance"
+    const val TOPICS_HEADER = "h-topics"
+    const val TOPICS_INTRO = "topics-intro"
+    const val TOPICS_FOOTER = "topics-footer"
+    const val READING_HEADER = "h-reading"
+    const val READING = "reading"
+    const val NOTIFICATION_HEADER = "h-notification"
+    const val NOTIFICATION = "notification"
+    const val PLACES_HEADER = "h-places"
+    const val PLACES = "places"
+    const val SOURCE_HEADER = "h-source"
+    const val SOURCE = "source"
+    const val UPDATE_HEADER = "h-update"
+    const val UPDATE = "update"
+    const val ABOUT_HEADER = "h-about"
+    const val ABOUT = "about"
+}
+
+private fun topicKey(id: String) = "$TOPIC_KEY_PREFIX$id"
+
+private fun isTopicKey(key: Any): Boolean = key is String && key.startsWith(TOPIC_KEY_PREFIX)
+
+/** Item keys in display order; the list is driven from this so indices are always known. */
+private fun blockKeys(topicOrder: List<String>): List<String> = buildList {
+    add(Block.APPEARANCE_HEADER)
+    add(Block.APPEARANCE)
+    add(Block.TOPICS_HEADER)
+    add(Block.TOPICS_INTRO)
+    topicOrder.forEach { add(topicKey(it)) }
+    add(Block.TOPICS_FOOTER)
+    add(Block.READING_HEADER)
+    add(Block.READING)
+    add(Block.NOTIFICATION_HEADER)
+    add(Block.NOTIFICATION)
+    add(Block.PLACES_HEADER)
+    add(Block.PLACES)
+    add(Block.SOURCE_HEADER)
+    add(Block.SOURCE)
+    add(Block.UPDATE_HEADER)
+    add(Block.UPDATE)
+    add(Block.ABOUT_HEADER)
+    add(Block.ABOUT)
+}
+
 /**
- * Tab "Einstellungen": appearance, notification (time + everything the system must allow),
- * places and day window, the GitHub token, and "Über". Every change is saved immediately.
+ * Tab "Einstellungen": appearance, topics (show/hide, order), reading size, notification (time
+ * + everything the system must allow), places and day window, the GitHub token, the in-app
+ * updater and "Über". Every change is saved immediately.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,22 +161,27 @@ fun SettingsScreen(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory),
+    updateViewModel: UpdateViewModel = viewModel(factory = UpdateViewModel.Factory),
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val tokenCheck by viewModel.tokenCheck.collectAsStateWithLifecycle()
     val placeSearch by viewModel.placeSearch.collectAsStateWithLifecycle()
+    val update by updateViewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val links = rememberLinkActions()
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val listState = rememberLazyListState()
+    val reduceMotion = rememberReduceMotion()
     var dialog by rememberSaveable { mutableStateOf<SettingsDialog?>(null) }
 
     // The user fixes permissions in the system settings and comes back: re-check on resume.
     var status by remember { mutableStateOf(SystemStatus.read(context)) }
-    LifecycleResumeEffect(context) {
+    LifecycleResumeEffect(context, updateViewModel) {
         status = SystemStatus.read(context)
-        onPauseOrDispose { }
+        updateViewModel.onResume()
+        onPauseOrDispose { updateViewModel.onPause() }
     }
     val requestNotifications = rememberNotificationPermissionRequester {
         status = SystemStatus.read(context)
@@ -126,6 +194,10 @@ fun SettingsScreen(
     val actions = SettingsActions(
         onThemeMode = viewModel::setThemeMode,
         onAccent = viewModel::setAccent,
+        onTopicVisible = viewModel::setTopicVisible,
+        onTopicOrder = viewModel::setTopicOrder,
+        onResetTopicOrder = viewModel::resetTopicOrder,
+        onReaderScale = viewModel::setReaderTextScale,
         onNotificationsToggle = { enabled ->
             viewModel.setNotificationsEnabled(enabled)
             if (enabled && !status.canNotify) requestNotifications()
@@ -175,6 +247,26 @@ fun SettingsScreen(
         onRemoveToken = { dialog = SettingsDialog.REMOVE_TOKEN },
     )
 
+    val updateActions = UpdateCardActions(
+        onCheck = updateViewModel::check,
+        onDownload = updateViewModel::downloadAndInstall,
+        onCancel = updateViewModel::cancel,
+        onInstall = { ready -> updateViewModel.install(ready.release, ready.apk) },
+        onAllowInstall = {
+            if (!updateViewModel.openInstallPermission()) {
+                scope.launch { snackbar.showSnackbar("Die Einstellung ließ sich nicht öffnen.") }
+            }
+        },
+        onDismissError = updateViewModel::dismissError,
+        onGoToToken = goToToken@{
+            val current = settings ?: return@goToToken
+            val index = blockKeys(TopicList.normalize(current.topicOrder)).indexOf(Block.SOURCE_HEADER)
+            scope.launch {
+                if (reduceMotion) listState.scrollToItem(index) else listState.animateScrollToItem(index)
+            }
+        },
+    )
+
     Box(modifier.fillMaxSize()) {
         Column(
             Modifier
@@ -198,7 +290,12 @@ fun SettingsScreen(
                     status = status,
                     links = links,
                     actions = actions,
+                    update = update,
+                    updateActions = updateActions,
+                    listState = listState,
+                    reduceMotion = reduceMotion,
                     bottomPadding = bottomContentInset(contentPadding),
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -265,6 +362,10 @@ fun SettingsScreen(
 private class SettingsActions(
     val onThemeMode: (ThemeMode) -> Unit,
     val onAccent: (AccentId) -> Unit,
+    val onTopicVisible: (id: String, visible: Boolean) -> Unit,
+    val onTopicOrder: (List<String>) -> Unit,
+    val onResetTopicOrder: () -> Unit,
+    val onReaderScale: (Float) -> Unit,
     val onNotificationsToggle: (Boolean) -> Unit,
     val onEditTime: () -> Unit,
     val onFixNotifications: () -> Unit,
@@ -284,30 +385,129 @@ private fun SettingsContent(
     status: SystemStatus,
     links: LinkActions,
     actions: SettingsActions,
+    update: UpdatePanelState,
+    updateActions: UpdateCardActions,
+    listState: LazyListState,
+    reduceMotion: Boolean,
     bottomPadding: Dp,
+    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = Modifier
+    val haptics = LocalHapticFeedback.current
+    val storedOrder = remember(settings.topicOrder) { TopicList.normalize(settings.topicOrder) }
+    // Local copy so a drag can reorder rows before anything is written; follows the store.
+    var order by remember { mutableStateOf(storedOrder) }
+    val reorder = rememberReorderState(
+        listState = listState,
+        reduceMotion = reduceMotion,
+        isReorderable = ::isTopicKey,
+        canMove = { key, down ->
+            val index = order.indexOf((key as String).removePrefix(TOPIC_KEY_PREFIX))
+            if (down) index in 0 until order.lastIndex else index > 0
+        },
+        onMove = { from, to ->
+            val fromIndex = order.indexOf((from as String).removePrefix(TOPIC_KEY_PREFIX))
+            val toIndex = order.indexOf((to as String).removePrefix(TOPIC_KEY_PREFIX))
+            if (fromIndex >= 0 && toIndex >= 0) order = TopicList.move(order, fromIndex, toIndex)
+        },
+        onSwap = { haptics.performHapticFeedback(HapticFeedbackType.SegmentTick) },
+        onDrop = {
+            haptics.performHapticFeedback(HapticFeedbackType.GestureEnd)
+            if (order != storedOrder) actions.onTopicOrder(order)
+        },
+    )
+    LaunchedEffect(storedOrder) {
+        if (!reorder.isDragging) order = storedOrder
+    }
+
+    val hidden = settings.hiddenTopics
+    val keys = blockKeys(order)
+    val placement = if (reduceMotion) {
+        null
+    } else {
+        spring(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = IntOffset.VisibilityThreshold)
+    }
+
+    LazyColumn(
+        state = listState,
+        modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .horizontalSafeDrawing()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = bottomPadding + 24.dp),
+            .horizontalSafeDrawing(),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = bottomPadding + 24.dp),
     ) {
-        SettingsSectionHeader("Darstellung", top = 4.dp)
-        AppearanceCard(settings, actions)
-
-        SettingsSectionHeader("Benachrichtigung")
-        NotificationCard(settings, status, actions)
-
-        SettingsSectionHeader("Orte")
-        PlacesCard(settings, actions)
-
-        SettingsSectionHeader("News-Quelle")
-        NewsSourceCard(settings, actions)
-
-        SettingsSectionHeader("Über")
-        AboutCard(links)
+        items(keys, key = { it }, contentType = { if (isTopicKey(it)) "topic" else it }) { key ->
+            when (key) {
+                Block.APPEARANCE_HEADER -> SettingsSectionHeader("Darstellung", top = 4.dp)
+                Block.APPEARANCE -> AppearanceCard(settings, actions)
+                Block.TOPICS_HEADER -> SettingsSectionHeader("Themen")
+                Block.TOPICS_INTRO -> TopicsIntro()
+                Block.TOPICS_FOOTER -> TopicsFooter(
+                    visibleCount = TopicList.visibleCount(order, hidden),
+                    total = order.size,
+                    isDefaultOrder = TopicList.isDefaultOrder(order),
+                    onReset = actions.onResetTopicOrder,
+                )
+                Block.READING_HEADER -> SettingsSectionHeader("Lesen")
+                Block.READING -> ReadingCard(scale = settings.readerTextScale, onCommit = actions.onReaderScale)
+                Block.NOTIFICATION_HEADER -> SettingsSectionHeader("Benachrichtigung")
+                Block.NOTIFICATION -> NotificationCard(settings, status, actions)
+                Block.PLACES_HEADER -> SettingsSectionHeader("Orte")
+                Block.PLACES -> PlacesCard(settings, actions)
+                Block.SOURCE_HEADER -> SettingsSectionHeader("News-Quelle")
+                Block.SOURCE -> NewsSourceCard(settings, actions)
+                Block.UPDATE_HEADER -> SettingsSectionHeader("App-Update")
+                Block.UPDATE -> UpdateCard(
+                    state = update,
+                    hasToken = settings.hasToken,
+                    reduceMotion = reduceMotion,
+                    actions = updateActions,
+                )
+                Block.ABOUT_HEADER -> SettingsSectionHeader("Über")
+                Block.ABOUT -> AboutCard(links)
+                else -> {
+                    val id = key.removePrefix(TOPIC_KEY_PREFIX)
+                    val topic = Topics.byId(id) ?: return@items
+                    val index = order.indexOf(id)
+                    val lifted = reorder.draggingKey == key
+                    val moving = lifted || reorder.settlingKey == key
+                    val moveBy: (Int) -> Unit = { delta ->
+                        val moved = TopicList.moveBy(order, id, delta)
+                        if (moved != order) {
+                            order = moved
+                            actions.onTopicOrder(moved)
+                        }
+                    }
+                    TopicRow(
+                        topic = topic,
+                        visible = id !in hidden,
+                        canHide = TopicList.canHide(order, hidden, id),
+                        position = tilePosition(index, order.size),
+                        lifted = lifted,
+                        actions = TopicRowActions(
+                            onVisibleChange = { visible -> actions.onTopicVisible(id, visible) },
+                            onMoveUp = if (index > 0) ({ moveBy(-1) }) else null,
+                            onMoveDown = if (index < order.lastIndex) ({ moveBy(1) }) else null,
+                            onDragStart = {
+                                reorder.onDragStart(key)
+                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            },
+                            onDrag = reorder::onDrag,
+                            onDragEnd = reorder::onDragEnd,
+                        ),
+                        modifier = Modifier
+                            .padding(bottom = 2.dp)
+                            .then(
+                                if (moving) {
+                                    Modifier
+                                        .zIndex(1f)
+                                        .graphicsLayer { translationY = reorder.offsetOf(key) }
+                                } else {
+                                    Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = placement)
+                                },
+                            ),
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -501,7 +701,7 @@ private fun NewsSourceCard(settings: AppSettings, actions: SettingsActions) {
             subtitle = if (settings.hasToken) "Token gespeichert ✓" else "Kein Token – Demo-Modus",
         )
         Text(
-            text = "Die News kommen jeden Morgen aus deinem privaten Repo " +
+            text = "Die News und App-Updates kommen aus deinem privaten Repo " +
                 "${BuildConfig.BRIEF_OWNER}/${BuildConfig.BRIEF_REPO}.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -529,17 +729,20 @@ private fun NewsSourceCard(settings: AppSettings, actions: SettingsActions) {
 private fun AboutCard(links: LinkActions) {
     SettingsCard {
         SettingsRow(
-            icon = Icons.Rounded.Info,
-            title = "Version",
-            subtitle = BuildConfig.VERSION_NAME,
-        )
-        SettingsDivider()
-        SettingsRow(
             icon = Icons.Rounded.Cloud,
             title = "Wetterdaten",
             subtitle = "Open-Meteo.com (CC BY 4.0)",
             onClickLabel = "Website öffnen",
             onClick = { links.open(Links.OPEN_METEO) },
+            trailing = { ExternalIcon() },
+        )
+        SettingsDivider()
+        SettingsRow(
+            icon = Icons.Rounded.Image,
+            title = "Artikelbilder",
+            subtitle = "Wikimedia Commons – freie Lizenzen, Urheber steht am Bild",
+            onClickLabel = "Website öffnen",
+            onClick = { links.open(WIKIMEDIA_COMMONS) },
             trailing = { ExternalIcon() },
         )
         SettingsDivider()

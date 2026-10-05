@@ -13,6 +13,7 @@ import com.cedrickgd.morgenbriefing.data.model.AccentId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
+import com.cedrickgd.morgenbriefing.data.model.Topics
 import com.cedrickgd.morgenbriefing.util.AppSignals
 import com.cedrickgd.morgenbriefing.util.attempt
 import com.cedrickgd.morgenbriefing.util.flatten
@@ -32,8 +33,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * Settings: every change is written straight to the DataStore (the theme applies live, the
- * alarm is re-synced by [MorgenbriefingApp]). Also runs the place search and the token check.
+ * Settings: every change is written straight to the DataStore (theme and topics apply live,
+ * the alarm is re-synced by [MorgenbriefingApp]). Also runs the place search and the token
+ * check. The in-app updater has its own [UpdateViewModel].
  */
 class SettingsViewModel(private val container: AppContainer) : ViewModel() {
 
@@ -81,6 +83,34 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
         val (s, e) = DayWindow.normalize(start, end)
         edit { it.copy(dayStartHour = s, dayEndHour = e) }
     }
+
+    /**
+     * Shows or hides a topic. Hiding the last visible topic is refused with a hint — the brief
+     * would otherwise be empty.
+     */
+    fun setTopicVisible(id: String, visible: Boolean) {
+        viewModelScope.launch {
+            var refused = false
+            val saved = persist { current ->
+                val order = TopicList.normalize(current.topicOrder)
+                val hidden = TopicList.setVisible(order, current.hiddenTopics, id, visible)
+                refused = !visible && id in order && id !in hidden
+                current.copy(hiddenTopics = hidden)
+            }
+            if (saved && refused) _messages.send("Mindestens ein Thema bleibt sichtbar.")
+        }
+    }
+
+    /** Stores a new topic order (after a drag or a move action). */
+    fun setTopicOrder(order: List<String>) = edit { it.copy(topicOrder = TopicList.normalize(order)) }
+
+    /** "Reihenfolge zurücksetzen": catalogue order; hidden topics stay hidden. */
+    fun resetTopicOrder() = edit(successMessage = "Reihenfolge zurückgesetzt.") {
+        it.copy(topicOrder = Topics.DEFAULT_ORDER)
+    }
+
+    /** Article text size, rounded to 5 % steps within 85–140 %. */
+    fun setReaderTextScale(scale: Float) = edit { it.copy(readerTextScale = ReaderScale.normalize(scale)) }
 
     /** Debounced (350 ms) geocoding search; queries shorter than 2 characters clear the list. */
     fun onPlaceQueryChange(query: String) {
@@ -160,15 +190,18 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
 
     private fun edit(successMessage: String? = null, transform: (AppSettings) -> AppSettings) {
         viewModelScope.launch {
-            val result = attempt { container.settings.update(transform) }
-            when {
-                result.isFailure -> {
-                    Log.w(TAG, "Settings update failed", result.exceptionOrNull())
-                    _messages.send("Das konnte gerade nicht gespeichert werden.")
-                }
-                successMessage != null -> _messages.send(successMessage)
-            }
+            if (persist(transform) && successMessage != null) _messages.send(successMessage)
         }
+    }
+
+    /** Writes [transform] atomically; a failure becomes a snackbar. Returns whether it was saved. */
+    private suspend fun persist(transform: (AppSettings) -> AppSettings): Boolean {
+        val result = attempt { container.settings.update(transform) }
+        if (result.isFailure) {
+            Log.w(TAG, "Settings update failed", result.exceptionOrNull())
+            _messages.send("Das konnte gerade nicht gespeichert werden.")
+        }
+        return result.isSuccess
     }
 
     companion object {
