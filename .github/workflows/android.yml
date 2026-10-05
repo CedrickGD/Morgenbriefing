@@ -1,0 +1,143 @@
+name: Android
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Tests & Debug-APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Gradle-Wrapper ausführbar machen
+        run: chmod +x gradlew
+
+      - name: Unit-Tests und Debug-Build
+        run: ./gradlew testDebugUnitTest assembleDebug --no-daemon --stacktrace
+
+      - name: Debug-APK hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: morgenbriefing-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Testberichte hochladen
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: |
+            app/build/reports/tests/
+            app/build/test-results/
+          if-no-files-found: ignore
+
+  release:
+    name: Release-APK
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Gradle-Wrapper ausführbar machen
+        run: chmod +x gradlew
+
+      # The keystore lives outside the workspace; app/build.gradle.kts resolves MB_KEYSTORE_FILE
+      # with rootProject.file(), which keeps absolute paths as they are.
+      - name: Keystore bereitstellen
+        id: keystore
+        env:
+          MB_KEYSTORE_BASE64: ${{ secrets.MB_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$MB_KEYSTORE_BASE64" ]; then
+            keystore="$RUNNER_TEMP/morgenbriefing-release.jks"
+            printf '%s' "$MB_KEYSTORE_BASE64" | base64 --decode --ignore-garbage > "$keystore"
+            echo "file=$keystore" >> "$GITHUB_OUTPUT"
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning title=Unsigniertes Release::Secret MB_KEYSTORE_BASE64 fehlt – die Release-APK wird mit einem frischen Debug-Schlüssel signiert. Sie lässt sich nicht als Update über eine anders signierte Version installieren. Siehe README → Release."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Release bauen
+        env:
+          SIGNED: ${{ steps.keystore.outputs.signed }}
+          MB_KEYSTORE_FILE: ${{ steps.keystore.outputs.file }}
+          MB_KEYSTORE_PASSWORD: ${{ secrets.MB_KEYSTORE_PASSWORD }}
+          MB_KEYSTORE_ALIAS: ${{ secrets.MB_KEYSTORE_ALIAS }}
+          MB_KEYSTORE_KEY_PASSWORD: ${{ secrets.MB_KEYSTORE_KEY_PASSWORD }}
+        run: |
+          if [ "$SIGNED" = "true" ]; then
+            ./gradlew assembleRelease --no-daemon --stacktrace \
+              -PMB_KEYSTORE_FILE="$MB_KEYSTORE_FILE" \
+              -PMB_KEYSTORE_PASSWORD="$MB_KEYSTORE_PASSWORD" \
+              -PMB_KEYSTORE_ALIAS="$MB_KEYSTORE_ALIAS" \
+              -PMB_KEYSTORE_KEY_PASSWORD="$MB_KEYSTORE_KEY_PASSWORD"
+          else
+            ./gradlew assembleRelease --no-daemon --stacktrace
+          fi
+
+      - name: APK umbenennen
+        id: apk
+        run: |
+          apk="$(find app/build/outputs/apk/release -name '*.apk' | head -n 1)"
+          if [ -z "$apk" ]; then
+            echo "::error::Keine Release-APK gefunden."
+            exit 1
+          fi
+          target="Morgenbriefing-${GITHUB_REF_NAME}.apk"
+          mv "$apk" "$target"
+          echo "path=$target" >> "$GITHUB_OUTPUT"
+
+      - name: Keystore entfernen
+        if: always()
+        run: rm -f "$RUNNER_TEMP/morgenbriefing-release.jks"
+
+      - name: GitHub-Release veröffentlichen
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.apk.outputs.path }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          body: |
+            **Installieren:** `${{ steps.apk.outputs.path }}` unten herunterladen und auf dem Handy öffnen.
+            ${{ steps.keystore.outputs.signed == 'true' && 'Mit dem Release-Schlüssel signiert – lässt sich über die vorherige Version installieren.' || 'Achtung: ohne Release-Schlüssel gebaut (Debug-Signatur): vorher die alte Version deinstallieren.' }}
