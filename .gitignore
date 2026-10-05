@@ -1,0 +1,25 @@
+# Gradle / Android
+.gradle/
+build/
+/local.properties
+/captures/
+*.apk
+*.aab
+*.ap_
+*.dex
+.externalNativeBuild/
+.cxx/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Signing — never commit keys or passwords
+keystore.properties
+*.jks
+*.keystore
+
+# Local routine scratch output
+routine/out/

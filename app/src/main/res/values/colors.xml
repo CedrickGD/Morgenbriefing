@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="window_background">#FCFCFB</color>
+    <color name="splash_background">#FCFCFB</color>
+    <color name="brand">#C6613F</color>
+    <color name="icon_background_top">#F6B26B</color>
+    <color name="icon_background_bottom">#C6613F</color>
+</resources>

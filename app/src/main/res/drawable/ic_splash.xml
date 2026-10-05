@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Splash icon (Android 12+ shows it inside a circle; older versions via core-splashscreen). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFC6613F"
+        android:pathData="M38,62 A16,16 0 0,1 70,62 Z" />
+    <path
+        android:strokeColor="#FFE58A57"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M54,41 L54,35 M68.1,47.9 L72.3,43.7 M39.9,47.9 L35.7,43.7 M74.7,58.3 L80.6,57.3 M33.3,58.3 L27.4,57.3" />
+    <path
+        android:strokeColor="#FFC6613F"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:pathData="M30,64 L78,64" />
+    <path
+        android:strokeColor="#99C6613F"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:pathData="M38,71.5 L70,71.5 M43,78 L65,78" />
+</vector>

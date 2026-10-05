@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The GitHub token is encrypted with an Android Keystore key that does not survive a
+     restore, so the settings store is excluded; briefs and weather history are fine. -->
+<full-backup-content>
+    <exclude domain="file" path="datastore/settings.preferences_pb" />
+</full-backup-content>

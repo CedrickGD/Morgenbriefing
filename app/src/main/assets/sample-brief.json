@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "date": "2026-10-05",
+  "generatedAt": "2026-10-05T17:30:00+02:00",
+  "teaser": "Geheimdienste warnen vor Russland, der Euro rutscht ab und die Telekom setzt voll auf KI.",
+  "sections": [
+    {
+      "id": "ki",
+      "title": "KI & Tech",
+      "emoji": "🤖",
+      "items": [
+        {
+          "headline": "Trump startet KI-Taskforce, Tech-Riesen unterschreiben Sicherheitsdeal",
+          "summary": "Eine neue „Super Intelligence Force“ soll binnen 120 Tagen Chancen und Risiken von KI bewerten. OpenAI, Anthropic, Google, Meta, Nvidia & Co. haben dazu eine freiwillige Sicherheitszusage unterschrieben – Selbstverpflichtung statt Gesetz.",
+          "source": "TechCrunch",
+          "url": "https://techcrunch.com/2026/10/04/trump-unveils-his-new-super-intelligence-force/",
+          "publishedAt": "2026-10-04T17:15:00+02:00",
+          "importance": 8
+        },
+        {
+          "headline": "Telekom will mit KI Milliarden sparen",
+          "summary": "Bis 2027 sollen KI-Tools rund 1,1 Mrd. € Kosten drücken, bis 2030 sogar 2,5 Mrd. Der KI-Umsatz soll sich bis dahin mehr als verdreifachen.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/technik/it-internet/telekom-hoettges-verspricht-investoren-milliarden-effekt-durch-ki/100259677.html",
+          "publishedAt": "2026-10-05T14:55:00+02:00",
+          "importance": 7
+        },
+        {
+          "headline": "Gemini gratis bald nur noch mit Flash-Lite",
+          "summary": "Ab Freitag bekommen Gratis-Nutzer der Gemini-App nur noch Googles kleinstes Modell. Flash und Pro wandern hinter die Bezahlschranke.",
+          "source": "t3n",
+          "url": "https://t3n.de/news/google-gemini-aenderung-nutzungsbedingungen-welche-modelle-weiterhin-gratis-1766588/",
+          "publishedAt": "2026-10-05T11:30:00+02:00",
+          "importance": 6
+        }
+      ]
+    },
+    {
+      "id": "wirtschaft",
+      "title": "Wirtschaft & Märkte",
+      "emoji": "📈",
+      "items": [
+        {
+          "headline": "Euro rutscht auf 17-Monats-Tief",
+          "summary": "Zeitweise nur noch 1,116 Dollar: Frankreichs Schulden und die politische Hängepartie dort drücken den Kurs. Urlaub und Importe außerhalb der Eurozone werden teurer.",
+          "source": "Berliner Zeitung",
+          "url": "https://www.berliner-zeitung.de/article/euro-faellt-auf-17-monatstief-frankreichs-schulden-belasten-den-kurs-10459822",
+          "publishedAt": "2026-10-05T10:30:00+02:00",
+          "importance": 8
+        },
+        {
+          "headline": "Dax hält die 25.000er-Marke",
+          "summary": "Leichtes Plus zum Wochenstart, aber noch rund 5 % unter dem Rekord vom August. Steigende Anleiherenditen und teure Energie bremsen.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dax-aktuell-dax-haelt-25.000punkte-marke-euro-faellt-deutlich/100259668.html",
+          "publishedAt": "2026-10-05T16:47:00+02:00",
+          "importance": 7
+        },
+        {
+          "headline": "OPEC+ dreht den Ölhahn nicht weiter auf",
+          "summary": "Keine höhere Förderung im November. Mit Brent um 101 Dollar je Barrel bleiben Sprit und Heizöl teuer.",
+          "source": "The National",
+          "url": "https://www.thenationalnews.com/business/energy/2026/10/04/opec-keeps-oil-output-targets-unchanged-for-november/",
+          "publishedAt": "2026-10-04T12:00:00+02:00",
+          "importance": 7
+        }
+      ]
+    },
+    {
+      "id": "politik",
+      "title": "Politik",
+      "emoji": "🏛️",
+      "items": [
+        {
+          "headline": "Geheimdienste nennen Russland größte Bedrohung",
+          "summary": "BND, Verfassungsschutz und MAD warnten im Bundestag offen vor einem Konflikt. Die Spur des versuchten Drohnenanschlags am Flughafen Leipzig/Halle führe „sehr klar nach Russland“.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/politik/deutschland/wir-werden-jetzt-angegriffen-deutsche-geheimdienste-warnen-vor-russland/100257696.html",
+          "publishedAt": "2026-10-05T11:36:00+02:00",
+          "importance": 9
+        },
+        {
+          "headline": "Merz sagt Kiew Milliardenhilfe zu",
+          "summary": "1 Mrd. € für weitreichende Waffen, 350 Mio. für die Energieversorgung vor dem Winter und Tausende Abfangdrohnen. Laut Selenskyj könnten bis Ende Oktober Dreiergespräche mit USA und Russland starten.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/ausland/merz-kiew-ukraine-krieg-russland-putin-100.html",
+          "publishedAt": "2026-10-04T18:04:00+02:00",
+          "importance": 8
+        },
+        {
+          "headline": "AfD erstmals bei 30 Prozent",
+          "summary": "In der Insa-Umfrage fällt die Union auf 18 %. Merz mahnt die Koalition, die Rentenreform bis Jahresende durchzuziehen.",
+          "source": "Handelsblatt (dpa)",
+          "url": "https://www.handelsblatt.com/politik/deutschland/zustand-der-koalition-merz-wir-muessen-in-der-regierung-zusammenbleiben/100259623.html",
+          "publishedAt": "2026-10-05T00:25:00+02:00",
+          "importance": 8
+        },
+        {
+          "headline": "Spanien wählt am 29. November neu",
+          "summary": "Sánchez' Minderheitsregierung ist gescheitert, Umfragen sehen PP und Vox klar vorn – noch mehr Unsicherheit für die Eurozone.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/politik/international/regierungskrise-sanchez-ruft-vorzeitige-neuwahlen-in-spanien-aus/100259595.html",
+          "publishedAt": "2026-10-05T13:37:00+02:00",
+          "importance": 7
+        }
+      ]
+    }
+  ]
+}

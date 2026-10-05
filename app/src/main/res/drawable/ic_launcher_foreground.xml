@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rising sun over the horizon with two "headline" lines below it. 108dp canvas, art inside the 66dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- sun -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M38,62 A16,16 0 0,1 70,62 Z" />
+    <!-- rays -->
+    <path
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M54,41 L54,35 M68.1,47.9 L72.3,43.7 M39.9,47.9 L35.7,43.7 M74.7,58.3 L80.6,57.3 M33.3,58.3 L27.4,57.3" />
+    <!-- horizon -->
+    <path
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:pathData="M30,64 L78,64" />
+    <!-- headlines -->
+    <path
+        android:strokeColor="#CCFFFFFF"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:pathData="M38,71.5 L70,71.5 M43,78 L65,78" />
+</vector>
