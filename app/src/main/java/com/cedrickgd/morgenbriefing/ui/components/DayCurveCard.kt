@@ -3,6 +3,7 @@ package com.cedrickgd.morgenbriefing.ui.components
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,6 +54,7 @@ import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import com.cedrickgd.morgenbriefing.domain.Condition
 import com.cedrickgd.morgenbriefing.domain.Fmt
 import com.cedrickgd.morgenbriefing.domain.WeatherInsights
+import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
 import com.cedrickgd.morgenbriefing.ui.theme.OverlineLetterSpacing
 import kotlinx.coroutines.delay
 import java.time.LocalDate
@@ -73,7 +74,7 @@ private const val POP_LABEL_FROM = 30
 private const val MIN_TEMP_RANGE = 6.0
 
 /**
- * "Leipzig · 10–18 Uhr": hand-drawn temperature curve + rain bars + day summary.
+ * "Leipzig · 10–18 Uhr": hand-drawn temperature curve + rain bars + day summary, on a glass card.
  *
  * The chart is one Canvas: a smooth, non-overshooting temperature line with a soft fill, hour
  * dots with labels, condition emojis, rain-probability bars and a dashed "jetzt" marker while
@@ -86,13 +87,11 @@ fun DayCurveCard(snapshot: WeatherSnapshot, modifier: Modifier = Modifier) {
     val typography = MaterialTheme.typography
     val hours = remember(day.hours) { day.hours.sortedBy { it.time } }
 
-    Surface(
+    GlassCard(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        color = colors.surfaceContainerLow,
-        contentColor = colors.onSurface,
+        contentPadding = PaddingValues(top = 20.dp, bottom = 20.dp),
     ) {
-        Column(Modifier.padding(top = 18.dp, bottom = 20.dp)) {
+        Column {
             Row(
                 modifier = Modifier.padding(horizontal = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -163,7 +162,8 @@ private fun DayCurveChart(day: DayWeather, hours: List<HourPoint>, modifier: Mod
     val typography = MaterialTheme.typography
     val dark = colors.background.luminance() < 0.5f
     val primary = colors.primary
-    val cardColor = colors.surfaceContainerLow
+    // Hollow dots are filled with the glass tint so the line seems to pass behind them.
+    val cardColor = colors.surface
     val rain = if (dark) {
         RainColors(bar = Color(0xFF6EA0F0).copy(alpha = 0.55f), text = Color(0xFF9CC0FA))
     } else {

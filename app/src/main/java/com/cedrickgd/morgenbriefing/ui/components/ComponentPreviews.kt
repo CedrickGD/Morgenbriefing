@@ -22,7 +22,11 @@ import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 import com.cedrickgd.morgenbriefing.data.model.Topics
 import com.cedrickgd.morgenbriefing.domain.Condition
 import com.cedrickgd.morgenbriefing.ui.news.CoverArt
-import com.cedrickgd.morgenbriefing.ui.news.TopicSection
+import com.cedrickgd.morgenbriefing.ui.news.FeedActions
+import com.cedrickgd.morgenbriefing.ui.news.FeedArticle
+import com.cedrickgd.morgenbriefing.ui.news.FeedEntry
+import com.cedrickgd.morgenbriefing.ui.news.FeedSectionHeader
+import com.cedrickgd.morgenbriefing.ui.news.MoreArticles
 import com.cedrickgd.morgenbriefing.ui.news.sectionUi
 import com.cedrickgd.morgenbriefing.ui.theme.MorgenbriefingTheme
 
@@ -115,18 +119,43 @@ private fun ClothingAndWarningsPreview() {
 @Composable
 private fun NewsPreview() {
     val section = sectionUi(index = 0, section = PreviewData.section, schema = PreviewData.brief.schema)
+    val actions = FeedActions(
+        onOpen = {},
+        onListen = {},
+        onStopListening = {},
+        onShare = {},
+        onShowSources = {},
+        onCopyLink = {},
+        onHideTopic = {},
+        onAsk = {},
+    )
     PreviewSurface {
         Column {
-            NewsTeaser(teaser = PreviewData.TEASER, generatedAt = PreviewData.GENERATED_AT, stale = true)
+            NewsTeaser(teaser = PreviewData.TEASER, generatedAt = PreviewData.GENERATED_AT, stale = true, meta = "8 Meldungen · 3 Themen")
+            Spacer(Modifier.height(16.dp))
+            AskBriefingEntry(onClick = {})
             Spacer(Modifier.height(24.dp))
-            TopicSection(
-                section = section,
-                expanded = true,
+            FeedSectionHeader(topic = section.topic, count = section.count)
+            Spacer(Modifier.height(16.dp))
+            FeedEntry(
+                article = FeedArticle(section.top.first(), section.topic, PreviewData.brief.date),
                 now = PreviewData.now,
-                onToggle = {},
-                onOpen = {},
-                onShare = {},
+                listening = false,
+                actions = actions,
             )
+            if (section.hasMore) {
+                Spacer(Modifier.height(16.dp))
+                MoreArticles(
+                    section = section,
+                    date = PreviewData.brief.date,
+                    expanded = true,
+                    now = PreviewData.now,
+                    onToggle = {},
+                    onOpen = {},
+                )
+            }
+            Spacer(Modifier.height(16.dp))
+            PageFooter(line = "Stand 05:07 · Wetter: Open-Meteo")
         }
     }
 }

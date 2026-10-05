@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.map
 import java.time.ZonedDateTime
 import kotlin.math.ceil
 
-/** How many stories the "Heute wichtig" pager shows. */
-internal const val TOP_STORY_COUNT = 5
+/** How many stories the "Top" chip of the feed shows. */
+internal const val TOP_STORY_COUNT = 10
 
 /** Reading speed used to estimate the reading time of articles without `readingMinutes`. */
 private const val WORDS_PER_MINUTE = 200.0
@@ -60,7 +60,7 @@ data class SectionUi(
     fun isExpanded(expandedIds: Set<String>): Boolean = hasMore && id in expandedIds
 }
 
-/** A story for the "Heute wichtig" pager, with the topic it belongs to. */
+/** One of the most important stories of a brief ("Top" chip), with the topic it belongs to. */
 @Immutable
 data class TopStory(val item: NewsItem, val topic: Topic)
 
@@ -68,6 +68,7 @@ data class TopStory(val item: NewsItem, val topic: Topic)
 @Immutable
 data class NewsFeed(
     val sections: List<SectionUi>,
+    /** The most important stories across the visible topics, importance descending. */
     val topStories: List<TopStory>,
     /** The brief has news, but the user switched off every topic in it. */
     val allHidden: Boolean,
@@ -107,12 +108,10 @@ internal fun splitTiers(items: List<NewsItem>, schema: Int): Pair<List<NewsItem>
 
 /**
  * The [count] most important stories across the visible [sections]: importance descending,
- * ties in brief order. Empty when the brief has no more stories than that — the pager would
- * only repeat the whole brief.
+ * ties in the user's topic order (and brief order within a topic).
  */
 internal fun topStories(sections: List<SectionUi>, count: Int = TOP_STORY_COUNT): List<TopStory> {
     val all = sections.flatMap { section -> (section.top + section.more).map { TopStory(it, section.topic) } }
-    if (all.size <= count) return emptyList()
     return all.withIndex()
         .sortedWith(compareByDescending<IndexedValue<TopStory>> { it.value.item.importance }.thenBy { it.index })
         .take(count)
@@ -198,6 +197,13 @@ internal fun articleMeta(item: NewsItem, now: ZonedDateTime): String {
         Fmt.relative(item.publishedAt, now)?.let(::add)
     }.joinToString(" · ")
 }
+
+/** Meta line under a feed entry: "vor 3 Std. · Handelsblatt" — unknown parts are left out. */
+internal fun feedMeta(item: NewsItem, now: ZonedDateTime): String = buildList {
+    Fmt.relative(item.publishedAt, now)?.let(::add)
+    val primary = item.source.trim().ifEmpty { sourcesOf(item).firstOrNull()?.let(::sourceLabel).orEmpty() }
+    if (primary.isNotEmpty()) add(primary)
+}.joinToString(" · ")
 
 /** Meta line in the reader: "4 Min. Lesezeit · vor 3 Std. · 3 Quellen". */
 internal fun readerMeta(item: NewsItem, now: ZonedDateTime): String {

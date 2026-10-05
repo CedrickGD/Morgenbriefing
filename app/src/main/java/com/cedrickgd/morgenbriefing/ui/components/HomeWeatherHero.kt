@@ -8,9 +8,9 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,8 +33,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.data.model.CurrentConditions
@@ -44,6 +43,7 @@ import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import com.cedrickgd.morgenbriefing.domain.Condition
 import com.cedrickgd.morgenbriefing.domain.Fmt
 import com.cedrickgd.morgenbriefing.domain.WeatherInsights
+import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
 import com.cedrickgd.morgenbriefing.ui.theme.OverlineLetterSpacing
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -58,10 +58,10 @@ private const val GUST_NOTE_KMH = 40.0
 private const val LOW_VISIBILITY_M = 5_000.0
 
 /**
- * "Vor der Tür · Bad Düben": big temperature, feels-like, condition, chips, home note.
+ * "Vor der Tür · Bad Düben": big serif temperature, feels-like, condition, chips, home note.
  *
- * Sits on top of the [WeatherBackdrop], so it lives on a translucent "glass" surface with a
- * hairline border — text contrast never depends on the sky behind it.
+ * A frosted glass card over the sky (docs/DESIGN.md §7) — the tint keeps text contrast
+ * independent of the sky behind it, with real blur on Android 12+ and a denser frost below.
  */
 @Composable
 fun HomeWeatherHero(snapshot: WeatherSnapshot, modifier: Modifier = Modifier) {
@@ -71,14 +71,11 @@ fun HomeWeatherHero(snapshot: WeatherSnapshot, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
-    Surface(
+    GlassCard(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.extraLarge,
-        color = colors.surface.copy(alpha = 0.8f),
-        contentColor = colors.onSurface,
-        border = BorderStroke(Dp.Hairline, colors.outlineVariant),
+        contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 20.dp, bottom = 20.dp),
     ) {
-        Column(Modifier.padding(start = 22.dp, end = 22.dp, top = 18.dp, bottom = 20.dp)) {
+        Column {
             Text(
                 text = heroLabel(home),
                 style = typography.labelMedium.copy(letterSpacing = OverlineLetterSpacing),
@@ -92,10 +89,11 @@ fun HomeWeatherHero(snapshot: WeatherSnapshot, modifier: Modifier = Modifier) {
                     CountUpTemperature(
                         target = current.temp,
                         style = TextStyle(
-                            fontSize = 76.sp,
-                            lineHeight = 84.sp,
-                            fontWeight = FontWeight.Light,
-                            letterSpacing = (-2).sp,
+                            fontFamily = FontFamily.Serif,
+                            fontSize = 72.sp,
+                            lineHeight = 80.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = (-1.5).sp,
                         ),
                         modifier = Modifier.weight(1f),
                     )
@@ -117,7 +115,7 @@ fun HomeWeatherHero(snapshot: WeatherSnapshot, modifier: Modifier = Modifier) {
                     Pill(
                         text = chip.text,
                         emoji = chip.emoji,
-                        container = colors.surfaceContainerHigh.copy(alpha = 0.85f),
+                        container = colors.onSurface.copy(alpha = 0.07f),
                     )
                 }
             }

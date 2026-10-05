@@ -10,9 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,10 +24,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.domain.WarningLevel
 import com.cedrickgd.morgenbriefing.domain.WeatherWarning
+import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
+import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
+import com.cedrickgd.morgenbriefing.ui.glass.glass
 
 /**
- * Stacked, rounded weather hints colored by severity (info → secondary, caution → tertiary,
- * severe → error container). Renders nothing for an empty list.
+ * Stacked weather hints as tinted glass banners (docs/DESIGN.md §7), colored by severity
+ * (info → secondary, caution → tertiary, severe → error container). Renders nothing for an
+ * empty list.
  */
 @Composable
 fun WarningBanner(warnings: List<WeatherWarning>, modifier: Modifier = Modifier) {
@@ -52,16 +57,13 @@ private fun WarningRow(warning: WeatherWarning) {
         WarningLevel.CAUTION -> colors.tertiaryContainer to colors.onTertiaryContainer
         WarningLevel.SEVERE -> colors.errorContainer to colors.onErrorContainer
     }
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics(mergeDescendants = true) { },
-        shape = MaterialTheme.shapes.large,
-        color = container,
-        contentColor = content,
-    ) {
+    CompositionLocalProvider(LocalContentColor provides content) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .glass(shape = GlassShapes.tile, level = GlassLevel.Regular, tint = container)
+                .semantics(mergeDescendants = true) { }
+                .padding(horizontal = 18.dp, vertical = 16.dp),
             verticalAlignment = Alignment.Top,
         ) {
             if (warning.emoji.isNotBlank()) {
