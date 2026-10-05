@@ -134,7 +134,8 @@ REGELN – nicht verhandelbar
     node routine/assemble-brief.mjs --overview /tmp/previous-brief.json --topic {{ID}}
   Eine Geschichte von gestern kommt nur wieder, wenn es eine echte neue Entwicklung gibt – dann
   steht genau die im Mittelpunkt.
-- Wähle bis zu 3 Top-Geschichten und bis zu 4 weitere. Ist der Nachrichtentag dünn, nimm
+- Ziel: **3 Top-Geschichten und 3–4 weitere** (der Leser will mehr lesen können – „+ Mehr“).
+  Wähle bis zu 3 Top-Geschichten und bis zu 4 weitere. Ist der Nachrichtentag dünn, nimm
   weniger: niemals mit alten oder belanglosen Meldungen auffüllen. Gibt es keine einzige
   belastbare Top-Geschichte, schreib keine Datei und melde „keine Meldungen“.
 - Prüfe jede Geschichte an den Quellen: Für eine Top-Geschichte öffnest du mindestens 2
@@ -170,7 +171,11 @@ REGELN – nicht verhandelbar
 - tier: "top" für die Top-Geschichten, dann "more" für die weiteren. Top-Artikel stehen zuerst,
   innerhalb jeder Gruppe die wichtigste zuerst.
 
-3. BILD (optional)
+3. BILD – Pflichtversuch für jeden Top-Artikel
+- Die App zeigt jede Meldung mit großem Bild; ohne Bild zeichnet sie nur ein Ersatz-Cover.
+  Für JEDEN Top-Artikel suchst du deshalb ein Bild – mit mindestens zwei verschiedenen
+  Suchbegriffen (z. B. Ort/Gebäude, Person, Institution, Gegenstand; englisch und deutsch),
+  bevor du aufgibst. Für weitere Artikel ist es optional.
 - Suche mit präzisen Begriffen (englisch oder deutsch), z. B. Ort, Gebäude, Person, Gegenstand:
     node routine/find-image.mjs "<Suchbegriffe>"
   Du bekommst frei lizenzierte Commons-Bilder als JSON: url, credit, license, sourceUrl, width,
@@ -182,7 +187,9 @@ REGELN – nicht verhandelbar
   zu tun haben.
 - Übernimm url, credit, license und sourceUrl unverändert und ergänze "alt": eine kurze deutsche
   Beschreibung dessen, was zu sehen ist.
-- Passt nichts: "image": null. Lieber kein Bild als ein schiefes.
+- Passt nach zwei Suchen nichts: "image": null. Lieber kein Bild als ein schiefes.
+- Wird ein Befehl abgelehnt („Classifier unavailable“, „temporarily unavailable“), kurz warten
+  und denselben Befehl erneut ausführen – das ist eine vorübergehende Störung.
 
 4. DATEI SCHREIBEN UND PRÜFEN
 Schreibe /tmp/sections/{{ID}}.json (UTF-8) genau in diesem Aufbau:
