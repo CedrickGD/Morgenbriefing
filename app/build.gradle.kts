@@ -24,8 +24,9 @@ android {
         applicationId = "com.cedrickgd.morgenbriefing"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        // Bumped by scripts/release.ps1 (gradle.properties: MB_VERSION_CODE / MB_VERSION_NAME).
+        versionCode = (findProperty("MB_VERSION_CODE") as String?)?.toInt() ?: 1
+        versionName = (findProperty("MB_VERSION_NAME") as String?) ?: "1.0.0"
 
         // Where the cloud routine publishes the daily briefs (private repo, data branch).
         buildConfigField("String", "BRIEF_OWNER", "\"CedrickGD\"")
@@ -119,6 +120,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.okhttp)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

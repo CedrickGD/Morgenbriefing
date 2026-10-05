@@ -48,4 +48,10 @@ data class AppSettings(
     val onboardingDone: Boolean = false,
     /** `YYYY-MM-DD` of the last morning notification, to avoid duplicates. */
     val lastNotifiedDate: String? = null,
+    /** Topic ids in the user's preferred order (see [Topics]). */
+    val topicOrder: List<String> = Topics.DEFAULT_ORDER,
+    /** Topic ids the user switched off. */
+    val hiddenTopics: Set<String> = emptySet(),
+    /** Article reader text size factor, 0.85–1.4. */
+    val readerTextScale: Float = 1f,
 )

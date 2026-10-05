@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -114,7 +115,19 @@ class SettingsRepository(context: Context) {
             hasToken = !this[Keys.TOKEN].isNullOrBlank(),
             onboardingDone = this[Keys.ONBOARDING_DONE] ?: defaults.onboardingDone,
             lastNotifiedDate = this[Keys.LAST_NOTIFIED_DATE]?.takeIf { it.isNotBlank() },
+            topicOrder = topicOrderOrDefault(this[Keys.TOPIC_ORDER], defaults.topicOrder),
+            hiddenTopics = this[Keys.HIDDEN_TOPICS]
+                ?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }?.toSet()
+                ?: defaults.hiddenTopics,
+            readerTextScale = this[Keys.READER_TEXT_SCALE]?.takeIf { it in 0.85f..1.4f } ?: defaults.readerTextScale,
         )
+    }
+
+    /** Stored order first; catalogue topics added in a newer app version are appended. */
+    private fun topicOrderOrDefault(raw: String?, default: List<String>): List<String> {
+        val stored = raw?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }?.distinct().orEmpty()
+        if (stored.isEmpty()) return default
+        return stored + default.filterNot { it in stored }
     }
 
     private fun MutablePreferences.write(s: AppSettings) {
@@ -130,6 +143,9 @@ class SettingsRepository(context: Context) {
         this[Keys.ONBOARDING_DONE] = s.onboardingDone
         val last = s.lastNotifiedDate
         if (last.isNullOrBlank()) remove(Keys.LAST_NOTIFIED_DATE) else this[Keys.LAST_NOTIFIED_DATE] = last
+        this[Keys.TOPIC_ORDER] = s.topicOrder.filter { it.isNotBlank() && ',' !in it }.distinct().joinToString(",")
+        this[Keys.HIDDEN_TOPICS] = s.hiddenTopics.filter { it.isNotBlank() && ',' !in it }.sorted().joinToString(",")
+        this[Keys.READER_TEXT_SCALE] = s.readerTextScale.coerceIn(0.85f, 1.4f)
     }
 
     private inline fun <reified E : Enum<E>> enumOrDefault(name: String?, default: E): E =
@@ -158,6 +174,9 @@ class SettingsRepository(context: Context) {
         val DAY_END_HOUR = intPreferencesKey("day_end_hour")
         val ONBOARDING_DONE = booleanPreferencesKey("onboarding_done")
         val LAST_NOTIFIED_DATE = stringPreferencesKey("last_notified_date")
+        val TOPIC_ORDER = stringPreferencesKey("topic_order")
+        val HIDDEN_TOPICS = stringPreferencesKey("hidden_topics")
+        val READER_TEXT_SCALE = floatPreferencesKey("reader_text_scale")
         val TOKEN = stringPreferencesKey("gh_token_enc")
     }
 }

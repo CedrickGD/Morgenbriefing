@@ -26,7 +26,7 @@ class NewsBlockTest {
                 id = "ki",
                 title = "KI & Tech",
                 emoji = "🤖",
-                items = listOf(NewsItem("Headline", "Summary", "Quelle", "https://example.org")),
+                items = listOf(NewsItem(headline = "Headline", summary = "Summary", source = "Quelle", url = "https://example.org")),
             ),
         ),
     )
