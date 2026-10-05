@@ -1,7 +1,6 @@
 package com.cedrickgd.morgenbriefing.ui.settings
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,21 +10,19 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Key
+import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.Place
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,14 +30,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDialog
-import androidx.compose.material3.TimePickerDialogDefaults
-import androidx.compose.material3.TimePickerDisplayMode
+import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,8 +43,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
@@ -64,8 +59,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.data.model.Place
+import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
 
-/** 24-hour time picker for the notification time (dial or keyboard input). */
+/** 24-hour time picker for the notification time (dial or keyboard input) in a glass dialog. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun NotifyTimeDialog(
@@ -75,36 +71,40 @@ internal fun NotifyTimeDialog(
     onConfirm: (hour: Int, minute: Int) -> Unit,
 ) {
     val state = rememberTimePickerState(initialHour = hour, initialMinute = minute, is24Hour = true)
-    var displayMode by remember { mutableStateOf(TimePickerDisplayMode.Picker) }
+    var keyboard by remember { mutableStateOf(false) }
+    val dark = isGlassDark()
+    val dial = if (dark) Color.White.copy(alpha = 0.08f) else Color.Black.copy(alpha = 0.05f)
+    val colors = TimePickerDefaults.colors(
+        clockDialColor = dial,
+        timeSelectorUnselectedContainerColor = dial,
+        periodSelectorUnselectedContainerColor = dial,
+    )
 
-    TimePickerDialog(
+    GlassDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = "Wann soll dein Briefing kommen?",
-                style = MaterialTheme.typography.labelLarge,
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = { onConfirm(state.hour, state.minute) }) { Text("Übernehmen") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
-        },
-        modeToggleButton = {
-            TimePickerDialogDefaults.DisplayModeToggle(
-                onDisplayModeChange = {
-                    displayMode = if (displayMode == TimePickerDisplayMode.Picker) {
-                        TimePickerDisplayMode.Input
-                    } else {
-                        TimePickerDisplayMode.Picker
-                    }
-                },
-                displayMode = displayMode,
-            )
+        title = "Wann soll dein Briefing kommen?",
+        icon = Icons.Rounded.Schedule,
+        buttons = {
+            IconButton(onClick = { keyboard = !keyboard }) {
+                Icon(
+                    imageVector = if (keyboard) Icons.Rounded.Schedule else Icons.Rounded.Keyboard,
+                    contentDescription = if (keyboard) "Uhr-Ansicht" else "Uhrzeit eintippen",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            DialogButton("Abbrechen", onDismiss)
+            DialogButton("Übernehmen", { onConfirm(state.hour, state.minute) })
         },
     ) {
-        if (displayMode == TimePickerDisplayMode.Picker) TimePicker(state = state) else TimeInput(state = state)
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (keyboard) TimeInput(state = state, colors = colors) else TimePicker(state = state, colors = colors)
+        }
     }
 }
 
@@ -112,7 +112,6 @@ internal fun NotifyTimeDialog(
  * Search dialog for a place (Open-Meteo geocoding). The query is debounced in the ViewModel;
  * this only renders [search] and reports typing and the choice.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PlacePickerDialog(
     target: PlaceTarget,
@@ -124,79 +123,53 @@ internal fun PlacePickerDialog(
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    BasicAlertDialog(onDismissRequest = onDismiss) {
+    GlassDialog(
+        onDismissRequest = onDismiss,
+        title = target.title,
+        icon = Icons.Rounded.Place,
+        buttons = { DialogButton("Abbrechen", onDismiss) },
+    ) {
         // Inside the dialog's own composition, so the text field is attached when this runs.
         LaunchedEffect(focusRequester) {
             // Open the keyboard right away; harmless if the field cannot take focus yet.
             runCatching { focusRequester.requestFocus() }
         }
-        Surface(
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            tonalElevation = 6.dp,
-        ) {
-            Column(modifier = Modifier.padding(top = 24.dp, bottom = 12.dp)) {
-                Text(
-                    text = target.title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                )
-                Text(
-                    text = "Aktuell: ${current.displayLabel()}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 4.dp, bottom = 16.dp),
-                )
-                OutlinedTextField(
-                    value = search.query,
-                    onValueChange = onQueryChange,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp)
-                        .focusRequester(focusRequester),
-                    singleLine = true,
-                    placeholder = { Text("Ort suchen, z. B. Leipzig") },
-                    leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
-                    trailingIcon = {
-                        if (search.query.isNotEmpty()) {
-                            IconButton(onClick = { onQueryChange("") }) {
-                                Icon(Icons.Rounded.Close, contentDescription = "Suche leeren")
-                            }
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words,
-                        imeAction = ImeAction.Search,
-                    ),
-                )
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                        .heightIn(min = 4.dp),
-                ) {
-                    if (search.loading) {
-                        LinearProgressIndicator(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 24.dp),
-                        )
+        Text(
+            text = "Aktuell: ${current.displayLabel()}",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = 14.dp),
+        )
+        OutlinedTextField(
+            value = search.query,
+            onValueChange = onQueryChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
+            singleLine = true,
+            placeholder = { Text("Ort suchen, z. B. Leipzig") },
+            leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
+            trailingIcon = {
+                if (search.query.isNotEmpty()) {
+                    IconButton(onClick = { onQueryChange("") }) {
+                        Icon(Icons.Rounded.Close, contentDescription = "Suche leeren")
                     }
                 }
-
-                PlaceResults(search = search, onPick = onPick)
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    TextButton(onClick = onDismiss) { Text("Abbrechen") }
-                }
-            }
+            },
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Words,
+                imeAction = ImeAction.Search,
+            ),
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+                .heightIn(min = 4.dp),
+        ) {
+            if (search.loading) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
+        PlaceResults(search = search, onPick = onPick)
     }
 }
 
@@ -217,34 +190,27 @@ private fun PlaceResults(search: PlaceSearchState, onPick: (Place) -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 48.dp)
-                .padding(horizontal = 24.dp, vertical = 12.dp)
+                .padding(vertical = 12.dp)
                 .semantics { liveRegion = LiveRegionMode.Polite },
         )
         return
     }
-    LazyColumn(modifier = Modifier.heightIn(max = 280.dp)) {
-        items(search.results, key = { "${it.lat},${it.lon},${it.name}" }) { place ->
+    // The dialog body scrolls as a whole, so the (at most ten) results are a plain column.
+    Column(Modifier.padding(top = 4.dp)) {
+        search.results.forEach { place ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
                     .clickable(role = Role.Button, onClickLabel = "Auswählen") { onPick(place) }
                     .heightIn(min = 56.dp)
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Place,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-                Spacer(Modifier.width(16.dp))
+                Icon(Icons.Rounded.Place, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Spacer(Modifier.width(14.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = place.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                    Text(place.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     if (place.region.isNotBlank()) {
                         Text(
                             text = place.region,
@@ -279,105 +245,78 @@ internal fun TokenDialog(
     val canSave = token.isNotBlank() && !checking
     val message = tokenCheckMessage(check)
 
-    AlertDialog(
+    GlassDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (hasToken) "Token ändern" else "GitHub-Token eintragen") },
-        text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Text(
-                    text = "So bekommst du einen Token (einmalig, ca. 2 Minuten):",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                TokenSteps()
-                TextButton(onClick = onOpenTokenPage, modifier = Modifier.heightIn(min = 48.dp)) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Token-Seite öffnen")
-                }
-                OutlinedTextField(
-                    value = token,
-                    onValueChange = { token = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Token") },
-                    placeholder = { Text("github_pat_…") },
-                    singleLine = true,
-                    enabled = !checking,
-                    visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done,
-                    ),
-                    keyboardActions = KeyboardActions(onDone = { if (canSave) onSaveAndTest(token) }),
-                    trailingIcon = {
-                        IconButton(onClick = { visible = !visible }) {
-                            Icon(
-                                imageVector = if (visible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
-                                contentDescription = if (visible) "Token verbergen" else "Token anzeigen",
-                            )
-                        }
-                    },
-                    supportingText = { Text("Wird verschlüsselt nur auf diesem Gerät gespeichert.") },
-                )
-                if (message != null) {
-                    Text(
-                        text = message,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = when (check) {
-                            TokenCheck.Success -> MaterialTheme.colorScheme.primary
-                            TokenCheck.Checking -> MaterialTheme.colorScheme.onSurfaceVariant
-                            else -> MaterialTheme.colorScheme.error
-                        },
-                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                    )
-                }
-            }
-        },
-        confirmButton = {
+        title = if (hasToken) "Token ändern" else "GitHub-Token eintragen",
+        icon = Icons.Rounded.Key,
+        dismissOnClickOutside = !checking,
+        buttons = {
             if (check == TokenCheck.Success) {
-                TextButton(onClick = onDismiss) { Text("Fertig") }
+                DialogButton("Fertig", onDismiss)
             } else {
-                TextButton(onClick = { onSaveAndTest(token) }, enabled = canSave) {
-                    if (checking) {
-                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
-                        Spacer(Modifier.width(8.dp))
-                    }
-                    Text("Speichern & testen")
+                DialogButton("Abbrechen", onDismiss)
+                DialogButton(if (checking) "Prüfe …" else "Speichern & testen", { onSaveAndTest(token) }, enabled = canSave)
+            }
+        },
+    ) {
+        Text(
+            text = "So bekommst du einen Token (einmalig, ca. 2 Minuten):",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.size(12.dp))
+        Steps(
+            listOf(
+                "GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token",
+                "Repository access: „Only select repositories“ → Morgenbriefing",
+                "Permissions → Contents: Read-only",
+                "Token kopieren und hier einfügen",
+            ),
+        )
+        Spacer(Modifier.size(12.dp))
+        GlassPillButton("Token-Seite öffnen", onClick = onOpenTokenPage, icon = Icons.AutoMirrored.Rounded.OpenInNew, style = PillStyle.Quiet)
+        Spacer(Modifier.size(14.dp))
+        OutlinedTextField(
+            value = token,
+            onValueChange = { token = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Token") },
+            placeholder = { Text("github_pat_…") },
+            singleLine = true,
+            enabled = !checking,
+            visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { if (canSave) onSaveAndTest(token) }),
+            trailingIcon = {
+                IconButton(onClick = { visible = !visible }) {
+                    Icon(
+                        imageVector = if (visible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
+                        contentDescription = if (visible) "Token verbergen" else "Token anzeigen",
+                    )
                 }
-            }
-        },
-        dismissButton = {
-            if (check != TokenCheck.Success) {
-                TextButton(onClick = onDismiss) { Text("Abbrechen") }
-            }
-        },
-    )
-}
-
-@Composable
-private fun TokenSteps() {
-    val steps = listOf(
-        "GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token",
-        "Repository access: „Only select repositories“ → Morgenbriefing",
-        "Permissions → Contents: Read-only",
-        "Token kopieren und hier einfügen",
-    )
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        steps.forEachIndexed { index, step ->
-            Row {
+            },
+            supportingText = { Text("Wird verschlüsselt nur auf diesem Gerät gespeichert.") },
+        )
+        if (message != null) {
+            Row(
+                modifier = Modifier
+                    .padding(top = 6.dp)
+                    .semantics { liveRegion = LiveRegionMode.Polite },
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (checking) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                    Spacer(Modifier.width(8.dp))
+                }
                 Text(
-                    text = "${index + 1}.",
+                    text = message,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.width(20.dp),
+                    color = when (check) {
+                        TokenCheck.Success -> StatusPalette.ok()
+                        TokenCheck.Checking -> MaterialTheme.colorScheme.onSurfaceVariant
+                        else -> MaterialTheme.colorScheme.error
+                    },
                 )
-                Text(text = step, style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
@@ -386,19 +325,17 @@ private fun TokenSteps() {
 /** Confirmation before deleting the stored token. */
 @Composable
 internal fun RemoveTokenDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    AlertDialog(
+    GlassDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Token entfernen?") },
-        text = {
-            Text("Danach zeigt die App wieder das Demo-Briefing. Deine gespeicherten Tage im Verlauf bleiben erhalten.")
+        title = "Token entfernen?",
+        buttons = {
+            DialogButton("Abbrechen", onDismiss)
+            DialogButton("Entfernen", onConfirm, color = MaterialTheme.colorScheme.error)
         },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text("Entfernen", color = MaterialTheme.colorScheme.error)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
-        },
-    )
+    ) {
+        Text(
+            "Danach zeigt die App wieder das Demo-Briefing. Deine gespeicherten Tage im Verlauf bleiben erhalten.",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
 }

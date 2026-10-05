@@ -8,7 +8,9 @@ import com.cedrickgd.morgenbriefing.data.model.HourPoint
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -82,6 +84,35 @@ class HistoryModelsTest {
         assertEquals("Mo", weekdayShort(DayOfWeek.MONDAY))
         assertEquals("Di", weekdayShort(DayOfWeek.TUESDAY))
         assertEquals("So", weekdayShort(DayOfWeek.SUNDAY))
+    }
+
+    @Test
+    fun `timeline rows put a month pill above its days and mark today and the end`() {
+        val today = LocalDate.parse("2026-10-06")
+        val rows = timelineRows(
+            groupByMonth(listOf(entry("2026-10-06"), entry("2026-10-01"), entry("2026-09-30"))),
+            today,
+        )
+        assertEquals(
+            listOf("month-2026-10", "day-2026-10-06", "day-2026-10-01", "month-2026-09", "day-2026-09-30"),
+            rows.map { it.key },
+        )
+        val firstMonth = rows[0] as TimelineRow.Month
+        assertTrue(firstMonth.first)
+        assertEquals(2, firstMonth.days)
+        assertFalse((rows[3] as TimelineRow.Month).first)
+        assertTrue((rows[1] as TimelineRow.Day).isToday)
+        assertFalse((rows[2] as TimelineRow.Day).isToday)
+        assertEquals(listOf(false, false, true), rows.filterIsInstance<TimelineRow.Day>().map { it.last })
+        assertEquals(emptyList<TimelineRow>(), timelineRows(emptyList(), today))
+    }
+
+    @Test
+    fun `month pill and weather labels`() {
+        assertEquals("Oktober 2026 · 1 Tag", monthPillLabel(YearMonth.of(2026, 10), 1))
+        assertEquals("September 2026 · 12 Tage", monthPillLabel(YearMonth.of(2026, 9), 12))
+        assertEquals("März 2027", monthPillLabel(YearMonth.of(2027, 3), 0))
+        assertEquals("9° → 21°", MiniWeather("☀️", morningTemp = 8.6, maxTemp = 21.2).rangeLabel())
     }
 
     @Test

@@ -6,7 +6,9 @@ import com.cedrickgd.morgenbriefing.data.model.HistoryEntry
 import com.cedrickgd.morgenbriefing.data.model.HourPoint
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import com.cedrickgd.morgenbriefing.domain.Condition
+import com.cedrickgd.morgenbriefing.domain.Fmt
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.YearMonth
 import kotlin.math.abs
 
@@ -56,6 +58,50 @@ internal fun itemCountLabel(count: Int): String? = when {
     count <= 0 -> null
     count == 1 -> "1 Meldung"
     else -> "$count Meldungen"
+}
+
+/** "9° → 21°" */
+internal fun MiniWeather.rangeLabel(): String = "${Fmt.temp(morningTemp)} → ${Fmt.temp(maxTemp)}"
+
+/** "Oktober 2026 · 1 Tag", "Oktober 2026 · 12 Tage" */
+internal fun monthPillLabel(month: YearMonth, days: Int): String {
+    val name = Fmt.monthHeader(month.atDay(1))
+    return when {
+        days <= 0 -> name
+        days == 1 -> "$name · 1 Tag"
+        else -> "$name · $days Tage"
+    }
+}
+
+/**
+ * One row of the history timeline: a month pill or a day card. The timeline line runs from the
+ * first month pill down to the dot of the last (oldest) day.
+ */
+@Immutable
+sealed interface TimelineRow {
+    val key: String
+
+    data class Month(val month: YearMonth, val days: Int, val first: Boolean) : TimelineRow {
+        override val key: String get() = "month-$month"
+    }
+
+    data class Day(val entry: HistoryEntry, val isToday: Boolean, val last: Boolean) : TimelineRow {
+        override val key: String get() = "day-${entry.date}"
+    }
+}
+
+/** Flattens the month groups into timeline rows (newest first). Pure, unit-tested. */
+internal fun timelineRows(groups: List<MonthGroup>, today: LocalDate): List<TimelineRow> {
+    val nonEmpty = groups.filter { it.entries.isNotEmpty() }
+    val lastDay = nonEmpty.lastOrNull()?.entries?.lastOrNull()?.date
+    return buildList {
+        nonEmpty.forEachIndexed { index, group ->
+            add(TimelineRow.Month(group.month, group.entries.size, first = index == 0))
+            group.entries.forEach { entry ->
+                add(TimelineRow.Day(entry, isToday = entry.date == today, last = entry.date == lastDay))
+            }
+        }
+    }
 }
 
 private const val REPRESENTATIVE_HOUR = 14

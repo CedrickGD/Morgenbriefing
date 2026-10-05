@@ -11,6 +11,7 @@ import java.io.IOException
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import kotlin.math.abs
 
 /** The day window ("Zeitfenster") slider: 6–22 Uhr in full hours, at least 2 h wide. */
 internal object DayWindow {
@@ -46,14 +47,39 @@ internal fun clockLabel(hour: Int, minute: Int): String =
     String.format(Locale.GERMANY, "%02d:%02d", hour, minute)
 
 /** "Nächstes Briefing: morgen um 05:30" for the next alarm [next] as seen from [now]. */
-internal fun nextBriefingLabel(now: ZonedDateTime, next: ZonedDateTime): String {
-    val day = when (ChronoUnit.DAYS.between(now.toLocalDate(), next.toLocalDate())) {
+internal fun nextBriefingLabel(now: ZonedDateTime, next: ZonedDateTime): String =
+    "Nächstes Briefing: ${dayWord(now, next)} um ${clockLabel(next.hour, next.minute)}"
+
+/** "heute", "morgen", "übermorgen" or "am Di, 6. Okt." for [next] as seen from [now]. */
+internal fun dayWord(now: ZonedDateTime, next: ZonedDateTime): String =
+    when (ChronoUnit.DAYS.between(now.toLocalDate(), next.toLocalDate())) {
         0L -> "heute"
         1L -> "morgen"
         2L -> "übermorgen"
         else -> "am ${Fmt.shortDate(next.toLocalDate())}"
     }
-    return "Nächstes Briefing: $day um ${clockLabel(next.hour, next.minute)}"
+
+/**
+ * Time until the next briefing: "in 45 Min.", "in 2 Std. 15 Min." (below 3 hours, where the
+ * minutes still matter) and "in 9 Std." (rounded) beyond that. Negative values count as 0.
+ */
+internal fun countdownLabel(minutes: Long): String {
+    val m = minutes.coerceAtLeast(0)
+    return when {
+        m < 1 -> "gleich"
+        m < 60 -> "in $m Min."
+        m < 180 -> {
+            val rest = m % 60
+            if (rest == 0L) "in ${m / 60} Std." else "in ${m / 60} Std. $rest Min."
+        }
+        else -> "in ${(m + 30) / 60} Std."
+    }
+}
+
+/** "Nächstes Briefing: morgen · in 9 Std." */
+internal fun nextBriefingCountdown(now: ZonedDateTime, next: ZonedDateTime): String {
+    val minutes = ChronoUnit.MINUTES.between(now, next)
+    return "Nächstes Briefing: ${dayWord(now, next)} · ${countdownLabel(minutes)}"
 }
 
 /** Accents offered on this device: Material You only where it exists (API 31+). */
@@ -67,6 +93,12 @@ internal fun effectiveAccent(accent: AccentId, sdkInt: Int = Build.VERSION.SDK_I
 /** "Bad Düben · Sachsen, Deutschland" */
 internal fun Place.displayLabel(): String =
     if (region.isBlank()) name else "$name · $region"
+
+/** Same place within ~1 km (geocoding results and stored snapshots round differently). */
+internal fun Place.sameSpotAs(other: Place): Boolean =
+    abs(lat - other.lat) < SAME_SPOT_DEGREES && abs(lon - other.lon) < SAME_SPOT_DEGREES
+
+private const val SAME_SPOT_DEGREES = 0.01
 
 /** Which place the picker edits. */
 enum class PlaceTarget(val title: String) {
