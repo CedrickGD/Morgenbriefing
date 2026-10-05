@@ -15,11 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -30,21 +25,6 @@ import com.cedrickgd.morgenbriefing.ui.components.Emoji
 
 /** Corner radius of article cards (reader). Feed pictures use 22 dp (GlassShapes.tile). */
 internal val CardShape = RoundedCornerShape(24.dp)
-
-/** Bottom scrim under text on pictures: clear at the top, dark where the text sits. */
-internal val HeadlineScrim: Brush = Brush.verticalGradient(
-    0f to Color.Black.copy(alpha = 0.10f),
-    0.3f to Color.Transparent,
-    0.5f to Color.Black.copy(alpha = 0.20f),
-    0.75f to Color.Black.copy(alpha = 0.55f),
-    1f to Color.Black.copy(alpha = 0.82f),
-)
-
-/** White text with a soft shadow, readable on any picture behind [HeadlineScrim]. */
-internal fun TextStyle.onPicture(): TextStyle = copy(
-    color = Color.White,
-    shadow = Shadow(color = Color.Black.copy(alpha = 0.45f), offset = Offset(0f, 2f), blurRadius = 10f),
-)
 
 /** Small rounded chip with the topic's emoji and title, tinted with the topic color. */
 @Composable

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
@@ -128,7 +127,6 @@ internal fun BoxScope.FloatingChrome(
             Box(
                 Modifier
                     .align(Alignment.BottomCenter)
-                    .widthIn(max = 600.dp)
                     .fillMaxWidth()
                     .graphicsLayer {
                         translationY = -lift.value * (GlassPageIndicatorHeight + ChromeGap).toPx()
@@ -136,7 +134,8 @@ internal fun BoxScope.FloatingChrome(
                     .onSizeChanged { insets.playerHeightPx = it.height },
                 contentAlignment = Alignment.BottomCenter,
             ) {
-                ListenMiniPlayer(Modifier.padding(horizontal = 16.dp))
+                // The player brings its own 16 dp side margins and 560 dp width cap.
+                ListenMiniPlayer()
             }
         }
         GlassPageIndicator(
