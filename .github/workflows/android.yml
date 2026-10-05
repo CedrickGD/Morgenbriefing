@@ -94,29 +94,26 @@ jobs:
             echo "file=$keystore" >> "$GITHUB_OUTPUT"
             echo "signed=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::warning title=Unsigniertes Release::Secret MB_KEYSTORE_BASE64 fehlt – die Release-APK wird mit einem frischen Debug-Schlüssel signiert. Sie lässt sich nicht als Update über eine anders signierte Version installieren. Siehe README → Release."
+            echo "::notice title=Kein CI-Release::Secret MB_KEYSTORE_BASE64 fehlt – Releases werden lokal mit scripts/release.ps1 signiert und veröffentlicht. Eine debug-signierte APK würde das In-App-Update brechen, deshalb wird hier nichts veröffentlicht."
             echo "signed=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Release bauen
+        if: steps.keystore.outputs.signed == 'true'
         env:
-          SIGNED: ${{ steps.keystore.outputs.signed }}
           MB_KEYSTORE_FILE: ${{ steps.keystore.outputs.file }}
           MB_KEYSTORE_PASSWORD: ${{ secrets.MB_KEYSTORE_PASSWORD }}
           MB_KEYSTORE_ALIAS: ${{ secrets.MB_KEYSTORE_ALIAS }}
           MB_KEYSTORE_KEY_PASSWORD: ${{ secrets.MB_KEYSTORE_KEY_PASSWORD }}
         run: |
-          if [ "$SIGNED" = "true" ]; then
-            ./gradlew assembleRelease --no-daemon --stacktrace \
-              -PMB_KEYSTORE_FILE="$MB_KEYSTORE_FILE" \
-              -PMB_KEYSTORE_PASSWORD="$MB_KEYSTORE_PASSWORD" \
-              -PMB_KEYSTORE_ALIAS="$MB_KEYSTORE_ALIAS" \
-              -PMB_KEYSTORE_KEY_PASSWORD="$MB_KEYSTORE_KEY_PASSWORD"
-          else
-            ./gradlew assembleRelease --no-daemon --stacktrace
-          fi
+          ./gradlew assembleRelease --no-daemon --stacktrace \
+            -PMB_KEYSTORE_FILE="$MB_KEYSTORE_FILE" \
+            -PMB_KEYSTORE_PASSWORD="$MB_KEYSTORE_PASSWORD" \
+            -PMB_KEYSTORE_ALIAS="$MB_KEYSTORE_ALIAS" \
+            -PMB_KEYSTORE_KEY_PASSWORD="$MB_KEYSTORE_KEY_PASSWORD"
 
       - name: APK umbenennen
+        if: steps.keystore.outputs.signed == 'true'
         id: apk
         run: |
           apk="$(find app/build/outputs/apk/release -name '*.apk' | head -n 1)"
@@ -133,6 +130,7 @@ jobs:
         run: rm -f "$RUNNER_TEMP/morgenbriefing-release.jks"
 
       - name: GitHub-Release veröffentlichen
+        if: steps.keystore.outputs.signed == 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.apk.outputs.path }}
@@ -140,4 +138,4 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-') }}
           body: |
             **Installieren:** `${{ steps.apk.outputs.path }}` unten herunterladen und auf dem Handy öffnen.
-            ${{ steps.keystore.outputs.signed == 'true' && 'Mit dem Release-Schlüssel signiert – lässt sich über die vorherige Version installieren.' || 'Achtung: ohne Release-Schlüssel gebaut (Debug-Signatur): vorher die alte Version deinstallieren.' }}
+            Mit dem Release-Schlüssel signiert – lässt sich als Update über die vorherige Version installieren.

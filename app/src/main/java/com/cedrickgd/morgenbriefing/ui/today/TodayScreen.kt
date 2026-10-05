@@ -24,6 +24,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +60,7 @@ import com.cedrickgd.morgenbriefing.ui.components.WarningBanner
 import com.cedrickgd.morgenbriefing.ui.components.WeatherBackdrop
 import com.cedrickgd.morgenbriefing.ui.onboarding.OnboardingSheet
 import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
+import com.cedrickgd.morgenbriefing.util.StatusBarScrim
 import com.cedrickgd.morgenbriefing.util.bottomContentInset
 import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
 import com.cedrickgd.morgenbriefing.util.parseInstantOrNull
@@ -246,8 +248,18 @@ private fun TodayContent(
                 }
             }
         }
+
+        // Once the header scrolls under the status bar, give the clock a background.
+        val scrolledUnderStatusBar by remember(listState) {
+            derivedStateOf {
+                listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > STATUS_SCRIM_THRESHOLD_PX
+            }
+        }
+        StatusBarScrim(visible = scrolledUnderStatusBar)
     }
 }
+
+private const val STATUS_SCRIM_THRESHOLD_PX = 24
 
 private fun LazyListScope.weatherItems(weather: WeatherUi) {
     item(key = "hero", contentType = "hero") {
