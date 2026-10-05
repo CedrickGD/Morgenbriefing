@@ -122,6 +122,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.haze)
+    implementation(libs.haze.materials)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
