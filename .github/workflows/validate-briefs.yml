@@ -1,0 +1,103 @@
+name: Briefs prüfen
+
+# Validates the data branch `briefs` with routine/validate-brief.mjs from `main`.
+#
+# Note: for `push` events GitHub reads the workflow file from the pushed commit. The orphan
+# `briefs` branch contains only data, so the push trigger below only fires if this file is ever
+# added to that branch. What actually runs it is the daily schedule (defined on `main`, shortly
+# after the 05:00 routine) and the manual trigger. The scheduled run also fails when today's brief
+# is missing, so GitHub's "workflow failed" e-mail doubles as a heads-up.
+on:
+  push:
+    branches: [briefs]
+  schedule:
+    - cron: '45 4 * * *' # 05:45 (Winterzeit) / 06:45 (Sommerzeit) in Berlin
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-briefs
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Briefings validieren
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Gibt es den Branch briefs schon?
+        id: branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${GITHUB_REPOSITORY}/branches/briefs" --silent; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Den Branch briefs gibt es noch nicht – die Cloud-Routine hat noch nichts veröffentlicht."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Branch briefs auschecken
+        if: steps.branch.outputs.exists == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'push' && github.sha || 'briefs' }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Prüfskripte aus main auschecken
+        if: steps.branch.outputs.exists == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: tools
+          sparse-checkout: |
+            routine/
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        if: steps.branch.outputs.exists == 'true'
+        with:
+          node-version: 22
+
+      - name: latest.json, index.json und geänderte Briefings prüfen
+        if: steps.branch.outputs.exists == 'true'
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" = "push" ] && [ -n "$BEFORE" ] && ! [[ "$BEFORE" =~ ^0+$ ]] \
+              && git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            mapfile -t changed < <(git diff --name-only --diff-filter=ACMR "$BEFORE" HEAD -- 'briefs/*.json')
+          elif git rev-parse -q --verify HEAD~1 >/dev/null; then
+            mapfile -t changed < <(git diff --name-only --diff-filter=ACMR HEAD~1 HEAD -- 'briefs/*.json')
+          else
+            mapfile -t changed < <(git ls-files 'briefs/*.json')
+          fi
+          echo "Geänderte Briefings: ${changed[*]:-keine}"
+          node tools/routine/validate-brief.mjs latest.json index.json "${changed[@]}" --max-age-hours 36
+
+      - name: Ist das heutige Briefing da?
+        if: steps.branch.outputs.exists == 'true' && github.event_name != 'push'
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          today="$(TZ=Europe/Berlin date +%F)"
+          latest="$(node -p 'require("./latest.json").date')"
+          if [ "$latest" = "$today" ]; then
+            echo "Das Briefing für $today ist da."
+            exit 0
+          fi
+          msg="latest.json ist vom $latest, heute ist $today – die Cloud-Routine hat heute (noch) kein Briefing veröffentlicht."
+          if [ "$EVENT" = "schedule" ]; then
+            echo "::error title=Briefing fehlt::$msg"
+            exit 1
+          fi
+          echo "::warning title=Briefing fehlt::$msg"

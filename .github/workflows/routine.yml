@@ -1,0 +1,50 @@
+name: Routine-Skripte
+
+# Tests for routine/*.mjs (zero dependencies, Node >= 18) and a check that the demo brief the
+# app ships with still matches the format.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'routine/**'
+      - 'app/src/main/assets/sample-brief.json'
+      - 'docs/brief-format.md'
+      - '.github/workflows/routine.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'routine/**'
+      - 'app/src/main/assets/sample-brief.json'
+      - 'docs/brief-format.md'
+      - '.github/workflows/routine.yml'
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['18', '22']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Tests
+        run: node --test routine/test/*.test.mjs
+
+      - name: Demo-Briefing der App prüfen
+        run: node routine/validate-brief.mjs app/src/main/assets/sample-brief.json

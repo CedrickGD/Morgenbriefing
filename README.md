@@ -1,0 +1,233 @@
+# Morgenbriefing
+
+**Dein Morgen auf einen Blick:** das Wetter vor der Tür, der Tag in Leipzig und die wichtigsten
+Nachrichten – jeden Morgen um 5:30 Uhr als Benachrichtigung und schön aufbereitet in einer
+eigenen App statt als E-Mail.
+
+Persönliche Android-App (Kotlin, Jetpack Compose, Material 3). Die News recherchiert jeden Morgen
+eine Claude-Cloud-Routine frisch, das Wetter kommt immer live.
+
+---
+
+## Was die App kann
+
+| | |
+|---|---|
+| **Heute** | Oben ein animierter Himmel passend zu Wetter und Tageszeit. Darunter „Vor der Tür“ in Bad Düben (jetzt und die nächsten Stunden, Sonnenauf- und -untergang), die Tageskurve für Leipzig von 10 bis 18 Uhr mit Regenwahrscheinlichkeit, was du anziehen solltest, Wetterwarnungen – und die Nachrichten des Tages in drei Rubriken: 🤖 KI & Tech, 📈 Wirtschaft & Märkte, 🏛️ Politik. Ein Tipp öffnet den Originalartikel. |
+| **Verlauf** | Alle bisherigen Tage mit Teaser, dem Wetter vom Morgen und dem kompletten Briefing – auch offline. |
+| **Einstellungen** | Hell, Dunkel oder wie das System; Akzentfarben (Material You, Morgenrot, Sonne, Ozean, Wald, Lavendel, Beere, Graphit); Uhrzeit der Benachrichtigung; Orte und Zeitfenster; GitHub-Token; Akku-Optimierung. |
+| **5:30-Benachrichtigung** | Ein exakter Alarm holt Live-Wetter und das frische Briefing und zeigt eine ausklappbare Benachrichtigung mit Wetter, Kleidungstipp und den Top-Schlagzeilen. |
+
+Läuft ab **Android 7.0** (API 24). Randlos (Edge-to-Edge) und sauber mit **Gesten- und
+3-Tasten-Navigation**, wie Samsung One UI beides anbietet, inklusive Predictive Back.
+
+## So funktioniert's
+
+```
+05:00  Cloud-Routine (claude.ai, täglich)                    05:30  App (AlarmManager, exakt)
+       ├─ recherchiert + verifiziert News                            ├─ Open-Meteo live (Wetter)
+       ├─ schreibt briefs/YYYY-MM-DD.json, latest.json,             ├─ GitHub contents API: latest.json
+       │  index.json auf Branch `briefs`                            ├─ speichert Morgen-Snapshot (Verlauf)
+       └─ git push  ──────────────► GitHub (privat) ◄───────────────└─ Benachrichtigung (BigText)
+```
+
+- **Wetter** kommt nie aus dem Repo: Die App fragt es immer live bei [Open-Meteo](https://open-meteo.com) ab
+  (ohne Schlüssel, ohne Konto).
+- **Nachrichten** schreibt die Cloud-Routine jeden Morgen als JSON auf den Daten-Branch `briefs`
+  dieses privaten Repos. Die App liest sie mit einem GitHub-Token, das nur Lesezugriff auf genau
+  dieses Repo hat. Ohne Token zeigt sie ein Demo-Briefing.
+- Vor jedem Push prüft die Routine jede Meldung an der Originalquelle und lässt das Ergebnis vom
+  Validator [`routine/validate-brief.mjs`](routine/validate-brief.mjs) kontrollieren – nichts ist
+  älter als 36 Stunden.
+
+Mehr dazu: [Architektur](docs/ARCHITECTURE.md) · [Datenformat](docs/brief-format.md) ·
+[Prompt der Cloud-Routine](routine/PROMPT.md)
+
+---
+
+## Einrichtung
+
+### 1. App installieren
+
+1. Auf dem Handy im Browser bei GitHub einloggen (das Repo ist privat) und unter
+   **[Releases](https://github.com/CedrickGD/Morgenbriefing/releases)** die neueste
+   `Morgenbriefing-vX.Y.Z.apk` herunterladen.
+2. Die Datei öffnen. Fragt Android nach „Unbekannte Apps installieren“, für Browser bzw.
+   „Eigene Dateien“ **Zulassen** wählen und die Installation bestätigen.
+3. Beim ersten Start **Benachrichtigungen erlauben** (ab Android 13 fragt die App danach).
+
+> Lieber den neuesten Entwicklungsstand? Jeder Build auf `main` legt unter **Actions → Android →
+> Artefakt `morgenbriefing-debug-apk`** eine Debug-Version ab. Sie heißt
+> `com.cedrickgd.morgenbriefing.debug` und lässt sich parallel zur normalen App installieren.
+
+### 2. GitHub-Token erstellen und in der App eintragen
+
+Das Token erlaubt der App nur, die Briefings aus diesem einen Repo zu **lesen**.
+
+1. Auf [github.com](https://github.com) oben rechts auf dein Profilbild → **Settings**.
+2. Links ganz unten **Developer settings** → **Personal access tokens** → **Fine-grained tokens**
+   → **Generate new token**.
+3. **Token name:** z. B. `Morgenbriefing-App`. **Resource owner:** `CedrickGD`.
+4. **Expiration:** so lang wie möglich (die längste angebotene Laufzeit bzw. „No expiration“,
+   falls angeboten). Trag dir das Ablaufdatum in den Kalender.
+5. **Repository access:** **Only select repositories** → `Morgenbriefing` auswählen.
+6. **Permissions** → **Repository permissions** → **Contents:** **Read-only**.
+   („Metadata: Read-only“ setzt GitHub automatisch.) Sonst nichts anhaken. In neueren
+   GitHub-Oberflächen geht das über **Add permissions** → **Contents** → **Read-only**.
+7. **Generate token** und das Token (beginnt mit `github_pat_`) kopieren – GitHub zeigt es nur
+   einmal an.
+8. In der App: **Einstellungen** → Token einfügen → **Verbindung testen**.
+
+Die App speichert das Token verschlüsselt (Android-Keystore). Läuft es ab, meldet die App einen
+Zugriffsfehler – dann einfach mit denselben Schritten ein neues erstellen.
+
+### 3. Samsung: Akku nicht einschränken
+
+Damit One UI die App morgens nicht schlafen legt:
+
+**Einstellungen → Apps → Morgenbriefing → Akku → „Nicht eingeschränkt“**
+
+Die App bietet unter **Einstellungen** zusätzlich „Akku-Optimierung aus“ an (System-Dialog).
+
+### 4. Cloud-Routine einrichten
+
+Die Routine recherchiert jeden Morgen um 05:00 Uhr die News und pusht sie auf den Branch
+`briefs`. So legst du sie in claude.ai an:
+
+1. Neue Routine (geplante Claude-Code-Aufgabe) erstellen und das Repo
+   **`CedrickGD/Morgenbriefing`** verbinden (Standard-Branch `main`).
+2. **Prompt:** den kompletten Inhalt von [`routine/PROMPT.md`](routine/PROMPT.md) einfügen.
+3. **Zeitplan:** täglich um **03:00 und 04:00 UTC** (Cron `0 3,4 * * *`). So läuft sie im Sommer
+   wie im Winter um 05:00 Uhr Berliner Zeit. Den überzähligen Start erkennt die Routine selbst
+   und antwortet nur „Übersprungen (Doppellauf)“. Lässt sich der Zeitplan direkt in
+   Europe/Berlin einstellen, reicht ein einziger Start um 05:00.
+4. **Werkzeuge:** Websuche und Webseitenabruf erlauben.
+5. **Pushen auf `briefs` erlauben:** Standardmäßig dürfen Cloud-Routinen oft nur auf
+   `claude/…`-Branches pushen. Erlaube in den Einstellungen der Routine bzw. der Umgebung Pushes
+   auf beliebige Branches. Sonst landet das Briefing auf `claude/briefs`, und die App sieht es
+   nicht – die Routine sagt das dann ausdrücklich.
+6. **Testen:** Routine einmal von Hand starten. Außerhalb von 04:00–04:59 und 06:00–07:59 Uhr
+   veröffentlicht sie sofort. Danach liegt auf GitHub im Branch `briefs` ein neues Briefing, und
+   in der App holt es ein Herunterziehen auf **Heute**.
+
+Änderst du später `routine/PROMPT.md`, kopiere den neuen Inhalt auch in die Routine.
+
+**Überwachung:** Der Workflow **Briefs prüfen** läuft täglich um 04:45 UTC, validiert die
+Daten auf `briefs` und schlägt fehl, wenn das heutige Briefing fehlt oder kaputt ist. GitHub
+schickt dir dann die übliche „Run failed“-Mail.
+
+---
+
+## Entwicklung
+
+### Voraussetzungen
+
+- **JDK 17** (z. B. Temurin; Android Studio bringt eines mit)
+- **Android SDK** mit Plattform **36** und Build-Tools – Android Studio installiert sie; sonst
+  `ANDROID_HOME` setzen oder `sdk.dir` in `local.properties` eintragen
+- **Node.js ≥ 18** für die Routine-Skripte (CI nutzt 22)
+
+### Bauen und testen
+
+```bash
+./gradlew assembleDebug        # → app/build/outputs/apk/debug/
+./gradlew testDebugUnitTest    # Unit-Tests
+./gradlew installDebug         # aufs angeschlossene Gerät oder den Emulator
+./gradlew assembleRelease      # Release (signiert, wenn keystore.properties existiert)
+```
+
+Unter Windows ohne Git Bash: `gradlew.bat …`
+
+Routine-Skripte:
+
+```bash
+node --test routine/test/*.test.mjs                                    # Tests
+node routine/validate-brief.mjs app/src/main/assets/sample-brief.json  # Datei prüfen
+mkdir -p routine/out/data                                              # Probe-Veröffentlichung
+node routine/publish-brief.mjs --brief app/src/main/assets/sample-brief.json --data-dir routine/out/data
+```
+
+`routine/out/` ist in `.gitignore`. `validate-brief.mjs` kennt `--max-age-hours <h>`,
+`publish-brief.mjs` zusätzlich `--dry-run`; `--help` zeigt alles.
+
+### Emulator und Gerät
+
+- Zwei virtuelle Geräte lohnen sich: ein aktuelles (API 36) und ein altes mit **API 24**
+  (Android 7.0), um die Kompatibilität zu prüfen.
+- Zwischen **3-Tasten- und Gesten-Navigation** umschalten:
+  ```bash
+  adb shell cmd overlay enable com.android.internal.systemui.navbar.threebutton
+  adb shell cmd overlay enable com.android.internal.systemui.navbar.gestural
+  ```
+- Dunkelmodus: `adb shell cmd uimode night yes` (bzw. `no`)
+- Große Schrift: `adb shell settings put system font_scale 1.3` (zurück mit `1.0`)
+- Eigenes Handy (S26 Ultra): **Einstellungen → Telefoninfo → Softwareinformationen** →
+  7× auf **Buildnummer** tippen, dann unter **Entwickleroptionen** **USB-Debugging** oder
+  **Wireless Debugging** (`adb pair …`, `adb connect …`) einschalten.
+
+### Release
+
+1. In `app/build.gradle.kts` `versionCode` erhöhen und `versionName` anpassen, committen.
+2. Tag setzen und pushen:
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+3. Der Workflow **Android** testet, baut die signierte APK und veröffentlicht
+   `Morgenbriefing-v1.0.0.apk` als GitHub-Release. Tags mit Bindestrich (`v1.1.0-beta1`) werden
+   als Vorabversion markiert.
+
+**Signaturschlüssel (einmalig):** Updates lassen sich nur über eine Version mit *demselben*
+Schlüssel installieren.
+
+```bash
+keytool -genkeypair -v -keystore morgenbriefing-release.jks -alias morgenbriefing \
+  -keyalg RSA -keysize 4096 -validity 10000
+```
+
+Den Keystore samt Passwörtern sicher aufbewahren, z. B. verschlüsselt auf dem NAS oder im
+Passwortmanager – ohne ihn gibt es keine Updates mehr. Dann im Repo unter **Settings → Secrets
+and variables → Actions** anlegen:
+
+| Secret | Inhalt |
+|---|---|
+| `MB_KEYSTORE_BASE64` | der Keystore als Base64: `base64 -w0 morgenbriefing-release.jks` (PowerShell: `[Convert]::ToBase64String([IO.File]::ReadAllBytes("morgenbriefing-release.jks"))`) |
+| `MB_KEYSTORE_PASSWORD` | Passwort des Keystores |
+| `MB_KEYSTORE_ALIAS` | `morgenbriefing` |
+| `MB_KEYSTORE_KEY_PASSWORD` | Passwort des Schlüssels |
+
+Fehlen die Secrets, baut der Workflow trotzdem – mit einer Warnung und einer Debug-Signatur, die
+sich nicht als Update über eine anders signierte Version installieren lässt.
+
+Lokal signierst du über eine `keystore.properties` im Projektordner (steht in `.gitignore`):
+
+```properties
+FILE=morgenbriefing-release.jks
+PASSWORD=…
+ALIAS=morgenbriefing
+KEY_PASSWORD=…
+```
+
+### Projektstruktur
+
+```
+app/                 Android-App (Kotlin, Jetpack Compose, Material 3)
+docs/                Architektur und Datenformat
+routine/             Prompt der Cloud-Routine, Validator, Veröffentlichungs-Skript, Tests
+.github/workflows/   Build und Tests, Releases, Routine-Skripte, Prüfung des Branches briefs
+```
+
+Der Branch **`briefs`** enthält nur Daten: `briefs/YYYY-MM-DD.json`, `latest.json`, `index.json`.
+
+| Workflow | Wann | Was |
+|---|---|---|
+| **Android** | Push/PR auf `main`, Tags `v*` | Unit-Tests, Debug-APK; bei Tags signiertes Release |
+| **Routine-Skripte** | Änderungen an `routine/` oder am Demo-Briefing | Tests der Node-Skripte (Node 18 und 22) |
+| **Briefs prüfen** | täglich 04:45 UTC, manuell | validiert `briefs`, meldet ein fehlendes Briefing |
+
+## Datenschutz
+
+- Wetter: Open-Meteo bekommt nur die Koordinaten deiner beiden Orte – kein Konto, kein Schlüssel.
+- Nachrichten: kommen ausschließlich aus deinem privaten Repo, gelesen mit einem Nur-Lese-Token,
+  das verschlüsselt auf dem Gerät liegt.
+- Kein Tracking, keine Werbung, keine Analyse-Dienste.
