@@ -1,7 +1,100 @@
 package com.cedrickgd.morgenbriefing.ui.chat
 
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.cedrickgd.morgenbriefing.ai
+import com.cedrickgd.morgenbriefing.ai.AiError
+import com.cedrickgd.morgenbriefing.ai.ChatContext
+import com.cedrickgd.morgenbriefing.ai.ChatMessage
+import com.cedrickgd.morgenbriefing.ai.ChatUiState
+import com.cedrickgd.morgenbriefing.ai.RetryableChatSession
+import com.cedrickgd.morgenbriefing.ui.components.entrance
+import com.cedrickgd.morgenbriefing.ui.components.rememberEntrance
+import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
+import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
+import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
+import com.cedrickgd.morgenbriefing.ui.glass.LocalGlassState
+import com.cedrickgd.morgenbriefing.ui.glass.glass
+import com.cedrickgd.morgenbriefing.ui.theme.Reading
+import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
+import com.cedrickgd.morgenbriefing.util.rememberLinkActions
+import com.cedrickgd.morgenbriefing.util.statusBarTop
+import dev.chrisbanes.haze.hazeSource
+import kotlinx.coroutines.launch
 
 /**
  * "Frag nach" (docs/AI.md §1): chat about the article [articleKey] of [date], or about the whole
@@ -14,4 +107,493 @@ fun ChatScreen(
     onBack: () -> Unit,
     onOpenSettings: () -> Unit = {},
     modifier: Modifier = Modifier,
-) { TODO("agent ai") }
+) {
+    val context = LocalContext.current
+    val session = remember(context, date, articleKey) { context.ai.chat.session(ChatContext(date, articleKey)) }
+    val state by session.state.collectAsStateWithLifecycle()
+    ChatContent(
+        state = state,
+        aboutArticle = articleKey != null,
+        onBack = onBack,
+        onOpenSettings = onOpenSettings,
+        onSend = session::send,
+        onStop = session::stop,
+        onRetry = { (session as? RetryableChatSession)?.retry() },
+        onClear = session::clear,
+        modifier = modifier,
+    )
+}
+
+/**
+ * The chat layout, stateless: messages over the sky, a glass top bar, a floating glass input
+ * (or a friendly card when AI is blocked). The message list is a second blur source above the
+ * sky, so both bars frost the text that scrolls beneath them.
+ */
+@Composable
+internal fun ChatContent(
+    state: ChatUiState,
+    aboutArticle: Boolean,
+    onBack: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onSend: (String) -> Unit,
+    onStop: () -> Unit,
+    onRetry: () -> Unit,
+    onClear: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val density = LocalDensity.current
+    val haptics = LocalHapticFeedback.current
+    var draft by rememberSaveable { mutableStateOf("") }
+    var topBarHeight by remember { mutableIntStateOf(0) }
+    var bottomHeight by remember { mutableIntStateOf(0) }
+    var confirmClear by remember { mutableStateOf(false) }
+
+    val send: (String) -> Unit = { text ->
+        if (text.isNotBlank() && !state.busy && state.blocked == null) {
+            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+            onSend(text)
+            draft = ""
+        }
+    }
+
+    val topPadding = with(density) { topBarHeight.toDp() } + 12.dp
+    val bottomPadding = with(density) { bottomHeight.toDp() } + 16.dp
+
+    Box(
+        modifier
+            .fillMaxSize()
+            // The keyboard pushes the whole chat up; nested insets below see it as consumed.
+            .imePadding(),
+    ) {
+        if (state.messages.isEmpty()) {
+            EmptyChat(
+                state = state,
+                aboutArticle = aboutArticle,
+                onSuggestion = send,
+                contentPadding = PaddingValues(top = topPadding, bottom = bottomPadding),
+            )
+        } else {
+            MessageList(
+                state = state,
+                onRetry = onRetry,
+                onOpenSettings = onOpenSettings,
+                contentPadding = PaddingValues(top = topPadding, bottom = bottomPadding),
+            )
+        }
+
+        ChatTopBar(
+            title = state.title,
+            canClear = state.messages.isNotEmpty(),
+            onBack = onBack,
+            onClear = { confirmClear = true },
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .onSizeChanged { topBarHeight = it.height },
+        )
+
+        Column(
+            Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .onSizeChanged { bottomHeight = it.height }
+                .navigationBarsPadding()
+                .horizontalSafeDrawing()
+                .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 10.dp),
+        ) {
+            val blocked = state.blocked
+            // A running answer keeps its stop button even if the limit is reached meanwhile.
+            if (blocked != null && !state.busy) {
+                BlockedCard(blocked, onOpenSettings)
+            } else {
+                ChatInputBar(
+                    value = draft,
+                    onValueChange = { draft = it },
+                    busy = state.busy,
+                    onSend = { send(draft) },
+                    onStop = onStop,
+                )
+            }
+        }
+    }
+
+    if (confirmClear) {
+        AlertDialog(
+            onDismissRequest = { confirmClear = false },
+            title = { Text("Verlauf löschen?") },
+            text = {
+                Text(
+                    if (aboutArticle) "Die Unterhaltung zu diesem Artikel wird gelöscht." else "Die Unterhaltung zu diesem Briefing wird gelöscht.",
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmClear = false
+                    draft = ""
+                    onClear()
+                }) { Text("Löschen") }
+            },
+            dismissButton = { TextButton(onClick = { confirmClear = false }) { Text("Abbrechen") } },
+        )
+    }
+}
+
+@Composable
+private fun ChatTopBar(
+    title: String,
+    canClear: Boolean,
+    onBack: () -> Unit,
+    onClear: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var menuOpen by remember { mutableStateOf(false) }
+    Box(
+        modifier
+            .fillMaxWidth()
+            .glass(shape = RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 26.dp), level = GlassLevel.Thick)
+            .padding(top = statusBarTop())
+            .horizontalSafeDrawing(),
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(68.dp)
+                .padding(horizontal = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            RoundGlassButton(icon = BackIcon, contentDescription = "Zurück", onClick = onBack)
+            Column(
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp)
+                    .semantics(mergeDescendants = true) { heading() },
+            ) {
+                Text(
+                    "✦ FRAG NACH",
+                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.6.sp, fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                )
+                Text(
+                    title.ifBlank { " " },
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = MaterialTheme.typography.headlineSmall.fontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            Box {
+                RoundGlassButton(icon = Icons.Rounded.MoreVert, contentDescription = "Weitere Optionen", onClick = { menuOpen = true })
+                DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                    DropdownMenuItem(
+                        text = { Text("Verlauf löschen") },
+                        leadingIcon = { Icon(Icons.Rounded.DeleteSweep, contentDescription = null) },
+                        enabled = canClear,
+                        onClick = {
+                            menuOpen = false
+                            onClear()
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** True while the "activity" line (thinking / searching) follows the streaming answer. */
+private fun footerShown(state: ChatUiState): Boolean {
+    val last = state.messages.lastOrNull() ?: return false
+    return state.busy && last.role == ChatMessage.Role.ASSISTANT && last.status == ChatMessage.Status.STREAMING &&
+        (state.activity != null || last.text.isBlank())
+}
+
+@Composable
+private fun MessageList(
+    state: ChatUiState,
+    onRetry: () -> Unit,
+    onOpenSettings: () -> Unit,
+    contentPadding: PaddingValues,
+) {
+    val context = LocalContext.current
+    val links = rememberLinkActions()
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+    val glassState = LocalGlassState.current
+
+    val footer = footerShown(state)
+    val itemCount = state.messages.size + if (footer) 1 else 0
+    val lastLength = state.messages.lastOrNull()?.text?.length ?: 0
+
+    // Follow the newest text while the reader is at the end; a drag upwards lets them read in peace.
+    var follow by remember { mutableStateOf(true) }
+    val dragged by listState.interactionSource.collectIsDraggedAsState()
+    LaunchedEffect(dragged) { if (dragged) follow = false }
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.canScrollForward }.collect { canScroll -> if (!canScroll) follow = true }
+    }
+    LaunchedEffect(state.messages.size) {
+        follow = true
+        if (itemCount > 0) listState.animateScrollToItem(itemCount - 1, END_OFFSET)
+    }
+    LaunchedEffect(lastLength, footer, state.activity) {
+        if (follow && itemCount > 0 && !dragged) listState.scrollToItem(itemCount - 1, END_OFFSET)
+    }
+    // The keyboard (or a taller input) shrinks the viewport: keep the end in view.
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.viewportSize.height }.collect {
+            val count = listState.layoutInfo.totalItemsCount
+            if (follow && count > 0) listState.scrollToItem(count - 1, END_OFFSET)
+        }
+    }
+
+    LazyColumn(
+        state = listState,
+        modifier = Modifier
+            .fillMaxSize()
+            .then(if (glassState != null) Modifier.hazeSource(glassState, zIndex = 1f) else Modifier),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = contentPadding.calculateTopPadding(),
+            bottom = contentPadding.calculateBottomPadding(),
+        ),
+        verticalArrangement = Arrangement.spacedBy(18.dp),
+    ) {
+        itemsIndexed(state.messages, key = { _, m -> m.id }, contentType = { _, m -> m.role }) { index, message ->
+            val appear = rememberEntrance(durationMillis = 420)
+            val itemModifier = Modifier
+                .animateItem()
+                .entrance(appear, distance = 12.dp)
+            when (message.role) {
+                ChatMessage.Role.USER -> UserBubble(message.text, itemModifier)
+                ChatMessage.Role.ASSISTANT -> AssistantMessage(
+                    message = message,
+                    isLast = index == state.messages.lastIndex,
+                    onRetry = onRetry,
+                    onOpenSettings = onOpenSettings,
+                    onOpenSource = links::open,
+                    onCopy = {
+                        scope.launch {
+                            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("Antwort von Claude", chatPlainText(message.text))))
+                            // Android 13+ confirms copies itself.
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                                Toast.makeText(context, "Antwort kopiert", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    },
+                    onShare = { shareAnswer(context, state.title, message) },
+                    modifier = itemModifier,
+                )
+            }
+        }
+        if (footer) {
+            item(key = "activity", contentType = "activity") {
+                ActivityLine(
+                    text = state.activity ?: "Denkt nach …",
+                    modifier = Modifier.animateItem().padding(start = 2.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AssistantMessage(
+    message: ChatMessage,
+    isLast: Boolean,
+    onRetry: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onOpenSource: (String) -> Unit,
+    onCopy: () -> Unit,
+    onShare: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val streaming = message.status == ChatMessage.Status.STREAMING
+    Column(modifier.fillMaxWidth().padding(end = 4.dp)) {
+        ClaudeMark()
+        Spacer(Modifier.height(10.dp))
+        if (message.text.isNotBlank()) {
+            MarkdownAnswer(text = message.text, streaming = streaming)
+        }
+        if (message.error == AiError.Truncated && message.text.isNotBlank()) {
+            Spacer(Modifier.height(10.dp))
+            TruncatedNote()
+        }
+        val error = message.error
+        if (message.status == ChatMessage.Status.FAILED && error != null) {
+            if (message.text.isNotBlank()) Spacer(Modifier.height(12.dp))
+            ErrorCard(error = error, canRetry = isLast, onRetry = onRetry, onOpenSettings = onOpenSettings)
+        }
+        if (message.sources.isNotEmpty()) {
+            Spacer(Modifier.height(14.dp))
+            SourceChips(message.sources, onOpenSource)
+        }
+        if (message.status == ChatMessage.Status.DONE && message.text.isNotBlank()) {
+            Spacer(Modifier.height(2.dp))
+            AnswerActions(onCopy = onCopy, onShare = onShare, modifier = Modifier.offset(x = (-12).dp))
+        }
+    }
+}
+
+/** First look: what this chat knows, a short intro and suggested questions as glass chips. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun EmptyChat(
+    state: ChatUiState,
+    aboutArticle: Boolean,
+    onSuggestion: (String) -> Unit,
+    contentPadding: PaddingValues,
+) {
+    val orb = rememberEntrance(delayMillis = 40)
+    val headline = rememberEntrance(delayMillis = 100)
+    val card = rememberEntrance(delayMillis = 160)
+    val chips = rememberEntrance(delayMillis = 220)
+    val glow = pulse(min = 0.4f, max = 1f, periodMillis = 1_800)
+    Column(
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(top = contentPadding.calculateTopPadding() + 12.dp, bottom = contentPadding.calculateBottomPadding())
+            .padding(horizontal = 20.dp),
+    ) {
+        Box(
+            Modifier
+                .entrance(orb)
+                .size(64.dp)
+                .glass(shape = CircleShape, level = GlassLevel.Regular, tint = MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center,
+        ) {
+            // A soft glow breathing behind the spark (alpha read in the draw phase only).
+            Box(
+                Modifier
+                    .size(40.dp)
+                    .graphicsLayer { alpha = glow.value }
+                    .clip(CircleShape)
+                    .background(
+                        Brush.radialGradient(
+                            listOf(MaterialTheme.colorScheme.primary.copy(alpha = 0.35f), MaterialTheme.colorScheme.primary.copy(alpha = 0f)),
+                        ),
+                    ),
+            )
+            Icon(
+                Icons.Rounded.AutoAwesome,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp).clearAndSetSemantics { },
+            )
+        }
+        Spacer(Modifier.height(20.dp))
+        Column(Modifier.entrance(headline)) {
+            Text(
+                if (aboutArticle) "FRAG NACH ZUM ARTIKEL" else "FRAG DEIN BRIEFING",
+                style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 1.6.sp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "Was möchtest du wissen?",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.semantics { heading() },
+            )
+            Spacer(Modifier.height(10.dp))
+            Text(
+                if (aboutArticle) {
+                    "Ich kenne den ganzen Artikel, erkläre Hintergründe und schaue im Netz nach, was seitdem passiert ist – mit Quellen."
+                } else {
+                    "Ich kenne alle Meldungen des Tages, ordne sie ein und schaue im Netz nach, was seitdem passiert ist – mit Quellen."
+                },
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        if (aboutArticle && state.title.isNotBlank()) {
+            Spacer(Modifier.height(20.dp))
+            GlassCard(
+                modifier = Modifier.fillMaxWidth().entrance(card),
+                level = GlassLevel.Regular,
+                shape = GlassShapes.tile,
+                contentPadding = PaddingValues(horizontal = 18.dp, vertical = 16.dp),
+            ) {
+                Text(
+                    "DEIN ARTIKEL",
+                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.4.sp),
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    state.title,
+                    style = Reading.feedHeadline(0.8f),
+                    maxLines = 4,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+        if (state.blocked == null && state.suggestions.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.entrance(chips)) {
+                Text(
+                    "Zum Beispiel",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(10.dp))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    state.suggestions.forEach { suggestion ->
+                        Row(
+                            Modifier
+                                .minimumInteractiveComponentSize()
+                                .frost(shape = GlassShapes.pill, level = GlassLevel.Thin)
+                                .clickable(role = Role.Button, onClickLabel = "Frage stellen") { onSuggestion(suggestion) }
+                                .padding(horizontal = 16.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                Icons.Rounded.AutoAwesome,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(15.dp),
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(suggestion, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface)
+                        }
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(28.dp))
+        Text(
+            "Antworten schreibt Claude von Anthropic – sie können Fehler enthalten. Prüf Wichtiges in den verlinkten Quellen.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/** Shares an answer as plain text, with its sources. */
+private fun shareAnswer(context: Context, title: String, message: ChatMessage) {
+    val text = buildString {
+        if (title.isNotBlank()) append(title.trim()).append("\n\n")
+        append(chatPlainText(message.text))
+        if (message.sources.isNotEmpty()) {
+            append("\n\nQuellen:\n")
+            message.sources.forEach { append("• ").append(it.name).append(": ").append(it.url).append('\n') }
+        }
+    }.trim()
+    val send = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, text)
+        if (title.isNotBlank()) putExtra(Intent.EXTRA_TITLE, title)
+    }
+    try {
+        context.startActivity(Intent.createChooser(send, "Antwort teilen"))
+    } catch (_: ActivityNotFoundException) {
+        Toast.makeText(context, "Teilen ist auf diesem Gerät gerade nicht möglich.", Toast.LENGTH_SHORT).show()
+    }
+}
+
+/** Scroll offset that lands on the very end of the last item (LazyColumn clamps it). */
+private const val END_OFFSET = 100_000

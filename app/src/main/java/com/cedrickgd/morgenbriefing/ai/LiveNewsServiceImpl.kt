@@ -1,0 +1,257 @@
+package com.cedrickgd.morgenbriefing.ai
+
+import android.util.Log
+import com.cedrickgd.morgenbriefing.data.BERLIN
+import com.cedrickgd.morgenbriefing.data.model.AppSettings
+import com.cedrickgd.morgenbriefing.data.model.Brief
+import com.cedrickgd.morgenbriefing.data.model.Topic
+import com.cedrickgd.morgenbriefing.data.model.Topics
+import com.cedrickgd.morgenbriefing.util.parseInstantOrNull
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.time.Clock
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+/**
+ * "⚡ Live" (docs/AI.md §2): one research run at a time through [engine], results stored per
+ * run in [store]. A null engine means API < 26 ([AiBlock.UNSUPPORTED_DEVICE]).
+ *
+ * @param briefOf today's (or any day's) stored morning brief, for "since when" and for the
+ *   headlines the reader already knows.
+ */
+internal class LiveNewsServiceImpl(
+    private val scope: CoroutineScope,
+    private val settings: Flow<AppSettings>,
+    private val apiKey: suspend () -> String?,
+    private val usageSink: UsageSink,
+    usageState: StateFlow<UsageSnapshot>,
+    private val engine: LiveEngine?,
+    private val store: LiveStore,
+    private val briefOf: suspend (LocalDate) -> Brief?,
+    private val clock: Clock = Clock.system(BERLIN),
+) : LiveNewsService {
+
+    private val _state = MutableStateFlow(LiveState(blocked = if (engine == null) AiBlock.UNSUPPORTED_DEVICE else null))
+    override val state: StateFlow<LiveState> = _state.asStateFlow()
+
+    /** Bumped whenever articles were stored; drives [todayArticles]. */
+    private val changes = MutableStateFlow(0)
+    private var job: Job? = null
+    private val publishLock = Mutex()
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    override val todayArticles: Flow<List<LiveArticle>> = changes
+        .mapLatest { store.day(today()) }
+        .distinctUntilChanged()
+
+    init {
+        scope.launch {
+            val last = store.lastRunAt(today())
+            if (last != null) _state.update { it.copy(lastRunAt = it.lastRunAt ?: last) }
+        }
+        scope.launch {
+            aiBlockFlow(engine != null, settings, usageState).collect { block ->
+                _state.update { it.copy(blocked = block) }
+            }
+        }
+    }
+
+    override fun refresh(topicIds: List<String>) {
+        synchronized(this) {
+            if (job?.isActive == true) return
+            job = scope.launch { run(topicIds) }
+        }
+    }
+
+    override fun cancel() {
+        synchronized(this) { job?.cancel() }
+    }
+
+    override suspend fun articles(date: LocalDate): List<LiveArticle> = store.day(date)
+
+    // -------------------------------------------------------------------------------------
+
+    private suspend fun run(requestedTopics: List<String>) {
+        val engine = engine ?: return
+        val key = apiKey()
+        if (key == null) {
+            _state.update { it.copy(blocked = AiBlock.NO_KEY) }
+            return
+        }
+        try {
+            usageSink.beforeRequest()
+        } catch (e: AiBlockedException) {
+            _state.update { it.copy(blocked = e.block) }
+            return
+        }
+
+        val current = settings.first()
+        val topics = runTopics(requestedTopics, current)
+        val now = ZonedDateTime.now(clock).withZoneSameInstant(BERLIN)
+        val today = now.toLocalDate()
+        val brief = try {
+            briefOf(today)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(TAG, "Brief for live run could not be read", e)
+            null
+        }
+        val earlier = store.day(today)
+        val since = sinceFor(now.toInstant(), brief, store.lastRunAt(today))
+        val known = buildList {
+            brief?.sections?.forEach { section -> section.items.forEach { add(AiPrompts.KnownHeadline(section.id, it.headline)) } }
+            earlier.forEach { add(AiPrompts.KnownHeadline(it.topicId, it.item.headline)) }
+        }
+        val takenKeys = buildSet {
+            brief?.sections?.forEach { section -> section.items.forEach { add(it.key) } }
+            earlier.forEach { add(it.item.key) }
+        }.toMutableSet()
+
+        _state.update { it.copy(running = true, progress = listOf("Starte die Recherche …"), newCount = 0, error = null) }
+        val model = current.aiModel.apiId
+        val topicIds = topics.map { it.id }
+        var newCount = 0
+        var attempts = 0
+
+        val listener = object : LiveResearchListener {
+            override fun onSearch(query: String) = progress("Suche: ${query.trim().take(80)}")
+            override fun onFetch(url: String) = progress("Lese ${hostOf(url)}")
+            override fun onToolCall(name: String) {
+                if (name == LivePublish.TOOL_NAME) progress("Schreibe die Artikel …")
+            }
+
+            override suspend fun onPublish(rawInput: String): PublishReply = publishLock.withLock {
+                attempts++
+                val outcome = LivePublish.validate(rawInput, topicIds.toSet(), takenKeys, clock.instant())
+                if (outcome.problems.isNotEmpty() && attempts <= MAX_CORRECTIONS) {
+                    progress("Prüfe und korrigiere …")
+                    return@withLock PublishReply(accepted = false, message = LivePublish.replyText(outcome))
+                }
+                // After the corrections budget: keep what is valid instead of looping on.
+                if (outcome.accepted.isNotEmpty()) {
+                    try {
+                        store.append(clock.instant(), model, topicIds, outcome.accepted)
+                    } catch (e: IOException) {
+                        Log.w(TAG, "Live articles could not be stored", e)
+                        return@withLock PublishReply(accepted = false, message = "Speichern fehlgeschlagen. Beende den Lauf.")
+                    }
+                    outcome.accepted.forEach { takenKeys += it.item.key }
+                    newCount += outcome.accepted.size
+                    _state.update { it.copy(newCount = newCount) }
+                    changes.update { it + 1 }
+                }
+                progress(if (newCount == 1) "1 neue Meldung" else "$newCount neue Meldungen")
+                PublishReply(accepted = true, message = "ok")
+            }
+        }
+
+        try {
+            val result = engine.research(
+                LiveResearchRequest(
+                    apiKey = key,
+                    model = model,
+                    systemPrompt = AiPrompts.LIVE_SYSTEM,
+                    userPrompt = AiPrompts.liveRequest(now, since, topics, known),
+                ),
+                listener,
+                usageSink,
+            )
+            val finishedAt = clock.instant()
+            if (newCount == 0) markChecked(finishedAt, model, topicIds)
+            val error = when (result.end) {
+                TurnEnd.REFUSED -> AiError.Refusal(result.refusalCategory)
+                TurnEnd.TRUNCATED -> if (newCount == 0) AiError.Truncated else null
+                TurnEnd.COMPLETE -> null
+            }
+            _state.update {
+                it.copy(
+                    running = false,
+                    lastRunAt = if (error == null || newCount > 0) iso(finishedAt) else it.lastRunAt,
+                    newCount = newCount,
+                    error = error,
+                    progress = it.progress.withLine(if (newCount == 0) "Nichts Neues seit dem letzten Stand" else "Fertig"),
+                )
+            }
+        } catch (e: CancellationException) {
+            withContext(NonCancellable) {
+                _state.update {
+                    it.copy(
+                        running = false,
+                        newCount = newCount,
+                        lastRunAt = if (newCount > 0) iso(clock.instant()) else it.lastRunAt,
+                        progress = it.progress.withLine("Abgebrochen"),
+                    )
+                }
+            }
+            throw e
+        } catch (e: AiBlockedException) {
+            _state.update { it.copy(running = false, blocked = e.block, newCount = newCount) }
+        } catch (e: AiException) {
+            _state.update { it.copy(running = false, error = e.error, newCount = newCount) }
+        }
+    }
+
+    private suspend fun markChecked(at: Instant, model: String, topicIds: List<String>) {
+        try {
+            store.append(at, model, topicIds, emptyList())
+        } catch (e: IOException) {
+            Log.w(TAG, "Live run could not be recorded", e)
+        }
+    }
+
+    private fun progress(line: String) {
+        _state.update { it.copy(progress = it.progress.withLine(line)) }
+    }
+
+    private fun today(): LocalDate = LocalDate.now(clock.withZone(BERLIN))
+
+    private fun iso(instant: Instant): String = instant.atZone(BERLIN).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+
+    private companion object {
+        const val TAG = "LiveNews"
+        const val MAX_PROGRESS_LINES = 8
+        const val MAX_CORRECTIONS = 2
+
+        fun List<String>.withLine(line: String): List<String> =
+            if (lastOrNull() == line) this else (this + line).takeLast(MAX_PROGRESS_LINES)
+    }
+}
+
+/** Topics of a run: the requested known ids, or the user's visible topics when none were given. */
+internal fun runTopics(requested: List<String>, settings: AppSettings): List<Topic> {
+    val ids = requested.map { it.trim() }.filter { it.isNotEmpty() }.distinct()
+    val chosen = if (ids.isNotEmpty()) ids else settings.topicOrder.filter { it !in settings.hiddenTopics }
+    return chosen.mapNotNull { Topics.byId(it) }.ifEmpty { Topics.ALL }
+}
+
+/**
+ * Since when news counts as new: the later of the morning brief's `generatedAt` and the last
+ * live run — but never further back than 24 h; without either, the last 12 h.
+ */
+internal fun sinceFor(now: Instant, brief: Brief?, lastRunAt: String?): Instant {
+    val candidates = listOfNotNull(parseInstantOrNull(brief?.generatedAt), parseInstantOrNull(lastRunAt))
+        .filter { !it.isAfter(now) }
+    val floor = now.minus(Duration.ofHours(24))
+    val since = candidates.maxOrNull() ?: now.minus(Duration.ofHours(12))
+    return if (since.isBefore(floor)) floor else since
+}
