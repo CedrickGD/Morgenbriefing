@@ -1,0 +1,991 @@
+{
+ "batchcomplete": "",
+ "continue": {
+  "gsroffset": 20,
+  "continue": "gsroffset||"
+ },
+ "query": {
+  "pages": {
+   "10576848": {
+    "pageid": 10576848,
+    "ns": 6,
+    "title": "File:LE Hauptbahnhof-4.jpg",
+    "index": 18,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 4606882,
+      "width": 3791,
+      "height": 1723,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/LE_Hauptbahnhof-4.jpg/1280px-LE_Hauptbahnhof-4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 582,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/LE_Hauptbahnhof-4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:LE_Hauptbahnhof-4.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=10576848",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "LE Hauptbahnhof-4",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Bahnhof Leipzig Hbf während der Bauzeit des <a href=\"https://en.wikipedia.org/wiki/de:City-Tunnel_Leipzig\" class=\"extiw\" title=\"w:de:City-Tunnel Leipzig\">Stadttunnels</a>, auffällig sind die fehlenden Gleise auf der Westseite und im Magdeburg-Thüringer Bahnhof.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Appaloosa\" title=\"User:Appaloosa\">Appaloosa</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 3.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "12467676": {
+    "pageid": 12467676,
+    "ns": 6,
+    "title": "File:Bf Leipzig Hbf, DABbuzf 777.jpg",
+    "index": 3,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 957154,
+      "width": 5621,
+      "height": 3730,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/Bf_Leipzig_Hbf%2C_DABbuzf_777.jpg/1280px-Bf_Leipzig_Hbf%2C_DABbuzf_777.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 849,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/87/Bf_Leipzig_Hbf%2C_DABbuzf_777.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Bf_Leipzig_Hbf,_DABbuzf_777.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=12467676",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Bf Leipzig Hbf, DABbuzf 777",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Zweite Modernisierungsstufe mit alter Stirnwand. Noch (Sommer 1995) verkehren die S-Bahn-Züge durchgehend zwischen Ost- und Westring als S1 über die Gleise 6 und 7.<br>\nIn dieser Form ist kein Fahrzeug mehr vorhanden.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Falk2\" title=\"User:Falk2\">Falk2</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY 3.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "12467714": {
+    "pageid": 12467714,
+    "ns": 6,
+    "title": "File:Bf Leipzig Hbf, 180 008.jpg",
+    "index": 19,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 1150319,
+      "width": 5539,
+      "height": 3742,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Bf_Leipzig_Hbf%2C_180_008.jpg/1280px-Bf_Leipzig_Hbf%2C_180_008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 865,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Bf_Leipzig_Hbf%2C_180_008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Bf_Leipzig_Hbf,_180_008.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=12467714",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Bf Leipzig Hbf, 180 008",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Zweisystemlokomotive für 15 kV, 16,7 Hz und 3 kV =, Füllleistung mit einem Binnenverkehrsschnellzug",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Falk2\" title=\"User:Falk2\">Falk2</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY 3.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "20090764": {
+    "pageid": 20090764,
+    "ns": 6,
+    "title": "File:12-06-30-leipzig-by-ralfr-04.jpg",
+    "index": 17,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 4332979,
+      "width": 4288,
+      "height": 2848,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/12-06-30-leipzig-by-ralfr-04.jpg/1280px-12-06-30-leipzig-by-ralfr-04.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 850,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/7b/12-06-30-leipzig-by-ralfr-04.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:12-06-30-leipzig-by-ralfr-04.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=20090764",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "12-06-30-leipzig-by-ralfr-04",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Leipzig, Germany",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Ralf_Roletschek\" title=\"User:Ralf Roletschek\">Ralf Roletschek</a> (<a href=\"//commons.wikimedia.org/wiki/User_talk:Ralf_Roletschek\" title=\"User talk:Ralf Roletschek\"><span class=\"signature-talk\">talk</span></a>) - <a rel=\"nofollow\" class=\"external text\" href=\"http://www.fahrradmonteur.de\">Infos über Fahrräder auf fahrradmonteur.de</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "FAL",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "20090915": {
+    "pageid": 20090915,
+    "ns": 6,
+    "title": "File:12-06-30-leipzig-by-ralfr-13.jpg",
+    "index": 13,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 4627941,
+      "width": 4288,
+      "height": 2848,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3a/12-06-30-leipzig-by-ralfr-13.jpg/1280px-12-06-30-leipzig-by-ralfr-13.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 850,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/12-06-30-leipzig-by-ralfr-13.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:12-06-30-leipzig-by-ralfr-13.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=20090915",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "12-06-30-leipzig-by-ralfr-13",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Leipzig, Deutschland",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Ralf_Roletschek\" title=\"User:Ralf Roletschek\">Ralf Roletschek</a> (<a href=\"//commons.wikimedia.org/wiki/User_talk:Ralf_Roletschek\" title=\"User talk:Ralf Roletschek\"><span class=\"signature-talk\">talk</span></a>) - <a rel=\"nofollow\" class=\"external text\" href=\"http://www.fahrradmonteur.de\">Infos über Fahrräder auf fahrradmonteur.de</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "FAL",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "20092766": {
+    "pageid": 20092766,
+    "ns": 6,
+    "title": "File:12-06-30-leipzig-by-ralfr-78.jpg",
+    "index": 9,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 4263431,
+      "width": 2848,
+      "height": 4288,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/12-06-30-leipzig-by-ralfr-78.jpg/1280px-12-06-30-leipzig-by-ralfr-78.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 1927,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/12-06-30-leipzig-by-ralfr-78.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:12-06-30-leipzig-by-ralfr-78.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=20092766",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "12-06-30-leipzig-by-ralfr-78",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "<a href=\"https://de.wikipedia.org/wiki/Leipzig_Hauptbahnhof\" class=\"extiw\" title=\"de:Leipzig Hauptbahnhof\">Leipzig Hauptbahnhof</a>, Eingang Westhalle, Deutschland",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Ralf_Roletschek\" title=\"User:Ralf Roletschek\">Ralf Roletschek</a> (<a href=\"//commons.wikimedia.org/wiki/User_talk:Ralf_Roletschek\" title=\"User talk:Ralf Roletschek\"><span class=\"signature-talk\">talk</span></a>) - <a rel=\"nofollow\" class=\"external text\" href=\"http://www.fahrradmonteur.de\">Infos über Fahrräder auf fahrradmonteur.de</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "FAL",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "20092915": {
+    "pageid": 20092915,
+    "ns": 6,
+    "title": "File:12-06-30-leipzig-by-ralfr-82.jpg",
+    "index": 16,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 4309779,
+      "width": 4288,
+      "height": 2848,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/12-06-30-leipzig-by-ralfr-82.jpg/1280px-12-06-30-leipzig-by-ralfr-82.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 850,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/07/12-06-30-leipzig-by-ralfr-82.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:12-06-30-leipzig-by-ralfr-82.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=20092915",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "12-06-30-leipzig-by-ralfr-82",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Leipzig, Deutschland",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Ralf_Roletschek\" title=\"User:Ralf Roletschek\">Ralf Roletschek</a> (<a href=\"//commons.wikimedia.org/wiki/User_talk:Ralf_Roletschek\" title=\"User talk:Ralf Roletschek\"><span class=\"signature-talk\">talk</span></a>) - <a rel=\"nofollow\" class=\"external text\" href=\"http://www.fahrradmonteur.de\">Infos über Fahrräder auf fahrradmonteur.de</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "FAL",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "23875005": {
+    "pageid": 23875005,
+    "ns": 6,
+    "title": "File:13-01-15-leipzig-hauptbahnhof-by-RalfR-02.jpg",
+    "index": 6,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 6823594,
+      "width": 4288,
+      "height": 2848,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/13-01-15-leipzig-hauptbahnhof-by-RalfR-02.jpg/1280px-13-01-15-leipzig-hauptbahnhof-by-RalfR-02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 850,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/6f/13-01-15-leipzig-hauptbahnhof-by-RalfR-02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:13-01-15-leipzig-hauptbahnhof-by-RalfR-02.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=23875005",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "13-01-15-leipzig-hauptbahnhof-by-RalfR-02",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Bahnhof Leipzig",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Ralf_Roletschek\" title=\"User:Ralf Roletschek\">Ralf Roletschek</a> (<a href=\"//commons.wikimedia.org/wiki/User_talk:Ralf_Roletschek\" title=\"User talk:Ralf Roletschek\"><span class=\"signature-talk\">talk</span></a>) - <a rel=\"nofollow\" class=\"external text\" href=\"http://www.fahrradmonteur.de\">Infos über Fahrräder auf fahrradmonteur.de</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 3.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "23875112": {
+    "pageid": 23875112,
+    "ns": 6,
+    "title": "File:13-01-15-leipzig-hauptbahnhof-by-RalfR-08.jpg",
+    "index": 7,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 6256883,
+      "width": 4288,
+      "height": 2848,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/13-01-15-leipzig-hauptbahnhof-by-RalfR-08.jpg/1280px-13-01-15-leipzig-hauptbahnhof-by-RalfR-08.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 850,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/13-01-15-leipzig-hauptbahnhof-by-RalfR-08.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:13-01-15-leipzig-hauptbahnhof-by-RalfR-08.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=23875112",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "13-01-15-leipzig-hauptbahnhof-by-RalfR-08",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Bahnhof Leipzig",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Ralf_Roletschek\" title=\"User:Ralf Roletschek\">Ralf Roletschek</a> (<a href=\"//commons.wikimedia.org/wiki/User_talk:Ralf_Roletschek\" title=\"User talk:Ralf Roletschek\"><span class=\"signature-talk\">talk</span></a>) - <a rel=\"nofollow\" class=\"external text\" href=\"http://www.fahrradmonteur.de\">Infos über Fahrräder auf fahrradmonteur.de</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 3.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "23875157": {
+    "pageid": 23875157,
+    "ns": 6,
+    "title": "File:13-01-15-leipzig-hauptbahnhof-by-RalfR-11.jpg",
+    "index": 5,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 5104999,
+      "width": 4288,
+      "height": 2848,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/13-01-15-leipzig-hauptbahnhof-by-RalfR-11.jpg/1280px-13-01-15-leipzig-hauptbahnhof-by-RalfR-11.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 850,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/25/13-01-15-leipzig-hauptbahnhof-by-RalfR-11.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:13-01-15-leipzig-hauptbahnhof-by-RalfR-11.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=23875157",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "13-01-15-leipzig-hauptbahnhof-by-RalfR-11",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Bahnhof Leipzig",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Ralf_Roletschek\" title=\"User:Ralf Roletschek\">Ralf Roletschek</a> (<a href=\"//commons.wikimedia.org/wiki/User_talk:Ralf_Roletschek\" title=\"User talk:Ralf Roletschek\"><span class=\"signature-talk\">talk</span></a>) - <a rel=\"nofollow\" class=\"external text\" href=\"http://www.fahrradmonteur.de\">Infos über Fahrräder auf fahrradmonteur.de</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 3.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "30298916": {
+    "pageid": 30298916,
+    "ns": 6,
+    "title": "File:Bahnhof Leipzig von Panorama Tower 2013.jpg",
+    "index": 8,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 4923659,
+      "width": 4546,
+      "height": 2206,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Bahnhof_Leipzig_von_Panorama_Tower_2013.jpg/1280px-Bahnhof_Leipzig_von_Panorama_Tower_2013.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 621,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/16/Bahnhof_Leipzig_von_Panorama_Tower_2013.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Bahnhof_Leipzig_von_Panorama_Tower_2013.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=30298916",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Bahnhof Leipzig von Panorama Tower 2013",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Bahnhof Leipzig von oben fotografiert vom Panorama Tower.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Tuxyso\" title=\"User:Tuxyso\">Tuxyso</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 3.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "36536707": {
+    "pageid": 36536707,
+    "ns": 6,
+    "title": "File:I11 012 Bf Leipzig Hbf, Personenntunnel.jpg",
+    "index": 20,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 1684935,
+      "width": 4494,
+      "height": 2996,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/I11_012_Bf_Leipzig_Hbf%2C_Personenntunnel.jpg/1280px-I11_012_Bf_Leipzig_Hbf%2C_Personenntunnel.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 853,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/0f/I11_012_Bf_Leipzig_Hbf%2C_Personenntunnel.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:I11_012_Bf_Leipzig_Hbf,_Personenntunnel.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=36536707",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "I11 012 Bf Leipzig Hbf, Personenntunnel",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Personentunnel zur Nikolaistraße unter der Westhalle. Hinter der verschlossenen rechten Tür liegt die Baustelle für den neuen Personentunnel mit Zugang zum Tunnelbahnsteig. Links die Verbindung zum alten Personentunnel – mit Treppen und Rolltreppen. Die Neigung der Sohle in Richtung Stadt hat keinen logischen Grund. Bislang musste man annehmen, es wäre eine Vorleistung für einen barrierefreien Übergang zum Tunnelbahnsteig.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Falk2\" title=\"User:Falk2\">Falk2</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "63938734": {
+    "pageid": 63938734,
+    "ns": 6,
+    "title": "File:I20 039 Bf Leipzig Hbf, Lichtsperrsignal 52L 0015Y.jpg",
+    "index": 4,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 1928048,
+      "width": 4254,
+      "height": 2836,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/I20_039_Bf_Leipzig_Hbf%2C_Lichtsperrsignal_52L_0015Y.jpg/1280px-I20_039_Bf_Leipzig_Hbf%2C_Lichtsperrsignal_52L_0015Y.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 853,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/99/I20_039_Bf_Leipzig_Hbf%2C_Lichtsperrsignal_52L_0015Y.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:I20_039_Bf_Leipzig_Hbf,_Lichtsperrsignal_52L_0015Y.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=63938734",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "I20 039 Bf Leipzig Hbf, Lichtsperrsignal 52L 0015Y",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Genutzt als <a href=\"https://de.wikipedia.org/wiki/Zugdeckungssignal\" class=\"extiw\" title=\"de:Zugdeckungssignal\">Zugdeckungssignal</a>, deshalb zeigt es solange Kennlicht, wie keine Fahrt bis zu diesem Signal eingestellt wird. Erst dabei wechselt es in die Haltstellung, am vorletzten Signalstandort wird der Frühhalt mit dem Signal Zs 13 signalisiert. Das untere Weißlicht wird für das Kuppeln von Flügelzügen benötigt, die Zustimmung zum Aufdrücken wird durch das Rangierfahrtsignal Ra 12 erteilt.<br>\nWeiß-rot-weiße Hauptsignalmastschilder kommen im DR-Netz, abgesehen von echten Hauptsignalen praktisch nur an Zugdeckungssignalen vor.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Falk2\" title=\"User:Falk2\">Falk2</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "109532785": {
+    "pageid": 109532785,
+    "ns": 6,
+    "title": "File:J39 687 Bf Leipzig Hbf, Bybzdf 482.jpg",
+    "index": 14,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 4047208,
+      "width": 5611,
+      "height": 3741,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/J39_687_Bf_Leipzig_Hbf%2C_Bybzdf_482.jpg/1280px-J39_687_Bf_Leipzig_Hbf%2C_Bybzdf_482.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 853,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/J39_687_Bf_Leipzig_Hbf%2C_Bybzdf_482.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:J39_687_Bf_Leipzig_Hbf,_Bybzdf_482.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=109532785",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "J39 687 Bf Leipzig Hbf, Bybzdf 482",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Ein Eilzug nach Chemnitz, Linie RE6 bei der Abfahrt von Leipzig, die Steuerwagen sind aus Halberstädter Mitteleinstiegwagen umgebaute Bybzdf 482 mit »Wittenberger Kopf«. Die Wendezüge lösten 2015 die bis dahin eingesetzten Pendolini der Reihe 612 ab. Der öffentliche Besteller wollte vor allem Kosten sparen. Der aufwändige Neigetechnikausbau der Strecke wurde damit nur zwölf Jahre genutzt.<br>\nDurch die Aufgabe der Bahnsteiggleise 24 bis 26 und des Gleises 24 zwischen den Stellwerken 1 und 21 wird der Betrieb auf der Ostseite unnötig erschwert, da für die Strecke nach Geithain nur noch eine Bahnsteigkante zur Verfügung steht. Drei wären erforderlich und die Planer haben sich um 1905 schon was bei den 26 Hallengleisen gedacht. Die Personenzüge von und nach Geithain müssen zwischen Hauptbahnhof und Dresdener Güterbahnhof auf die Gleise 20 und 21 ausweichen.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"https://de.wikipedia.org/wiki/User:Falk2\" class=\"extiw\" title=\"de:User:Falk2\">Falk2</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "129489227": {
+    "pageid": 129489227,
+    "ns": 6,
+    "title": "File:J41 083 Bf Leipzig Hbf, Schienenprüfzug.jpg",
+    "index": 10,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 6259020,
+      "width": 5820,
+      "height": 3880,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/J41_083_Bf_Leipzig_Hbf%2C_Schienenpr%C3%BCfzug.jpg/1280px-J41_083_Bf_Leipzig_Hbf%2C_Schienenpr%C3%BCfzug.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 853,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a4/J41_083_Bf_Leipzig_Hbf%2C_Schienenpr%C3%BCfzug.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:J41_083_Bf_Leipzig_Hbf,_Schienenpr%C3%BCfzug.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=129489227",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "J41 083 Bf Leipzig Hbf, Schienenprüfzug",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Bei einer Rangierfahrt zum Unterwerk des Bw Leipzig Hbf Süd zum Abstellen über Nacht, die Einheit steht auf dem Gleis 149 vor den Kreuzungen mit den Stammgleisen Richtung Dresden und Chemnitz.<br>\n<p>Der mittlere Messwagen stammt von Schienenprüfzug <i>SPZ 1</i>, der 1995 als dreiteiliger Triebzug <i>SPE 140</i> bei <a href=\"https://de.wikipedia.org/wiki/Plasser_%26_Theurer\" class=\"extiw\" title=\"de:Plasser &amp; Theurer\">Plasser &amp; Theurer</a> gebaut wurde. Die Antriebsanlagen der beiden Endwagen wurden wegen zu hoher Massen erst ausgebaut, 2013 wurden die Wagen daraufhin ausgemustert und zerlegt. Der Messwagen läuft seitdem zwischen einem angepassten Halberstädter Mitteleinstiegsteuerwagen Bybdzf 482 und einer Lokomotive der Reihe 218. Die Zugzielanzeige wurde ausgebaut, aber nicht verblendet.<br>\n</p>\nDie Nummer an der Führerstandsfront ist ein Teil der EDV-Nummer 99 80 9360 003. Bei der Deutschen Bahn scheint es Kräfte zu geben, die sich nicht an die Arbeitswagennummern, die vom Eisenbahnbundesamt vergeben werden und keinen Rückschluss auf alte DB-Nummern ermöglichen, gewöhnen können oder wollen.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Falk2\" title=\"User:Falk2\">Falk2</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "129620128": {
+    "pageid": 129620128,
+    "ns": 6,
+    "title": "File:J41 019 Bf Leipzig Hbf, Bmmdz.jpg",
+    "index": 12,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 4709882,
+      "width": 5611,
+      "height": 3741,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/J41_019_Bf_Leipzig_Hbf%2C_Bmmdz.jpg/1280px-J41_019_Bf_Leipzig_Hbf%2C_Bmmdz.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 853,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/25/J41_019_Bf_Leipzig_Hbf%2C_Bmmdz.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:J41_019_Bf_Leipzig_Hbf,_Bmmdz.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=129620128",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "J41 019 Bf Leipzig Hbf, Bmmdz",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "»Flixtrain«-Wagen, entstanden aus Interregiowagen auf Basis von UIC-X-Wagen der Deutschen Bundesbahn. Sie wurden, erkennbar am Nebenzeichen -mm-, nach 2016 erneut modernisiert. Die Fensterteilung wurde dabei nicht verändert, doch wurde die aufgelockerte Inneneinrichtung entfernt und die Wagen zu reinen Großraumwagen umgerüstet.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"https://de.wikipedia.org/wiki/User:Falk2\" class=\"extiw\" title=\"de:User:Falk2\">Falk2</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "131140596": {
+    "pageid": 131140596,
+    "ns": 6,
+    "title": "File:L01 542 Bf Leipzig Hbf, ex Stw 1.jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 10616963,
+      "width": 6783,
+      "height": 4522,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/L01_542_Bf_Leipzig_Hbf%2C_ex_Stw_1.jpg/1280px-L01_542_Bf_Leipzig_Hbf%2C_ex_Stw_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 853,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/84/L01_542_Bf_Leipzig_Hbf%2C_ex_Stw_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:L01_542_Bf_Leipzig_Hbf,_ex_Stw_1.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=131140596",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "L01 542 Bf Leipzig Hbf, ex Stw 1",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Beim Umbau der Gleise 20 bis 23 im Frühjahr 2023, der Sinn der Abdeckung des Stellwerksdaches ist noch nicht erkennbar. Das Stellwerk ist seit 2002 außer Betrieb.<br>\nDahinter wurde eine Baustraße für den Materialtransport von der und zur B‌austelle eingerichtet. Die Achszähltöpfe stehen noch dort, wo sie vorher in Betrieb waren. Das könnte bedeuten, dass die neuen Anlagen etwa in der Lage der alten entstehen.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"https://de.wikipedia.org/wiki/User:Falk2\" class=\"extiw\" title=\"de:User:Falk2\">Falk2</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "131140599": {
+    "pageid": 131140599,
+    "ns": 6,
+    "title": "File:L01 547 Bf Leipzig Hbf, Umbau Ostseite, Gl 23.jpg",
+    "index": 11,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 11048972,
+      "width": 6765,
+      "height": 4510,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/L01_547_Bf_Leipzig_Hbf%2C_Umbau_Ostseite%2C_Gl_23.jpg/1280px-L01_547_Bf_Leipzig_Hbf%2C_Umbau_Ostseite%2C_Gl_23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 853,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/85/L01_547_Bf_Leipzig_Hbf%2C_Umbau_Ostseite%2C_Gl_23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:L01_547_Bf_Leipzig_Hbf,_Umbau_Ostseite,_Gl_23.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=131140599",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "L01 547 Bf Leipzig Hbf, Umbau Ostseite, Gl 23",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Vom Gleis 23 Richtung Osten, auch hier sind die Weichen 50W01 und 50W02 ausgebaut. Der Umbau der Ostseite war schon im Zeitraum von 2014 bis 2018 vorgesehen, doch wurde er seinerzeit wegen Geldmangel gestrichen.<br>\nDas Stammgleis 23 führt über den rechten Strang über die DKW 50W04, die gerade Verlängerung ist das Gleis 5051 in die Dresdener Gruppe. Das Richtungsgleis 24 wurde beim Umbau 2014 bis 2016 zwischen der Bahnsteighalle und dem Stellwerk 21 im Bahnhof Le-Dre Gbf aufgegeben, ohne damit einen echten Vorteil zu erreichen. Die wegen der Anschlüsse zeitnah von und nach Dresden und Chemnitz ein- und ausfahrenden Züge behindern sich jetzt gegenseitig.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"https://de.wikipedia.org/wiki/User:Falk2\" class=\"extiw\" title=\"de:User:Falk2\">Falk2</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "131436547": {
+    "pageid": 131436547,
+    "ns": 6,
+    "title": "File:L01 566 Bf Leipzig Hbf, 151 007.jpg",
+    "index": 15,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 7956005,
+      "width": 6541,
+      "height": 4361,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/L01_566_Bf_Leipzig_Hbf%2C_151_007.jpg/1280px-L01_566_Bf_Leipzig_Hbf%2C_151_007.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 853,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4a/L01_566_Bf_Leipzig_Hbf%2C_151_007.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:L01_566_Bf_Leipzig_Hbf,_151_007.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=131436547",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "L01 566 Bf Leipzig Hbf, 151 007",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Auf dem letzten auch signalmäßig nutzbaren Außenbahnsteiggleis 38, der gelbe Anstrich ließ von Weitem eine Lokomotive von DB Netz vermuten. Erst aus der Nähe zeigt sich, dass die briefkastengelbe Lokmotive der Eisenbahngesellschaft Potsdam gehört.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"https://de.wikipedia.org/wiki/User:Falk2\" class=\"extiw\" title=\"de:User:Falk2\">Falk2</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   },
+   "131447874": {
+    "pageid": 131447874,
+    "ns": 6,
+    "title": "File:L01 573 Bf Leipzig Hbf, Tunnelrampe Ostseite.jpg",
+    "index": 2,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 9575182,
+      "width": 6550,
+      "height": 4367,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/L01_573_Bf_Leipzig_Hbf%2C_Tunnelrampe_Ostseite.jpg/1280px-L01_573_Bf_Leipzig_Hbf%2C_Tunnelrampe_Ostseite.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 1280,
+      "thumbheight": 853,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/L01_573_Bf_Leipzig_Hbf%2C_Tunnelrampe_Ostseite.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:L01_573_Bf_Leipzig_Hbf,_Tunnelrampe_Ostseite.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=131447874",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "L01 573 Bf Leipzig Hbf, Tunnelrampe Ostseite",
+        "source": "mediawiki-metadata"
+       },
+       "ImageDescription": {
+        "value": "Richtung Nordost beim Umbau der Ostseite im Frühjahr 2023; die Tunnelrampe wurde beim Bau des Hauptbahnhofs mitgebaut. Als Folge des ersten Weltkrieges wurde der Tunnel zum Bahnhof Leipzig Bayer Bf seinerzeit nicht weitergebaut und mit der Bildung der Deutschen Reichsbahn endete auch der Konkurrenzkampf zwischen der preußischen und sächsischen Staatsbahn. Damit waren die Vorleistungen auf der sächsischen Seite gegenstandslos geworden.<br>\nMit dem Umbau der Ostseite des Bahnhofs Leipzig Hbf soll der ungenutzte Tunnel, der zusätzlich durch zwei Bombentreffer im zweiten Weltkrieg in drei Teile unterbrochen wurde, verfüllt werden.",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"https://de.wikipedia.org/wiki/User:Falk2\" class=\"extiw\" title=\"de:User:Falk2\">Falk2</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      }
+     }
+    ]
+   }
+  }
+ }
+}

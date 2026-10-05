@@ -1,7 +1,9 @@
 name: Routine-Skripte
 
 # Tests for routine/*.mjs (zero dependencies, Node >= 18) and a check that the demo brief the
-# app ships with still matches the format.
+# app ships with still matches the format (schema 2, freshness relative to its own generatedAt).
+# The tests never touch the network: find-image.mjs is tested against a recorded Commons API
+# response in routine/test/fixtures/.
 on:
   push:
     branches: [main]
@@ -47,4 +49,11 @@ jobs:
         run: node --test routine/test/*.test.mjs
 
       - name: Demo-Briefing der App prüfen
-        run: node routine/validate-brief.mjs app/src/main/assets/sample-brief.json
+        run: node routine/validate-brief.mjs app/src/main/assets/sample-brief.json --max-age-hours 36
+
+      - name: Hilfe der Skripte lässt sich aufrufen
+        run: |
+          set -euo pipefail
+          for script in validate-brief find-image assemble-brief publish-brief; do
+            node "routine/${script}.mjs" --help > /dev/null
+          done
