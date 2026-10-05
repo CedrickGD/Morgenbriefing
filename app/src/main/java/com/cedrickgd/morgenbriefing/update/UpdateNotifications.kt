@@ -12,6 +12,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.cedrickgd.morgenbriefing.R
 import com.cedrickgd.morgenbriefing.notify.Notifications
+import com.cedrickgd.morgenbriefing.ui.shell.AppLinks
 
 /** The "Update verfügbar" notification on its own channel [CHANNEL_UPDATES]. */
 object UpdateNotifications {
@@ -40,7 +41,7 @@ object UpdateNotifications {
             return
         }
         val excerpt = UpdateText.notesExcerpt(release.notes, maxLines = 4, maxChars = 220)
-        val text = "Tippe, um es unter Einstellungen → App-Update zu installieren."
+        val text = "Tippe, um es unter Einstellungen → App zu installieren."
         val builder = NotificationCompat.Builder(context, CHANNEL_UPDATES)
             .setSmallIcon(R.drawable.ic_stat_sun)
             .setColor(ContextCompat.getColor(context, R.color.brand))
@@ -65,9 +66,11 @@ object UpdateNotifications {
         NotificationManagerCompat.from(context).cancel(ID_UPDATE)
     }
 
+    /** Opens the app on the "Einstellungen" page, where the update card lives. */
     private fun openAppIntent(context: Context): PendingIntent? {
         val launch = context.packageManager.getLaunchIntentForPackage(context.packageName) ?: return null
         launch.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        launch.putExtra(AppLinks.EXTRA_OPEN_PAGE, AppLinks.PAGE_SETTINGS)
         return PendingIntent.getActivity(
             context,
             ID_UPDATE,

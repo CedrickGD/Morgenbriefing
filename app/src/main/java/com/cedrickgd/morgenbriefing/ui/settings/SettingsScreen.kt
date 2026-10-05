@@ -1,59 +1,19 @@
 package com.cedrickgd.morgenbriefing.ui.settings
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.OpenInNew
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.BatteryChargingFull
-import androidx.compose.material.icons.rounded.Cloud
-import androidx.compose.material.icons.rounded.Code
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.Key
-import androidx.compose.material.icons.rounded.LocationCity
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.NotificationsActive
-import androidx.compose.material.icons.rounded.NotificationsOff
-import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,30 +22,26 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cedrickgd.morgenbriefing.BuildConfig
-import com.cedrickgd.morgenbriefing.data.BERLIN
+import androidx.compose.foundation.lazy.LazyListState
+import com.cedrickgd.morgenbriefing.ai.AiSupport
+import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
 import com.cedrickgd.morgenbriefing.data.model.AccentId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
+import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
-import com.cedrickgd.morgenbriefing.data.model.Topics
+import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import com.cedrickgd.morgenbriefing.notify.AlarmScheduler
 import com.cedrickgd.morgenbriefing.notify.MorningWorker
+import com.cedrickgd.morgenbriefing.ui.glass.PageTitle
+import com.cedrickgd.morgenbriefing.ui.glass.TopGlassBar
+import com.cedrickgd.morgenbriefing.ui.shell.reportChromeScroll
 import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
-import com.cedrickgd.morgenbriefing.util.LinkActions
 import com.cedrickgd.morgenbriefing.util.Links
 import com.cedrickgd.morgenbriefing.util.SystemIntents
 import com.cedrickgd.morgenbriefing.util.SystemStatus
@@ -93,69 +49,50 @@ import com.cedrickgd.morgenbriefing.util.bottomContentInset
 import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import com.cedrickgd.morgenbriefing.util.rememberNotificationPermissionRequester
+import com.cedrickgd.morgenbriefing.util.statusBarTop
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
-import kotlin.math.roundToInt
 
-/** Dialogs of the settings screen; saveable so they survive rotation. */
-private enum class SettingsDialog { TIME, HOME_PLACE, DAY_PLACE, TOKEN, REMOVE_TOKEN }
+/** Dialogs of the settings page; saveable so they survive rotation. */
+private enum class SettingsDialog { TIME, HOME_PLACE, DAY_PLACE, TOKEN, REMOVE_TOKEN, AI_KEY, REMOVE_AI_KEY }
 
-private const val TOPIC_KEY_PREFIX = "topic:"
-private const val WIKIMEDIA_COMMONS = "https://commons.wikimedia.org/"
-
-/** Lazy-list keys of the screen's fixed blocks (topic rows are `topic:<id>`). */
+/** Lazy-list keys of the page, in display order. */
 private object Block {
-    const val APPEARANCE_HEADER = "h-appearance"
-    const val APPEARANCE = "appearance"
-    const val TOPICS_HEADER = "h-topics"
-    const val TOPICS_INTRO = "topics-intro"
-    const val TOPICS_FOOTER = "topics-footer"
-    const val READING_HEADER = "h-reading"
-    const val READING = "reading"
-    const val NOTIFICATION_HEADER = "h-notification"
-    const val NOTIFICATION = "notification"
-    const val PLACES_HEADER = "h-places"
+    const val TITLE = "title"
+    const val LOADING = "loading"
+    const val HERO = "hero"
+    const val H_BRIEFING = "h-briefing"
+    const val BRIEFING = "briefing"
+    const val H_LOOK = "h-look"
+    const val LOOK = "look"
+    const val H_TOPICS = "h-topics"
+    const val TOPICS = "topics"
+    const val H_PLACES = "h-places"
     const val PLACES = "places"
-    const val SOURCE_HEADER = "h-source"
+    const val H_READING = "h-reading"
+    const val READING = "reading"
+    const val H_AI = "h-ai"
+    const val AI = "ai"
+    const val H_SOURCE = "h-source"
     const val SOURCE = "source"
-    const val UPDATE_HEADER = "h-update"
+    const val H_APP = "h-app"
+    const val APP = "app"
     const val UPDATE = "update"
-    const val ABOUT_HEADER = "h-about"
-    const val ABOUT = "about"
-}
+    const val LINKS = "links"
+    const val FOOTER = "footer"
 
-private fun topicKey(id: String) = "$TOPIC_KEY_PREFIX$id"
-
-private fun isTopicKey(key: Any): Boolean = key is String && key.startsWith(TOPIC_KEY_PREFIX)
-
-/** Item keys in display order; the list is driven from this so indices are always known. */
-private fun blockKeys(topicOrder: List<String>): List<String> = buildList {
-    add(Block.APPEARANCE_HEADER)
-    add(Block.APPEARANCE)
-    add(Block.TOPICS_HEADER)
-    add(Block.TOPICS_INTRO)
-    topicOrder.forEach { add(topicKey(it)) }
-    add(Block.TOPICS_FOOTER)
-    add(Block.READING_HEADER)
-    add(Block.READING)
-    add(Block.NOTIFICATION_HEADER)
-    add(Block.NOTIFICATION)
-    add(Block.PLACES_HEADER)
-    add(Block.PLACES)
-    add(Block.SOURCE_HEADER)
-    add(Block.SOURCE)
-    add(Block.UPDATE_HEADER)
-    add(Block.UPDATE)
-    add(Block.ABOUT_HEADER)
-    add(Block.ABOUT)
+    val ALL = listOf(
+        TITLE, HERO, H_BRIEFING, BRIEFING, H_LOOK, LOOK, H_TOPICS, TOPICS, H_PLACES, PLACES,
+        H_READING, READING, H_AI, AI, H_SOURCE, SOURCE, H_APP, APP, UPDATE, LINKS, FOOTER,
+    )
 }
 
 /**
- * Tab "Einstellungen": appearance, topics (show/hide, order), reading size, notification (time
- * + everything the system must allow), places and day window, the GitHub token, the in-app
- * updater and "Über". Every change is saved immediately.
+ * Page "Einstellungen" (docs/DESIGN.md §4, §7): transparent over the sky, page title under the
+ * status bar and a frosted top bar once it scrolled away. Sections: status hero, Morgenbriefing,
+ * Darstellung, Themen, Orte & Zeitfenster, Lesen, KI, News-Quelle, App. Every change is saved
+ * immediately.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     contentPadding: PaddingValues,
@@ -166,21 +103,35 @@ fun SettingsScreen(
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val tokenCheck by viewModel.tokenCheck.collectAsStateWithLifecycle()
     val placeSearch by viewModel.placeSearch.collectAsStateWithLifecycle()
+    val source by viewModel.source.collectAsStateWithLifecycle()
+    val aiKey by viewModel.aiKey.collectAsStateWithLifecycle()
+    val usage by viewModel.usage.collectAsStateWithLifecycle()
+    val weather by viewModel.weather.collectAsStateWithLifecycle()
     val update by updateViewModel.state.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
     val links = rememberLinkActions()
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val listState = rememberLazyListState()
     val reduceMotion = rememberReduceMotion()
+    val stagger = rememberStagger(enabled = !reduceMotion)
+    val now = rememberMinuteClock()
     var dialog by rememberSaveable { mutableStateOf<SettingsDialog?>(null) }
+
+    val density = LocalDensity.current
+    val topBarPx = with(density) { (statusBarTop() + TOP_BAR_HEIGHT).toPx() }
+    val titleThresholdPx = with(density) { TITLE_SCROLL_THRESHOLD.toPx() }
+    val showTopBar by remember {
+        derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > titleThresholdPx }
+    }
 
     // The user fixes permissions in the system settings and comes back: re-check on resume.
     var status by remember { mutableStateOf(SystemStatus.read(context)) }
-    LifecycleResumeEffect(context, updateViewModel) {
+    LifecycleResumeEffect(context, updateViewModel, viewModel) {
         status = SystemStatus.read(context)
         updateViewModel.onResume()
+        viewModel.onResume()
         onPauseOrDispose { updateViewModel.onPause() }
     }
     val requestNotifications = rememberNotificationPermissionRequester {
@@ -191,61 +142,77 @@ fun SettingsScreen(
         viewModel.messages.collect { snackbar.showSnackbar(it) }
     }
 
-    val actions = SettingsActions(
-        onThemeMode = viewModel::setThemeMode,
-        onAccent = viewModel::setAccent,
-        onTopicVisible = viewModel::setTopicVisible,
-        onTopicOrder = viewModel::setTopicOrder,
-        onResetTopicOrder = viewModel::resetTopicOrder,
-        onReaderScale = viewModel::setReaderTextScale,
-        onNotificationsToggle = { enabled ->
-            viewModel.setNotificationsEnabled(enabled)
-            if (enabled && !status.canNotify) requestNotifications()
-        },
-        onEditTime = { dialog = SettingsDialog.TIME },
-        onFixNotifications = requestNotifications,
-        onFixExactAlarms = { SystemIntents.requestExactAlarms(context) },
-        onFixBattery = { SystemIntents.requestIgnoreBatteryOptimizations(context) },
-        onOpenAppDetails = { SystemIntents.openAppDetails(context) },
-        onTestNotification = {
-            if (!status.canNotify) {
-                scope.launch {
-                    val result = snackbar.showSnackbar(
-                        message = "Erlaube zuerst Benachrichtigungen.",
-                        actionLabel = "Erlauben",
-                        duration = SnackbarDuration.Long,
-                    )
-                    if (result == SnackbarResult.ActionPerformed) requestNotifications()
-                }
-            } else {
-                val queued = try {
-                    MorningWorker.enqueue(context.applicationContext, force = true)
-                    true
-                } catch (e: IllegalStateException) {
-                    false
-                }
-                scope.launch {
-                    snackbar.showSnackbar(
-                        if (queued) {
-                            "Kommt gleich – die Test-Benachrichtigung ist unterwegs."
-                        } else {
-                            "Die Test-Benachrichtigung konnte nicht gestartet werden."
-                        },
-                    )
-                }
+    fun scrollTo(key: String) {
+        val index = Block.ALL.indexOf(key)
+        if (index < 0) return
+        scope.launch {
+            val offset = -topBarPx.toInt()
+            if (reduceMotion) listState.scrollToItem(index, offset) else listState.animateScrollToItem(index, offset)
+        }
+    }
+
+    fun openTokenDialog() {
+        viewModel.resetTokenCheck()
+        dialog = SettingsDialog.TOKEN
+    }
+
+    fun openAiKeyDialog() {
+        viewModel.resetAiKeyState()
+        dialog = SettingsDialog.AI_KEY
+    }
+
+    val onTestNotification: () -> Unit = {
+        if (!status.canNotify) {
+            scope.launch {
+                val result = snackbar.showSnackbar(
+                    message = "Erlaube zuerst Benachrichtigungen.",
+                    actionLabel = "Erlauben",
+                    duration = SnackbarDuration.Long,
+                )
+                if (result == SnackbarResult.ActionPerformed) requestNotifications()
             }
-        },
-        onEditPlace = { target ->
-            viewModel.resetPlaceSearch()
-            dialog = if (target == PlaceTarget.HOME) SettingsDialog.HOME_PLACE else SettingsDialog.DAY_PLACE
-        },
-        onDayWindow = viewModel::setDayWindow,
-        onEditToken = {
-            viewModel.resetTokenCheck()
-            dialog = SettingsDialog.TOKEN
-        },
-        onRemoveToken = { dialog = SettingsDialog.REMOVE_TOKEN },
-    )
+        } else {
+            val queued = try {
+                MorningWorker.enqueue(context.applicationContext, force = true)
+                true
+            } catch (e: IllegalStateException) {
+                false
+            }
+            scope.launch {
+                snackbar.showSnackbar(
+                    if (queued) "Kommt gleich – die Test-Benachrichtigung ist unterwegs." else "Die Test-Benachrichtigung konnte nicht gestartet werden.",
+                )
+            }
+        }
+    }
+
+    val onPill: (StatusItem) -> Unit = { item ->
+        when (item.level) {
+            StatusLevel.ATTENTION -> when (item.kind) {
+                StatusKind.NOTIFICATIONS -> requestNotifications()
+                StatusKind.EXACT_ALARM -> SystemIntents.requestExactAlarms(context)
+                StatusKind.BATTERY -> SystemIntents.requestIgnoreBatteryOptimizations(context)
+                StatusKind.NEWS -> {
+                    val failed = source as? SourceStatus.Failed
+                    if (failed != null && failed.kind == BriefErrorKind.NETWORK) {
+                        viewModel.checkSource(force = true)
+                        scrollTo(Block.H_SOURCE)
+                    } else {
+                        openTokenDialog()
+                    }
+                }
+                StatusKind.AI -> openAiKeyDialog()
+            }
+            StatusLevel.NEUTRAL -> if (item.kind == StatusKind.AI) openAiKeyDialog() else scrollTo(Block.H_SOURCE)
+            StatusLevel.OK -> scrollTo(
+                when (item.kind) {
+                    StatusKind.NEWS -> Block.H_SOURCE
+                    StatusKind.AI -> Block.H_AI
+                    else -> Block.H_BRIEFING
+                },
+            )
+        }
+    }
 
     val updateActions = UpdateCardActions(
         onCheck = updateViewModel::check,
@@ -258,49 +225,89 @@ fun SettingsScreen(
             }
         },
         onDismissError = updateViewModel::dismissError,
-        onGoToToken = goToToken@{
-            val current = settings ?: return@goToToken
-            val index = blockKeys(TopicList.normalize(current.topicOrder)).indexOf(Block.SOURCE_HEADER)
-            scope.launch {
-                if (reduceMotion) listState.scrollToItem(index) else listState.animateScrollToItem(index)
-            }
-        },
+        onGoToToken = { scrollTo(Block.H_SOURCE) },
     )
 
+    val aiActions = AiActions(
+        onEditKey = ::openAiKeyDialog,
+        onModel = viewModel::setAiModel,
+        onLimit = viewModel::setAiMonthlyLimit,
+        onLiveAuto = viewModel::setLiveAutoRefresh,
+    )
+
+    val current = settings
+    val keys = if (current == null) listOf(Block.TITLE, Block.LOADING) else Block.ALL
+
     Box(modifier.fillMaxSize()) {
-        Column(
-            Modifier
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
                 .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
+                .reportChromeScroll()
+                .horizontalSafeDrawing(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = bottomContentInset(contentPadding) + 32.dp),
         ) {
-            LargeTopAppBar(
-                title = { Text("Einstellungen") },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                ),
-            )
-            val current = settings
-            if (current == null) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-            } else {
-                SettingsContent(
+            items(keys, key = { it }, contentType = { if (it.startsWith("h-")) "heading" else it }) { key ->
+                val index = keys.indexOf(key)
+                val enter = Modifier
+                    .fillMaxWidth()
+                    .staggerIn(stagger, key, index)
+                if (key == Block.TITLE) {
+                    PageTitle(overline = "Dein Morgen", title = "Einstellungen", modifier = enter.padding(horizontal = 4.dp))
+                    return@items
+                }
+                if (current == null) {
+                    HeroPlaceholder(enter.padding(top = 16.dp))
+                    return@items
+                }
+                SettingsBlock(
+                    key = key,
                     settings = current,
-                    status = status,
-                    links = links,
-                    actions = actions,
-                    update = update,
-                    updateActions = updateActions,
+                    modifier = enter,
+                    content = BlockContent(
+                        status = status,
+                        source = source,
+                        now = now,
+                        weather = weather,
+                        usage = usage,
+                        update = update,
+                        reduceMotion = reduceMotion,
+                    ),
+                    callbacks = BlockCallbacks(
+                        onPill = onPill,
+                        onOpenAppDetails = { SystemIntents.openAppDetails(context) },
+                        onNotificationsToggle = { enabled ->
+                            viewModel.setNotificationsEnabled(enabled)
+                            if (enabled && !status.canNotify) requestNotifications()
+                        },
+                        onEditTime = { dialog = SettingsDialog.TIME },
+                        onTestNotification = onTestNotification,
+                        onThemeMode = viewModel::setThemeMode,
+                        onAccent = viewModel::setAccent,
+                        onTopicVisible = viewModel::setTopicVisible,
+                        onTopicOrder = viewModel::setTopicOrder,
+                        onResetTopics = viewModel::resetTopics,
+                        onEditPlace = { target ->
+                            viewModel.resetPlaceSearch()
+                            dialog = if (target == PlaceTarget.HOME) SettingsDialog.HOME_PLACE else SettingsDialog.DAY_PLACE
+                        },
+                        onDayWindow = viewModel::setDayWindow,
+                        onReaderScale = viewModel::setReaderTextScale,
+                        ai = aiActions,
+                        onEditToken = ::openTokenDialog,
+                        onRemoveToken = { dialog = SettingsDialog.REMOVE_TOKEN },
+                        onRecheckSource = { viewModel.checkSource(force = true) },
+                        update = updateActions,
+                        onOpenLink = links::open,
+                    ),
                     listState = listState,
-                    reduceMotion = reduceMotion,
-                    bottomPadding = bottomContentInset(contentPadding),
-                    modifier = Modifier.weight(1f),
+                    topObstruction = topBarPx,
                 )
             }
         }
-        SnackbarHost(
-            hostState = snackbar,
+        TopGlassBar(title = "Einstellungen", visible = showTopBar)
+        GlassSnackbarHost(
+            state = snackbar,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .horizontalSafeDrawing()
@@ -308,7 +315,7 @@ fun SettingsScreen(
         )
     }
 
-    val current = settings ?: return
+    current ?: return
     when (dialog) {
         SettingsDialog.TIME -> NotifyTimeDialog(
             hour = current.notifyHour,
@@ -354,431 +361,180 @@ fun SettingsScreen(
             onDismiss = { dialog = null },
         )
 
+        SettingsDialog.AI_KEY -> AiKeyDialog(
+            hasKey = current.hasAiKey,
+            state = aiKey,
+            onSaveAndTest = viewModel::saveAndTestAiKey,
+            onOpenConsole = { links.open(ANTHROPIC_KEYS_URL) },
+            onRemove = { dialog = SettingsDialog.REMOVE_AI_KEY },
+            onDismiss = {
+                dialog = null
+                viewModel.resetAiKeyState()
+            },
+        )
+
+        SettingsDialog.REMOVE_AI_KEY -> RemoveAiKeyDialog(
+            onConfirm = {
+                dialog = null
+                viewModel.resetAiKeyState()
+                viewModel.removeAiKey()
+            },
+            onDismiss = { dialog = SettingsDialog.AI_KEY },
+        )
+
         null -> Unit
     }
 }
 
-/** Callbacks of [SettingsContent], bundled to keep the composable signature readable. */
-private class SettingsActions(
-    val onThemeMode: (ThemeMode) -> Unit,
-    val onAccent: (AccentId) -> Unit,
-    val onTopicVisible: (id: String, visible: Boolean) -> Unit,
-    val onTopicOrder: (List<String>) -> Unit,
-    val onResetTopicOrder: () -> Unit,
-    val onReaderScale: (Float) -> Unit,
-    val onNotificationsToggle: (Boolean) -> Unit,
-    val onEditTime: () -> Unit,
-    val onFixNotifications: () -> Unit,
-    val onFixExactAlarms: () -> Unit,
-    val onFixBattery: () -> Unit,
-    val onOpenAppDetails: () -> Unit,
-    val onTestNotification: () -> Unit,
-    val onEditPlace: (PlaceTarget) -> Unit,
-    val onDayWindow: (start: Int, end: Int) -> Unit,
-    val onEditToken: () -> Unit,
-    val onRemoveToken: () -> Unit,
+/** Values every block may need, bundled to keep [SettingsBlock]'s signature readable. */
+private class BlockContent(
+    val status: SystemStatus,
+    val source: SourceStatus,
+    val now: ZonedDateTime,
+    val weather: WeatherSnapshot?,
+    val usage: UsageSnapshot,
+    val update: UpdatePanelState,
+    val reduceMotion: Boolean,
 )
 
+/** Callbacks of the blocks. */
+private class BlockCallbacks(
+    val onPill: (StatusItem) -> Unit,
+    val onOpenAppDetails: () -> Unit,
+    val onNotificationsToggle: (Boolean) -> Unit,
+    val onEditTime: () -> Unit,
+    val onTestNotification: () -> Unit,
+    val onThemeMode: (ThemeMode) -> Unit,
+    val onAccent: (AccentId) -> Unit,
+    val onTopicVisible: (String, Boolean) -> Unit,
+    val onTopicOrder: (List<String>) -> Unit,
+    val onResetTopics: () -> Unit,
+    val onEditPlace: (PlaceTarget) -> Unit,
+    val onDayWindow: (Int, Int) -> Unit,
+    val onReaderScale: (Float) -> Unit,
+    val ai: AiActions,
+    val onEditToken: () -> Unit,
+    val onRemoveToken: () -> Unit,
+    val onRecheckSource: () -> Unit,
+    val update: UpdateCardActions,
+    val onOpenLink: (String) -> Unit,
+)
+
+/** One entry of the settings list. */
 @Composable
-private fun SettingsContent(
+private fun SettingsBlock(
+    key: String,
     settings: AppSettings,
-    status: SystemStatus,
-    links: LinkActions,
-    actions: SettingsActions,
-    update: UpdatePanelState,
-    updateActions: UpdateCardActions,
+    modifier: Modifier,
+    content: BlockContent,
+    callbacks: BlockCallbacks,
     listState: LazyListState,
-    reduceMotion: Boolean,
-    bottomPadding: Dp,
-    modifier: Modifier = Modifier,
+    topObstruction: Float,
 ) {
-    val haptics = LocalHapticFeedback.current
-    val storedOrder = remember(settings.topicOrder) { TopicList.normalize(settings.topicOrder) }
-    // Local copy so a drag can reorder rows before anything is written; follows the store.
-    var order by remember { mutableStateOf(storedOrder) }
-    val reorder = rememberReorderState(
-        listState = listState,
-        reduceMotion = reduceMotion,
-        isReorderable = ::isTopicKey,
-        canMove = { key, down ->
-            val index = order.indexOf((key as String).removePrefix(TOPIC_KEY_PREFIX))
-            if (down) index in 0 until order.lastIndex else index > 0
-        },
-        onMove = { from, to ->
-            val fromIndex = order.indexOf((from as String).removePrefix(TOPIC_KEY_PREFIX))
-            val toIndex = order.indexOf((to as String).removePrefix(TOPIC_KEY_PREFIX))
-            if (fromIndex >= 0 && toIndex >= 0) order = TopicList.move(order, fromIndex, toIndex)
-        },
-        onSwap = { haptics.performHapticFeedback(HapticFeedbackType.SegmentTick) },
-        onDrop = {
-            haptics.performHapticFeedback(HapticFeedbackType.GestureEnd)
-            if (order != storedOrder) actions.onTopicOrder(order)
-        },
-    )
-    LaunchedEffect(storedOrder) {
-        if (!reorder.isDragging) order = storedOrder
-    }
-
-    val hidden = settings.hiddenTopics
-    val keys = blockKeys(order)
-    val placement = if (reduceMotion) {
-        null
-    } else {
-        spring(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = IntOffset.VisibilityThreshold)
-    }
-
-    LazyColumn(
-        state = listState,
-        modifier = modifier
-            .fillMaxSize()
-            .horizontalSafeDrawing(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = bottomPadding + 24.dp),
-    ) {
-        items(keys, key = { it }, contentType = { if (isTopicKey(it)) "topic" else it }) { key ->
-            when (key) {
-                Block.APPEARANCE_HEADER -> SettingsSectionHeader("Darstellung", top = 4.dp)
-                Block.APPEARANCE -> AppearanceCard(settings, actions)
-                Block.TOPICS_HEADER -> SettingsSectionHeader("Themen")
-                Block.TOPICS_INTRO -> TopicsIntro()
-                Block.TOPICS_FOOTER -> TopicsFooter(
-                    visibleCount = TopicList.visibleCount(order, hidden),
-                    total = order.size,
-                    isDefaultOrder = TopicList.isDefaultOrder(order),
-                    onReset = actions.onResetTopicOrder,
-                )
-                Block.READING_HEADER -> SettingsSectionHeader("Lesen")
-                Block.READING -> ReadingCard(scale = settings.readerTextScale, onCommit = actions.onReaderScale)
-                Block.NOTIFICATION_HEADER -> SettingsSectionHeader("Benachrichtigung")
-                Block.NOTIFICATION -> NotificationCard(settings, status, actions)
-                Block.PLACES_HEADER -> SettingsSectionHeader("Orte")
-                Block.PLACES -> PlacesCard(settings, actions)
-                Block.SOURCE_HEADER -> SettingsSectionHeader("News-Quelle")
-                Block.SOURCE -> NewsSourceCard(settings, actions)
-                Block.UPDATE_HEADER -> SettingsSectionHeader("App-Update")
-                Block.UPDATE -> UpdateCard(
-                    state = update,
-                    hasToken = settings.hasToken,
-                    reduceMotion = reduceMotion,
-                    actions = updateActions,
-                )
-                Block.ABOUT_HEADER -> SettingsSectionHeader("Über")
-                Block.ABOUT -> AboutCard(links)
-                else -> {
-                    val id = key.removePrefix(TOPIC_KEY_PREFIX)
-                    val topic = Topics.byId(id) ?: return@items
-                    val index = order.indexOf(id)
-                    val lifted = reorder.draggingKey == key
-                    val moving = lifted || reorder.settlingKey == key
-                    val moveBy: (Int) -> Unit = { delta ->
-                        val moved = TopicList.moveBy(order, id, delta)
-                        if (moved != order) {
-                            order = moved
-                            actions.onTopicOrder(moved)
-                        }
-                    }
-                    TopicRow(
-                        topic = topic,
-                        visible = id !in hidden,
-                        canHide = TopicList.canHide(order, hidden, id),
-                        position = tilePosition(index, order.size),
-                        lifted = lifted,
-                        actions = TopicRowActions(
-                            onVisibleChange = { visible -> actions.onTopicVisible(id, visible) },
-                            onMoveUp = if (index > 0) ({ moveBy(-1) }) else null,
-                            onMoveDown = if (index < order.lastIndex) ({ moveBy(1) }) else null,
-                            onDragStart = {
-                                reorder.onDragStart(key)
-                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                            },
-                            onDrag = reorder::onDrag,
-                            onDragEnd = reorder::onDragEnd,
-                        ),
-                        modifier = Modifier
-                            .padding(bottom = 2.dp)
-                            .then(
-                                if (moving) {
-                                    Modifier
-                                        .zIndex(1f)
-                                        .graphicsLayer { translationY = reorder.offsetOf(key) }
-                                } else {
-                                    Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = placement)
-                                },
-                            ),
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun AppearanceCard(settings: AppSettings, actions: SettingsActions) {
-    val darkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    SettingsCard {
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text("Design", style = MaterialTheme.typography.labelLarge)
-            ThemeModeSelector(selected = settings.themeMode, onSelect = actions.onThemeMode)
-            Text("Akzentfarbe", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 8.dp))
-            AccentPicker(selected = settings.accent, darkTheme = darkTheme, onSelect = actions.onAccent)
-        }
-    }
-}
-
-@Composable
-private fun NotificationCard(settings: AppSettings, status: SystemStatus, actions: SettingsActions) {
-    val enabled = settings.notificationsEnabled
-    SettingsCard {
-        SettingsRow(
-            icon = if (enabled) Icons.Rounded.NotificationsActive else Icons.Rounded.NotificationsOff,
-            title = "Morgenbriefing",
-            subtitle = "Jeden Morgen Wetter & News als Benachrichtigung",
-            modifier = Modifier.toggleable(
-                value = enabled,
-                role = Role.Switch,
-                onValueChange = actions.onNotificationsToggle,
-            ),
-            trailing = { Switch(checked = enabled, onCheckedChange = null) },
-        )
-        SettingsDivider()
-        SettingsRow(
-            icon = Icons.Rounded.Schedule,
-            title = "Uhrzeit",
-            subtitle = if (enabled) nextBriefingText(settings) else "Aus – es kommt keine Benachrichtigung",
-            enabled = enabled,
-            onClickLabel = "Uhrzeit ändern",
-            onClick = actions.onEditTime,
-            trailing = {
-                Text(
-                    text = clockLabel(settings.notifyHour, settings.notifyMinute),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            },
-        )
-        SettingsDivider()
-        StatusRow(
-            icon = if (status.canNotify) Icons.Rounded.Notifications else Icons.Rounded.NotificationsOff,
-            title = "Benachrichtigungen",
-            ok = status.canNotify,
-            okText = "Erlaubt",
-            problemText = if (status.permissionGranted && status.appNotificationsEnabled) {
-                "Der Kanal „Morgenbriefing“ ist ausgeschaltet."
-            } else {
-                "Nicht erlaubt – morgens kommt nichts an."
-            },
-            actionLabel = "Erlauben",
-            onAction = actions.onFixNotifications,
-        )
-        if (status.exactAlarmRelevant) {
-            SettingsDivider()
-            StatusRow(
-                icon = Icons.Rounded.Alarm,
-                title = "Exakte Uhrzeit",
-                ok = status.exactAlarmsAllowed,
-                okText = "Erlaubt – kommt auf die Minute",
-                problemText = "Nicht erlaubt – das Briefing kann sich um ein paar Minuten verspäten.",
-                actionLabel = "Erlauben",
-                onAction = actions.onFixExactAlarms,
+    when (key) {
+        Block.HERO -> {
+            val items = statusItems(content.status, content.source, AiSupport.isSupported, settings.hasAiKey)
+            val next = AlarmScheduler.nextTrigger(content.now, settings.notifyHour, settings.notifyMinute)
+            val hero = heroText(
+                enabled = settings.notificationsEnabled,
+                items = items,
+                day = dayWord(content.now, next),
+                time = clockLabel(settings.notifyHour, settings.notifyMinute),
+            )
+            StatusHero(
+                hero = hero,
+                enabled = settings.notificationsEnabled,
+                items = items,
+                reduceMotion = content.reduceMotion,
+                onPill = callbacks.onPill,
+                onOpenAppDetails = callbacks.onOpenAppDetails,
+                modifier = modifier.padding(top = 16.dp),
             )
         }
-        SettingsDivider()
-        StatusRow(
-            icon = Icons.Rounded.BatteryChargingFull,
-            title = "Akku-Optimierung",
-            ok = status.batteryUnrestricted,
-            okText = "Aus – Android bremst dein Briefing nicht",
-            problemText = "An – Android kann die Benachrichtigung verzögern.",
-            actionLabel = "Akku-Optimierung aus",
-            onAction = actions.onFixBattery,
-            hint = "Bei Samsung zusätzlich: App-Akku auf „Nicht eingeschränkt“.",
-            secondaryActionLabel = "App-Info öffnen",
-            onSecondaryAction = actions.onOpenAppDetails,
+        Block.H_BRIEFING -> SectionHeading("Dein Wecker", "Morgenbriefing", modifier)
+        Block.BRIEFING -> BriefingCard(
+            settings = settings,
+            now = content.now,
+            reduceMotion = content.reduceMotion,
+            onToggle = callbacks.onNotificationsToggle,
+            onEditTime = callbacks.onEditTime,
+            onTest = callbacks.onTestNotification,
+            modifier = modifier,
         )
-        FilledTonalButton(
-            onClick = actions.onTestNotification,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .heightIn(min = 48.dp),
-        ) {
-            Icon(Icons.Rounded.NotificationsActive, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(8.dp))
-            Text("Test-Benachrichtigung senden")
-        }
-    }
-}
-
-@Composable
-private fun PlacesCard(settings: AppSettings, actions: SettingsActions) {
-    SettingsCard {
-        SettingsRow(
-            icon = Icons.Rounded.Home,
-            title = "Vor der Tür",
-            subtitle = settings.home.displayLabel(),
-            onClickLabel = "Ort ändern",
-            onClick = { actions.onEditPlace(PlaceTarget.HOME) },
-            trailing = { ChevronIcon() },
+        Block.H_LOOK -> SectionHeading("Dein Look", "Darstellung", modifier)
+        Block.LOOK -> AppearanceCard(
+            themeMode = settings.themeMode,
+            accent = settings.accent,
+            onThemeMode = callbacks.onThemeMode,
+            onAccent = callbacks.onAccent,
+            modifier = modifier,
         )
-        SettingsDivider()
-        SettingsRow(
-            icon = Icons.Rounded.LocationCity,
-            title = "Tagsüber",
-            subtitle = settings.day.displayLabel(),
-            onClickLabel = "Ort ändern",
-            onClick = { actions.onEditPlace(PlaceTarget.DAY) },
-            trailing = { ChevronIcon() },
+        Block.H_TOPICS -> SectionHeading("Dein Feed", "Themen", modifier)
+        Block.TOPICS -> TopicGrid(
+            storedOrder = remember(settings.topicOrder) { TopicList.normalize(settings.topicOrder) },
+            hidden = settings.hiddenTopics,
+            reduceMotion = content.reduceMotion,
+            listState = listState,
+            listItemKey = Block.TOPICS,
+            topObstruction = topObstruction,
+            onToggle = callbacks.onTopicVisible,
+            onOrder = callbacks.onTopicOrder,
+            onReset = callbacks.onResetTopics,
+            modifier = modifier,
         )
-        SettingsDivider()
-        DayWindowRow(
-            start = settings.dayStartHour,
-            end = settings.dayEndHour,
-            placeName = settings.day.name,
-            onCommit = actions.onDayWindow,
-        )
-    }
-}
-
-@Composable
-private fun DayWindowRow(start: Int, end: Int, placeName: String, onCommit: (Int, Int) -> Unit) {
-    // Local while dragging, written once the finger lifts; resets when the stored value changes.
-    var range by remember(start, end) { mutableStateOf(DayWindow.normalize(start, end)) }
-    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Icon(Icons.Rounded.AccessTime, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-            Column(modifier = Modifier.weight(1f)) {
-                Text("Zeitfenster", style = MaterialTheme.typography.bodyLarge)
-                Text(
-                    text = "Tagesverlauf in $placeName",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+        Block.H_PLACES -> SectionHeading("Dein Wetter", "Orte & Zeitfenster", modifier)
+        Block.PLACES -> {
+            val (home, day) = remember(content.weather, settings.home, settings.day, content.now) {
+                placeWeather(content.weather, settings.home, settings.day, content.now)
             }
-            Text(
-                text = DayWindow.label(range.first, range.second),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
+            PlacesSection(
+                settings = settings,
+                homeWeather = home,
+                dayWeather = day,
+                onEditPlace = callbacks.onEditPlace,
+                onDayWindow = callbacks.onDayWindow,
+                modifier = modifier,
             )
         }
-        RangeSlider(
-            value = range.first.toFloat()..range.second.toFloat(),
-            onValueChange = { value ->
-                range = DayWindow.constrain(
-                    previousStart = range.first,
-                    previousEnd = range.second,
-                    start = value.start.roundToInt(),
-                    end = value.endInclusive.roundToInt(),
-                )
-            },
-            onValueChangeFinished = { onCommit(range.first, range.second) },
-            valueRange = DayWindow.MIN_HOUR.toFloat()..DayWindow.MAX_HOUR.toFloat(),
-            steps = DayWindow.SLIDER_STEPS,
-            modifier = Modifier.padding(top = 8.dp),
+        Block.H_READING -> SectionHeading("Artikel", "Lesen", modifier)
+        Block.READING -> ReadingCard(
+            scale = settings.readerTextScale,
+            onCommit = callbacks.onReaderScale,
+            reduceMotion = content.reduceMotion,
+            modifier = modifier,
         )
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            HourCaption("${DayWindow.MIN_HOUR} Uhr")
-            HourCaption("${DayWindow.MAX_HOUR} Uhr")
-        }
+        Block.H_AI -> SectionHeading("Claude", "KI", modifier)
+        Block.AI -> AiCard(
+            settings = settings,
+            supported = AiSupport.isSupported,
+            usage = content.usage,
+            reduceMotion = content.reduceMotion,
+            actions = callbacks.ai,
+            modifier = modifier,
+        )
+        Block.H_SOURCE -> SectionHeading("Deine News", "News-Quelle", modifier)
+        Block.SOURCE -> NewsSourceCard(
+            hasToken = settings.hasToken,
+            status = content.source,
+            now = content.now,
+            onEditToken = callbacks.onEditToken,
+            onRemoveToken = callbacks.onRemoveToken,
+            onRecheck = callbacks.onRecheckSource,
+            modifier = modifier,
+        )
+        Block.H_APP -> SectionHeading("Über", "App", modifier)
+        Block.APP -> AppHeaderCard(installedVersion = content.update.installedVersion, modifier = modifier)
+        Block.UPDATE -> UpdateCard(
+            state = content.update,
+            hasToken = settings.hasToken,
+            reduceMotion = content.reduceMotion,
+            actions = callbacks.update,
+            modifier = modifier.padding(top = 14.dp),
+        )
+        Block.LINKS -> LinksCard(onOpen = callbacks.onOpenLink, modifier = modifier.padding(top = 14.dp))
+        Block.FOOTER -> SettingsFooter(modifier)
     }
 }
 
-@Composable
-private fun HourCaption(text: String) {
-    Text(text = text, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-}
-
-@Composable
-private fun NewsSourceCard(settings: AppSettings, actions: SettingsActions) {
-    SettingsCard {
-        SettingsRow(
-            icon = Icons.Rounded.Key,
-            title = "GitHub-Token",
-            subtitle = if (settings.hasToken) "Token gespeichert ✓" else "Kein Token – Demo-Modus",
-        )
-        Text(
-            text = "Die News und App-Updates kommen aus deinem privaten Repo " +
-                "${BuildConfig.BRIEF_OWNER}/${BuildConfig.BRIEF_REPO}.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 56.dp, end = 16.dp),
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 56.dp, end = 16.dp, top = 12.dp, bottom = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Button(onClick = actions.onEditToken, modifier = Modifier.heightIn(min = 48.dp)) {
-                Text(if (settings.hasToken) "Token ändern" else "Token eintragen")
-            }
-            if (settings.hasToken) {
-                OutlinedButton(onClick = actions.onRemoveToken, modifier = Modifier.heightIn(min = 48.dp)) {
-                    Text("Token entfernen")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun AboutCard(links: LinkActions) {
-    SettingsCard {
-        SettingsRow(
-            icon = Icons.Rounded.Cloud,
-            title = "Wetterdaten",
-            subtitle = "Open-Meteo.com (CC BY 4.0)",
-            onClickLabel = "Website öffnen",
-            onClick = { links.open(Links.OPEN_METEO) },
-            trailing = { ExternalIcon() },
-        )
-        SettingsDivider()
-        SettingsRow(
-            icon = Icons.Rounded.Image,
-            title = "Artikelbilder",
-            subtitle = "Wikimedia Commons – freie Lizenzen, Urheber steht am Bild",
-            onClickLabel = "Website öffnen",
-            onClick = { links.open(WIKIMEDIA_COMMONS) },
-            trailing = { ExternalIcon() },
-        )
-        SettingsDivider()
-        SettingsRow(
-            icon = Icons.Rounded.Code,
-            title = "Quellcode",
-            subtitle = "github.com/CedrickGD/Morgenbriefing",
-            onClickLabel = "Repository öffnen",
-            onClick = { links.open(Links.SOURCE_CODE) },
-            trailing = { ExternalIcon() },
-        )
-    }
-}
-
-@Composable
-private fun ChevronIcon() {
-    Icon(
-        imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-}
-
-@Composable
-private fun ExternalIcon() {
-    Icon(
-        imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.size(20.dp),
-    )
-}
-
-/** "Nächstes Briefing: morgen um 05:30" based on the alarm scheduler's next trigger. */
-private fun nextBriefingText(settings: AppSettings): String {
-    val now = ZonedDateTime.now(BERLIN)
-    val next = AlarmScheduler.nextTrigger(now, settings.notifyHour, settings.notifyMinute)
-    return nextBriefingLabel(now, next)
-}
+private val TOP_BAR_HEIGHT = 52.dp
+private val TITLE_SCROLL_THRESHOLD = 72.dp

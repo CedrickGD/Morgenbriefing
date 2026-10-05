@@ -73,6 +73,29 @@ class SettingsLogicTest {
     }
 
     @Test
+    fun `countdown to the next briefing`() {
+        assertEquals("gleich", countdownLabel(0))
+        assertEquals("gleich", countdownLabel(-5))
+        assertEquals("in 45 Min.", countdownLabel(45))
+        assertEquals("in 1 Std.", countdownLabel(60))
+        assertEquals("in 2 Std. 15 Min.", countdownLabel(135))
+        assertEquals("in 9 Std.", countdownLabel(9 * 60 + 10))
+        assertEquals("in 10 Std.", countdownLabel(9 * 60 + 40))
+    }
+
+    @Test
+    fun `next briefing countdown names the day`() {
+        val zone = ZoneId.of("Europe/Berlin")
+        val evening = ZonedDateTime.of(2026, 10, 5, 20, 30, 0, 0, zone)
+        val next = ZonedDateTime.of(2026, 10, 6, 5, 30, 0, 0, zone)
+        assertEquals("Nächstes Briefing: morgen · in 9 Std.", nextBriefingCountdown(evening, next))
+        val early = ZonedDateTime.of(2026, 10, 6, 4, 50, 0, 0, zone)
+        assertEquals("Nächstes Briefing: heute · in 40 Min.", nextBriefingCountdown(early, next))
+        assertEquals("heute", dayWord(early, next))
+        assertEquals("am Fr, 9. Okt.", dayWord(evening, ZonedDateTime.of(2026, 10, 9, 5, 30, 0, 0, zone)))
+    }
+
+    @Test
     fun `token check messages`() {
         assertNull(tokenCheckMessage(TokenCheck.Idle))
         assertEquals("✓ Verbindung klappt – ab morgen kommen deine News.", tokenCheckMessage(TokenCheck.Success))
