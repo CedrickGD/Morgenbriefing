@@ -10,14 +10,22 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
+import com.cedrickgd.morgenbriefing.ai.AiSupport
+import com.cedrickgd.morgenbriefing.ai.LiveArticle
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.BriefLoad
 import com.cedrickgd.morgenbriefing.ui.brief.isBriefFor
+import com.cedrickgd.morgenbriefing.ui.reader.ReaderEntry
+import com.cedrickgd.morgenbriefing.ui.reader.readerEntries
+import com.cedrickgd.morgenbriefing.ui.reader.stepTextScale
 import com.cedrickgd.morgenbriefing.util.attempt
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,27 +45,30 @@ import java.time.ZonedDateTime
 @Immutable
 data class ArticleUiState(
     val loading: Boolean = true,
-    /** Every article of the brief in reading order (arranged like on the Today screen). */
-    val articles: List<ReaderArticle> = emptyList(),
-    /** Page of the article the reader was opened with; 0 when it is no longer in the brief. */
+    /** Every article of the day in reading order: the brief (arranged like Today), then live articles. */
+    val articles: List<ReaderEntry> = emptyList(),
+    /** Page of the article the reader was opened with; 0 when it is no longer there. */
     val startIndex: Int = 0,
     /** Reader text size factor from the settings (0.85–1.4). */
     val textScale: Float = 1f,
-    /** No brief for this date could be loaded (offline, deleted, malformed link). */
+    /** Neither a brief nor live articles for this date could be loaded (offline, deleted, malformed link). */
     val failed: Boolean = false,
     /** Reference for relative publish times ("vor 3 Std."). */
     val now: ZonedDateTime = ZonedDateTime.now(BERLIN),
 )
 
 /**
- * Loads the brief of [date] for the reader and exposes its articles as one flat list.
+ * Loads the articles of [date] for the reader and exposes them as one flat list.
  *
  * Where the brief comes from, first match wins (a brief only counts if it contains [key];
- * otherwise the first brief of that date is used and the reader starts at the top):
+ * otherwise the first brief of that date is used):
  * 1. without a token: the bundled demo brief (that is what the Today screen shows then),
  * 2. the offline store,
  * 3. with a token and [date] = today: `latest.json`,
  * 4. with a token: `briefs/DATE.json` via [com.cedrickgd.morgenbriefing.data.BriefRepository.day].
+ *
+ * The day's stored live articles ([liveArticles], "⚡ Live") are appended after the brief, so
+ * a live article opens in the reader too; on Android < 8 there are none.
  *
  * @param date null when the route carried a malformed date.
  */
@@ -65,12 +76,13 @@ class ArticleViewModel(
     private val container: AppContainer,
     val date: LocalDate?,
     private val key: String,
+    private val liveArticles: suspend (LocalDate) -> List<LiveArticle> = { emptyList() },
     private val clock: () -> ZonedDateTime = { ZonedDateTime.now(BERLIN) },
 ) : ViewModel() {
 
     private sealed interface Source {
         data object Loading : Source
-        data class Ready(val brief: Brief, val now: ZonedDateTime) : Source
+        data class Ready(val brief: Brief?, val live: List<LiveArticle>, val now: ZonedDateTime) : Source
         data object Missing : Source
     }
 
@@ -82,11 +94,11 @@ class ArticleViewModel(
             emit(AppSettings())
         }
 
-    private val articles: Flow<List<ReaderArticle>> = combine(
+    private val articles: Flow<List<ReaderEntry>> = combine(
         source,
         settings.map { TopicPrefs(it) }.distinctUntilChanged(),
     ) { src, prefs ->
-        if (src is Source.Ready) readerArticles(src.brief, prefs, focusKey = key) else emptyList()
+        if (src is Source.Ready) readerEntries(src.brief, src.live, prefs, focusKey = key) else emptyList()
     }.distinctUntilChanged()
 
     val state: StateFlow<ArticleUiState> = combine(
@@ -99,7 +111,7 @@ class ArticleViewModel(
             articles = list,
             startIndex = list.indexOfFirst { it.item.key == key }.coerceAtLeast(0),
             textScale = scale,
-            failed = src is Source.Missing,
+            failed = src is Source.Missing || (src is Source.Ready && list.isEmpty()),
             now = (src as? Source.Ready)?.now ?: clock(),
         )
     }.stateIn(
@@ -119,20 +131,37 @@ class ArticleViewModel(
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
             source.value = Source.Loading
-            val brief = attempt { findBrief(day) }
-                .onFailure { Log.w(TAG, "Could not load the brief of $day", it) }
-                .getOrNull()
+            val (brief, live) = coroutineScope {
+                val live = async { loadLive(day) }
+                val brief = attempt { findBrief(day) }
+                    .onFailure { Log.w(TAG, "Could not load the brief of $day", it) }
+                    .getOrNull()
+                brief to live.await()
+            }
             ensureActive()
-            source.value = if (brief != null) Source.Ready(brief, clock()) else Source.Missing
+            source.value = if (brief != null || live.isNotEmpty()) Source.Ready(brief, live, clock()) else Source.Missing
         }
     }
 
     /** A− / A+: one step smaller or larger, stored in the settings. */
     fun changeTextScale(larger: Boolean) {
         viewModelScope.launch {
-            attempt { container.settings.update { it.copy(readerTextScale = nextTextScale(it.readerTextScale, larger)) } }
+            attempt { container.settings.update { it.copy(readerTextScale = stepTextScale(it.readerTextScale, larger)) } }
                 .onFailure { Log.w(TAG, "Could not store the reader text size", it) }
         }
+    }
+
+    /** Live articles are a bonus: any failure (no AI on this device, broken store) means none. */
+    private suspend fun loadLive(day: LocalDate): List<LiveArticle> = try {
+        liveArticles(day)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Log.w(TAG, "Live articles of $day unavailable", e)
+        emptyList()
+    } catch (e: LinkageError) {
+        Log.w(TAG, "Live articles not supported here", e)
+        emptyList()
     }
 
     private suspend fun findBrief(day: LocalDate): Brief? {
@@ -173,7 +202,13 @@ class ArticleViewModel(
         fun factory(date: LocalDate?, key: String): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as MorgenbriefingApp
-                ArticleViewModel(app.container, date, key)
+                ArticleViewModel(
+                    container = app.container,
+                    date = date,
+                    key = key,
+                    // The AI package must not be touched below Android 8 (docs/AI.md).
+                    liveArticles = { day -> if (AiSupport.isSupported) app.ai.live.articles(day) else emptyList() },
+                )
             }
         }
     }
