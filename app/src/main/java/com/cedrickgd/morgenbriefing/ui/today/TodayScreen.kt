@@ -91,6 +91,8 @@ fun TodayScreen(
     openTodaySignal: Int,
     onOpenSettings: () -> Unit,
     onOpenArticle: (date: String, key: String) -> Unit,
+    onAskBriefing: (date: String) -> Unit = {},
+    onAskAboutArticle: (date: String, key: String) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
     viewModel: TodayViewModel = viewModel(factory = TodayViewModel.Factory),
 ) {

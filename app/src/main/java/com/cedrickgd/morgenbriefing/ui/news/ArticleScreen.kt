@@ -140,6 +140,7 @@ fun ArticleScreen(
     date: String,
     articleKey: String,
     onBack: () -> Unit,
+    onAskAboutArticle: (date: String, key: String) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
 ) {
     val day = remember(date) { parseDateOrNull(date) }

@@ -8,4 +8,10 @@ import androidx.compose.ui.Modifier
  * brief of [date] when [articleKey] is null. Full screen over the pager, edge-to-edge.
  */
 @Composable
-fun ChatScreen(date: String, articleKey: String?, onBack: () -> Unit, modifier: Modifier = Modifier) { TODO("agent ai") }
+fun ChatScreen(
+    date: String,
+    articleKey: String?,
+    onBack: () -> Unit,
+    onOpenSettings: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) { TODO("agent ai") }
