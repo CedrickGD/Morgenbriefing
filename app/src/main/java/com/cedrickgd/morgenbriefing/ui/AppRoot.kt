@@ -29,17 +29,18 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import coil3.compose.setSingletonImageLoaderFactory
 import com.cedrickgd.morgenbriefing.container
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 import com.cedrickgd.morgenbriefing.ui.nav.AppNavHost
-import com.cedrickgd.morgenbriefing.ui.nav.DayRoute
-import com.cedrickgd.morgenbriefing.ui.nav.TopLevelDestination
 import com.cedrickgd.morgenbriefing.ui.nav.TodayRoute
+import com.cedrickgd.morgenbriefing.ui.nav.TopLevelDestination
+import com.cedrickgd.morgenbriefing.ui.nav.isDetail
 import com.cedrickgd.morgenbriefing.ui.nav.navigateToTopLevel
+import com.cedrickgd.morgenbriefing.ui.news.newsImageLoader
 import com.cedrickgd.morgenbriefing.ui.theme.MorgenbriefingTheme
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -64,6 +65,10 @@ fun AppRoot(
     onReady: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    // Article pictures: one loader for the whole app, sharing the app's OkHttp client.
+    val http = remember(context) { context.container.http }
+    setSingletonImageLoaderFactory { platformContext -> newsImageLoader(platformContext, http) }
+
     val settingsFlow = remember(context) {
         context.container.settings.settings
             .map<AppSettings, AppSettings?> { it }
@@ -95,12 +100,18 @@ private fun AppShell(openTodayRequests: Int, darkTheme: Boolean) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val destination = backStackEntry?.destination
-    val showBottomBar = destination?.hasRoute<DayRoute>() != true
+    val showBottomBar = backStackEntry?.isDetail() != true
 
     SystemBarsEffect(darkTheme = darkTheme, bottomBarVisible = showBottomBar)
 
     LaunchedEffect(openTodayRequests) {
-        if (openTodayRequests > 0) navController.navigateToTopLevel(TodayRoute)
+        if (openTodayRequests > 0) {
+            navController.navigateToTopLevel(TodayRoute)
+            // The tab restores its own stack — close an article that was open on top of Today.
+            if (navController.currentBackStackEntry?.isDetail() == true) {
+                navController.popBackStack<TodayRoute>(inclusive = false)
+            }
+        }
     }
 
     Scaffold(

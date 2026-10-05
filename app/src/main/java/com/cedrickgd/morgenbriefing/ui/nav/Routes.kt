@@ -17,3 +17,10 @@ data object SettingsRoute
 /** One stored morning; [date] is `YYYY-MM-DD` (Europe/Berlin). */
 @Serializable
 data class DayRoute(val date: String)
+
+/**
+ * The article reader: pages through every article of the brief of [date] (`YYYY-MM-DD`),
+ * starting at the article whose `NewsItem.key` is [key].
+ */
+@Serializable
+data class ArticleRoute(val date: String, val key: String)

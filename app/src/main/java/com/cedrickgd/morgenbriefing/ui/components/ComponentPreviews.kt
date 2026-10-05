@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,7 +19,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.data.model.AccentId
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
+import com.cedrickgd.morgenbriefing.data.model.Topics
 import com.cedrickgd.morgenbriefing.domain.Condition
+import com.cedrickgd.morgenbriefing.ui.news.CoverArt
+import com.cedrickgd.morgenbriefing.ui.news.TopicSection
+import com.cedrickgd.morgenbriefing.ui.news.sectionUi
 import com.cedrickgd.morgenbriefing.ui.theme.MorgenbriefingTheme
 
 // Previews use the fixtures in PreviewData. Components that call into the domain layer
@@ -109,16 +114,43 @@ private fun ClothingAndWarningsPreview() {
 @ThemePreviews
 @Composable
 private fun NewsPreview() {
+    val section = sectionUi(index = 0, section = PreviewData.section, schema = PreviewData.brief.schema)
     PreviewSurface {
         Column {
             NewsTeaser(teaser = PreviewData.TEASER, generatedAt = PreviewData.GENERATED_AT, stale = true)
             Spacer(Modifier.height(24.dp))
-            NewsSectionBlock(
-                section = PreviewData.section,
+            TopicSection(
+                section = section,
+                expanded = true,
                 now = PreviewData.now,
+                onToggle = {},
                 onOpen = {},
                 onShare = {},
             )
+        }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun CoverGalleryPreview() {
+    PreviewSurface {
+        Column {
+            Topics.ALL.chunked(2).forEach { row ->
+                Row {
+                    row.forEach { topic ->
+                        CoverArt(
+                            topic = topic,
+                            seedKey = topic.id + "-preview",
+                            modifier = Modifier
+                                .width(170.dp)
+                                .aspectRatio(16f / 10f),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+            }
         }
     }
 }

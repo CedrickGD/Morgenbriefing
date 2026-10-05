@@ -19,6 +19,8 @@ import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.ui.brief.WeatherUi
 import com.cedrickgd.morgenbriefing.ui.brief.isBriefFor
 import com.cedrickgd.morgenbriefing.ui.brief.toWeatherUi
+import com.cedrickgd.morgenbriefing.ui.news.TopicPrefs
+import com.cedrickgd.morgenbriefing.ui.news.topicPrefs
 import com.cedrickgd.morgenbriefing.util.AppSignals
 import com.cedrickgd.morgenbriefing.util.attempt
 import com.cedrickgd.morgenbriefing.util.flatten
@@ -87,6 +89,11 @@ class TodayViewModel(
         .distinctUntilChanged()
         .catch { e -> Log.w(TAG, "Settings unavailable for onboarding", e) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
+
+    /** Topic order and switched-off topics; they arrange the brief's sections on screen. */
+    val topicPrefs: StateFlow<TopicPrefs> = container.settings.topicPrefs()
+        .catch { e -> Log.w(TAG, "Settings unavailable for topics", e) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, TopicPrefs())
 
     private var weatherJob: Job? = null
     private var briefJob: Job? = null

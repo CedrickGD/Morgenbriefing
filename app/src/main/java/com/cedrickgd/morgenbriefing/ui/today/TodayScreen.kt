@@ -46,10 +46,10 @@ import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
 import com.cedrickgd.morgenbriefing.domain.Condition
 import com.cedrickgd.morgenbriefing.domain.Fmt
+import com.cedrickgd.morgenbriefing.ui.brief.EmptyNewsCopy
 import com.cedrickgd.morgenbriefing.ui.brief.WeatherUi
-import com.cedrickgd.morgenbriefing.ui.brief.briefSectionItems
-import com.cedrickgd.morgenbriefing.ui.brief.briefTeaserItem
-import com.cedrickgd.morgenbriefing.ui.brief.visibleSections
+import com.cedrickgd.morgenbriefing.ui.brief.briefNewsItems
+import com.cedrickgd.morgenbriefing.ui.brief.rememberExpandedSections
 import com.cedrickgd.morgenbriefing.ui.components.ClothingCard
 import com.cedrickgd.morgenbriefing.ui.components.DayCurveCard
 import com.cedrickgd.morgenbriefing.ui.components.HomeWeatherHero
@@ -58,6 +58,10 @@ import com.cedrickgd.morgenbriefing.ui.components.LoadingSkeleton
 import com.cedrickgd.morgenbriefing.ui.components.TodayHeader
 import com.cedrickgd.morgenbriefing.ui.components.WarningBanner
 import com.cedrickgd.morgenbriefing.ui.components.WeatherBackdrop
+import com.cedrickgd.morgenbriefing.ui.news.NewsFeed
+import com.cedrickgd.morgenbriefing.ui.news.TopicPrefs
+import com.cedrickgd.morgenbriefing.ui.news.buildNewsFeed
+import com.cedrickgd.morgenbriefing.ui.news.toggled
 import com.cedrickgd.morgenbriefing.ui.onboarding.OnboardingSheet
 import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
 import com.cedrickgd.morgenbriefing.util.StatusBarScrim
@@ -79,17 +83,20 @@ private const val BACKDROP_PARALLAX = 0.35f
  * today's news. Draws under the status bar; the bottom is padded by the navigation bar.
  *
  * @param openTodaySignal changes on a notification tap — scrolls back to the top.
+ * @param onOpenArticle opens the reader for the article [key] of the brief dated [date].
  */
 @Composable
 fun TodayScreen(
     contentPadding: PaddingValues,
     openTodaySignal: Int,
     onOpenSettings: () -> Unit,
+    onOpenArticle: (date: String, key: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TodayViewModel = viewModel(factory = TodayViewModel.Factory),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onboarding by viewModel.onboarding.collectAsStateWithLifecycle()
+    val topicPrefs by viewModel.topicPrefs.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
 
     LifecycleResumeEffect(viewModel) {
@@ -108,6 +115,7 @@ fun TodayScreen(
 
     TodayContent(
         state = state,
+        topicPrefs = topicPrefs,
         listState = listState,
         contentPadding = contentPadding,
         onRefresh = viewModel::refresh,
@@ -118,6 +126,8 @@ fun TodayScreen(
                 NoticeAction.RETRY -> viewModel.retryBrief()
             }
         },
+        onOpenSettings = onOpenSettings,
+        onOpenArticle = onOpenArticle,
         modifier = modifier,
     )
 
@@ -137,11 +147,14 @@ fun TodayScreen(
 @Composable
 private fun TodayContent(
     state: TodayUiState,
+    topicPrefs: TopicPrefs,
     listState: LazyListState,
     contentPadding: PaddingValues,
     onRefresh: () -> Unit,
     onRetryWeather: () -> Unit,
     onNoticeAction: (NoticeAction) -> Unit,
+    onOpenSettings: () -> Unit,
+    onOpenArticle: (date: String, key: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val links = rememberLinkActions()
@@ -151,6 +164,17 @@ private fun TodayContent(
     val weather = state.weather
     val today = state.today
     val news = remember(state.brief, today) { newsBlockFor(state.brief, today) }
+    val shownBrief = news.shownBrief
+    val feed = remember(shownBrief, topicPrefs) { shownBrief?.let { buildNewsFeed(it, topicPrefs) } }
+    var expanded by rememberExpandedSections(shownBrief?.date)
+    val newsActions = NewsActions(
+        expanded = expanded,
+        onToggleSection = { id -> expanded = expanded.toggled(id) },
+        onOpen = { item -> shownBrief?.let { onOpenArticle(it.date, item.key) } },
+        onShare = links::shareArticle,
+        onNoticeAction = onNoticeAction,
+        onOpenSettings = onOpenSettings,
+    )
     val greeting = remember(state.now) { Fmt.greeting(state.now) }
     val showSkeleton = weather == null && state.weatherLoading
     val headline = weather?.headline?.takeIf { it.isNotBlank() } ?: if (state.weatherLoading) {
@@ -233,12 +257,11 @@ private fun TodayContent(
 
                 newsItems(
                     news = news,
+                    feed = feed,
                     now = state.now,
                     // The skeleton already sketches the news; don't show a second loader.
                     showLoader = !showSkeleton,
-                    onOpen = links::openArticle,
-                    onShare = links::shareArticle,
-                    onNoticeAction = onNoticeAction,
+                    actions = newsActions,
                 )
 
                 if (weather != null) {
@@ -280,13 +303,28 @@ private fun LazyListScope.weatherItems(weather: WeatherUi) {
     }
 }
 
+/** Callbacks and UI state of the news part, bundled to keep the list builder readable. */
+private class NewsActions(
+    val expanded: Set<String>,
+    val onToggleSection: (String) -> Unit,
+    val onOpen: (NewsItem) -> Unit,
+    val onShare: (NewsItem) -> Unit,
+    val onNoticeAction: (NoticeAction) -> Unit,
+    val onOpenSettings: () -> Unit,
+)
+
+private val TodayEmptyNews = EmptyNewsCopy(
+    emoji = "📭",
+    title = "Keine Meldungen im Briefing",
+    text = "Die Morgen-Routine hat diesmal nichts Berichtenswertes gefunden.",
+)
+
 private fun LazyListScope.newsItems(
     news: NewsBlock,
+    feed: NewsFeed?,
     now: ZonedDateTime,
     showLoader: Boolean,
-    onOpen: (NewsItem) -> Unit,
-    onShare: (NewsItem) -> Unit,
-    onNoticeAction: (NoticeAction) -> Unit,
+    actions: NewsActions,
 ) {
     when (news) {
         NewsBlock.Loading -> if (showLoader) {
@@ -294,39 +332,41 @@ private fun LazyListScope.newsItems(
         }
 
         is NewsBlock.Demo -> {
-            noticeItem(news.notice, onNoticeAction)
-            briefSectionItems(news.brief, now, onOpen, onShare, keyPrefix = "today")
+            noticeItem(news.notice, actions.onNoticeAction)
+            briefItems(news.brief, feed, stale = false, now, actions)
         }
 
-        is NewsBlock.Ready -> briefItems(news.brief, news.stale, now, onOpen, onShare)
+        is NewsBlock.Ready -> briefItems(news.brief, feed, news.stale, now, actions)
 
         is NewsBlock.Problem -> {
-            noticeItem(news.notice, onNoticeAction)
-            news.brief?.let { briefItems(it, news.stale, now, onOpen, onShare) }
+            noticeItem(news.notice, actions.onNoticeAction)
+            news.brief?.let { briefItems(it, feed, news.stale, now, actions) }
         }
     }
 }
 
 private fun LazyListScope.briefItems(
     brief: Brief,
+    feed: NewsFeed?,
     stale: Boolean,
     now: ZonedDateTime,
-    onOpen: (NewsItem) -> Unit,
-    onShare: (NewsItem) -> Unit,
+    actions: NewsActions,
 ) {
-    briefTeaserItem(brief = brief, stale = stale, keyPrefix = "today")
-    if (brief.visibleSections().isEmpty()) {
-        item(key = "news-empty", contentType = "info") {
-            InfoCard(
-                emoji = "📭",
-                title = "Keine Meldungen im Briefing",
-                text = "Die Morgen-Routine hat diesmal nichts Berichtenswertes gefunden.",
-                modifier = Modifier.animateItem(),
-            )
-        }
-    } else {
-        briefSectionItems(brief, now, onOpen, onShare, keyPrefix = "today")
-    }
+    if (feed == null) return
+    briefNewsItems(
+        brief = brief,
+        feed = feed,
+        stale = stale,
+        now = now,
+        expanded = actions.expanded,
+        topStoriesTitle = if (stale) "Das Wichtigste" else "Heute wichtig",
+        empty = TodayEmptyNews,
+        onToggleSection = actions.onToggleSection,
+        onOpen = actions.onOpen,
+        onShare = actions.onShare,
+        keyPrefix = "today",
+        onOpenSettings = actions.onOpenSettings,
+    )
 }
 
 private fun LazyListScope.noticeItem(notice: Notice, onAction: (NoticeAction) -> Unit) {
