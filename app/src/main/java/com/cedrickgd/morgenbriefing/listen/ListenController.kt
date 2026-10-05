@@ -49,6 +49,8 @@ data class ListenState(
     val title: String? = null,
     /** `NewsItem.key` of the article being read. */
     val articleKey: String? = null,
+    /** Brief date (`YYYY-MM-DD`) of that article, when the caller knew it — lets the mini player open it. */
+    val articleDate: String? = null,
     /** 0f..1f over the whole article. */
     val progress: Float = 0f,
     /** The speech engine is still starting; reading begins in a moment. */
@@ -57,6 +59,11 @@ data class ListenState(
     val estimatedSeconds: Int = 0,
     /** Set after a failed attempt; cleared by [ListenController.stop]. */
     val issue: ListenIssue? = null,
+    /**
+     * The engine only has a German voice that needs the internet (no offline voice installed):
+     * reading works now, but not offline — the mini player offers to install one.
+     */
+    val onlineVoiceOnly: Boolean = false,
 ) {
     /** Something is loaded: reading, preparing or paused. */
     val active: Boolean get() = speaking || paused
@@ -90,6 +97,9 @@ class ListenController(context: Context) {
 
     private var tts: TextToSpeech? = null
     private var engine = Engine.OFF
+
+    /** The ready engine reads German only with a network voice (see [ListenState.onlineVoiceOnly]). */
+    private var voiceOnlineOnly = false
 
     /** Bumped for every engine instance; callbacks of an older one are ignored. */
     private var engineGeneration = 0
@@ -154,9 +164,10 @@ class ListenController(context: Context) {
 
     /**
      * Reads [item] aloud. Another article that is being read is replaced; the same article
-     * keeps reading (or resumes when it was paused).
+     * keeps reading (or resumes when it was paused). [date] is the brief's date (`YYYY-MM-DD`);
+     * with it, tapping the mini player opens the article in the reader.
      */
-    fun play(item: NewsItem) = onMain {
+    fun play(item: NewsItem, date: String? = null) = onMain {
         val key = item.key
         val current = mutableState.value
         if (script != null && current.articleKey == key) {
@@ -178,7 +189,9 @@ class ListenController(context: Context) {
             speaking = true,
             title = item.headline.trim().ifEmpty { "Artikel" },
             articleKey = key,
+            articleDate = date,
             preparing = engine != Engine.READY,
+            onlineVoiceOnly = voiceOnlineOnly,
             estimatedSeconds = next.estimatedSeconds,
         )
         begin()
@@ -380,10 +393,12 @@ class ListenController(context: Context) {
             Log.w(TAG, "TextToSpeech init failed ($status)")
             return failEngine(ListenIssue.NO_ENGINE)
         }
-        if (pickLanguage(engineTts) == null) {
+        val language = pickLanguage(engineTts)
+        if (language == null) {
             Log.w(TAG, "No German (or device language) voice available")
             return failEngine(ListenIssue.MISSING_VOICE)
         }
+        voiceOnlineOnly = !preferOfflineVoice(engineTts, language)
         try {
             engineTts.setAudioAttributes(AudioFocus.attributes)
             engineTts.setOnUtteranceProgressListener(progressListener)
@@ -392,7 +407,7 @@ class ListenController(context: Context) {
             return failEngine(ListenIssue.NO_ENGINE)
         }
         engine = Engine.READY
-        mutableState.update { it.copy(available = true, issue = null) }
+        mutableState.update { it.copy(available = true, issue = null, onlineVoiceOnly = voiceOnlineOnly) }
         if (mutableState.value.speaking && script != null) speakFrom(position) else scheduleRelease()
     }
 
@@ -411,6 +426,28 @@ class ListenController(context: Context) {
             return fallback
         }
         return null
+    }
+
+    /**
+     * Picks an installed voice for [locale] that works without internet, if the engine has one.
+     * Returns false when only network voices exist (reading will fail offline). Engines that do
+     * not list their voices are trusted (true).
+     */
+    private fun preferOfflineVoice(engineTts: TextToSpeech, locale: Locale): Boolean = try {
+        val voices = engineTts.voices.orEmpty().filter { it.locale.language == locale.language }
+        val offline = voices
+            .filter { !it.isNetworkConnectionRequired && TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED !in it.features.orEmpty() }
+            .maxByOrNull { it.quality }
+        when {
+            offline != null -> {
+                engineTts.voice = offline
+                true
+            }
+            else -> voices.isEmpty()
+        }
+    } catch (e: RuntimeException) {
+        Log.w(TAG, "Voice list unavailable", e)
+        true
     }
 
     private fun setLanguage(engineTts: TextToSpeech, locale: Locale): Int = try {

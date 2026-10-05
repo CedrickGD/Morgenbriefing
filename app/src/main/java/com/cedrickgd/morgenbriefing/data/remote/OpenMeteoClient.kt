@@ -153,6 +153,7 @@ class OpenMeteoClient(
             nextHours = nextHours,
             sunrise = daily?.sunrise.orEmpty(),
             sunset = daily?.sunset.orEmpty(),
+            sunriseTomorrow = f.daily[today.plusDays(1)]?.sunrise.orEmpty(),
         )
     }
 

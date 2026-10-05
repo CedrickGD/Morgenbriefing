@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -40,8 +41,12 @@ import com.cedrickgd.morgenbriefing.notify.AlarmScheduler
 import com.cedrickgd.morgenbriefing.notify.MorningWorker
 import com.cedrickgd.morgenbriefing.ui.glass.PageTitle
 import com.cedrickgd.morgenbriefing.ui.glass.TopGlassBar
+import com.cedrickgd.morgenbriefing.ui.glass.glassContent
+import com.cedrickgd.morgenbriefing.ui.shell.LocalSettingsLink
+import com.cedrickgd.morgenbriefing.ui.shell.SettingsTarget
 import com.cedrickgd.morgenbriefing.ui.shell.reportChromeScroll
 import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
+import com.cedrickgd.morgenbriefing.util.KeepListEndAboveChrome
 import com.cedrickgd.morgenbriefing.util.Links
 import com.cedrickgd.morgenbriefing.util.SystemIntents
 import com.cedrickgd.morgenbriefing.util.SystemStatus
@@ -50,6 +55,8 @@ import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import com.cedrickgd.morgenbriefing.util.rememberNotificationPermissionRequester
 import com.cedrickgd.morgenbriefing.util.statusBarTop
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 
@@ -107,6 +114,7 @@ fun SettingsScreen(
     val aiKey by viewModel.aiKey.collectAsStateWithLifecycle()
     val usage by viewModel.usage.collectAsStateWithLifecycle()
     val weather by viewModel.weather.collectAsStateWithLifecycle()
+    val weatherLoading by viewModel.weatherLoading.collectAsStateWithLifecycle()
     val update by updateViewModel.state.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
@@ -142,6 +150,8 @@ fun SettingsScreen(
         viewModel.messages.collect { snackbar.showSnackbar(it) }
     }
 
+    KeepListEndAboveChrome(listState, bottomContentInset(contentPadding))
+
     fun scrollTo(key: String) {
         val index = Block.ALL.indexOf(key)
         if (index < 0) return
@@ -159,6 +169,25 @@ fun SettingsScreen(
     fun openAiKeyDialog() {
         viewModel.resetAiKeyState()
         dialog = SettingsDialog.AI_KEY
+    }
+
+    // Sent here from another screen ("Token eintragen", Live's monthly limit): glide to the
+    // right section once the page is on screen, and open its dialog.
+    val settingsLink = LocalSettingsLink.current
+    val ready = settings != null
+    LaunchedEffect(settingsLink, ready) {
+        if (!ready) return@LaunchedEffect
+        snapshotFlow { settingsLink.pending }.filterNotNull().collect { target ->
+            delay(LINK_SETTLE_MS)
+            settingsLink.consume(target)
+            when (target) {
+                SettingsTarget.NEWS_TOKEN -> {
+                    scrollTo(Block.H_SOURCE)
+                    openTokenDialog()
+                }
+                SettingsTarget.AI -> scrollTo(Block.H_AI)
+            }
+        }
     }
 
     val onTestNotification: () -> Unit = {
@@ -225,7 +254,10 @@ fun SettingsScreen(
             }
         },
         onDismissError = updateViewModel::dismissError,
-        onGoToToken = { scrollTo(Block.H_SOURCE) },
+        onGoToToken = {
+            scrollTo(Block.H_SOURCE)
+            openTokenDialog()
+        },
     )
 
     val aiActions = AiActions(
@@ -244,6 +276,8 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .reportChromeScroll()
+                // The floating glass above (bar, indicator, player) blurs this content.
+                .glassContent()
                 .horizontalSafeDrawing(),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = bottomContentInset(contentPadding) + 32.dp),
         ) {
@@ -269,6 +303,7 @@ fun SettingsScreen(
                         source = source,
                         now = now,
                         weather = weather,
+                        weatherLoading = weatherLoading,
                         usage = usage,
                         update = update,
                         reduceMotion = reduceMotion,
@@ -305,7 +340,11 @@ fun SettingsScreen(
                 )
             }
         }
-        TopGlassBar(title = "Einstellungen", visible = showTopBar)
+        TopGlassBar(
+            title = "Einstellungen",
+            visible = showTopBar,
+            onTap = { scope.launch { if (reduceMotion) listState.scrollToItem(0) else listState.animateScrollToItem(0) } },
+        )
         GlassSnackbarHost(
             state = snackbar,
             modifier = Modifier
@@ -392,6 +431,7 @@ private class BlockContent(
     val source: SourceStatus,
     val now: ZonedDateTime,
     val weather: WeatherSnapshot?,
+    val weatherLoading: Boolean,
     val usage: UsageSnapshot,
     val update: UpdatePanelState,
     val reduceMotion: Boolean,
@@ -491,6 +531,7 @@ private fun SettingsBlock(
                 settings = settings,
                 homeWeather = home,
                 dayWeather = day,
+                weatherLoading = content.weatherLoading,
                 onEditPlace = callbacks.onEditPlace,
                 onDayWindow = callbacks.onDayWindow,
                 modifier = modifier,
@@ -537,4 +578,7 @@ private fun SettingsBlock(
 }
 
 private val TOP_BAR_HEIGHT = 52.dp
+
+/** Lets the pager glide to this page before a deep link scrolls and opens a dialog. */
+private const val LINK_SETTLE_MS = 380L
 private val TITLE_SCROLL_THRESHOLD = 72.dp

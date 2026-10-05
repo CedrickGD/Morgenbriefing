@@ -9,6 +9,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -29,7 +30,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.rounded.Add
@@ -43,22 +43,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.layout
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import com.cedrickgd.morgenbriefing.ui.components.Emoji
 import com.cedrickgd.morgenbriefing.ui.components.motionDisabled
 import com.cedrickgd.morgenbriefing.ui.components.pressScale
@@ -67,7 +71,10 @@ import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
 import com.cedrickgd.morgenbriefing.ui.glass.glass
 
 /** Width of the soft fade where the chips run out before the "Themen" button. */
-private val ChipFadeWidth: Dp = 28.dp
+private val ChipFadeWidth: Dp = 32.dp
+
+/** Clear space between the last visible chip and the "Themen" button. */
+private val ChipButtonGap: Dp = 8.dp
 
 /** Height of the chip row itself (chips are 40 dp, touch targets 48 dp). */
 internal val ChipRowHeight: Dp = 56.dp
@@ -77,7 +84,13 @@ internal val ChipRowHeight: Dp = 56.dp
  * pills scrolling horizontally (they win over the page swipe until their end), and a round
  * glass "Themen" button floating at the right end.
  *
+ * Inner horizontal scrolling wins over the page swipe (docs/DESIGN.md §3): whatever the row
+ * cannot use itself — the rest of a flick at its start or end — is swallowed instead of being
+ * handed on to the page pager.
+ *
  * @param liveRunning shows a pulsing dot on the "⚡ Live" chip while a live research runs.
+ * @param rowState hoist it to keep the scroll position when the row moves (e.g. into the top bar).
+ * @param onGlass the row sits on a glass bar: chips get a quiet fill and rim instead of their own glass.
  */
 @Composable
 fun FeedChipRow(
@@ -87,8 +100,9 @@ fun FeedChipRow(
     onSelect: (FeedFilter) -> Unit,
     onOpenTopics: () -> Unit,
     modifier: Modifier = Modifier,
+    rowState: LazyListState = rememberLazyListState(),
+    onGlass: Boolean = false,
 ) {
-    val rowState = rememberLazyListState()
     val selectedIndex = chips.indexOfFirst { it.filter == selected }
     LaunchedEffect(selectedIndex) {
         if (selectedIndex < 0) return@LaunchedEffect
@@ -110,8 +124,9 @@ fun FeedChipRow(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .fillMaxWidth()
+                .nestedScroll(KeepHorizontalScroll)
                 // The chips end left of the "Themen" button and fade out softly towards it.
-                .padding(end = FeedGutter + 48.dp + 2.dp)
+                .padding(end = FeedGutter + 48.dp + ChipButtonGap)
                 .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
                 .drawWithContent {
                     drawContent()
@@ -137,12 +152,14 @@ fun FeedChipRow(
                     chip = chip,
                     selected = chip.filter == selected,
                     pulsing = liveRunning && chip.filter == FeedFilter.Live,
+                    onGlass = onGlass,
                     onClick = { onSelect(chip.filter) },
                 )
             }
         }
         TopicsButton(
             onClick = onOpenTopics,
+            onGlass = onGlass,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = FeedGutter),
@@ -151,7 +168,7 @@ fun FeedChipRow(
 }
 
 @Composable
-private fun FeedChipPill(chip: FeedChip, selected: Boolean, pulsing: Boolean, onClick: () -> Unit) {
+private fun FeedChipPill(chip: FeedChip, selected: Boolean, pulsing: Boolean, onGlass: Boolean, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     val topicColors = chip.topic?.let { rememberTopicColors(it) }
     val selectedFill = when {
@@ -188,7 +205,13 @@ private fun FeedChipPill(chip: FeedChip, selected: Boolean, pulsing: Boolean, on
             modifier = Modifier
                 .height(40.dp)
                 .pressScale(interaction, pressedScale = 0.94f)
-                .then(if (selected) Modifier else Modifier.glass(shape = GlassShapes.pill, level = GlassLevel.Thin))
+                .then(
+                    when {
+                        selected -> Modifier
+                        onGlass -> Modifier.onGlassChip()
+                        else -> Modifier.glass(shape = GlassShapes.pill, level = GlassLevel.Thin)
+                    },
+                )
                 .background(fill, CircleShape)
                 .indication(interaction, ripple())
                 .padding(horizontal = 16.dp),
@@ -236,15 +259,22 @@ private fun PulsingDot(color: Color) {
 
 /** Round glass button with a heart and a plus — opens the topic sheet. */
 @Composable
-private fun TopicsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun TopicsButton(onClick: () -> Unit, onGlass: Boolean, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     val interaction = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
             .size(48.dp)
             .pressScale(interaction, pressedScale = 0.9f)
-            .shadow(10.dp, CircleShape, ambientColor = Color.Black.copy(alpha = 0.10f), spotColor = Color.Black.copy(alpha = 0.10f))
-            .glass(shape = GlassShapes.pill, level = GlassLevel.Regular)
+            .then(
+                if (onGlass) {
+                    Modifier.onGlassChip()
+                } else {
+                    Modifier
+                        .shadow(10.dp, CircleShape, ambientColor = Color.Black.copy(alpha = 0.10f), spotColor = Color.Black.copy(alpha = 0.10f))
+                        .glass(shape = GlassShapes.pill, level = GlassLevel.Regular)
+                },
+            )
             .clickable(
                 interactionSource = interaction,
                 indication = ripple(),
@@ -279,62 +309,44 @@ private fun TopicsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 /**
- * Makes a LazyColumn `stickyHeader` park [barHeightPx] below the top of the list — under the
- * TopGlassBar — instead of at the very top. The header's content must begin with a spacer of
- * that height: in the flow this part overhangs the item above (it is transparent and does not
- * take touches); while stuck it fills the room behind the bar. Reads the list state only in the
- * placement phase, so scrolling never recomposes the header.
+ * Swallows the horizontal scroll and fling the chip row could not use itself (at its start or
+ * end), so a flick back to "Für dich" never carries on into a page swipe.
  */
-internal fun Modifier.stickBelowBar(listState: LazyListState, key: Any, barHeightPx: Int): Modifier =
-    zIndex(2f).layout { measurable, constraints ->
-        val placeable = measurable.measure(constraints)
-        val ownHeight = (placeable.height - barHeightPx).coerceAtLeast(0)
-        layout(placeable.width, ownHeight) {
-            placeable.place(0, -barHeightPx + stickyShift(listState, key, barHeightPx))
-        }
-    }
+private val KeepHorizontalScroll = object : NestedScrollConnection {
+    override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset =
+        Offset(available.x, 0f)
 
-/**
- * 0 → 1 while the sticky header approaches its parked position below the bar (last [fadePx]);
- * 1 while it is parked. Drives the frosted strip behind the chips (draw phase).
- */
-internal fun stuckFraction(listState: LazyListState, key: Any, barHeightPx: Int, fadePx: Float): Float {
-    val natural = naturalOffset(listState, key) ?: return 0f
-    return ((barHeightPx + fadePx - natural) / fadePx).coerceIn(0f, 1f)
+    override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity =
+        Velocity(available.x, 0f)
 }
 
-/** How far the header must move down from where the list placed it (0 … [bar]). */
-private fun stickyShift(listState: LazyListState, key: Any, bar: Int): Int {
-    val natural = naturalOffset(listState, key) ?: return 0
-    return if (natural <= 0) bar else (bar - natural).coerceAtLeast(0)
+/** Chip surface on a glass bar: a quiet fill and a fine rim (a second blur would vanish into the bar). */
+@Composable
+private fun Modifier.onGlassChip(): Modifier {
+    val ink = MaterialTheme.colorScheme.onSurface
+    return this
+        .clip(CircleShape)
+        .background(ink.copy(alpha = 0.06f))
+        .border(1.dp, ink.copy(alpha = 0.14f), CircleShape)
 }
 
 /**
- * Where the header would be without sticking (px from the top of the list); very negative once
- * it is scrolled past, null when it is not laid out at all.
+ * True when the chip row — the list item at [chipIndex] — has reached the lower edge of the top
+ * bar ([barHeightPx] from the top of the list) or scrolled past it: from then on the bar carries
+ * the chips. Reads list state only; call it inside `derivedStateOf`.
  */
-private fun naturalOffset(listState: LazyListState, key: Any): Int? {
-    val info = listState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == key } ?: return null
+internal fun chipsParked(listState: LazyListState, chipIndex: Int, barHeightPx: Int): Boolean {
+    if (chipIndex < 0) return false
     val first = listState.firstVisibleItemIndex
     return when {
-        info.index < first -> Int.MIN_VALUE / 2
-        info.index == first -> -listState.firstVisibleItemScrollOffset
-        else -> info.offset
+        first > chipIndex -> true
+        first == chipIndex -> true // its top is at or above the list's top, far above the bar's edge
+        else -> listState.layoutInfo.visibleItemsInfo
+            .firstOrNull { it.index == chipIndex }
+            ?.let { it.offset <= barHeightPx }
+            ?: false
     }
 }
-
-/** True when the sticky header [key] is parked below the bar (used before switching chips). */
-internal fun isParked(listState: LazyListState, key: Any, barHeightPx: Int): Boolean {
-    val natural = naturalOffset(listState, key) ?: return false
-    return natural <= barHeightPx
-}
-
-/** The index of [key] in the list, if it is laid out. */
-internal fun indexOfKey(listState: LazyListState, key: Any): Int? =
-    listState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == key }?.index
 
 private const val TOPICS_BUTTON_ROOM_PX = 80
 private const val CHIP_SCROLL_MARGIN_PX = 40
-
-/** Shape of the frosted strip behind the parked chips (continues the TopGlassBar). */
-internal val ChipStripShape = RoundedCornerShape(bottomStart = 22.dp, bottomEnd = 22.dp)

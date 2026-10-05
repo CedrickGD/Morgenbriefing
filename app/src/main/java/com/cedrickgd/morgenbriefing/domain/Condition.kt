@@ -18,8 +18,12 @@ enum class Condition(val label: String, val emojiDay: String, val emojiNight: St
 
     fun emoji(isDay: Boolean): String = if (isDay) emojiDay else emojiNight
 
-    /** "sonnig" reads better than "klar" during the day. */
-    fun labelFor(isDay: Boolean): String = if (this == CLEAR && isDay) "sonnig" else label
+    /** "sonnig" reads better than "klar" during the day; at night nothing is "sonnig". */
+    fun labelFor(isDay: Boolean): String = when {
+        this == CLEAR && isDay -> "sonnig"
+        this == MOSTLY_CLEAR && !isDay -> "überwiegend klar"
+        else -> label
+    }
 
     val isWet: Boolean
         get() = this in setOf(DRIZZLE, RAIN, HEAVY_RAIN, FREEZING_RAIN, SHOWERS, SNOW, SNOW_SHOWERS, THUNDER)

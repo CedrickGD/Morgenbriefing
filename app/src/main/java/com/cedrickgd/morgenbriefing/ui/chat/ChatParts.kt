@@ -52,7 +52,7 @@ import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material.icons.rounded.WifiOff
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -500,7 +500,7 @@ internal fun ErrorCard(
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             if (error == AiError.InvalidKey) {
-                TextButton(onClick = onOpenSettings) { Text("Zu den Einstellungen") }
+                TextButton(onClick = onOpenSettings) { Text("Key ändern") }
             } else if (canRetry && AiTexts.isRetryable(error)) {
                 TextButton(onClick = onRetry) { Text("Nochmal versuchen") }
             } else {
@@ -531,7 +531,7 @@ internal fun ChatInputBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .glass(shape = RoundedCornerShape(28.dp), level = GlassLevel.Thick)
+            .glass(shape = RoundedCornerShape(28.dp), level = GlassLevel.Thick, floating = true)
             .padding(start = 4.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
@@ -645,7 +645,8 @@ internal fun BlockedCard(block: AiBlock, onOpenSettings: () -> Unit, modifier: M
         }
         if (block != AiBlock.UNSUPPORTED_DEVICE) {
             Row(Modifier.fillMaxWidth().padding(top = 10.dp), horizontalArrangement = Arrangement.End) {
-                FilledTonalButton(onClick = onOpenSettings) {
+                // The one way forward: a filled accent button, like every other key/token action.
+                Button(onClick = onOpenSettings, modifier = Modifier.heightIn(min = 48.dp)) {
                     Text(if (block == AiBlock.NO_KEY) "Key eintragen" else "Limit anpassen")
                 }
             }

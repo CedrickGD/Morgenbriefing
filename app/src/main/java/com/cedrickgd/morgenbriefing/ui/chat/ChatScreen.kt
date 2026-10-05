@@ -77,6 +77,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cedrickgd.morgenbriefing.ai
+import com.cedrickgd.morgenbriefing.ai.AiBlock
 import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.ChatContext
 import com.cedrickgd.morgenbriefing.ai.ChatMessage
@@ -87,13 +88,16 @@ import com.cedrickgd.morgenbriefing.ui.components.rememberEntrance
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
 import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
-import com.cedrickgd.morgenbriefing.ui.glass.LocalGlassState
+import com.cedrickgd.morgenbriefing.ui.glass.blockTouchesBehind
 import com.cedrickgd.morgenbriefing.ui.glass.glass
+import com.cedrickgd.morgenbriefing.ui.glass.glassContent
+import com.cedrickgd.morgenbriefing.ui.settings.InlineAiKeyDialog
+import com.cedrickgd.morgenbriefing.ui.shell.LocalSettingsLink
+import com.cedrickgd.morgenbriefing.ui.shell.SettingsTarget
 import com.cedrickgd.morgenbriefing.ui.theme.Reading
 import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import com.cedrickgd.morgenbriefing.util.statusBarTop
-import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
 
 /**
@@ -111,17 +115,29 @@ fun ChatScreen(
     val context = LocalContext.current
     val session = remember(context, date, articleKey) { context.ai.chat.session(ChatContext(date, articleKey)) }
     val state by session.state.collectAsStateWithLifecycle()
+    val settingsLink = LocalSettingsLink.current
+    var keyDialog by rememberSaveable { mutableStateOf(false) }
     ChatContent(
         state = state,
         aboutArticle = articleKey != null,
         onBack = onBack,
-        onOpenSettings = onOpenSettings,
+        // A missing or rejected key is entered right here (Back keeps the user in the chat); only
+        // the monthly limit leads to the settings' KI section.
+        onOpenSettings = {
+            if (state.blocked == AiBlock.LIMIT_REACHED) {
+                settingsLink.request(SettingsTarget.AI)
+                onOpenSettings()
+            } else {
+                keyDialog = true
+            }
+        },
         onSend = session::send,
         onStop = session::stop,
         onRetry = { (session as? RetryableChatSession)?.retry() },
         onClear = session::clear,
         modifier = modifier,
     )
+    if (keyDialog) InlineAiKeyDialog(onDismiss = { keyDialog = false })
 }
 
 /**
@@ -203,7 +219,8 @@ internal fun ChatContent(
             val blocked = state.blocked
             // A running answer keeps its stop button even if the limit is reached meanwhile.
             if (blocked != null && !state.busy) {
-                BlockedCard(blocked, onOpenSettings)
+                // Same 20 dp gutter as the cards of the chat above.
+                BlockedCard(blocked, onOpenSettings, Modifier.padding(horizontal = 8.dp))
             } else {
                 ChatInputBar(
                     value = draft,
@@ -249,7 +266,8 @@ private fun ChatTopBar(
     Box(
         modifier
             .fillMaxWidth()
-            .glass(shape = RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 26.dp), level = GlassLevel.Thick)
+            .glass(shape = RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 26.dp), level = GlassLevel.Thick, floating = true)
+            .blockTouchesBehind()
             .padding(top = statusBarTop())
             .horizontalSafeDrawing(),
     ) {
@@ -284,7 +302,8 @@ private fun ChatTopBar(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            Box {
+            // The menu only holds "Verlauf löschen": without a conversation there is nothing to offer.
+            if (canClear) Box {
                 RoundGlassButton(icon = Icons.Rounded.MoreVert, contentDescription = "Weitere Optionen", onClick = { menuOpen = true })
                 DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                     DropdownMenuItem(
@@ -321,7 +340,6 @@ private fun MessageList(
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-    val glassState = LocalGlassState.current
 
     val footer = footerShown(state)
     val itemCount = state.messages.size + if (footer) 1 else 0
@@ -353,7 +371,8 @@ private fun MessageList(
         state = listState,
         modifier = Modifier
             .fillMaxSize()
-            .then(if (glassState != null) Modifier.hazeSource(glassState, zIndex = 1f) else Modifier),
+            // The bars above frost the messages gliding beneath them.
+            .glassContent(),
         contentPadding = PaddingValues(
             start = 16.dp,
             end = 16.dp,
@@ -532,11 +551,17 @@ private fun EmptyChat(
                 )
             }
         }
-        if (state.blocked == null && state.suggestions.isNotEmpty()) {
+        if (state.suggestions.isNotEmpty()) {
+            // While AI is blocked the questions still show what the chat can do — as a quiet preview.
+            val blocked = state.blocked != null
             Spacer(Modifier.height(24.dp))
-            Column(Modifier.entrance(chips)) {
+            Column(
+                Modifier
+                    .entrance(chips)
+                    .graphicsLayer { alpha = if (blocked) 0.6f else 1f },
+            ) {
                 Text(
-                    "Zum Beispiel",
+                    if (blocked) "Das kannst du dann fragen" else "Zum Beispiel",
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -547,7 +572,7 @@ private fun EmptyChat(
                             Modifier
                                 .minimumInteractiveComponentSize()
                                 .frost(shape = GlassShapes.pill, level = GlassLevel.Thin)
-                                .clickable(role = Role.Button, onClickLabel = "Frage stellen") { onSuggestion(suggestion) }
+                                .clickable(enabled = !blocked, role = Role.Button, onClickLabel = "Frage stellen") { onSuggestion(suggestion) }
                                 .padding(horizontal = 16.dp, vertical = 10.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {

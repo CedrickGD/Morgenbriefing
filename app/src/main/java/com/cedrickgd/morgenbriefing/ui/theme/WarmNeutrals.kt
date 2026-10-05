@@ -3,8 +3,10 @@ package com.cedrickgd.morgenbriefing.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * The warm, paper-like neutral surfaces shared by every non-dynamic accent. They stay the same
- * no matter which accent is chosen, so the app always feels calm and only the accent changes.
+ * The neutral surfaces shared by every non-dynamic accent: warm and paper-like in light mode,
+ * a deep "Morgenglas" night blue in dark mode (docs/DESIGN.md §1), so menus, sheets, dialogs
+ * and the reader belong to the same night sky as the pages. They stay the same no matter which
+ * accent is chosen, so the app always feels calm and only the accent changes.
  */
 internal data class WarmNeutrals(
     val background: Color,
@@ -41,20 +43,20 @@ internal data class WarmNeutrals(
         )
 
         val Dark = WarmNeutrals(
-            background = Color(0xFF151412),
-            surfaceContainerLowest = Color(0xFF100F0E),
-            surfaceContainerLow = Color(0xFF1B1A18),
-            surfaceContainer = Color(0xFF201F1C),
-            surfaceContainerHigh = Color(0xFF2A2925),
-            surfaceContainerHighest = Color(0xFF353430),
-            surfaceDim = Color(0xFF151412),
-            surfaceBright = Color(0xFF3B3A35),
-            onSurface = Color(0xFFECEAE4),
-            onSurfaceVariant = Color(0xFFB3B0A6),
-            outline = Color(0xFF8A877E),
-            outlineVariant = Color(0xFF3A3833),
-            inverseSurface = Color(0xFFE6E3DC),
-            inverseOnSurface = Color(0xFF32302C),
+            background = Color(0xFF0F1320),
+            surfaceContainerLowest = Color(0xFF0B0E18),
+            surfaceContainerLow = Color(0xFF151A28),
+            surfaceContainer = Color(0xFF1A2133),
+            surfaceContainerHigh = Color(0xFF222A3E),
+            surfaceContainerHighest = Color(0xFF2B344A),
+            surfaceDim = Color(0xFF0F1320),
+            surfaceBright = Color(0xFF343E56),
+            onSurface = Color(0xFFE9EBF2),
+            onSurfaceVariant = Color(0xFFB2B7C6),
+            outline = Color(0xFF868C9D),
+            outlineVariant = Color(0xFF323A4F),
+            inverseSurface = Color(0xFFE3E5EC),
+            inverseOnSurface = Color(0xFF2B2F3A),
         )
 
         fun of(dark: Boolean): WarmNeutrals = if (dark) Dark else Light

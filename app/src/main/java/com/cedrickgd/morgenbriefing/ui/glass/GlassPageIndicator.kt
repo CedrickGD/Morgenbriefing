@@ -61,7 +61,8 @@ fun GlassPageIndicator(
 ) {
     val accent = MaterialTheme.colorScheme.primary
     val onAccent = MaterialTheme.colorScheme.onPrimary
-    val idle = MaterialTheme.colorScheme.onSurfaceVariant
+    // Full-strength ink: the pill floats over photos of any brightness.
+    val idle = MaterialTheme.colorScheme.onSurface
     // A drop of colored glass: lit from above, with a bright rim along its top edge.
     val capsuleFill = remember(accent) {
         Brush.verticalGradient(listOf(lerp(accent, Color.White, 0.16f), accent, lerp(accent, Color.Black, 0.06f)))
@@ -89,7 +90,10 @@ fun GlassPageIndicator(
                     ambientColor = Color.Black.copy(alpha = 0.10f),
                     spotColor = Color.Black.copy(alpha = 0.10f),
                 )
-                .glass(shape = GlassShapes.pill, level = GlassLevel.Thin)
+                // Regular, not Thin: it floats over pictures too, and its icons must stay readable.
+                .glass(shape = GlassShapes.pill, level = GlassLevel.Regular, floating = true)
+                // Taps on its padding never fall through to the list underneath.
+                .blockTouchesBehind()
                 .height(PILL_HEIGHT)
                 .padding(horizontal = PILL_PADDING),
         ) {

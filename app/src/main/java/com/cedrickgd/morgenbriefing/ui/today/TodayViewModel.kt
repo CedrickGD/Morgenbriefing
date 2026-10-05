@@ -22,6 +22,7 @@ import com.cedrickgd.morgenbriefing.ui.brief.WeatherUi
 import com.cedrickgd.morgenbriefing.ui.brief.isBriefFor
 import com.cedrickgd.morgenbriefing.ui.brief.toWeatherUi
 import com.cedrickgd.morgenbriefing.ui.news.TopicPrefs
+import com.cedrickgd.morgenbriefing.ui.settings.TopicList
 import com.cedrickgd.morgenbriefing.ui.news.topicPrefs
 import com.cedrickgd.morgenbriefing.ui.news.withTopicVisible
 import com.cedrickgd.morgenbriefing.util.AppSignals
@@ -209,6 +210,14 @@ class TodayViewModel(
                     settings.copy(hiddenTopics = next.hidden)
                 }
             }.onFailure { Log.w(TAG, "Could not store topic visibility", it) }
+        }
+    }
+
+    /** Stores a new topic order (the "Themen" sheet; same setting as in Einstellungen → Themen). */
+    fun setTopicOrder(order: List<String>) {
+        viewModelScope.launch {
+            attempt { container.settings.update { it.copy(topicOrder = TopicList.normalize(order)) } }
+                .onFailure { Log.w(TAG, "Could not store topic order", it) }
         }
     }
 

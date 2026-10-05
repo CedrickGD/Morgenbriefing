@@ -1,11 +1,25 @@
 package com.cedrickgd.morgenbriefing.ui.news
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
@@ -14,17 +28,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.data.model.Topic
+import com.cedrickgd.morgenbriefing.ui.components.Emoji
+import com.cedrickgd.morgenbriefing.ui.theme.OverlineLetterSpacing
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.roundToInt
 import kotlin.math.sin
 
 /** The abstract motif of a generated cover. */
@@ -92,69 +110,118 @@ internal class CoverRandom(seed: Int) {
 }
 
 /**
- * A generated cover for articles without a (free) picture: a gradient in the topic's color,
- * soft abstract shapes picked by a hash of [seedKey] and the topic emoji, large. Decorative —
- * no semantics. Works in light and dark (the palette comes from [rememberTopicColors]).
+ * A typographic cover for articles without a (free) picture — editorial, not clip-art: a soft
+ * mesh gradient in the topic's color with a quiet abstract motif (picked by a hash of
+ * [seedKey]), a large serif initial of the [title] as a watermark, and a small frosted badge
+ * with the topic ("🤖 KI & TECH"). Small covers (thumbnails) keep only the initial and the topic
+ * emoji in a little glass circle. Decorative — no semantics. Works in light and dark (the palette
+ * comes from [rememberTopicColors]).
  *
- * @param emojiAlignment where the emoji sits; [Alignment.TopEnd] leaves room for a headline
- *   at the bottom and a chip at the top start.
- * @param emojiFraction emoji size relative to the cover's smaller side.
+ * @param title the headline; its first letter becomes the watermark (falls back to the topic).
+ * @param badgeAlignment where the topic badge sits on large covers.
+ * @param badgePadding distance of the badge from the cover's edges.
+ * @param showBadge false where the caller shows the topic itself (e.g. a chip on top).
  */
 @Composable
 fun CoverArt(
     topic: Topic,
     seedKey: String,
     modifier: Modifier = Modifier,
-    emojiAlignment: Alignment = Alignment.TopEnd,
-    emojiFraction: Float = 0.34f,
+    title: String? = null,
+    badgeAlignment: Alignment = Alignment.BottomStart,
+    badgePadding: PaddingValues = PaddingValues(14.dp),
+    showBadge: Boolean = true,
 ) {
     val colors = rememberTopicColors(topic)
     val spec = remember(seedKey) { coverSpec(seedKey) }
-    val measurer = rememberTextMeasurer(cacheSize = 4)
+    val initial = remember(title, topic.title) { coverInitial(title, topic.title) }
     val emoji = topic.emoji.ifBlank { "📰" }
 
-    Box(
+    BoxWithConstraints(
         // The shapes deliberately overshoot the edges; never paint over neighbouring content.
         modifier.clipToBounds().drawWithCache {
-            val emojiPx = min(size.width, size.height) * emojiFraction
-            val layout = if (emojiPx >= 1f) {
-                measurer.measure(emoji, TextStyle(fontSize = emojiPx.toSp(), lineHeight = (emojiPx * 1.15f).toSp()))
-            } else {
-                null
-            }
-            val margin = min(size.width, size.height) * 0.09f
-            val emojiTopLeft = layout?.let { result ->
-                val box = IntSize(
-                    (size.width - margin * 2).roundToInt().coerceAtLeast(0),
-                    (size.height - margin * 2).roundToInt().coerceAtLeast(0),
-                )
-                val offset = emojiAlignment.align(result.size, box, layoutDirection)
-                Offset(offset.x + margin, offset.y + margin)
-            }
-            onDrawBehind {
-                drawCoverBackground(spec, colors)
-                if (layout != null && emojiTopLeft != null) {
-                    val center = Offset(
-                        emojiTopLeft.x + layout.size.width / 2f,
-                        emojiTopLeft.y + layout.size.height / 2f,
-                    )
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            listOf(colors.coverGlow.copy(alpha = 0.42f), Color.Transparent),
-                            center = center,
-                            radius = emojiPx * 1.05f,
-                        ),
-                        radius = emojiPx * 1.05f,
-                        center = center,
-                    )
-                    rotate(spec.emojiTilt, pivot = center) {
-                        drawText(layout, topLeft = emojiTopLeft)
-                    }
-                }
-            }
+            onDrawBehind { drawCoverBackground(spec, colors) }
         },
-    )
+    ) {
+        val large = minOf(maxWidth, maxHeight) >= LargeCoverMin
+        val initialSize = with(LocalDensity.current) { (maxHeight * if (large) 1.05f else 0.9f).toSp() }
+        Text(
+            text = initial,
+            style = TextStyle(
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = initialSize,
+                lineHeight = initialSize,
+                color = Color.White.copy(alpha = if (large) 0.17f else 0.2f),
+            ),
+            maxLines = 1,
+            softWrap = false,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .wrapContentSize(unbounded = true, align = Alignment.BottomEnd)
+                .graphicsLayer {
+                    // Partly cropped by the edges, slightly turned: a watermark, not a letter to read.
+                    translationX = size.width * 0.12f
+                    translationY = size.height * 0.2f
+                    rotationZ = spec.emojiTilt * 0.4f
+                },
+        )
+        if (!showBadge) return@BoxWithConstraints
+        if (large) {
+            TopicBadgeOnCover(
+                emoji = emoji,
+                label = topic.title,
+                modifier = Modifier
+                    .align(badgeAlignment)
+                    .padding(badgePadding),
+            )
+        } else {
+            Box(
+                Modifier
+                    .align(Alignment.Center)
+                    .size(minOf(32.dp, minOf(maxWidth, maxHeight) * 0.42f))
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.2f))
+                    .border(1.dp, Color.White.copy(alpha = 0.32f), CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Emoji(emoji, size = 16.sp)
+            }
+        }
+    }
 }
+
+/** "🤖 KI & TECH" on a frosted white pill. */
+@Composable
+private fun TopicBadgeOnCover(emoji: String, label: String, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .clip(CircleShape)
+            .background(Color.White.copy(alpha = 0.2f))
+            .border(1.dp, Color.White.copy(alpha = 0.34f), CircleShape)
+            .padding(start = 10.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Emoji(emoji, size = 15.sp)
+        Spacer(Modifier.width(7.dp))
+        Text(
+            text = label.uppercase(),
+            style = MaterialTheme.typography.labelMedium.copy(letterSpacing = OverlineLetterSpacing, fontWeight = FontWeight.SemiBold),
+            color = Color.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+/** The first letter of the first word of [title] (skipping quotes and digits), else of [fallback]. */
+internal fun coverInitial(title: String?, fallback: String): String {
+    fun firstLetter(text: String?): String? = text?.firstOrNull { it.isLetter() }?.uppercaseChar()?.toString()
+    return firstLetter(title) ?: firstLetter(fallback) ?: "N"
+}
+
+/** From this size on a cover shows its topic badge; smaller ones are thumbnails. */
+private val LargeCoverMin = 120.dp
 
 private fun DrawScope.drawCoverBackground(spec: CoverSpec, colors: TopicColors) {
     val w = size.width
@@ -181,6 +248,22 @@ private fun DrawScope.drawCoverBackground(spec: CoverSpec, colors: TopicColors) 
         brush = Brush.radialGradient(listOf(colors.coverGlow.copy(alpha = 0.5f), Color.Transparent), glowCenter, glowRadius),
         radius = glowRadius,
         center = glowCenter,
+    )
+
+    // Two more soft fields make it a mesh: a lighter one opposite the glow, a deeper one low down.
+    val lightCenter = Offset(w * (1f - spec.glowX), h * (0.7f + spec.glowY * 0.4f))
+    val lightRadius = maxDim * 0.6f
+    drawCircle(
+        brush = Brush.radialGradient(listOf(colors.coverStart.copy(alpha = 0.6f), Color.Transparent), lightCenter, lightRadius),
+        radius = lightRadius,
+        center = lightCenter,
+    )
+    val deepCenter = Offset(w * (0.2f + spec.glowY), h * 1.05f)
+    val deepRadius = maxDim * 0.55f
+    drawCircle(
+        brush = Brush.radialGradient(listOf(colors.coverEnd.copy(alpha = 0.65f), Color.Transparent), deepCenter, deepRadius),
+        radius = deepRadius,
+        center = deepCenter,
     )
 
     val random = CoverRandom(spec.seed)

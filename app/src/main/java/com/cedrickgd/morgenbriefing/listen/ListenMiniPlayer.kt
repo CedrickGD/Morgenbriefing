@@ -1,6 +1,5 @@
 package com.cedrickgd.morgenbriefing.listen
 
-import android.os.Build
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -21,7 +20,9 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.HeadsetOff
 import androidx.compose.material.icons.rounded.Headphones
 import androidx.compose.material.icons.rounded.Pause
@@ -67,9 +69,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
@@ -86,7 +90,7 @@ import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 import com.cedrickgd.morgenbriefing.listen
 import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
-import com.cedrickgd.morgenbriefing.ui.glass.LocalGlassState
+import com.cedrickgd.morgenbriefing.ui.glass.blockTouchesBehind
 import com.cedrickgd.morgenbriefing.ui.glass.glass
 import com.cedrickgd.morgenbriefing.ui.theme.MorgenbriefingTheme
 import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
@@ -114,9 +118,12 @@ fun ListenState.showsMiniPlayer(): Boolean = speaking || paused || issue != null
  *
  * Fills the width it gets (max 560 dp, centred) with 16 dp side margins; the shell positions
  * it above the page indicator, on pushed screens above the navigation bar.
+ *
+ * Tapping the pill opens the article being read ([onOpenArticle] with its brief date and key);
+ * taps never fall through to the content underneath.
  */
 @Composable
-fun ListenMiniPlayer(modifier: Modifier = Modifier) {
+fun ListenMiniPlayer(modifier: Modifier = Modifier, onOpenArticle: ((date: String, key: String) -> Unit)? = null) {
     if (LocalInspectionMode.current) return
     val context = LocalContext.current
     val controller = remember(context) { context.listen }
@@ -127,6 +134,14 @@ fun ListenMiniPlayer(modifier: Modifier = Modifier) {
         onClose = controller::stop,
         onFix = { controller.installVoiceData(context) },
         modifier = modifier,
+        onOpen = onOpenArticle?.let { open ->
+            {
+                val current = controller.state.value
+                val date = current.articleDate
+                val key = current.articleKey
+                if (date != null && key != null) open(date, key)
+            }
+        },
     )
 }
 
@@ -138,6 +153,7 @@ internal fun ListenMiniPlayerContent(
     onClose: () -> Unit,
     onFix: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpen: (() -> Unit)? = null,
 ) {
     val visible = state.showsMiniPlayer()
     // The controller resets its state when reading ends; keep showing the last visible one
@@ -164,10 +180,9 @@ internal fun ListenMiniPlayerContent(
                 .widthIn(max = 560.dp)
                 .fillMaxWidth(),
         ) {
-            // Without real blur (Android < 12, or no blur source) the player may sit on text:
-            // a denser underlay keeps its title readable.
-            val needsUnderlay = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || LocalGlassState.current == null
-            val underlay = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
+            // Only a reading whose article is known can be opened (not the "no voice" hint).
+            val open = onOpen?.takeIf { shown.issue == null && shown.articleDate != null }
+            val title = shown.title.orEmpty()
             CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
                 Row(
                     modifier = Modifier
@@ -177,8 +192,19 @@ internal fun ListenMiniPlayerContent(
                             ambientColor = Color.Black.copy(alpha = 0.16f),
                             spotColor = Color.Black.copy(alpha = 0.16f),
                         )
-                        .then(if (needsUnderlay) Modifier.background(underlay, GlassShapes.pill) else Modifier)
-                        .glass(shape = GlassShapes.pill, level = GlassLevel.Regular)
+                        // Floating glass: blurs the feed or article beneath; opaque without real blur.
+                        .glass(shape = GlassShapes.pill, level = GlassLevel.Regular, floating = true)
+                        // The whole pill takes its touches: nothing beneath is ever opened by accident.
+                        .blockTouchesBehind()
+                        .then(
+                            if (open != null) {
+                                Modifier
+                                    .clickable(role = Role.Button, onClickLabel = "Artikel öffnen", onClick = open)
+                                    .semantics { contentDescription = "Vorlesen: $title öffnen" }
+                            } else {
+                                Modifier
+                            },
+                        )
                         .fillMaxWidth()
                         .height(ListenMiniPlayerDefaults.Height)
                         .padding(start = 10.dp, end = 6.dp),
@@ -188,7 +214,7 @@ internal fun ListenMiniPlayerContent(
                     if (issue != null) {
                         IssueContent(issue = issue, onFix = onFix, onClose = onClose)
                     } else {
-                        PlayerContent(state = shown, onToggle = onToggle, onClose = onClose)
+                        PlayerContent(state = shown, onToggle = onToggle, onClose = onClose, onFix = onFix)
                     }
                 }
             }
@@ -200,7 +226,7 @@ internal fun ListenMiniPlayerContent(
 private class LastVisible(var value: ListenState)
 
 @Composable
-private fun RowScope.PlayerContent(state: ListenState, onToggle: () -> Unit, onClose: () -> Unit) {
+private fun RowScope.PlayerContent(state: ListenState, onToggle: () -> Unit, onClose: () -> Unit, onFix: () -> Unit) {
     val reduceMotion = rememberReduceMotion()
     val progress = animateFloatAsState(
         targetValue = state.progress.coerceIn(0f, 1f),
@@ -230,8 +256,14 @@ private fun RowScope.PlayerContent(state: ListenState, onToggle: () -> Unit, onC
             overflow = if (marquee) TextOverflow.Clip else TextOverflow.Ellipsis,
             modifier = if (marquee) {
                 Modifier
-                    .fadingEdges()
-                    .basicMarquee(iterations = Int.MAX_VALUE, initialDelayMillis = 1_600, repeatDelayMillis = 2_400)
+                    .marqueeFadeArea()
+                    .basicMarquee(
+                        iterations = Int.MAX_VALUE,
+                        initialDelayMillis = 1_500,
+                        repeatDelayMillis = 2_400,
+                        spacing = MarqueeSpacing(32.dp),
+                        velocity = 34.dp,
+                    )
             } else {
                 Modifier
             },
@@ -240,6 +272,16 @@ private fun RowScope.PlayerContent(state: ListenState, onToggle: () -> Unit, onC
         ProgressLine(progress = progress)
     }
     Spacer(Modifier.width(4.dp))
+    if (state.onlineVoiceOnly) {
+        // Reading uses a network voice: offer the offline German voice (works without internet).
+        IconButton(onClick = onFix) {
+            Icon(
+                imageVector = Icons.Rounded.Download,
+                contentDescription = "Deutsche Stimme offline installieren",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
     ToggleButton(paused = state.paused, onToggle = onToggle)
     IconButton(onClick = onClose) {
         Icon(
@@ -250,14 +292,24 @@ private fun RowScope.PlayerContent(state: ListenState, onToggle: () -> Unit, onC
     }
 }
 
-/** Soft edges for the scrolling title instead of a hard cut. */
-private fun Modifier.fadingEdges(): Modifier = this
+/**
+ * Soft edges for the scrolling title instead of a hard cut. The fade zone on the left lies
+ * *outside* the text column (over the gap next to the badge), so at rest the title starts fully
+ * opaque, aligned with the overline above it, and only letters scrolling out fade away.
+ */
+private fun Modifier.marqueeFadeArea(): Modifier = this
+    .layout { measurable, constraints ->
+        val extra = MarqueeFade.roundToPx()
+        val wide = if (constraints.hasBoundedWidth) constraints.maxWidth + extra else constraints.maxWidth
+        val placeable = measurable.measure(constraints.copy(minWidth = 0, maxWidth = wide))
+        layout((placeable.width - extra).coerceAtLeast(0), placeable.height) { placeable.place(-extra, 0) }
+    }
     .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
     .drawWithContent {
         drawContent()
         if (size.width <= 0f) return@drawWithContent
-        val start = (6.dp.toPx() / size.width).coerceAtMost(0.2f)
-        val end = (18.dp.toPx() / size.width).coerceAtMost(0.3f)
+        val start = (MarqueeFade.toPx() / size.width).coerceAtMost(0.25f)
+        val end = (20.dp.toPx() / size.width).coerceAtMost(0.3f)
         drawRect(
             brush = Brush.horizontalGradient(
                 0f to Color.Transparent,
@@ -268,12 +320,17 @@ private fun Modifier.fadingEdges(): Modifier = this
             blendMode = BlendMode.DstIn,
         )
     }
+    .padding(start = MarqueeFade)
+
+/** Width of the fade zone left of the title (inside the 12 dp gap next to the badge). */
+private val MarqueeFade = 12.dp
 
 /** "LIEST VOR · NOCH ETWA 3 MIN." */
 private fun statusLine(state: ListenState): String {
     val status = when {
         state.preparing -> "STIMME WIRD VORBEREITET"
         state.paused -> "PAUSIERT"
+        state.onlineVoiceOnly -> "LIEST VOR · ONLINE-STIMME"
         else -> "LIEST VOR"
     }
     val remaining = remainingMinutes(state.estimatedSeconds, state.progress)

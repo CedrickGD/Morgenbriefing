@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +51,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -69,6 +71,7 @@ import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
 import com.cedrickgd.morgenbriefing.ui.glass.PageTitle
 import com.cedrickgd.morgenbriefing.ui.glass.TopGlassBar
 import com.cedrickgd.morgenbriefing.ui.glass.glass
+import com.cedrickgd.morgenbriefing.ui.glass.glassContent
 import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
 import com.cedrickgd.morgenbriefing.ui.settings.GlassPillButton
 import com.cedrickgd.morgenbriefing.ui.settings.Overline
@@ -78,9 +81,11 @@ import com.cedrickgd.morgenbriefing.ui.settings.rememberStagger
 import com.cedrickgd.morgenbriefing.ui.settings.staggerIn
 import com.cedrickgd.morgenbriefing.ui.shell.reportChromeScroll
 import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
+import com.cedrickgd.morgenbriefing.util.KeepListEndAboveChrome
 import com.cedrickgd.morgenbriefing.util.bottomContentInset
 import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
 import com.cedrickgd.morgenbriefing.util.statusBarTop
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 /**
@@ -116,6 +121,8 @@ fun HistoryScreen(
     val groups = state.groups
     val rows = remember(groups, state.today) { groups?.let { timelineRows(it, state.today) } }
     val statusTop = statusBarTop()
+    val scope = rememberCoroutineScope()
+    KeepListEndAboveChrome(listState, bottomContentInset(contentPadding))
 
     Box(modifier.fillMaxSize()) {
         PullToRefreshBox(
@@ -140,6 +147,7 @@ fun HistoryScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .reportChromeScroll()
+                    .glassContent()
                     .horizontalSafeDrawing(),
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = bottomContentInset(contentPadding) + 32.dp),
             ) {
@@ -157,29 +165,58 @@ fun HistoryScreen(
                         SkeletonRow(first = index == 0, last = index == SKELETON_ROWS - 1, reduceMotion = reduceMotion)
                     }
 
-                    rows.isEmpty() -> item(key = "empty", contentType = "empty") {
-                        EmptyState(
-                            failed = state.failed,
-                            onRetry = viewModel::refresh,
-                            modifier = Modifier
-                                .padding(top = 20.dp)
-                                .staggerIn(stagger, "empty", 1),
-                        )
+                    rows.isEmpty() -> {
+                        item(key = "empty", contentType = "empty") {
+                            EmptyState(
+                                failed = state.failed,
+                                onRetry = viewModel::refresh,
+                                modifier = Modifier
+                                    .padding(top = 20.dp)
+                                    .staggerIn(stagger, "empty", 1),
+                            )
+                        }
+                        // A faded preview of the timeline to come, instead of empty sky.
+                        if (!state.failed) {
+                            items(GHOST_ROWS, key = { "ghost-$it" }, contentType = { "ghost" }) { index ->
+                                GhostRow(index = index, first = index == 0, last = index == GHOST_ROWS - 1)
+                            }
+                        }
                     }
 
-                    else -> itemsIndexed(rows, key = { _, row -> row.key }, contentType = { _, row -> if (row is TimelineRow.Month) "month" else "day" }) { index, row ->
-                        val enter = Modifier
-                            .staggerIn(stagger, row.key, index + 1)
-                            .animateItem(fadeInSpec = null, fadeOutSpec = null)
-                        when (row) {
-                            is TimelineRow.Month -> MonthRow(row, enter)
-                            is TimelineRow.Day -> DayRow(row, onOpen = { onOpenDay(row.entry.date) }, modifier = enter)
+                    else -> {
+                        itemsIndexed(rows, key = { _, row -> row.key }, contentType = { _, row -> if (row is TimelineRow.Month) "month" else "day" }) { index, row ->
+                            val enter = Modifier
+                                .staggerIn(stagger, row.key, index + 1)
+                                .animateItem(fadeInSpec = null, fadeOutSpec = null)
+                            when (row) {
+                                is TimelineRow.Month -> MonthRow(row, enter)
+                                is TimelineRow.Day -> DayRow(row, onOpen = { onOpenDay(row.entry.date) }, modifier = enter)
+                            }
+                        }
+                        // A young archive: the mornings still to come, as a faded promise.
+                        val days = rows.count { it is TimelineRow.Day }
+                        if (days < FEW_DAYS) {
+                            item(key = "upcoming-hint", contentType = "hint") {
+                                Text(
+                                    text = "Ab morgen früh kommt hier jeden Tag dein Briefing dazu – mit Wetter und allen Artikeln.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(start = GUTTER, end = 8.dp, top = 8.dp),
+                                )
+                            }
+                            items(GHOST_ROWS - 1, key = { "upcoming-$it" }, contentType = { "ghost" }) { index ->
+                                GhostRow(index = index + 1, first = index == 0, last = index == GHOST_ROWS - 2)
+                            }
                         }
                     }
                 }
             }
         }
-        TopGlassBar(title = "Verlauf", visible = showTopBar)
+        TopGlassBar(
+            title = "Verlauf",
+            visible = showTopBar,
+            onTap = { scope.launch { if (reduceMotion) listState.scrollToItem(0) else listState.animateScrollToItem(0) } },
+        )
     }
 }
 
@@ -191,6 +228,10 @@ private val ROW_GAP = 12.dp
 /** Distance from a day card's top to its dot (aligned with the day number). */
 private val DOT_Y = 40.dp
 private const val SKELETON_ROWS = 4
+private const val GHOST_ROWS = 3
+
+/** Below this many days the timeline shows the mornings still to come. */
+private const val FEW_DAYS = 3
 
 @Composable
 private fun lineColor(): Color =
@@ -287,6 +328,7 @@ private fun DayCard(entry: HistoryEntry, isToday: Boolean, onClick: () -> Unit, 
     val count = itemCountLabel(entry.itemCount)
     val description = buildString {
         if (isToday) append("Heute, ")
+        if (entry.demo) append("Demo-Briefing, ")
         append(fullDate)
         append(". ")
         append(teaser)
@@ -325,9 +367,13 @@ private fun DayCard(entry: HistoryEntry, isToday: Boolean, onClick: () -> Unit, 
             }
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                if (isToday) {
+                if (isToday || entry.demo) {
                     Text(
-                        text = "HEUTE",
+                        text = when {
+                            isToday && entry.demo -> "HEUTE · DEMO"
+                            entry.demo -> "DEMO"
+                            else -> "HEUTE"
+                        },
                         style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.4.sp),
                         fontWeight = FontWeight.Bold,
                         color = colors.onPrimary,
@@ -439,6 +485,46 @@ private fun SkeletonRow(first: Boolean, last: Boolean, reduceMotion: Boolean) {
                     .height(14.dp)
                     .lamina(CircleShape),
             )
+        }
+    }
+}
+
+/**
+ * One faded day of the timeline still to come (shown under the empty state): dot, line and a
+ * ghost card, fading further with every row.
+ */
+@Composable
+private fun GhostRow(index: Int, first: Boolean, last: Boolean) {
+    val line = lineColor()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = if (first) 20.dp else 0.dp)
+            .graphicsLayer { alpha = 0.55f - index * 0.15f }
+            .drawBehind {
+                val x = LINE_X.toPx()
+                drawLine(line, Offset(x, 0f), Offset(x, if (last) DOT_Y.toPx() else size.height), 2.dp.toPx())
+                drawCircle(line, radius = 5.dp.toPx(), center = Offset(x, DOT_Y.toPx()), style = Stroke(1.5.dp.toPx()))
+            }
+            .padding(start = GUTTER, bottom = ROW_GAP)
+            .clearAndSetSemantics { },
+    ) {
+        GlassCard(Modifier.weight(1f), contentPadding = PaddingValues(start = 18.dp, end = 18.dp, top = 16.dp, bottom = 16.dp)) {
+            Row {
+                Column(Modifier.width(56.dp)) {
+                    Box(Modifier.size(width = 34.dp, height = 34.dp).lamina())
+                    Spacer(Modifier.height(6.dp))
+                    Box(Modifier.size(width = 22.dp, height = 10.dp).lamina(CircleShape))
+                }
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.weight(1f)) {
+                    Box(Modifier.fillMaxWidth(0.9f).height(13.dp).lamina(CircleShape))
+                    Spacer(Modifier.height(8.dp))
+                    Box(Modifier.fillMaxWidth(0.6f).height(13.dp).lamina(CircleShape))
+                    Spacer(Modifier.height(12.dp))
+                    Box(Modifier.size(width = 74.dp, height = 20.dp).lamina(CircleShape))
+                }
+            }
         }
     }
 }

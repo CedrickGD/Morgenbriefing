@@ -10,6 +10,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
+import androidx.navigation.toRoute
+import com.cedrickgd.morgenbriefing.ui.nav.ArticleRoute
 import com.cedrickgd.morgenbriefing.ui.nav.MainRoute
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -70,6 +72,24 @@ class ShellNavigator internal constructor(
     fun push(from: NavBackStackEntry, route: Any) {
         if (from.lifecycle.currentState != Lifecycle.State.RESUMED) return
         navController.navigate(route) { launchSingleTop = true }
+    }
+
+    /**
+     * Opens the article [key] of the brief [date] in the reader (the mini player was tapped).
+     * Already reading it: nothing happens. Another article open in the reader: it is replaced,
+     * so Back still leads to where the user came from.
+     */
+    fun openArticle(date: String, key: String) {
+        val top = navController.currentBackStackEntry
+        if (top != null && top.destination.hasRoute<ArticleRoute>()) {
+            val shown = runCatching { top.toRoute<ArticleRoute>() }.getOrNull()
+            if (shown?.date == date && shown.key == key) return
+            navController.navigate(ArticleRoute(date, key)) {
+                popUpTo<ArticleRoute> { inclusive = true }
+            }
+        } else {
+            navController.navigate(ArticleRoute(date, key)) { launchSingleTop = true }
+        }
     }
 
     /** Closes the screen [from] (ignored when it is not the resumed top entry). */

@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -72,16 +73,24 @@ class SettingsViewModel(
     /** Connection to the briefs repo (status hero + "News-Quelle"). */
     val source: StateFlow<SourceStatus> = _source.asStateFlow()
 
-    private val _aiKey = MutableStateFlow<AiKeyState>(AiKeyState.Idle)
-    val aiKey: StateFlow<AiKeyState> = _aiKey.asStateFlow()
+    private val aiKeyEditor = AiKeyEditor(viewModelScope, container, ai)
+    val aiKey: StateFlow<AiKeyState> = aiKeyEditor.state
 
     /** This month's AI spending; zeros where AI is unavailable. */
     val usage: StateFlow<UsageSnapshot> = aiUsageOrNull() ?: MutableStateFlow(UsageSnapshot()).asStateFlow()
 
     private val _weather = MutableStateFlow<WeatherSnapshot?>(null)
 
-    /** Last stored weather, for the mini weather on the place cards. */
+    /**
+     * Newest known weather (live from "Heute", else the stored copy) for the mini weather on the
+     * place cards. Null until one is known.
+     */
     val weather: StateFlow<WeatherSnapshot?> = _weather.asStateFlow()
+
+    private val _weatherLoading = MutableStateFlow(true)
+
+    /** True until the first weather (stored or live) arrived or the stored copy turned out missing. */
+    val weatherLoading: StateFlow<Boolean> = _weatherLoading.asStateFlow()
 
     private val _messages = Channel<String>(Channel.BUFFERED)
 
@@ -91,11 +100,25 @@ class SettingsViewModel(
     private var searchJob: Job? = null
     private var tokenJob: Job? = null
     private var sourceJob: Job? = null
-    private var aiKeyJob: Job? = null
     private var lastSourceCheck: ZonedDateTime? = null
 
     init {
         loadWeather()
+        // Live weather fetched by "Heute" (or anywhere else) updates the place cards right away.
+        viewModelScope.launch {
+            container.weather.latest
+                .filterNotNull()
+                .catch { e -> Log.w(TAG, "Weather updates unavailable", e) }
+                .collect {
+                    _weather.value = it
+                    _weatherLoading.value = false
+                }
+        }
+        // No stored copy and no live answer for a while: the cards say so instead of waiting forever.
+        viewModelScope.launch {
+            delay(WEATHER_WAIT_MS)
+            _weatherLoading.value = false
+        }
         // Token added or removed (here or in onboarding): update the connection status.
         viewModelScope.launch {
             container.settings.settings
@@ -305,47 +328,9 @@ class SettingsViewModel(
      * "Speichern & testen" of the Claude key: one tiny request through the AI facade; only a key
      * that works is stored. [skipTest] stores without the request (offline).
      */
-    fun saveAndTestAiKey(raw: String, skipTest: Boolean = false) {
-        val key = raw.trim()
-        if (key.isEmpty()) return
-        val services = ai
-        if (services == null) {
-            _aiKey.value = AiKeyState.Failed(AiKeyProblem.UNSUPPORTED)
-            return
-        }
-        aiKeyJob?.cancel()
-        aiKeyJob = viewModelScope.launch {
-            _aiKey.value = AiKeyState.Checking
-            if (!skipTest) {
-                val problem = try {
-                    services().testKey(key).toProblem()
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Throwable) {
-                    // Anything unexpected from the facade (incl. a missing implementation).
-                    Log.w(TAG, "Key test failed", e)
-                    AiKeyProblem.UNKNOWN
-                }
-                ensureActive()
-                if (problem != null) {
-                    _aiKey.value = AiKeyState.Failed(problem)
-                    return@launch
-                }
-            }
-            val saved = attempt { container.settings.setAiKey(key) }
-            _aiKey.value = if (saved.isSuccess) {
-                AiKeyState.Saved
-            } else {
-                Log.w(TAG, "Key could not be stored", saved.exceptionOrNull())
-                AiKeyState.Failed(AiKeyProblem.SAVE_FAILED)
-            }
-        }
-    }
+    fun saveAndTestAiKey(raw: String, skipTest: Boolean = false) = aiKeyEditor.saveAndTest(raw, skipTest)
 
-    fun resetAiKeyState() {
-        aiKeyJob?.cancel()
-        _aiKey.value = AiKeyState.Idle
-    }
+    fun resetAiKeyState() = aiKeyEditor.reset()
 
     fun removeAiKey() {
         viewModelScope.launch {
@@ -362,7 +347,10 @@ class SettingsViewModel(
             val cached = attempt { container.weather.cached() }
                 .onFailure { Log.w(TAG, "Cached weather unreadable", it) }
                 .getOrNull()
-            if (cached != null) _weather.value = cached
+            if (cached != null) {
+                _weather.value = cached
+                _weatherLoading.value = false
+            }
         }
     }
 
@@ -398,6 +386,7 @@ class SettingsViewModel(
         private const val STOP_TIMEOUT_MS = 5_000L
         private const val SEARCH_DEBOUNCE_MS = 350L
         private const val SOURCE_RECHECK_MINUTES = 10L
+        private const val WEATHER_WAIT_MS = 20_000L
 
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {

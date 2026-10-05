@@ -37,6 +37,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Headphones
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Icon
@@ -79,6 +80,7 @@ import com.cedrickgd.morgenbriefing.listen.ListenBars
 import com.cedrickgd.morgenbriefing.ui.components.motionDisabled
 import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
+import com.cedrickgd.morgenbriefing.ui.glass.blockTouchesBehind
 import com.cedrickgd.morgenbriefing.ui.glass.glass
 import com.cedrickgd.morgenbriefing.ui.theme.OverlineLetterSpacing
 import com.cedrickgd.morgenbriefing.ui.theme.Reading
@@ -106,6 +108,8 @@ private val SCALE_DOTS = listOf(0.85f, 0.9f, 1.0f, 1.1f, 1.2f, 1.3f, 1.4f)
  * into a frosted bar under which the text glides, with a thin reading-progress line.
  *
  * [collapse] and [readingProgress] are read in the draw phase only — scrolling never recomposes.
+ * With [onAsk] the capsule gets a "✨" segment for "Frag Claude" (while the mini player takes the
+ * bottom of the screen). The bar takes every touch inside it, so nothing beneath is hit by accident.
  */
 @Composable
 internal fun BoxScope.ReaderTopBar(
@@ -118,6 +122,7 @@ internal fun BoxScope.ReaderTopBar(
     onListen: () -> Unit,
     onTextSize: () -> Unit,
     onShare: () -> Unit,
+    onAsk: (() -> Unit)? = null,
 ) {
     val statusTop = statusBarTop()
     val accent = MaterialTheme.colorScheme.primary
@@ -127,7 +132,8 @@ internal fun BoxScope.ReaderTopBar(
         Modifier
             .align(Alignment.TopCenter)
             .fillMaxWidth()
-            .height(statusTop + ReaderBarHeight),
+            .height(statusTop + ReaderBarHeight)
+            .blockTouchesBehind(),
     ) {
         Box(
             Modifier
@@ -172,10 +178,11 @@ internal fun BoxScope.ReaderTopBar(
                     glassAlpha = glassAlpha,
                     listening = listening,
                     speaking = speaking,
-                    showLabel = !compact,
+                    showLabel = !compact && onAsk == null,
                     onListen = onListen,
                     onTextSize = onTextSize,
                     onShare = onShare,
+                    onAsk = onAsk,
                 )
             }
         }
@@ -201,7 +208,7 @@ private fun Modifier.fadingGlass(
             Modifier
         },
     )
-    .glass(shape = shape, level = level)
+    .glass(shape = shape, level = level, floating = true)
 
 /** A round 48 dp glass button; its glass fades out when the frosted bar takes over. */
 @Composable
@@ -238,6 +245,7 @@ private fun ActionCapsule(
     onListen: () -> Unit,
     onTextSize: () -> Unit,
     onShare: () -> Unit,
+    onAsk: (() -> Unit)?,
 ) {
     Box(Modifier.height(ButtonSize)) {
         Box(
@@ -271,6 +279,24 @@ private fun ActionCapsule(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(Icons.Rounded.Share, contentDescription = null, modifier = Modifier.size(22.dp))
+            }
+            if (onAsk != null) {
+                SegmentDivider()
+                Box(
+                    modifier = Modifier
+                        .size(ButtonSize)
+                        .clip(CircleShape)
+                        .clickable(role = Role.Button, onClickLabel = "Chat öffnen", onClick = onAsk)
+                        .semantics { contentDescription = "Frag Claude zu diesem Artikel" },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.Rounded.AutoAwesome,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(21.dp),
+                    )
+                }
             }
         }
     }
@@ -384,7 +410,7 @@ internal fun BoxScope.TextSizePanel(
                 Modifier
                     .widthIn(max = 320.dp)
                     .shadow(20.dp, GlassShapes.card, ambientColor = Color.Black.copy(alpha = 0.18f), spotColor = Color.Black.copy(alpha = 0.18f))
-                    .glass(shape = GlassShapes.card, level = GlassLevel.Thick)
+                    .glass(shape = GlassShapes.card, level = GlassLevel.Thick, floating = true)
                     .padding(horizontal = 16.dp, vertical = 16.dp),
             ) {
                 Text(
@@ -539,7 +565,7 @@ internal fun BoxScope.AskClaudePill(
         Row(
             modifier = Modifier
                 .shadow(14.dp, GlassShapes.pill, ambientColor = Color.Black.copy(alpha = 0.16f), spotColor = colors.primary.copy(alpha = 0.22f))
-                .glass(shape = GlassShapes.pill, level = GlassLevel.Thick, tint = colors.primaryContainer)
+                .glass(shape = GlassShapes.pill, level = GlassLevel.Thick, tint = colors.primaryContainer, floating = true)
                 .drawWithContent {
                     drawContent()
                     val p = sweep.value

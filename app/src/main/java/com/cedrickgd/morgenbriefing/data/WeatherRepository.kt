@@ -7,6 +7,9 @@ import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import com.cedrickgd.morgenbriefing.data.remote.OpenMeteoClient
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.io.IOException
 import java.time.ZonedDateTime
 
@@ -15,6 +18,14 @@ class WeatherRepository(
     private val client: OpenMeteoClient,
     private val store: BriefStore,
 ) {
+    private val _latest = MutableStateFlow<WeatherSnapshot?>(null)
+
+    /**
+     * The newest snapshot this process has seen (live fetch or offline copy), so every screen
+     * (Heute, the place cards in Einstellungen) shows the same weather. Null until one is known.
+     */
+    val latest: StateFlow<WeatherSnapshot?> = _latest.asStateFlow()
+
     /**
      * Live fetch (one retry after 1.5 s on failure). On success also saves it as latest and,
      * between 04:00 and 11:59 local time, as today's morning snapshot (first one wins).
@@ -34,12 +45,18 @@ class WeatherRepository(
                 return Result.failure(e)
             }
         }
+        _latest.value = snapshot
         persist(snapshot)
         return Result.success(snapshot)
     }
 
     /** Last successful snapshot, for offline start. */
-    suspend fun cached(): WeatherSnapshot? = store.loadLatestWeather()
+    suspend fun cached(): WeatherSnapshot? {
+        _latest.value?.let { return it }
+        val stored = store.loadLatestWeather() ?: return null
+        _latest.compareAndSet(null, stored)
+        return _latest.value ?: stored
+    }
 
     suspend fun search(query: String): Result<List<Place>> = try {
         Result.success(client.searchPlaces(query))

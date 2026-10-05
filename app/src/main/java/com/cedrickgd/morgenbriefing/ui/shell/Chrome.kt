@@ -14,11 +14,16 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.Velocity
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Shared state of the floating chrome (page indicator, mini player) above the page pager:
- * hides while the user scrolls content down, comes back on scroll up or when the list reaches
- * its top. Pages report their scrolling with [reportChromeScroll]. Provided by the shell via
+ * hides while the user scrolls content down, comes back on scroll up, when the list reaches
+ * its top and — docs/DESIGN.md §3 — as soon as scrolling has come to rest ([watchScrollRest]).
+ * Pages report their scrolling with [reportChromeScroll]. Provided by the shell via
  * [LocalChromeController]; the default instance makes pages work in isolation (previews).
  */
 @Stable
@@ -26,7 +31,17 @@ class ChromeController {
     var indicatorVisible by mutableStateOf(true)
         private set
 
+    /**
+     * True from the first scrolled pixel until the content has rested for a moment. Read it
+     * outside of composition only (e.g. in a `snapshotFlow`): it flips twice per gesture.
+     */
+    var scrolling by mutableStateOf(false)
+        private set
+
     private var travel = 0f
+
+    /** One pulse per scrolled frame; [watchScrollRest] waits for them to stop. */
+    private val scrollPulses = MutableSharedFlow<Unit>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     val nestedScrollConnection: NestedScrollConnection = object : NestedScrollConnection {
         override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
@@ -34,6 +49,8 @@ class ChromeController {
             // Overscroll at the top (nothing consumed, pulling down) always reveals the chrome.
             if (dy == 0f && available.y > 0f) show()
             if (dy != 0f) {
+                if (!scrolling) scrolling = true
+                scrollPulses.tryEmit(Unit)
                 travel = if ((travel < 0f) == (dy < 0f)) travel + dy else dy
                 when {
                     travel < -HIDE_AFTER_PX -> setVisible(false)
@@ -51,6 +68,18 @@ class ChromeController {
 
     fun show() = setVisible(true)
 
+    /**
+     * Runs for as long as the shell lives: once no scroll has happened for [REST_MS] — the
+     * finger lifted and any fling settled, or the list hit its end — the chrome returns.
+     */
+    suspend fun watchScrollRest() {
+        scrollPulses.collectLatest {
+            delay(REST_MS)
+            scrolling = false
+            show()
+        }
+    }
+
     private fun setVisible(visible: Boolean) {
         if (indicatorVisible != visible) indicatorVisible = visible
         travel = 0f
@@ -59,6 +88,9 @@ class ChromeController {
     private companion object {
         const val HIDE_AFTER_PX = 48f
         const val SHOW_AFTER_PX = 24f
+
+        /** Pause after the last scrolled frame before the chrome comes back. */
+        const val REST_MS = 650L
     }
 }
 

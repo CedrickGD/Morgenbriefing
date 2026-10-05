@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -78,7 +79,10 @@ fun InfoCard(
     }
 }
 
-/** Emoji glyph that is decorative by default (screen readers skip it). */
+/**
+ * Emoji glyph that is decorative by default (screen readers skip it). Emoji the device font
+ * cannot draw are swapped for a close relative ([EmojiSupport]) instead of showing a box.
+ */
 @Composable
 internal fun Emoji(
     emoji: String,
@@ -86,8 +90,9 @@ internal fun Emoji(
     modifier: Modifier = Modifier,
     decorative: Boolean = true,
 ) {
+    val shown = remember(emoji) { EmojiSupport.display(emoji) }
     Text(
-        text = emoji,
+        text = shown,
         style = TextStyle(fontSize = size, lineHeight = size * 1.15f),
         modifier = if (decorative) modifier.clearAndSetSemantics { } else modifier,
     )

@@ -51,7 +51,7 @@ class LiveModelsTest {
     @Test
     fun `blocks and errors have friendly German copy`() {
         assertTrue(liveBlockText(AiBlock.UNSUPPORTED_DEVICE).startsWith("Live-Recherche braucht Android 8 oder neuer"))
-        assertTrue(liveBlockText(AiBlock.NO_KEY).startsWith("Trag in den Einstellungen deinen Claude-API-Key ein"))
+        assertTrue(liveBlockText(AiBlock.NO_KEY).startsWith("Trag einmal deinen Claude-API-Key ein"))
         assertEquals("Monatslimit erreicht – in den Einstellungen anpassen.", liveBlockText(AiBlock.LIMIT_REACHED))
         listOf(
             AiError.InvalidKey, AiError.RateLimited, AiError.Overloaded, AiError.Network,

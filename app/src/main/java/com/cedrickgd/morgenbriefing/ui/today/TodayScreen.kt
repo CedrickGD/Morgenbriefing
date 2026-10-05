@@ -3,11 +3,13 @@ package com.cedrickgd.morgenbriefing.ui.today
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cedrickgd.morgenbriefing.ai.AiBlock
 import com.cedrickgd.morgenbriefing.ai.AiSupport
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.Topic
@@ -51,27 +54,31 @@ import com.cedrickgd.morgenbriefing.ui.brief.WeatherUi
 import com.cedrickgd.morgenbriefing.ui.brief.feedSummary
 import com.cedrickgd.morgenbriefing.ui.brief.footerLine
 import com.cedrickgd.morgenbriefing.ui.brief.rememberExpandedSections
-import com.cedrickgd.morgenbriefing.ui.components.AskBriefingEntry
+import com.cedrickgd.morgenbriefing.ui.components.AskBriefingPill
+import com.cedrickgd.morgenbriefing.ui.components.BriefingPullQuote
 import com.cedrickgd.morgenbriefing.ui.components.ClothingCard
 import com.cedrickgd.morgenbriefing.ui.components.DayCurveCard
 import com.cedrickgd.morgenbriefing.ui.components.GlassSnackbarHost
 import com.cedrickgd.morgenbriefing.ui.components.HomeWeatherHero
 import com.cedrickgd.morgenbriefing.ui.components.InfoCard
 import com.cedrickgd.morgenbriefing.ui.components.LoadingSkeleton
-import com.cedrickgd.morgenbriefing.ui.components.NewsTeaser
+import com.cedrickgd.morgenbriefing.ui.components.NewsSectionTitle
+import com.cedrickgd.morgenbriefing.ui.components.NoticeBanner
 import com.cedrickgd.morgenbriefing.ui.components.PageFooter
 import com.cedrickgd.morgenbriefing.ui.components.TodayHeader
 import com.cedrickgd.morgenbriefing.ui.components.WarningBanner
 import com.cedrickgd.morgenbriefing.ui.glass.TopGlassBar
+import com.cedrickgd.morgenbriefing.ui.glass.glassContent
+import com.cedrickgd.morgenbriefing.ui.news.chipsParked
+import com.cedrickgd.morgenbriefing.ui.news.ChipRowHeight
 import com.cedrickgd.morgenbriefing.ui.news.FeedActions
 import com.cedrickgd.morgenbriefing.ui.news.FeedArticle
 import com.cedrickgd.morgenbriefing.ui.news.FeedChipRow
 import com.cedrickgd.morgenbriefing.ui.news.FeedFilter
 import com.cedrickgd.morgenbriefing.ui.news.FeedGutter
-import com.cedrickgd.morgenbriefing.ui.news.FeedSectionHeader
 import com.cedrickgd.morgenbriefing.ui.news.FeedViewIntro
 import com.cedrickgd.morgenbriefing.ui.news.NewsFeed
-import com.cedrickgd.morgenbriefing.ui.news.ParkedChipHeader
+import com.cedrickgd.morgenbriefing.ui.news.NowListening
 import com.cedrickgd.morgenbriefing.ui.news.SourcesSheet
 import com.cedrickgd.morgenbriefing.ui.news.TopicPrefs
 import com.cedrickgd.morgenbriefing.ui.news.TopicsSheet
@@ -80,8 +87,6 @@ import com.cedrickgd.morgenbriefing.ui.news.buildNewsFeed
 import com.cedrickgd.morgenbriefing.ui.news.catalogueOrder
 import com.cedrickgd.morgenbriefing.ui.news.feedChips
 import com.cedrickgd.morgenbriefing.ui.news.forYouItems
-import com.cedrickgd.morgenbriefing.ui.news.indexOfKey
-import com.cedrickgd.morgenbriefing.ui.news.isParked
 import com.cedrickgd.morgenbriefing.ui.news.liveBadge
 import com.cedrickgd.morgenbriefing.ui.news.liveFeed
 import com.cedrickgd.morgenbriefing.ui.news.rememberFeedActions
@@ -93,7 +98,12 @@ import com.cedrickgd.morgenbriefing.ui.news.sectionFor
 import com.cedrickgd.morgenbriefing.ui.news.toggled
 import com.cedrickgd.morgenbriefing.ui.news.withTopicVisible
 import com.cedrickgd.morgenbriefing.ui.onboarding.OnboardingSheet
+import com.cedrickgd.morgenbriefing.ui.settings.InlineAiKeyDialog
+import com.cedrickgd.morgenbriefing.ui.shell.LocalSettingsLink
+import com.cedrickgd.morgenbriefing.ui.shell.SettingsTarget
 import com.cedrickgd.morgenbriefing.ui.shell.reportChromeScroll
+import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
+import com.cedrickgd.morgenbriefing.util.KeepListEndAboveChrome
 import com.cedrickgd.morgenbriefing.util.bottomContentInset
 import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
@@ -101,7 +111,7 @@ import com.cedrickgd.morgenbriefing.util.statusBarTop
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 
-/** Key of the sticky chip row in the list. */
+/** Key of the chip row in the list. */
 private const val CHIPS_KEY = "today-chips"
 
 /** Height of the TopGlassBar below the status bar (docs/DESIGN.md §4). */
@@ -112,8 +122,9 @@ private val HeaderGoneAfter = 96.dp
 
 /**
  * Page "Heute" (docs/DESIGN.md §7): transparent over the AmbientSky. Header directly on the
- * sky, the weather as glass cards, then the editorial news feed with a sticky glass chip row
- * ("Für dich", "Top", "⚡ Live", topics), "✨ Frag dein Briefing" and a calm footer.
+ * sky, the weather as glass cards, then the news: title, the chip row ("Für dich", "Top",
+ * "⚡ Live", topics) — which the frosted top bar takes in once it reaches it — and the editorial
+ * feed. "Für dich" opens with the brief's summary as a pull quote with "✨ Frag dein Briefing".
  *
  * @param contentPadding top is 0 (the page handles the status bar); bottom leaves room for the
  *   floating chrome and the navigation bar.
@@ -138,6 +149,8 @@ fun TodayScreen(
     val topicPrefs by viewModel.topicPrefs.collectAsStateWithLifecycle()
     val live by viewModel.liveUi.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+    val settingsLink = LocalSettingsLink.current
+    var keyDialog by rememberSaveable { mutableStateOf(false) }
 
     LifecycleResumeEffect(viewModel) {
         viewModel.onResume()
@@ -153,18 +166,26 @@ fun TodayScreen(
         }
     }
 
+    val openSettingsAt: (SettingsTarget) -> Unit = { target ->
+        settingsLink.request(target)
+        onOpenSettings()
+    }
+
     val callbacks = TodayCallbacks(
         onRefresh = viewModel::refresh,
         onRetryWeather = viewModel::retryWeather,
         onRetryBrief = viewModel::retryBrief,
-        onOpenSettings = onOpenSettings,
+        onOpenToken = { openSettingsAt(SettingsTarget.NEWS_TOKEN) },
         onOpenArticle = onOpenArticle,
         onAskBriefing = onAskBriefing,
         onAskAboutArticle = onAskAboutArticle,
         onRefreshLive = viewModel::refreshLive,
         onCancelLive = viewModel::cancelLive,
         onLiveOpened = viewModel::onLiveOpened,
+        // No key: enter it right here. Monthly limit: that lives in the settings' KI section.
+        onFixLive = { block -> if (block == AiBlock.NO_KEY) keyDialog = true else openSettingsAt(SettingsTarget.AI) },
         onSetTopicVisible = viewModel::setTopicVisible,
+        onSetTopicOrder = viewModel::setTopicOrder,
     )
 
     TodayContent(
@@ -183,9 +204,12 @@ fun TodayScreen(
             onDone = viewModel::finishOnboarding,
             onOpenSettings = {
                 viewModel.finishOnboarding()
-                onOpenSettings()
+                openSettingsAt(SettingsTarget.NEWS_TOKEN)
             },
         )
+    }
+    if (keyDialog && AiSupport.isSupported) {
+        InlineAiKeyDialog(onDismiss = { keyDialog = false })
     }
 }
 
@@ -194,14 +218,16 @@ private class TodayCallbacks(
     val onRefresh: () -> Unit,
     val onRetryWeather: () -> Unit,
     val onRetryBrief: () -> Unit,
-    val onOpenSettings: () -> Unit,
+    val onOpenToken: () -> Unit,
     val onOpenArticle: (date: String, key: String) -> Unit,
     val onAskBriefing: (date: String) -> Unit,
     val onAskAboutArticle: (date: String, key: String) -> Unit,
     val onRefreshLive: (List<String>) -> Unit,
     val onCancelLive: () -> Unit,
     val onLiveOpened: (List<String>) -> Unit,
+    val onFixLive: (AiBlock) -> Unit,
     val onSetTopicVisible: (String, Boolean) -> Unit,
+    val onSetTopicOrder: (List<String>) -> Unit,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -218,6 +244,7 @@ private fun TodayContent(
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
     val links = rememberLinkActions()
+    val reduceMotion = rememberReduceMotion()
     val statusTop = statusBarTop()
     val barHeightPx = with(density) { (statusTop + TopBarHeight).roundToPx() }
     val headerGonePx = with(density) { HeaderGoneAfter.roundToPx() }
@@ -239,6 +266,15 @@ private fun TodayContent(
     var showTopics by rememberSaveable { mutableStateOf(false) }
     var sourcesFor by remember { mutableStateOf<FeedArticle?>(null) }
     val visibleTopicIds = remember(topicPrefs) { topicPrefs.catalogueOrder().map { it.id }.filter { it !in topicPrefs.hidden } }
+
+    // The chip row: in the list until it reaches the top bar, then carried by the bar.
+    val chipsShown = shownBrief != null && feed != null && !feed.isEmpty
+    val chipIndex = if (chipsShown) chipRowIndex(weather) else -1
+    val chipRowState = rememberLazyListState()
+    val chipsParked by remember(listState, barHeightPx, chipIndex) {
+        derivedStateOf { chipsParked(listState, chipIndex, barHeightPx) }
+    }
+    val parked = chipsShown && chipsParked
 
     val hideTopic: (Topic) -> Unit = { topic ->
         if (topicPrefs.withTopicVisible(topic.id, visible = false) == null) {
@@ -263,18 +299,28 @@ private fun TodayContent(
     )
     val onSelect: (FeedFilter) -> Unit = { filter ->
         if (filter != selected) {
-            // Switching while the chips are parked: start the new view right below them.
-            val parked = isParked(listState, CHIPS_KEY, barHeightPx)
-            val index = indexOfKey(listState, CHIPS_KEY)
+            // Switching while the chips ride in the bar: start the new view right below them.
+            val wasParked = parked
             selectedKey = filter.key
-            if (parked && index != null) {
+            if (wasParked && chipIndex >= 0) {
                 scope.launch {
-                    listState.scrollToItem(index)
+                    listState.scrollToItem(chipIndex)
                     listState.scrollBy(-barHeightPx.toFloat())
                 }
             }
             if (filter == FeedFilter.Live) callbacks.onLiveOpened(visibleTopicIds)
         }
+    }
+    val chipRow: @Composable (onGlass: Boolean) -> Unit = { onGlass ->
+        FeedChipRow(
+            chips = chips,
+            selected = selected,
+            liveRunning = live.running,
+            onSelect = onSelect,
+            onOpenTopics = { showTopics = true },
+            rowState = chipRowState,
+            onGlass = onGlass,
+        )
     }
 
     val greeting = remember(now) { Fmt.greeting(now) }
@@ -284,6 +330,8 @@ private fun TodayContent(
     } else {
         "Schön, dass du da bist."
     }
+
+    KeepListEndAboveChrome(listState, bottomInset)
 
     Box(modifier.fillMaxSize()) {
         PullToRefreshBox(
@@ -306,6 +354,8 @@ private fun TodayContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .reportChromeScroll()
+                    // The floating glass above (bar, indicator, player) blurs this content.
+                    .glassContent()
                     .horizontalSafeDrawing(),
                 contentPadding = PaddingValues(bottom = bottomInset + 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -338,46 +388,33 @@ private fun TodayContent(
                     }
                 }
 
-                newsIntroItems(
+                newsHeadItems(
                     news = news,
                     feed = feed,
                     showLoader = !showSkeleton,
-                    onNoticeAction = { action ->
-                        when (action) {
-                            NoticeAction.OPEN_SETTINGS -> callbacks.onOpenSettings()
-                            NoticeAction.RETRY -> callbacks.onRetryBrief()
-                        }
-                    },
-                    onAskBriefing = callbacks.onAskBriefing,
+                    onNoticeAction = { action -> noticeAction(action, callbacks) },
                     onChooseTopics = { showTopics = true },
                 )
 
-                if (shownBrief != null && feed != null && !feed.isEmpty) {
-                    stickyHeader(key = CHIPS_KEY, contentType = "chips") {
-                        ParkedChipHeader(listState = listState, key = CHIPS_KEY, barHeightPx = barHeightPx) {
-                            FeedChipRow(
-                                chips = chips,
-                                selected = selected,
-                                liveRunning = live.running,
-                                onSelect = onSelect,
-                                onOpenTopics = { showTopics = true },
-                            )
-                        }
+                if (chipsShown) {
+                    item(key = CHIPS_KEY, contentType = "chips") {
+                        // Parked: the bar shows the row; this spot keeps its room in the list.
+                        if (parked) Spacer(Modifier.height(ChipRowHeight)) else chipRow(false)
                     }
                     feedItems(
                         selected = selected,
+                        news = news,
                         brief = shownBrief,
                         feed = feed,
                         live = live,
                         liveArticles = { liveFeed(shownBrief, topicPrefs, live.articles, now, today.toString()) },
                         now = now,
                         expanded = expanded,
-                        listeningKey = listening,
+                        listening = listening,
                         actions = actions,
+                        callbacks = callbacks,
+                        visibleTopicIds = visibleTopicIds,
                         onToggleSection = { id -> expanded = expanded.toggled(id) },
-                        onRefreshLive = { callbacks.onRefreshLive(visibleTopicIds) },
-                        onCancelLive = callbacks.onCancelLive,
-                        onOpenSettings = callbacks.onOpenSettings,
                     )
                 }
 
@@ -395,7 +432,23 @@ private fun TodayContent(
         val headerGone by remember(listState) {
             derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > headerGonePx }
         }
-        TopGlassBar(title = "Heute · ${Fmt.shortDate(today)}", visible = headerGone)
+        TopGlassBar(
+            title = "Heute · ${Fmt.shortDate(today)}",
+            visible = headerGone || parked,
+            onTap = {
+                scope.launch { if (reduceMotion) listState.scrollToItem(0) else listState.animateScrollToItem(0) }
+            },
+            bottom = if (parked) {
+                {
+                    Column(Modifier.horizontalSafeDrawing()) {
+                        chipRow(true)
+                        Spacer(Modifier.height(6.dp))
+                    }
+                }
+            } else {
+                null
+            },
+        )
 
         GlassSnackbarHost(
             hostState = snackbar,
@@ -410,10 +463,7 @@ private fun TodayContent(
             prefs = topicPrefs,
             counts = remember(shownBrief) { shownBrief?.sections?.associate { it.id to it.items.size }.orEmpty() },
             onSetVisible = { id, visible -> callbacks.onSetTopicVisible(id, visible) },
-            onOpenSettings = {
-                showTopics = false
-                callbacks.onOpenSettings()
-            },
+            onSetOrder = callbacks.onSetTopicOrder,
             onDismiss = { showTopics = false },
         )
     }
@@ -421,6 +471,43 @@ private fun TodayContent(
         SourcesSheet(article = article, onOpenLink = links::open, onDismiss = { sourcesFor = null })
     }
 }
+
+/**
+ * List index of the chip row: header, the weather items (or their skeleton / error card) and the
+ * news title come before it. Must mirror the item order of [TodayContent].
+ */
+private fun chipRowIndex(weather: WeatherUi?): Int {
+    val weatherItems = when {
+        weather != null -> 2 + (if (weather.warnings.isNotEmpty()) 1 else 0) + (if (weather.clothing != null) 1 else 0)
+        else -> 1 // skeleton or error card
+    }
+    return 1 + weatherItems + 1
+}
+
+/** Runs a notice's button: token problems lead to the token dialog, the rest retries. */
+private fun noticeAction(action: NoticeAction, callbacks: TodayCallbacks) {
+    when (action) {
+        NoticeAction.OPEN_SETTINGS -> callbacks.onOpenToken()
+        NoticeAction.RETRY -> callbacks.onRetryBrief()
+    }
+}
+
+/** The notice of a news block (demo, problems), if any. */
+private val NewsBlock.notice: Notice?
+    get() = when (this) {
+        NewsBlock.Loading -> null
+        is NewsBlock.Demo -> notice
+        is NewsBlock.Ready -> null
+        is NewsBlock.Problem -> notice
+    }
+
+/** True when the shown brief is not today's. */
+private val NewsBlock.stale: Boolean
+    get() = when (this) {
+        is NewsBlock.Ready -> stale
+        is NewsBlock.Problem -> stale
+        else -> false
+    }
 
 private fun LazyListScope.weatherItems(weather: WeatherUi) {
     item(key = "hero", contentType = "hero") {
@@ -441,64 +528,51 @@ private fun LazyListScope.weatherItems(weather: WeatherUi) {
     }
 }
 
-/** Notice (demo, problems), teaser card, "✨ Frag dein Briefing" and empty/hidden hints. */
-private fun LazyListScope.newsIntroItems(
+/**
+ * The title of the news part ("DEINE NACHRICHTEN · STAND 05:07 / Heute in den News"), right
+ * above the chips. Without a feed to show, the notice, the summary and the empty/hidden hints
+ * follow here instead (with a feed they open "Für dich").
+ */
+private fun LazyListScope.newsHeadItems(
     news: NewsBlock,
     feed: NewsFeed?,
     showLoader: Boolean,
     onNoticeAction: (NoticeAction) -> Unit,
-    onAskBriefing: (String) -> Unit,
     onChooseTopics: () -> Unit,
 ) {
-    val (notice, brief, stale) = when (news) {
-        NewsBlock.Loading -> {
-            if (showLoader) item(key = "news-loading", contentType = "loading") { NewsLoadingRow() }
-            return
-        }
-        is NewsBlock.Demo -> Triple(news.notice, news.brief, false)
-        is NewsBlock.Ready -> Triple(null, news.brief, news.stale)
-        is NewsBlock.Problem -> Triple(news.notice, news.brief, news.stale)
+    if (news == NewsBlock.Loading) {
+        if (showLoader) item(key = "news-loading", contentType = "loading") { NewsLoadingRow() }
+        return
     }
+    val brief = news.shownBrief
+    item(key = "news-title", contentType = "news-title") {
+        NewsSectionTitle(
+            generatedAt = brief?.generatedAt,
+            modifier = Modifier
+                .animateItem()
+                .padding(horizontal = FeedGutter)
+                .padding(top = 20.dp),
+        )
+    }
+    if (feed != null && !feed.isEmpty) return
 
-    if (brief != null) {
-        item(key = "news-teaser", contentType = "teaser") {
-            NewsTeaser(
-                teaser = brief.teaser,
-                generatedAt = brief.generatedAt,
-                stale = stale,
-                meta = feed?.let(::feedSummary),
-                modifier = Modifier
-                    .animateItem()
-                    .padding(horizontal = FeedGutter)
-                    .padding(top = 20.dp),
-            )
-        }
-    }
-    if (notice != null) {
-        item(key = "news-notice", contentType = "info") {
-            val action = notice.action
-            InfoCard(
-                emoji = notice.emoji,
-                title = notice.title,
-                text = notice.text,
-                modifier = Modifier.animateItem().padding(horizontal = FeedGutter),
-                actionLabel = notice.actionLabel.takeIf { action != null },
-                onAction = action?.let { act -> { onNoticeAction(act) } },
-            )
+    news.notice?.let { notice ->
+        item(key = "news-notice", contentType = "notice") {
+            NoticeBannerFor(notice, onNoticeAction, Modifier.animateItem().padding(horizontal = FeedGutter))
         }
     }
     if (brief == null || feed == null) return
-
-    if (AiSupport.isSupported && !feed.isEmpty) {
-        item(key = "ask-briefing", contentType = "ask") {
-            AskBriefingEntry(
-                onClick = { onAskBriefing(brief.date) },
-                modifier = Modifier.animateItem().padding(horizontal = FeedGutter),
-            )
-        }
+    item(key = "news-quote", contentType = "quote") {
+        BriefingPullQuote(
+            teaser = brief.teaser,
+            stale = news.stale,
+            modifier = Modifier
+                .animateItem()
+                .padding(horizontal = FeedGutter + 4.dp),
+        )
     }
-    when {
-        feed.allHidden -> item(key = "news-all-hidden", contentType = "info") {
+    item(key = if (feed.allHidden) "news-all-hidden" else "news-empty", contentType = "info") {
+        if (feed.allHidden) {
             InfoCard(
                 emoji = "🙈",
                 title = "Alle Themen ausgeblendet",
@@ -507,8 +581,7 @@ private fun LazyListScope.newsIntroItems(
                 actionLabel = "Themen wählen",
                 onAction = onChooseTopics,
             )
-        }
-        feed.isEmpty -> item(key = "news-empty", contentType = "info") {
+        } else {
             InfoCard(
                 emoji = "📭",
                 title = "Keine Meldungen im Briefing",
@@ -519,33 +592,69 @@ private fun LazyListScope.newsIntroItems(
     }
 }
 
+@Composable
+private fun NoticeBannerFor(notice: Notice, onAction: (NoticeAction) -> Unit, modifier: Modifier = Modifier) {
+    val action = notice.action
+    NoticeBanner(
+        emoji = notice.emoji,
+        title = notice.title,
+        text = notice.text,
+        actionLabel = notice.actionLabel.takeIf { action != null },
+        onAction = action?.let { act -> { onAction(act) } },
+        modifier = modifier,
+    )
+}
+
 /** The feed below the chips, depending on the selected chip. */
 private fun LazyListScope.feedItems(
     selected: FeedFilter,
+    news: NewsBlock,
     brief: Brief,
     feed: NewsFeed,
     live: LiveUi,
     liveArticles: () -> List<FeedArticle>,
     now: ZonedDateTime,
     expanded: Set<String>,
-    listeningKey: String?,
+    listening: NowListening?,
     actions: FeedActions,
+    callbacks: TodayCallbacks,
+    visibleTopicIds: List<String>,
     onToggleSection: (String) -> Unit,
-    onRefreshLive: () -> Unit,
-    onCancelLive: () -> Unit,
-    onOpenSettings: () -> Unit,
 ) {
     when (selected) {
-        FeedFilter.ForYou -> forYouItems(
-            sections = feed.sections,
-            date = brief.date,
-            now = now,
-            expanded = expanded,
-            listeningKey = listeningKey,
-            actions = actions,
-            onToggleSection = onToggleSection,
-            keyPrefix = "foryou",
-        )
+        FeedFilter.ForYou -> {
+            // The day in one breath: the summary as a pull quote, "✨ Frag dein Briefing" with it,
+            // and a slim hint when this is the demo or something is off.
+            item(key = "foryou-intro", contentType = "quote") {
+                Column(Modifier.animateItem().padding(horizontal = FeedGutter)) {
+                    BriefingPullQuote(
+                        teaser = brief.teaser,
+                        meta = feedSummary(feed),
+                        stale = news.stale,
+                        action = if (AiSupport.isSupported) {
+                            { AskBriefingPill(onClick = { callbacks.onAskBriefing(brief.date) }) }
+                        } else {
+                            null
+                        },
+                        modifier = Modifier.padding(start = 4.dp, top = 4.dp),
+                    )
+                    news.notice?.let { notice ->
+                        Spacer(Modifier.height(18.dp))
+                        NoticeBannerFor(notice, onAction = { action -> noticeAction(action, callbacks) })
+                    }
+                }
+            }
+            forYouItems(
+                sections = feed.sections,
+                date = brief.date,
+                now = now,
+                expanded = expanded,
+                listening = listening,
+                actions = actions,
+                onToggleSection = onToggleSection,
+                keyPrefix = "foryou",
+            )
+        }
 
         FeedFilter.Top -> {
             item(key = "top-intro", contentType = "feed-intro") {
@@ -558,7 +667,7 @@ private fun LazyListScope.feedItems(
             articleItems(
                 articles = feed.topStories.map { FeedArticle(it.item, it.topic, brief.date) },
                 now = now,
-                listeningKey = listeningKey,
+                listening = listening,
                 actions = actions,
                 keyPrefix = "top",
                 showTopic = true,
@@ -572,9 +681,9 @@ private fun LazyListScope.feedItems(
                     live = live,
                     now = now,
                     freshCount = fresh.size,
-                    onRefresh = onRefreshLive,
-                    onCancel = onCancelLive,
-                    onOpenSettings = onOpenSettings,
+                    onRefresh = { callbacks.onRefreshLive(visibleTopicIds) },
+                    onCancel = callbacks.onCancelLive,
+                    onOpenSettings = { live.blocked?.let(callbacks.onFixLive) },
                     modifier = Modifier.animateItem().padding(horizontal = FeedGutter),
                 )
             }
@@ -586,7 +695,7 @@ private fun LazyListScope.feedItems(
                 articleItems(
                     articles = fresh,
                     now = now,
-                    listeningKey = listeningKey,
+                    listening = listening,
                     actions = actions,
                     keyPrefix = "live",
                     showTopic = true,
@@ -595,19 +704,13 @@ private fun LazyListScope.feedItems(
             }
         }
 
+        // The selected chip already names the topic: no extra section header here.
         is FeedFilter.OneTopic -> {
             val section = feed.sectionFor(selected.topicId) ?: return
-            item(key = "topic-header-${section.id}", contentType = "feed-section-header") {
-                FeedSectionHeader(
-                    topic = section.topic,
-                    count = section.count,
-                    modifier = Modifier.animateItem().padding(horizontal = FeedGutter).padding(top = 4.dp, bottom = 4.dp),
-                )
-            }
             articleItems(
                 articles = (section.top + section.more).map { FeedArticle(it, section.topic, brief.date) },
                 now = now,
-                listeningKey = listeningKey,
+                listening = listening,
                 actions = actions,
                 keyPrefix = "topic-${section.id}",
                 showTopic = false,

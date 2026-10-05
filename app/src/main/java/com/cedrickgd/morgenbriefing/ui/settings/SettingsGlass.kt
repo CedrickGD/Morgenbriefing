@@ -69,6 +69,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -261,6 +262,25 @@ internal fun CalmSliderTrack(state: SliderState) {
     }
 }
 
+/**
+ * The one slider knob of the settings: a round accent disc with a white rim and a soft shadow —
+ * the same family as the sun knobs of the day window.
+ */
+@Composable
+internal fun CalmSliderThumb() {
+    val primary = MaterialTheme.colorScheme.primary
+    Box(
+        Modifier
+            .size(SliderKnobSize)
+            .shadow(4.dp, CircleShape, ambientColor = Color.Black.copy(alpha = 0.2f), spotColor = Color.Black.copy(alpha = 0.2f))
+            .background(Brush.linearGradient(listOf(lerp(primary, Color.White, 0.25f), primary)), CircleShape)
+            .border(2.dp, Color.White.copy(alpha = 0.9f), CircleShape),
+    )
+}
+
+/** Size of every slider knob in the settings. */
+internal val SliderKnobSize = 26.dp
+
 /** Haptic tick for switches and toggles (on/off feel different). */
 @Composable
 internal fun rememberToggleHaptics(): (Boolean) -> Unit {
@@ -394,10 +414,14 @@ internal fun GlassDialog(
         val colors = MaterialTheme.colorScheme
         val shape = GlassShapes.card
         val fill = if (dark) {
-            colors.surfaceContainer.copy(alpha = if (blurred) 0.80f else 0.95f)
+            colors.surfaceContainer.copy(alpha = if (blurred) 0.80f else 1f)
         } else {
-            colors.surface.copy(alpha = if (blurred) 0.80f else 0.96f)
+            // Without the system blur behind the window the pane is fully opaque: nothing of the
+            // page may ghost through a text field or the buttons.
+            colors.surface.copy(alpha = if (blurred) 0.80f else 1f)
         }
+        val scroll = rememberScrollState()
+        val fadeColor = if (dark) colors.surfaceContainer else colors.surface
         val sheen = Color.White.copy(alpha = if (dark) 0.06f else 0.5f)
         CompositionLocalProvider(LocalGlassState provides null, LocalContentColor provides colors.onSurface) {
             Column(
@@ -424,14 +448,25 @@ internal fun GlassDialog(
                         .padding(horizontal = 24.dp)
                         .semantics { heading() },
                 )
-                Column(
-                    modifier = Modifier
-                        .weight(1f, fill = false)
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 24.dp)
-                        .padding(top = 12.dp, bottom = 8.dp),
-                    content = content,
-                )
+                Box(Modifier.weight(1f, fill = false)) {
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(scroll)
+                            .padding(horizontal = 24.dp)
+                            .padding(top = 12.dp, bottom = 8.dp),
+                        content = content,
+                    )
+                    // Text scrolling up under the fixed title fades out instead of being cut in half
+                    // (e.g. when the keyboard pushes the dialog up).
+                    Box(
+                        Modifier
+                            .align(Alignment.TopCenter)
+                            .fillMaxWidth()
+                            .height(14.dp)
+                            .graphicsLayer { alpha = (scroll.value / 24f).coerceIn(0f, 1f) }
+                            .background(Brush.verticalGradient(listOf(fadeColor, fadeColor.copy(alpha = 0f)))),
+                    )
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

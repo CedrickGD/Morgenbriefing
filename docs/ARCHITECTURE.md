@@ -58,7 +58,7 @@ ViewModels über `viewModelFactory { initializer { … } }`.
 Warm, ruhig, lebendig – nicht „tote E-Mail“.
 
 * Neutrale warme Flächen: hell `#FCFCFB` / Wash `#F9F9F7` / Tinte `#2E2C27`;
-  dunkel `#151412` / Flächen `#1E1D1A` / Text `#ECEAE4`. Akzent aus der gewählten Farbe.
+  dunkel ein tiefes Nachtblau `#0F1320` / Flächen `#1A2133` / Text `#E9EBF2`. Akzent aus der gewählten Farbe.
 * Überschriften Serif (`FontFamily.Serif`, SemiBold), alles andere System-Sans.
 * Oben ein animierter Himmel (`WeatherBackdrop`) passend zu Wetter und Tageszeit
   (Morgendämmerung, Nebelschwaden, Regenfäden, Sonnenschein, Sterne), der weich in den

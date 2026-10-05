@@ -3,6 +3,7 @@ package com.cedrickgd.morgenbriefing.ui.components
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,9 +15,14 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -54,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
 import com.cedrickgd.morgenbriefing.ui.glass.glass
+import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
 
 /** Scales an element to 0.97 while it is pressed (docs/DESIGN.md §6), springy, layer only. */
 @Composable
@@ -180,7 +188,7 @@ private fun GlassSnackbar(data: SnackbarData) {
             .padding(horizontal = 16.dp)
             .fillMaxWidth()
             .shadow(16.dp, GlassShapes.tile, ambientColor = Color.Black.copy(alpha = 0.16f), spotColor = Color.Black.copy(alpha = 0.16f))
-            .glass(shape = GlassShapes.tile, level = GlassLevel.Thick)
+            .glass(shape = GlassShapes.tile, level = GlassLevel.Thick, floating = true)
             .heightIn(min = 56.dp)
             .padding(start = 20.dp, end = 8.dp)
             .semantics { liveRegion = LiveRegionMode.Polite },
@@ -214,8 +222,11 @@ private fun GlassSnackbar(data: SnackbarData) {
 private val SheetShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
 
 /**
- * A bottom sheet made of thick frosted glass (docs/DESIGN.md §2: sheets = `Thick`). The glass
- * reaches under the navigation bar; its content is padded above it.
+ * A bottom sheet made of thick frosted glass (docs/DESIGN.md §2: sheets = `Thick`). It never
+ * rises under the status bar; the glass reaches under the navigation bar while its content is
+ * padded above it. Without real blur (Android < 12) the glass is practically opaque, so the page
+ * never ghosts through a modal. On Android 7, which cannot draw dark navigation buttons, a dark
+ * band behind them keeps the white buttons visible on the light sheet.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -224,6 +235,8 @@ fun GlassSheet(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val dark = isGlassDark()
+    val lightButtonsImpossible = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
@@ -232,14 +245,18 @@ fun GlassSheet(
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = 0.dp,
         dragHandle = null,
-        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
+        // Room for the status bar above a fully expanded sheet (transparent, so a short sheet
+        // simply has a little invisible headroom).
+        contentWindowInsets = { WindowInsets.statusBars.only(WindowInsetsSides.Top) },
+        properties = ModalBottomSheetProperties(
+            isAppearanceLightStatusBars = !dark,
+            isAppearanceLightNavigationBars = !dark && !lightButtonsImpossible,
+        ),
     ) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .glass(shape = SheetShape, level = GlassLevel.Thick)
-                .navigationBarsPadding()
-                .padding(bottom = 12.dp),
+                .glass(shape = SheetShape, level = GlassLevel.Thick, floating = true),
         ) {
             Box(
                 Modifier
@@ -249,6 +266,13 @@ fun GlassSheet(
                     .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f), CircleShape),
             )
             content()
+            Spacer(Modifier.height(12.dp))
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .windowInsetsBottomHeight(WindowInsets.navigationBars)
+                    .then(if (lightButtonsImpossible && !dark) Modifier.background(Color.Black.copy(alpha = 0.55f)) else Modifier),
+            )
         }
     }
 }

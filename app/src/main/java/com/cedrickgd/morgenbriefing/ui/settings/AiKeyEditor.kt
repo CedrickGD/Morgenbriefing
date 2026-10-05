@@ -1,0 +1,147 @@
+package com.cedrickgd.morgenbriefing.ui.settings
+
+import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.cedrickgd.morgenbriefing.AppContainer
+import com.cedrickgd.morgenbriefing.MorgenbriefingApp
+import com.cedrickgd.morgenbriefing.ai.AiServices
+import com.cedrickgd.morgenbriefing.ai.AiSupport
+import com.cedrickgd.morgenbriefing.util.attempt
+import com.cedrickgd.morgenbriefing.util.rememberLinkActions
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+
+/**
+ * "Speichern & testen" of the Claude API key: one tiny request through the AI facade, and only
+ * a key that works is stored. Shared by the settings page and the in-place key dialog that
+ * "Frag nach" and "⚡ Live" open where the user is ([InlineAiKeyDialog]).
+ *
+ * @param ai the AI facade, or null where AI cannot run (Android 7) — never touched then.
+ */
+internal class AiKeyEditor(
+    private val scope: CoroutineScope,
+    private val container: AppContainer,
+    private val ai: (() -> AiServices)?,
+) {
+    private val _state = MutableStateFlow<AiKeyState>(AiKeyState.Idle)
+    val state: StateFlow<AiKeyState> = _state.asStateFlow()
+
+    private var job: Job? = null
+
+    /** Tests [raw] (unless [skipTest], e.g. offline) and stores it when it works. */
+    fun saveAndTest(raw: String, skipTest: Boolean = false) {
+        val key = raw.trim()
+        if (key.isEmpty()) return
+        val services = ai
+        if (services == null) {
+            _state.value = AiKeyState.Failed(AiKeyProblem.UNSUPPORTED)
+            return
+        }
+        job?.cancel()
+        job = scope.launch {
+            _state.value = AiKeyState.Checking
+            if (!skipTest) {
+                val problem = try {
+                    services().testKey(key).toProblem()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Throwable) {
+                    // Anything unexpected from the facade (incl. a missing implementation).
+                    Log.w(TAG, "Key test failed", e)
+                    AiKeyProblem.UNKNOWN
+                }
+                ensureActive()
+                if (problem != null) {
+                    _state.value = AiKeyState.Failed(problem)
+                    return@launch
+                }
+            }
+            val saved = attempt { container.settings.setAiKey(key) }
+            _state.value = if (saved.isSuccess) {
+                AiKeyState.Saved
+            } else {
+                Log.w(TAG, "Key could not be stored", saved.exceptionOrNull())
+                AiKeyState.Failed(AiKeyProblem.SAVE_FAILED)
+            }
+        }
+    }
+
+    /** Back to idle (dialog closed or reopened); a running check is abandoned. */
+    fun reset() {
+        job?.cancel()
+        _state.value = AiKeyState.Idle
+    }
+
+    private companion object {
+        const val TAG = "AiKeyEditor"
+    }
+}
+
+/** Backs [InlineAiKeyDialog]: the key editor plus whether a key is stored already. */
+internal class AiKeyViewModel(container: AppContainer, ai: (() -> AiServices)?) : ViewModel() {
+    private val editor = AiKeyEditor(viewModelScope, container, ai)
+    val state: StateFlow<AiKeyState> = editor.state
+
+    val hasKey: StateFlow<Boolean> = container.settings.settings
+        .map { it.hasAiKey }
+        .distinctUntilChanged()
+        .catch { e -> Log.w("AiKeyViewModel", "Settings unavailable", e) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    fun saveAndTest(raw: String, skipTest: Boolean) = editor.saveAndTest(raw, skipTest)
+
+    fun reset() = editor.reset()
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = this[APPLICATION_KEY] as MorgenbriefingApp
+                AiKeyViewModel(app.container, if (AiSupport.isSupported) ({ app.ai }) else null)
+            }
+        }
+    }
+}
+
+/**
+ * The Claude key dialog right where the user needs it (blocked chat, "⚡ Live"), so entering a
+ * key never sends them hunting through the settings — and closing it returns them exactly where
+ * they were. Removing a stored key stays in the settings.
+ */
+@Composable
+fun InlineAiKeyDialog(onDismiss: () -> Unit) {
+    val viewModel: AiKeyViewModel = viewModel(factory = AiKeyViewModel.Factory)
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val hasKey by viewModel.hasKey.collectAsStateWithLifecycle()
+    val links = rememberLinkActions()
+    AiKeyDialog(
+        hasKey = hasKey,
+        state = state,
+        onSaveAndTest = viewModel::saveAndTest,
+        onOpenConsole = { links.open(ANTHROPIC_KEYS_URL) },
+        onRemove = null,
+        onDismiss = {
+            viewModel.reset()
+            onDismiss()
+        },
+    )
+}

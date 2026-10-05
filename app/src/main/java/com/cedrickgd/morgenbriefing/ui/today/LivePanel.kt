@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.MaterialTheme
@@ -116,7 +117,13 @@ internal fun LiveHeader(
                 Text(text = liveBlockText(block), style = MaterialTheme.typography.bodyMedium, color = colors.onSurface)
                 if (block != AiBlock.UNSUPPORTED_DEVICE) {
                     Spacer(Modifier.height(14.dp))
-                    GlassPillButton(text = "Zu den Einstellungen", icon = Icons.Rounded.Settings, onClick = onOpenSettings, filled = true)
+                    // No key: entered right here. Monthly limit: adjusted in the settings' KI section.
+                    GlassPillButton(
+                        text = if (block == AiBlock.NO_KEY) "Key eintragen" else "Limit anpassen",
+                        icon = if (block == AiBlock.NO_KEY) Icons.Rounded.Key else Icons.Rounded.Settings,
+                        onClick = onOpenSettings,
+                        filled = true,
+                    )
                 }
             }
 

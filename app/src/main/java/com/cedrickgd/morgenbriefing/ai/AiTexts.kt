@@ -17,7 +17,7 @@ object AiTexts {
         AiBlock.UNSUPPORTED_DEVICE ->
             "Die KI-Funktionen laufen erst ab Android 8.0. Alles andere in der App funktioniert ganz normal."
         AiBlock.NO_KEY ->
-            "Trag in den Einstellungen deinen API-Key von console.anthropic.com ein – dann kannst du hier " +
+            "Trag einmal deinen API-Key von console.anthropic.com ein – dann kannst du hier " +
                 "nachfragen und brandaktuelle Meldungen abrufen."
         AiBlock.LIMIT_REACHED ->
             "Dein KI-Budget für diesen Monat ist aufgebraucht. Du kannst das Limit in den Einstellungen anheben – " +
@@ -26,7 +26,7 @@ object AiTexts {
 
     /** What went wrong, in one sentence. */
     fun error(error: AiError): String = when (error) {
-        AiError.InvalidKey -> "Dein Claude-Key wurde abgelehnt. Prüf ihn bitte in den Einstellungen."
+        AiError.InvalidKey -> "Dein Claude-Key wurde abgelehnt. Prüf ihn bitte oder trag einen neuen ein."
         AiError.RateLimited -> "Gerade kommen zu viele Anfragen auf einmal an. Versuch es in einer Minute noch mal."
         AiError.Overloaded -> "Claude ist im Moment überlastet. Versuch es gleich noch einmal."
         AiError.Network -> "Keine Verbindung zu Claude. Prüf dein Internet und versuch es noch mal."
