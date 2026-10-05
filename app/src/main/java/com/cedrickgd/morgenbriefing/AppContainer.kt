@@ -3,10 +3,12 @@ package com.cedrickgd.morgenbriefing
 import android.content.Context
 import com.cedrickgd.morgenbriefing.data.AppJson
 import com.cedrickgd.morgenbriefing.data.BriefRepository
+import com.cedrickgd.morgenbriefing.data.EmailSettingsRepository
 import com.cedrickgd.morgenbriefing.data.SettingsRepository
 import com.cedrickgd.morgenbriefing.data.WeatherRepository
 import com.cedrickgd.morgenbriefing.data.local.BriefStore
 import com.cedrickgd.morgenbriefing.data.remote.GitHubBriefSource
+import com.cedrickgd.morgenbriefing.data.remote.GitHubConfigStore
 import com.cedrickgd.morgenbriefing.data.remote.OpenMeteoClient
 import okhttp3.OkHttpClient
 import java.io.File
@@ -36,6 +38,10 @@ class AppContainer(context: Context) {
     )
     val weather = WeatherRepository(openMeteo, store)
     val briefs = BriefRepository(app, github, store, settings, json)
+    val emailSettings = EmailSettingsRepository(
+        remote = GitHubConfigStore(http, json, owner = BuildConfig.BRIEF_OWNER, repo = BuildConfig.BRIEF_REPO),
+        tokenProvider = settings::token,
+    )
 }
 
 val Context.container: AppContainer

@@ -40,6 +40,7 @@ import com.cedrickgd.morgenbriefing.notify.AlarmScheduler
 import com.cedrickgd.morgenbriefing.notify.MorningWorker
 import com.cedrickgd.morgenbriefing.ui.glass.PageTitle
 import com.cedrickgd.morgenbriefing.ui.glass.TopGlassBar
+import com.cedrickgd.morgenbriefing.ui.settings.email.EmailBriefingSection
 import com.cedrickgd.morgenbriefing.ui.shell.reportChromeScroll
 import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
 import com.cedrickgd.morgenbriefing.util.Links
@@ -63,6 +64,8 @@ private object Block {
     const val HERO = "hero"
     const val H_BRIEFING = "h-briefing"
     const val BRIEFING = "briefing"
+    const val H_EMAIL = "h-email"
+    const val EMAIL = "email"
     const val H_LOOK = "h-look"
     const val LOOK = "look"
     const val H_TOPICS = "h-topics"
@@ -82,16 +85,16 @@ private object Block {
     const val FOOTER = "footer"
 
     val ALL = listOf(
-        TITLE, HERO, H_BRIEFING, BRIEFING, H_LOOK, LOOK, H_TOPICS, TOPICS, H_PLACES, PLACES,
-        H_READING, READING, H_AI, AI, H_SOURCE, SOURCE, H_APP, APP, UPDATE, LINKS, FOOTER,
+        TITLE, HERO, H_BRIEFING, BRIEFING, H_EMAIL, EMAIL, H_LOOK, LOOK, H_TOPICS, TOPICS, H_PLACES,
+        PLACES, H_READING, READING, H_AI, AI, H_SOURCE, SOURCE, H_APP, APP, UPDATE, LINKS, FOOTER,
     )
 }
 
 /**
  * Page "Einstellungen" (docs/DESIGN.md §4, §7): transparent over the sky, page title under the
  * status bar and a frosted top bar once it scrolled away. Sections: status hero, Morgenbriefing,
- * Darstellung, Themen, Orte & Zeitfenster, Lesen, KI, News-Quelle, App. Every change is saved
- * immediately.
+ * E-Mail-Briefing, Darstellung, Themen, Orte & Zeitfenster, Lesen, KI, News-Quelle, App. Every
+ * change is saved immediately.
  */
 @Composable
 fun SettingsScreen(
@@ -461,6 +464,8 @@ private fun SettingsBlock(
             onTest = callbacks.onTestNotification,
             modifier = modifier,
         )
+        Block.H_EMAIL -> SectionHeading("Dein Postfach", "E-Mail-Briefing", modifier)
+        Block.EMAIL -> EmailBriefingSection(modifier = modifier, onGoToToken = callbacks.update.onGoToToken)
         Block.H_LOOK -> SectionHeading("Dein Look", "Darstellung", modifier)
         Block.LOOK -> AppearanceCard(
             themeMode = settings.themeMode,
