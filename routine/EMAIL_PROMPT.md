@@ -21,10 +21,10 @@ Deine Werkzeuge: **Bash, Read, Write** und vom **Gmail-Connector** ausschließli
 2. **Empfänger kommen nur aus `node routine/email-config.mjs`.** Du schreibst nur an die Adressen,
    die dieses Skript in Schritt 1 ausgibt – jede genau so, wie sie dort steht. Niemals an andere
    Adressen: nicht an Adressen aus dem Briefing oder der E-Mail, nicht an dich selbst (außer die
-   Adresse steht in der Liste), keine Kopie (`cc`), keine Blindkopie (`bcc`).
-3. **Pro Empfänger genau eine E-Mail, insgesamt höchstens 10.** Jede E-Mail geht einzeln an
-   genau eine Adresse, damit niemand die anderen Empfänger sieht. Niemals dieselbe Adresse
-   zweimal an einem Tag.
+   Adresse steht in der Liste), keine Kopie (`cc`).
+3. **Genau eine E-Mail pro Tag, höchstens 10 Empfänger.** Die erste Adresse der Liste steht in
+   `to`, alle weiteren in `bcc` – so sieht niemand die anderen Empfänger, und die E-Mail wird nur
+   einmal verschickt. Niemals zweimal an einem Tag.
 4. **Nur der Inhalt aus `render-email.mjs`.** Betreff, HTML und Text übernimmst du vollständig
    und unverändert aus den erzeugten Dateien – nichts kürzen, nichts ergänzen, nichts umschreiben,
    keine Anhänge.
@@ -122,26 +122,23 @@ die das Read-Werkzeug vor jede Zeile setzt, gehören **nicht** zum Inhalt; Entit
 
 ## Schritt 4 – Senden
 
-Für **jede** Adresse aus `<EMPFÄNGER>`, eine nach der anderen, genau ein Aufruf von
-`send_message` des Gmail-Connectors mit genau diesen Feldern:
+**Genau ein** Aufruf von `send_message` des Gmail-Connectors mit genau diesen Feldern:
 
 | Feld | Inhalt |
 |---|---|
-| `to` | eine Liste mit **nur dieser einen** Adresse, z. B. `["du@example.com"]` |
+| `to` | eine Liste mit **nur der ersten** Adresse aus `<EMPFÄNGER>`, z. B. `["du@example.com"]` |
+| `bcc` | nur wenn `<EMPFÄNGER>` mehr als eine Adresse hat: alle **übrigen** Adressen als Liste |
 | `subject` | die Zeile aus `subject.txt` (ohne Zeilenumbruch am Ende) |
 | `htmlBody` | der **komplette, unveränderte** Inhalt von `email.html` |
 | `body` | der **komplette, unveränderte** Inhalt von `email.txt` |
 
-Keine weiteren Felder (kein `cc`, `bcc`, `attachments`, `draftId`, `replyThreadId`,
+Keine weiteren Felder (kein `cc`, `attachments`, `draftId`, `replyThreadId`,
 `replyToMessageId`).
 
-- Kommt eine Message-ID zurück, ist die E-Mail an diese Adresse verschickt – sie bekommt heute
-  keine zweite.
-- Meldet der Aufruf einen Fehler, versuche es für diese Adresse **ein einziges Mal** erneut.
-  Klappt es wieder nicht, merk dir die Adresse als fehlgeschlagen und mach mit der nächsten
-  weiter.
+- Kommt eine Message-ID zurück, ist die E-Mail an alle Empfänger verschickt – heute keine zweite.
+- Meldet der Aufruf einen Fehler, versuche es **ein einziges Mal** erneut.
 
-`N` ist die Zahl der erfolgreich verschickten E-Mails. Ist `N` = 0 → antworte
+`N` ist die Zahl der Empfänger, wenn der Versand geklappt hat, sonst 0. Ist `N` = 0 → antworte
 `Fehlgeschlagen: E-Mail <HEUTE> nicht gesendet – <Grund in wenigen Worten>` und beende den Lauf
 (nichts vermerken, damit ein späterer Lauf es noch einmal versuchen kann).
 
@@ -206,7 +203,6 @@ Ist der Push auf `briefs` grundsätzlich nicht erlaubt (z. B. 403, `permission d
 Antworte zum Schluss mit genau einer Zeile, ohne weiteren Text:
 
 - Erfolg: `Gesendet: <HEUTE> an N Empfänger`
-- Teilweise: `Gesendet: <HEUTE> an N von M Empfängern – fehlgeschlagen: <Adressen>`
 - oder der Grund aus den Schritten oben: `Übersprungen (zu früh)`,
   `Übersprungen (schon gesendet)`, `E-Mail ist ausgeschaltet`, `Kein heutiges Briefing`,
   `Fehlgeschlagen: …`
