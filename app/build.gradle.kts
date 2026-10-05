@@ -61,7 +61,8 @@ android {
             }
         }
         debug {
-            applicationIdSuffix = ".debug"
+            // Parallel QA installs can use their own id: -PMB_ID_SUFFIX=.qa1
+            applicationIdSuffix = (findProperty("MB_ID_SUFFIX") as String?) ?: ".debug"
             versionNameSuffix = "-debug"
         }
     }
@@ -124,6 +125,7 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.haze)
     implementation(libs.haze.materials)
+    implementation(libs.anthropic.java)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
