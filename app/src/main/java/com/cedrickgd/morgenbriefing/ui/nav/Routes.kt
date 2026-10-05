@@ -24,3 +24,7 @@ data class DayRoute(val date: String)
  */
 @Serializable
 data class ArticleRoute(val date: String, val key: String)
+
+/** "Frag nach": chat about the article [key] of [date], or about the whole brief when [key] is null. */
+@Serializable
+data class ChatRoute(val date: String, val key: String? = null)

@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.floatPreferencesKey
@@ -83,14 +84,45 @@ class SettingsRepository(context: Context) {
     }
 
     /**
-     * If the keystore entry is definitely gone (not just a hiccup), the stored ciphertext can
-     * never be read again: drop it so the settings screen asks for the token again.
+     * Claude API key (docs/AI.md), stored encrypted like the GitHub token.
+     * Trims whitespace; null/blank clears it.
+     * @throws IOException if DataStore cannot persist the change.
+     * @throws java.security.GeneralSecurityException if the keystore cannot encrypt.
      */
-    private suspend fun forgetUndecryptableToken(encrypted: String) {
+    suspend fun setAiKey(key: String?) {
+        val clean = key?.trim().orEmpty()
+        if (clean.isEmpty()) {
+            store.edit { it.remove(Keys.AI_KEY) }
+            return
+        }
+        val encrypted = withContext(Dispatchers.IO) { TokenCipher.encrypt(clean) }
+        store.edit { it[Keys.AI_KEY] = encrypted }
+    }
+
+    /** Decrypted Claude API key or null. */
+    suspend fun aiKey(): String? {
+        val encrypted = try {
+            store.data.first()[Keys.AI_KEY]
+        } catch (_: IOException) {
+            null
+        }
+        if (encrypted.isNullOrBlank()) return null
+        val plain = withContext(Dispatchers.IO) { TokenCipher.decrypt(encrypted) }
+        if (plain == null) forgetUndecryptable(Keys.AI_KEY, encrypted)
+        return plain?.trim()?.takeIf { it.isNotEmpty() }
+    }
+
+    private suspend fun forgetUndecryptableToken(encrypted: String) = forgetUndecryptable(Keys.TOKEN, encrypted)
+
+    /**
+     * If the keystore entry is definitely gone (not just a hiccup), the stored ciphertext can
+     * never be read again: drop it so the settings screen asks for the secret again.
+     */
+    private suspend fun forgetUndecryptable(key: Preferences.Key<String>, encrypted: String) {
         val keyExists = withContext(Dispatchers.IO) { TokenCipher.hasKey() }
         if (keyExists != false) return
         try {
-            store.edit { prefs -> if (prefs[Keys.TOKEN] == encrypted) prefs.remove(Keys.TOKEN) }
+            store.edit { prefs -> if (prefs[key] == encrypted) prefs.remove(key) }
         } catch (_: IOException) {
             // Retried on the next read.
         }
@@ -120,6 +152,10 @@ class SettingsRepository(context: Context) {
                 ?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }?.toSet()
                 ?: defaults.hiddenTopics,
             readerTextScale = this[Keys.READER_TEXT_SCALE]?.takeIf { it in 0.85f..1.4f } ?: defaults.readerTextScale,
+            hasAiKey = !this[Keys.AI_KEY].isNullOrBlank(),
+            aiModel = enumOrDefault(this[Keys.AI_MODEL], defaults.aiModel),
+            aiMonthlyLimitUsd = this[Keys.AI_MONTHLY_LIMIT]?.takeIf { it in 0.0..1000.0 } ?: defaults.aiMonthlyLimitUsd,
+            liveAutoRefresh = this[Keys.LIVE_AUTO_REFRESH] ?: defaults.liveAutoRefresh,
         )
     }
 
@@ -146,6 +182,9 @@ class SettingsRepository(context: Context) {
         this[Keys.TOPIC_ORDER] = s.topicOrder.filter { it.isNotBlank() && ',' !in it }.distinct().joinToString(",")
         this[Keys.HIDDEN_TOPICS] = s.hiddenTopics.filter { it.isNotBlank() && ',' !in it }.sorted().joinToString(",")
         this[Keys.READER_TEXT_SCALE] = s.readerTextScale.coerceIn(0.85f, 1.4f)
+        this[Keys.AI_MODEL] = s.aiModel.name
+        this[Keys.AI_MONTHLY_LIMIT] = s.aiMonthlyLimitUsd.coerceIn(0.0, 1000.0)
+        this[Keys.LIVE_AUTO_REFRESH] = s.liveAutoRefresh
     }
 
     private inline fun <reified E : Enum<E>> enumOrDefault(name: String?, default: E): E =
@@ -177,6 +216,10 @@ class SettingsRepository(context: Context) {
         val TOPIC_ORDER = stringPreferencesKey("topic_order")
         val HIDDEN_TOPICS = stringPreferencesKey("hidden_topics")
         val READER_TEXT_SCALE = floatPreferencesKey("reader_text_scale")
+        val AI_KEY = stringPreferencesKey("ai_key_enc")
+        val AI_MODEL = stringPreferencesKey("ai_model")
+        val AI_MONTHLY_LIMIT = doublePreferencesKey("ai_monthly_limit_usd")
+        val LIVE_AUTO_REFRESH = booleanPreferencesKey("live_auto_refresh")
         val TOKEN = stringPreferencesKey("gh_token_enc")
     }
 }

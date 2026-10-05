@@ -54,4 +54,17 @@ data class AppSettings(
     val hiddenTopics: Set<String> = emptySet(),
     /** Article reader text size factor, 0.85–1.4. */
     val readerTextScale: Float = 1f,
+    /** A Claude API key is stored (encrypted; the value never leaves SettingsRepository). */
+    val hasAiKey: Boolean = false,
+    val aiModel: AiModel = AiModel.SONNET,
+    /** Monthly AI spending cap in US dollars; 0 = no cap. */
+    val aiMonthlyLimitUsd: Double = 5.0,
+    /** Run a live news update automatically when "⚡ Live" is opened and the last one is > 30 min old. */
+    val liveAutoRefresh: Boolean = false,
 )
+
+/** Claude models the user can pick for chat and live news (docs/AI.md). */
+enum class AiModel(val apiId: String, val label: String) {
+    SONNET("claude-sonnet-5-5", "Claude Sonnet 5.5"),
+    OPUS("claude-opus-5-5", "Claude Opus 5.5"),
+}

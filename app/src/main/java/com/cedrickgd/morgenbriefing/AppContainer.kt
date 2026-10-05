@@ -40,3 +40,9 @@ class AppContainer(context: Context) {
 
 val Context.container: AppContainer
     get() = (applicationContext as MorgenbriefingApp).container
+
+val Context.ai: com.cedrickgd.morgenbriefing.ai.AiServices
+    get() = (applicationContext as MorgenbriefingApp).ai
+
+val Context.listen: com.cedrickgd.morgenbriefing.listen.ListenController
+    get() = (applicationContext as MorgenbriefingApp).listen
