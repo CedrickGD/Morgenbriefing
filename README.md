@@ -39,8 +39,8 @@ Läuft ab **Android 7.0** (API 24). Randlos (Edge-to-Edge) und sauber mit **Gest
 - **Wetter** kommt nie aus dem Repo: Die App fragt es immer live bei [Open-Meteo](https://open-meteo.com) ab
   (ohne Schlüssel, ohne Konto).
 - **Nachrichten** schreibt die Cloud-Routine jeden Morgen als JSON auf den Daten-Branch `briefs`
-  dieses privaten Repos. Die App liest sie mit einem GitHub-Token, das nur Lesezugriff auf genau
-  dieses Repo hat. Ohne Token zeigt sie ein Demo-Briefing.
+  dieses privaten Repos. Die App liest sie mit einem GitHub-Token, das nur für genau dieses Repo
+  gilt. Ohne Token zeigt sie ein Demo-Briefing.
 - **Eigene Texte statt Kopien:** Für jede Rubrik recherchiert ein eigener Agent die wichtigsten
   Geschichten der letzten 24 Stunden, öffnet für jede Top-Geschichte mindestens zwei unabhängige
   Quellen und schreibt daraus einen vollständigen Artikel in eigenen Worten (nur Fakten,
@@ -78,8 +78,11 @@ darf – einmal **Zulassen**, danach geht es mit einem Tipp.
 
 ### 2. GitHub-Token erstellen und in der App eintragen
 
-Das Token erlaubt der App nur, die Briefings (und neue App-Versionen) aus diesem einen Repo zu
-**lesen**.
+Das Token gilt nur für dieses eine Repo. Die App **liest** damit die Briefings (und neue
+App-Versionen) und **schreibt** genau eine Datei: `config/email.json`, wenn du unter
+**Einstellungen → E-Mail-Briefing** den Versand ein- oder ausschaltest oder Empfänger änderst.
+Dafür braucht das Token **Contents: Read and write**. Mit einem Nur-Lese-Token laufen News und
+Updates trotzdem, nur das E-Mail-Briefing meldet dann „Schreibrecht fehlt“.
 
 1. Auf [github.com](https://github.com) oben rechts auf dein Profilbild → **Settings**.
 2. Links ganz unten **Developer settings** → **Personal access tokens** → **Fine-grained tokens**
@@ -88,9 +91,10 @@ Das Token erlaubt der App nur, die Briefings (und neue App-Versionen) aus diesem
 4. **Expiration:** so lang wie möglich (die längste angebotene Laufzeit bzw. „No expiration“,
    falls angeboten). Trag dir das Ablaufdatum in den Kalender.
 5. **Repository access:** **Only select repositories** → `Morgenbriefing` auswählen.
-6. **Permissions** → **Repository permissions** → **Contents:** **Read-only**.
+6. **Permissions** → **Repository permissions** → **Contents:** **Read and write**.
    („Metadata: Read-only“ setzt GitHub automatisch.) Sonst nichts anhaken. In neueren
-   GitHub-Oberflächen geht das über **Add permissions** → **Contents** → **Read-only**.
+   GitHub-Oberflächen geht das über **Add permissions** → **Contents** → **Read and write**.
+   Geschrieben wird nur `config/email.json` (E-Mail-Briefing).
 7. **Generate token** und das Token (beginnt mit `github_pat_`) kopieren – GitHub zeigt es nur
    einmal an.
 8. In der App: **Einstellungen** → Token einfügen → **Verbindung testen**.
@@ -273,7 +277,8 @@ Der Branch **`briefs`** enthält nur Daten: `briefs/YYYY-MM-DD.json`, `latest.js
 ## Datenschutz
 
 - Wetter: Open-Meteo bekommt nur die Koordinaten deiner beiden Orte – kein Konto, kein Schlüssel.
-- Nachrichten: kommen ausschließlich aus deinem privaten Repo, gelesen mit einem Nur-Lese-Token,
-  das verschlüsselt auf dem Gerät liegt.
+- Nachrichten: kommen ausschließlich aus deinem privaten Repo, gelesen mit einem Token nur für
+  dieses Repo, das verschlüsselt auf dem Gerät liegt. Geschrieben wird damit nur
+  `config/email.json` (E-Mail-Briefing).
 - Bilder: werden direkt von Wikimedia Commons (`upload.wikimedia.org`) geladen.
 - Kein Tracking, keine Werbung, keine Analyse-Dienste.

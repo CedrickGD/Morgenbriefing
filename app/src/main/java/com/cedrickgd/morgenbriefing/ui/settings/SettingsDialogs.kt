@@ -228,7 +228,8 @@ private fun PlaceResults(search: PlaceSearchState, onPick: (Place) -> Unit) {
 
 /**
  * Enter or replace the GitHub token, with the short setup guide. "Speichern & testen" stores
- * the token first and then reports whether it can read the briefs repo.
+ * the token first and then reports whether it can read the briefs repo. The guide asks for
+ * Contents: Read and write, because the E-Mail-Briefing setting writes config/email.json.
  */
 @Composable
 internal fun TokenDialog(
@@ -269,7 +270,7 @@ internal fun TokenDialog(
             listOf(
                 "GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token",
                 "Repository access: „Only select repositories“ → Morgenbriefing",
-                "Permissions → Contents: Read-only",
+                "Permissions → Contents: Read and write (geschrieben wird nur config/email.json fürs E-Mail-Briefing)",
                 "Token kopieren und hier einfügen",
             ),
         )
