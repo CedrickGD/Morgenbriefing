@@ -76,6 +76,10 @@ object Notifications {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setShowWhen(true)
             .setWhen(System.currentTimeMillis())
+        // Below API 26 there is no channel: without a sound Android 7 ranks the notification
+        // LOW and it arrives silently. Same as the IMPORTANCE_DEFAULT channel on 8+ (sound, no
+        // vibration of its own); 8+ ignores this. The silent follow-up update stays quiet.
+        if (!silent) builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
         openAppIntent(context)?.let(builder::setContentIntent)
         post(context, ID_MORNING, builder)
     }
