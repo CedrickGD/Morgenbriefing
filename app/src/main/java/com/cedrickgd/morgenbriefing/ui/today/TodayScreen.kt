@@ -149,6 +149,13 @@ fun TodayScreen(
     val topicPrefs by viewModel.topicPrefs.collectAsStateWithLifecycle()
     val live by viewModel.liveUi.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+    // After process death the saved position points into the feed; measuring the header and the
+    // loading skeleton first would clamp it to their few items. Until weather and news are known
+    // the page runs on a list state of its own; the saved one is attached with the real content.
+    val loadingListState = remember { LazyListState() }
+    val contentKnownNow = state.brief != null && (state.weather != null || !state.weatherLoading)
+    var contentKnown by remember { mutableStateOf(contentKnownNow) }
+    LaunchedEffect(contentKnownNow) { if (contentKnownNow) contentKnown = true }
     val settingsLink = LocalSettingsLink.current
     var keyDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -192,7 +199,7 @@ fun TodayScreen(
         state = state,
         topicPrefs = topicPrefs,
         live = live,
-        listState = listState,
+        listState = if (contentKnown) listState else loadingListState,
         contentPadding = contentPadding,
         callbacks = callbacks,
         modifier = modifier,
