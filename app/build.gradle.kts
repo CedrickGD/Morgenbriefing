@@ -131,3 +131,23 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
 }
+
+// Jackson reaches the Anthropic SDK's JSON model (com.anthropic.core, Values.kt) only through
+// annotations, so R8 does not see that it is used (proguard-rules.pro, "Anthropic Java SDK").
+// Fail the release build when R8 removed one of these classes anyway: in the app every Claude
+// request would then fail before it reaches the network.
+val r8KeptJsonModel = Regex(
+    """com\.anthropic\.core\.(ExcludeMissing|KnownValue|MultipartField|BaseSerializer|BaseDeserializer|""" +
+        """Json(Field|Value|Missing|Null|Boolean|Number|String|Array|Object))(\$.*)?""",
+)
+tasks.matching { it.name == "minifyReleaseWithR8" }.configureEach {
+    val usage = layout.buildDirectory.file("outputs/mapping/release/usage.txt")
+    doLast {
+        val file = usage.get().asFile
+        if (!file.exists()) return@doLast
+        val removed = file.readLines().filter { !it.startsWith(" ") && r8KeptJsonModel.matches(it.trim()) }
+        check(removed.isEmpty()) {
+            "R8 removed classes that Jackson needs to (de)serialize Claude requests: $removed – see proguard-rules.pro"
+        }
+    }
+}
