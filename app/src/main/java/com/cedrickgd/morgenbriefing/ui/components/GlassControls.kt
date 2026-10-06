@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import android.os.Build
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -46,6 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -174,7 +176,7 @@ fun GlassIconButton(
     }
 }
 
-/** Snackbars as frosted glass pills, placed by the caller (above the floating chrome). */
+/** Snackbars as dense frosted pills, placed by the caller (above the floating chrome). */
 @Composable
 fun GlassSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
     SnackbarHost(hostState = hostState, modifier = modifier) { data -> GlassSnackbar(data) }
@@ -183,12 +185,18 @@ fun GlassSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifie
 @Composable
 private fun GlassSnackbar(data: SnackbarData) {
     val colors = MaterialTheme.colorScheme
+    val outline = colors.onSurface.copy(alpha = if (isGlassDark()) 0.16f else 0.10f)
     Row(
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth()
             .shadow(16.dp, GlassShapes.tile, ambientColor = Color.Black.copy(alpha = 0.16f), spotColor = Color.Black.copy(alpha = 0.16f))
-            .glass(shape = GlassShapes.tile, level = GlassLevel.Thick, floating = true)
+            // The host scales snackbars in, which a live blur cannot follow (part of the pill
+            // stayed clear, the feed sharp beneath it): a dense frosted fill instead, as in the
+            // settings.
+            .clip(GlassShapes.tile)
+            .background(colors.surfaceContainerHigh.copy(alpha = 0.97f))
+            .border(1.dp, outline, GlassShapes.tile)
             .heightIn(min = 56.dp)
             .padding(start = 20.dp, end = 8.dp)
             .semantics { liveRegion = LiveRegionMode.Polite },
