@@ -298,10 +298,13 @@ private fun TodayContent(
         },
     )
     val onSelect: (FeedFilter) -> Unit = { filter ->
+        // Always remember the tap: after a hidden topic fell back to "Für dich", the stored key
+        // still names that topic, and tapping "Für dich" must replace it (or the old filter
+        // would come back once the topic is shown again).
+        selectedKey = filter.key
         if (filter != selected) {
             // Switching while the chips ride in the bar: start the new view right below them.
             val wasParked = parked
-            selectedKey = filter.key
             if (wasParked && chipIndex >= 0) {
                 scope.launch {
                     listState.scrollToItem(chipIndex)
