@@ -23,7 +23,9 @@ beide Funktionen sichtbar, erklären sich aber freundlich und verweisen auf die 
 * Die App rechnet jede Antwort aus `usage` (input, output, cache_creation, cache_read,
   `server_tool_use.web_search_requests`) mit dieser Preistabelle in Dollar um, summiert pro
   Kalendermonat und zeigt den Stand in den Einstellungen. **Monatslimit** (Standard 5 $,
-  einstellbar, 0 = aus): ist es erreicht, werden KI-Anfragen nicht mehr gesendet.
+  einstellbar, 0 = aus): ist es erreicht, werden KI-Anfragen nicht mehr gesendet. Am
+  Monatsersten (Europe/Berlin) beginnt die Zählung bei null – auch in einer laufenden App:
+  `UsageStore` prüft den Monat mindestens einmal pro Minute.
 * Preise stehen an einer Stelle im Code (`ai/AiPricing.kt`) mit Quelle + Datum.
 
 ## API-Regeln (aktueller Stand, verbindlich)

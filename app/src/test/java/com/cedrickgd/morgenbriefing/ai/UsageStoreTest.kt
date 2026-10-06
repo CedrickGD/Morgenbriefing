@@ -13,14 +13,19 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
 import java.time.Clock
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 
@@ -36,6 +41,19 @@ internal class MemoryPreferencesStore : DataStore<Preferences> {
 
     override suspend fun updateData(transform: suspend (t: Preferences) -> Preferences): Preferences =
         lock.withLock { transform(state.value).also { state.value = it } }
+}
+
+/** A wall clock the test moves by hand (independent of the coroutine test scheduler). */
+internal class MutableClock(@Volatile var now: Instant, private val zoneId: ZoneId = ZoneId.of("Europe/Berlin")) : Clock() {
+    override fun getZone(): ZoneId = zoneId
+    override fun withZone(zone: ZoneId): Clock = View(zone)
+    override fun instant(): Instant = now
+
+    private inner class View(private val zoneId: ZoneId) : Clock() {
+        override fun getZone(): ZoneId = zoneId
+        override fun withZone(zone: ZoneId): Clock = View(zone)
+        override fun instant(): Instant = now
+    }
 }
 
 class UsageStoreTest {
@@ -103,6 +121,40 @@ class UsageStoreTest {
         october.record("claude-sonnet-5-5", TokenUsage(outputTokens = 50_000))
         assertEquals(0.5, october.spentThisMonth(), 1e-9)
         assertEquals(1, withTimeout(5_000) { october.usage.first { it.requests == 1 } }.requests)
+    }
+
+    @Test
+    fun `last month's limit lifts at the Berlin month start without any write`() = runTest {
+        val clock = MutableClock(Instant.parse("2026-10-31T20:00:00Z"))
+        val usage = UsageStore(dataStore, limit, backgroundScope, clock)
+        usage.record("claude-opus-5-5", TokenUsage(outputTokens = 300_000)) // 6 $
+        runCurrent()
+        val october = usage.usage.value
+        assertEquals("2026-10", october.month)
+        assertEquals(6.0, october.spentUsd, 1e-9)
+        assertEquals(AiBlock.LIMIT_REACHED, aiBlock(true, true, october))
+
+        // 23:30 UTC on Oct 31 is November 1st in Berlin. While the limit blocks, no request runs
+        // and nothing writes the store — the snapshot must still move on by itself.
+        clock.now = Instant.parse("2026-10-31T23:30:00Z")
+        advanceTimeBy(UsageStore.MONTH_RECHECK.toMillis() + 1)
+        runCurrent()
+        val november = usage.usage.value
+        assertEquals("2026-11", november.month)
+        assertEquals(0.0, november.spentUsd, 0.0)
+        assertEquals(5.0, november.limitUsd, 0.0)
+        assertNull(aiBlock(true, true, november))
+        assertFalse(usage.limitReached())
+    }
+
+    @Test
+    fun `month checks wait at most a minute and land on the month start`() {
+        // Oct 31, 2026 is CET (UTC+1): November starts at 23:00 UTC.
+        assertEquals(UsageStore.MONTH_RECHECK, UsageStore.nextMonthCheckIn(Instant.parse("2026-10-31T20:00:00Z")))
+        assertEquals(Duration.ofSeconds(30), UsageStore.nextMonthCheckIn(Instant.parse("2026-10-31T22:59:30Z")))
+        assertEquals(UsageStore.MONTH_RECHECK, UsageStore.nextMonthCheckIn(Instant.parse("2026-10-31T23:00:00Z")))
+        // Never a zero (busy) wait.
+        assertEquals(Duration.ofMillis(1), UsageStore.nextMonthCheckIn(Instant.parse("2026-10-31T22:59:59.9999Z")))
     }
 
     @Test
