@@ -19,10 +19,11 @@ import com.cedrickgd.morgenbriefing.ui.shell.PageRequest
  * Single activity (launchMode singleTop, notifications add SINGLE_TOP | CLEAR_TOP). A launch
  * intent may carry [AppLinks.EXTRA_OPEN_PAGE] to open a page of the pager:
  *
- * * on a fresh start the pager simply opens on that page,
- * * while the app is open the tap arrives in [onNewIntent]: pushed screens close and the pager
- *   glides to the page. Without the extra (morning notification) that is "Heute", which also
- *   scrolls back to the top.
+ * * on a fresh start the pager simply opens on that page ("Heute" without the extra),
+ * * while the app is open a notification tap arrives in [onNewIntent]: pushed screens close
+ *   and the pager glides to the page ("Heute" — the morning notification — also scrolls back
+ *   to the top). An intent without the extra (the launcher icon) changes nothing: the user
+ *   comes back to exactly where they were, like from Recents.
  */
 class MainActivity : ComponentActivity() {
 
@@ -61,14 +62,18 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        pageRequest = PageRequest(intent.requestedPage(), id = ++nextRequestId)
+        // The launcher icon delivers the same MAIN/LAUNCHER intent as a notification would, but
+        // without the extra: only an explicit page request navigates.
+        val page = MainPage.requestedBy(intent.openPageLink()) ?: return
+        pageRequest = PageRequest(page, id = ++nextRequestId)
     }
 
     /** The page an intent asks for; "Heute" when it names none (or its extras are unreadable). */
-    private fun Intent?.requestedPage(): MainPage {
-        val link = runCatching { this?.getStringExtra(AppLinks.EXTRA_OPEN_PAGE) }.getOrNull()
-        return MainPage.fromLink(link)
-    }
+    private fun Intent?.requestedPage(): MainPage = MainPage.fromLink(openPageLink())
+
+    /** [AppLinks.EXTRA_OPEN_PAGE] of this intent; null when missing or unreadable. */
+    private fun Intent?.openPageLink(): String? =
+        runCatching { this?.getStringExtra(AppLinks.EXTRA_OPEN_PAGE) }.getOrNull()
 
     private companion object {
         const val MAX_SPLASH_MS = 1_200L

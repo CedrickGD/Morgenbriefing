@@ -17,6 +17,7 @@ import androidx.work.ForegroundInfo
 import com.cedrickgd.morgenbriefing.R
 import com.cedrickgd.morgenbriefing.domain.NotificationText
 import com.cedrickgd.morgenbriefing.ui.components.EmojiSupport
+import com.cedrickgd.morgenbriefing.ui.shell.AppLinks
 
 /**
  * Everything the app posts to the notification shade: the morning briefing on
@@ -124,10 +125,15 @@ object Notifications {
         false
     }
 
-    /** Opens (or brings to front) the launcher activity without referencing it directly. */
+    /**
+     * Opens (or brings to front) the launcher activity on "Heute" without referencing it
+     * directly. The explicit page extra is what tells this tap apart from the launcher icon,
+     * whose intent is otherwise identical (MainActivity only navigates for an extra).
+     */
     private fun openAppIntent(context: Context): PendingIntent? {
         val launch = context.packageManager.getLaunchIntentForPackage(context.packageName) ?: return null
         launch.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        launch.putExtra(AppLinks.EXTRA_OPEN_PAGE, AppLinks.PAGE_TODAY)
         return PendingIntent.getActivity(
             context,
             ID_MORNING,

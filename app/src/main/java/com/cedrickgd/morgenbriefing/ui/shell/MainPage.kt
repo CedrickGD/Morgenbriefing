@@ -30,5 +30,12 @@ enum class MainPage(val label: String, val icon: ImageVector, val link: String) 
 
         /** Maps an [AppLinks.EXTRA_OPEN_PAGE] value; unknown or missing values open [Start]. */
         fun fromLink(value: String?): MainPage = entries.firstOrNull { it.link == value } ?: Start
+
+        /**
+         * The page a new intent for the running app asks for. Only an intent that carries
+         * [AppLinks.EXTRA_OPEN_PAGE] (the notifications) navigates; without it (the launcher
+         * icon) null: the app stays where it is, reader and chat included.
+         */
+        fun requestedBy(value: String?): MainPage? = value?.let(::fromLink)
     }
 }
