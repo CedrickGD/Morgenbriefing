@@ -53,13 +53,15 @@ data class HeroText(val title: String, val subtitle: String, val ready: Boolean)
 
 /**
  * The pills of the status hero, in display order. [aiSupported] false hides the KI pill
- * (Android 7); a missing key is neutral, because KI is optional for the morning briefing.
+ * (Android 7); a missing key is neutral, because KI is optional for the morning briefing, and so
+ * is a key saved without a passed test ([aiKeyUntested]): the pill must not claim it works.
  */
 internal fun statusItems(
     system: SystemStatus,
     source: SourceStatus,
     aiSupported: Boolean,
     hasAiKey: Boolean,
+    aiKeyUntested: Boolean = false,
 ): List<StatusItem> = buildList {
     add(
         StatusItem(
@@ -112,9 +114,13 @@ internal fun statusItems(
         add(
             StatusItem(
                 kind = StatusKind.AI,
-                level = if (hasAiKey) StatusLevel.OK else StatusLevel.NEUTRAL,
+                level = if (hasAiKey && !aiKeyUntested) StatusLevel.OK else StatusLevel.NEUTRAL,
                 label = "KI",
-                state = if (hasAiKey) "eingerichtet" else "aus, kein API-Key",
+                state = when {
+                    !hasAiKey -> "aus, kein API-Key"
+                    aiKeyUntested -> "Key noch nicht getestet"
+                    else -> "eingerichtet"
+                },
             ),
         )
     }

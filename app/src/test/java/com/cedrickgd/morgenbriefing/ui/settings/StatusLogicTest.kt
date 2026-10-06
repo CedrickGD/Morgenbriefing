@@ -45,6 +45,17 @@ class StatusLogicTest {
     }
 
     @Test
+    fun `an untested ki key is neutral and does not claim to work`() {
+        val untested = statusItems(allGood, connected, aiSupported = true, hasAiKey = true, aiKeyUntested = true)
+        val ai = untested.single { it.kind == StatusKind.AI }
+        assertEquals(StatusLevel.NEUTRAL, ai.level)
+        assertEquals("Key noch nicht getestet", ai.state)
+        assertTrue(heroText(true, untested, "morgen", "05:30").ready)
+        val tested = statusItems(allGood, connected, aiSupported = true, hasAiKey = true, aiKeyUntested = false)
+        assertEquals(StatusItem(StatusKind.AI, StatusLevel.OK, "KI", "eingerichtet"), tested.single { it.kind == StatusKind.AI })
+    }
+
+    @Test
     fun `exact alarms only matter from android 12`() {
         val oldAndroid = allGood.copy(exactAlarmRelevant = false, exactAlarmsAllowed = false)
         assertEquals(StatusLevel.OK, levels(statusItems(oldAndroid, connected, false, false))[StatusKind.EXACT_ALARM])

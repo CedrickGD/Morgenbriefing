@@ -490,7 +490,7 @@ private fun SettingsBlock(
 ) {
     when (key) {
         Block.HERO -> {
-            val items = statusItems(content.status, content.source, AiSupport.isSupported, settings.hasAiKey)
+            val items = statusItems(content.status, content.source, AiSupport.isSupported, settings.hasAiKey, settings.aiKeyUntested)
             val next = nextBriefingAt(content.now, settings.notifyHour, settings.notifyMinute)
             val hero = heroText(
                 enabled = settings.notificationsEnabled,

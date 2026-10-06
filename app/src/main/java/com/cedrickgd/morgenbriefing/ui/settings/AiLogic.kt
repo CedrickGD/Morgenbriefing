@@ -24,8 +24,14 @@ sealed interface AiKeyState {
 
     /** Tested OK and stored. */
     data object Saved : AiKeyState
+
+    /** Stored without a passed test ("Ohne Test speichern"): nobody knows yet whether it works. */
+    data object SavedUntested : AiKeyState
     data class Failed(val problem: AiKeyProblem) : AiKeyState
 }
+
+/** What the dialog says once the key is stored: [tested] only after a passed "Speichern & testen". */
+internal fun savedKeyState(tested: Boolean): AiKeyState = if (tested) AiKeyState.Saved else AiKeyState.SavedUntested
 
 /** Maps the facade's check result; null = OK (store the key). */
 internal fun AiKeyCheck.toProblem(): AiKeyProblem? = when (this) {
@@ -40,6 +46,7 @@ internal fun aiKeyMessage(state: AiKeyState): String? = when (state) {
     AiKeyState.Idle -> null
     AiKeyState.Checking -> "Prüfe den Key bei Anthropic …"
     AiKeyState.Saved -> "✓ Der Key funktioniert und ist gespeichert."
+    AiKeyState.SavedUntested -> "Gespeichert – noch nicht getestet. Die erste Anfrage zeigt, ob er funktioniert."
     is AiKeyState.Failed -> when (state.problem) {
         AiKeyProblem.INVALID -> "✗ Anthropic lehnt den Key ab – hast du ihn vollständig kopiert?"
         AiKeyProblem.NETWORK -> "✗ Keine Verbindung zu Anthropic – bist du online?"
@@ -47,6 +54,13 @@ internal fun aiKeyMessage(state: AiKeyState): String? = when (state) {
         AiKeyProblem.SAVE_FAILED -> "✗ Der Key konnte nicht gespeichert werden. Versuch's nochmal."
         AiKeyProblem.UNKNOWN -> "✗ Das hat gerade nicht geklappt – versuch's gleich nochmal."
     }
+}
+
+/** Second line of the key row in Settings → KI. */
+internal fun aiKeyRowLabel(hasKey: Boolean, untested: Boolean): String = when {
+    !hasKey -> "Noch keiner eingetragen"
+    untested -> "Gespeichert · noch nicht getestet"
+    else -> "Gespeichert ✓ · verschlüsselt"
 }
 
 /** Claude API keys start with "sk-ant-"; anything else is most likely a copy mistake. */

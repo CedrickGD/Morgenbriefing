@@ -77,6 +77,25 @@ class AiLogicTest {
     }
 
     @Test
+    fun `a key saved without a passed test never claims to work`() {
+        assertEquals(AiKeyState.Saved, savedKeyState(tested = true))
+        assertEquals(AiKeyState.SavedUntested, savedKeyState(tested = false))
+        val untested = aiKeyMessage(AiKeyState.SavedUntested)!!
+        assertEquals("Gespeichert – noch nicht getestet. Die erste Anfrage zeigt, ob er funktioniert.", untested)
+        assertFalse(untested.startsWith("✓"))
+        assertFalse(untested.contains("funktioniert und"))
+    }
+
+    @Test
+    fun `key row label`() {
+        assertEquals("Noch keiner eingetragen", aiKeyRowLabel(hasKey = false, untested = false))
+        assertEquals("Gespeichert ✓ · verschlüsselt", aiKeyRowLabel(hasKey = true, untested = false))
+        assertEquals("Gespeichert · noch nicht getestet", aiKeyRowLabel(hasKey = true, untested = true))
+        // The flag means nothing without a key.
+        assertEquals("Noch keiner eingetragen", aiKeyRowLabel(hasKey = false, untested = true))
+    }
+
+    @Test
     fun `key format hint`() {
         assertTrue(looksLikeAnthropicKey("  sk-ant-api03-abcdefghijklmnopqrstuvwxyz  "))
         assertFalse(looksLikeAnthropicKey("sk-ant-short"))

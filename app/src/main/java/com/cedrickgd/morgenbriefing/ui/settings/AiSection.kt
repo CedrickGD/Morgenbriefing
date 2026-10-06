@@ -137,7 +137,7 @@ internal fun AiCard(
         }
 
         Spacer(Modifier.height(16.dp))
-        KeyRow(hasKey = settings.hasAiKey, onEdit = actions.onEditKey)
+        KeyRow(hasKey = settings.hasAiKey, untested = settings.aiKeyUntested, onEdit = actions.onEditKey)
 
         Spacer(Modifier.height(22.dp))
         Overline("Modell")
@@ -190,7 +190,9 @@ private fun SparkleBadge() {
 }
 
 @Composable
-private fun KeyRow(hasKey: Boolean, onEdit: () -> Unit) {
+private fun KeyRow(hasKey: Boolean, untested: Boolean, onEdit: () -> Unit) {
+    // Green only for a key that passed the test or answered a request.
+    val works = hasKey && !untested
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -201,7 +203,7 @@ private fun KeyRow(hasKey: Boolean, onEdit: () -> Unit) {
         Icon(
             Icons.Rounded.Key,
             contentDescription = null,
-            tint = if (hasKey) StatusPalette.ok() else MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = if (works) StatusPalette.ok() else MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.width(12.dp))
         Column(
@@ -211,11 +213,11 @@ private fun KeyRow(hasKey: Boolean, onEdit: () -> Unit) {
         ) {
             Text("API-Key", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface)
             Text(
-                text = if (hasKey) "Gespeichert ✓ · verschlüsselt" else "Noch keiner eingetragen",
+                text = aiKeyRowLabel(hasKey, untested),
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                color = if (hasKey) StatusPalette.ok() else MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (works) StatusPalette.ok() else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         GlassPillButton(
@@ -421,8 +423,9 @@ private const val WARN_AT = 0.8f
 
 /**
  * "Claude-API-Key eintragen/ändern": short steps, link to the Anthropic console, a password
- * field with show/hide, "Speichern & testen" (only a working key is stored) and, for an
- * existing key and a non-null [onRemove], "Key entfernen".
+ * field with show/hide, "Speichern & testen" (only a working key is stored; offline also
+ * "Ohne Test speichern", which says so) and, for an existing key and a non-null [onRemove],
+ * "Key entfernen".
  */
 @Composable
 internal fun AiKeyDialog(
@@ -437,6 +440,7 @@ internal fun AiKeyDialog(
     var key by remember { mutableStateOf("") }
     var visible by remember { mutableStateOf(false) }
     val checking = state == AiKeyState.Checking
+    val saved = state == AiKeyState.Saved || state == AiKeyState.SavedUntested
     val canSave = key.isNotBlank() && !checking
     val message = aiKeyMessage(state)
     val colors = MaterialTheme.colorScheme
@@ -447,7 +451,7 @@ internal fun AiKeyDialog(
         icon = Icons.Rounded.Key,
         dismissOnClickOutside = !checking,
         buttons = {
-            if (state == AiKeyState.Saved) {
+            if (saved) {
                 DialogButton("Fertig", onDismiss)
             } else {
                 DialogButton("Abbrechen", onDismiss)
@@ -535,7 +539,7 @@ internal fun AiKeyDialog(
                     style = MaterialTheme.typography.bodyMedium,
                     color = when (state) {
                         AiKeyState.Saved -> StatusPalette.ok()
-                        AiKeyState.Checking -> colors.onSurfaceVariant
+                        AiKeyState.Checking, AiKeyState.SavedUntested -> colors.onSurfaceVariant
                         else -> colors.error
                     },
                 )
@@ -545,7 +549,7 @@ internal fun AiKeyDialog(
             Spacer(Modifier.height(8.dp))
             GlassPillButton(text = "Ohne Test speichern", onClick = { onSaveAndTest(key, true) }, style = PillStyle.Quiet)
         }
-        if (hasKey && onRemove != null && state != AiKeyState.Saved) {
+        if (hasKey && onRemove != null && !saved) {
             Spacer(Modifier.height(8.dp))
             DialogButton("Gespeicherten Key entfernen", onRemove, color = colors.error)
         }

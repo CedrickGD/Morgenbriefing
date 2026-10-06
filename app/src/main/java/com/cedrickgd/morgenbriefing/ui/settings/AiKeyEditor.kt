@@ -33,8 +33,9 @@ import kotlinx.coroutines.launch
 
 /**
  * "Speichern & testen" of the Claude API key: one tiny request through the AI facade, and only
- * a key that works is stored. Shared by the settings page and the in-place key dialog that
- * "Frag nach" and "⚡ Live" open where the user is ([InlineAiKeyDialog]).
+ * a key that works is stored (offline, "Ohne Test speichern" stores it marked as untested).
+ * Shared by the settings page and the in-place key dialog that "Frag nach" and "⚡ Live" open
+ * where the user is ([InlineAiKeyDialog]).
  *
  * @param ai the AI facade, or null where AI cannot run (Android 7) — never touched then.
  */
@@ -48,7 +49,10 @@ internal class AiKeyEditor(
 
     private var job: Job? = null
 
-    /** Tests [raw] (unless [skipTest], e.g. offline) and stores it when it works. */
+    /**
+     * Tests [raw] and stores it when it works; with [skipTest] (offline) it is stored untested
+     * and the dialog and the settings say so instead of claiming it works.
+     */
     fun saveAndTest(raw: String, skipTest: Boolean = false) {
         val key = raw.trim()
         if (key.isEmpty()) return
@@ -76,9 +80,9 @@ internal class AiKeyEditor(
                     return@launch
                 }
             }
-            val saved = attempt { container.settings.setAiKey(key) }
+            val saved = attempt { container.settings.setAiKey(key, tested = !skipTest) }
             _state.value = if (saved.isSuccess) {
-                AiKeyState.Saved
+                savedKeyState(tested = !skipTest)
             } else {
                 Log.w(TAG, "Key could not be stored", saved.exceptionOrNull())
                 AiKeyState.Failed(AiKeyProblem.SAVE_FAILED)

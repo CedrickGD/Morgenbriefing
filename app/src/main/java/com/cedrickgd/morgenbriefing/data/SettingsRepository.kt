@@ -85,18 +85,34 @@ class SettingsRepository(context: Context) {
 
     /**
      * Claude API key (docs/AI.md), stored encrypted like the GitHub token.
-     * Trims whitespace; null/blank clears it.
+     * Trims whitespace; null/blank clears it. [tested] false marks it as saved without a passed
+     * test ([AppSettings.aiKeyUntested]) until [markAiKeyWorks].
      * @throws IOException if DataStore cannot persist the change.
      * @throws java.security.GeneralSecurityException if the keystore cannot encrypt.
      */
-    suspend fun setAiKey(key: String?) {
+    suspend fun setAiKey(key: String?, tested: Boolean = true) {
         val clean = key?.trim().orEmpty()
         if (clean.isEmpty()) {
-            store.edit { it.remove(Keys.AI_KEY) }
+            store.edit {
+                it.remove(Keys.AI_KEY)
+                it.remove(Keys.AI_KEY_UNTESTED)
+            }
             return
         }
         val encrypted = withContext(Dispatchers.IO) { TokenCipher.encrypt(clean) }
-        store.edit { it[Keys.AI_KEY] = encrypted }
+        store.edit {
+            it[Keys.AI_KEY] = encrypted
+            if (tested) it.remove(Keys.AI_KEY_UNTESTED) else it[Keys.AI_KEY_UNTESTED] = true
+        }
+    }
+
+    /**
+     * Anthropic accepted a request with the stored key: it is no longer untested. No write when
+     * it was not marked.
+     * @throws IOException if DataStore cannot persist the change.
+     */
+    suspend fun markAiKeyWorks() {
+        store.edit { if (Keys.AI_KEY_UNTESTED in it) it.remove(Keys.AI_KEY_UNTESTED) }
     }
 
     /** Decrypted Claude API key or null. */
@@ -153,6 +169,7 @@ class SettingsRepository(context: Context) {
                 ?: defaults.hiddenTopics,
             readerTextScale = this[Keys.READER_TEXT_SCALE]?.takeIf { it in 0.85f..1.4f } ?: defaults.readerTextScale,
             hasAiKey = !this[Keys.AI_KEY].isNullOrBlank(),
+            aiKeyUntested = !this[Keys.AI_KEY].isNullOrBlank() && this[Keys.AI_KEY_UNTESTED] == true,
             aiModel = enumOrDefault(this[Keys.AI_MODEL], defaults.aiModel),
             aiMonthlyLimitUsd = this[Keys.AI_MONTHLY_LIMIT]?.takeIf { it in 0.0..1000.0 } ?: defaults.aiMonthlyLimitUsd,
             liveAutoRefresh = this[Keys.LIVE_AUTO_REFRESH] ?: defaults.liveAutoRefresh,
@@ -217,6 +234,7 @@ class SettingsRepository(context: Context) {
         val HIDDEN_TOPICS = stringPreferencesKey("hidden_topics")
         val READER_TEXT_SCALE = floatPreferencesKey("reader_text_scale")
         val AI_KEY = stringPreferencesKey("ai_key_enc")
+        val AI_KEY_UNTESTED = booleanPreferencesKey("ai_key_untested")
         val AI_MODEL = stringPreferencesKey("ai_model")
         val AI_MONTHLY_LIMIT = doublePreferencesKey("ai_monthly_limit_usd")
         val LIVE_AUTO_REFRESH = booleanPreferencesKey("live_auto_refresh")

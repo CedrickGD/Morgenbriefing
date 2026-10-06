@@ -53,12 +53,26 @@ class AiServices(private val context: Context, private val container: AppContain
         )
     }
 
+    /**
+     * Usage of chat and Live requests. Usage only exists for a request Anthropic accepted, so it
+     * also confirms a key that was saved without a test
+     * ([com.cedrickgd.morgenbriefing.data.model.AppSettings.aiKeyUntested]).
+     */
+    private val requestUsage: UsageSink by lazy {
+        object : UsageSink by usageStore {
+            override suspend fun record(modelId: String, usage: TokenUsage) {
+                usageStore.record(modelId, usage)
+                markKeyWorks()
+            }
+        }
+    }
+
     private val liveService: LiveNewsServiceImpl by lazy {
         LiveNewsServiceImpl(
             scope = scope,
             settings = container.settings.settings,
             apiKey = ::apiKeyOrNull,
-            usageSink = usageStore,
+            usageSink = requestUsage,
             usageState = usageStore.usage,
             engine = backend?.live,
             store = LiveStore(File(storeDir, "live"), container.json),
@@ -71,7 +85,7 @@ class AiServices(private val context: Context, private val container: AppContain
             scope = scope,
             settings = container.settings.settings,
             apiKey = ::apiKeyOrNull,
-            usageSink = usageStore,
+            usageSink = requestUsage,
             usageState = usageStore.usage,
             engine = backend?.chat,
             store = ChatStore(File(storeDir, "chat"), container.json),
@@ -89,6 +103,16 @@ class AiServices(private val context: Context, private val container: AppContain
         val clean = key.trim()
         if (clean.isEmpty() || clean.any { it.isWhitespace() }) return AiKeyCheck.INVALID
         return checker.check(clean, usageStore)
+    }
+
+    private suspend fun markKeyWorks() {
+        try {
+            container.settings.markAiKeyWorks()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(TAG, "Claude key could not be marked as working", e)
+        }
     }
 
     private suspend fun apiKeyOrNull(): String? = try {
