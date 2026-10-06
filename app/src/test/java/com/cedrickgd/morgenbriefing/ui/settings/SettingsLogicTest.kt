@@ -96,6 +96,18 @@ class SettingsLogicTest {
     }
 
     @Test
+    fun `a gesture on the window slider is classified by its first clear axis`() {
+        val slop = 20f
+        assertEquals(GestureAxis.UNDECIDED, gestureAxis(dx = 5f, dy = -12f, slop = slop))
+        // Scrolling the page with a finger that landed on the track.
+        assertEquals(GestureAxis.VERTICAL, gestureAxis(dx = 6f, dy = -30f, slop = slop))
+        assertEquals(GestureAxis.VERTICAL, gestureAxis(dx = -3f, dy = 25f, slop = slop))
+        // Dragging a thumb, even a little wobbly.
+        assertEquals(GestureAxis.HORIZONTAL, gestureAxis(dx = 30f, dy = 10f, slop = slop))
+        assertEquals(GestureAxis.HORIZONTAL, gestureAxis(dx = -40f, dy = 35f, slop = slop))
+    }
+
+    @Test
     fun `token check messages`() {
         assertNull(tokenCheckMessage(TokenCheck.Idle))
         assertEquals("✓ Verbindung klappt – ab morgen kommen deine News.", tokenCheckMessage(TokenCheck.Success))

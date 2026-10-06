@@ -42,6 +42,19 @@ internal object DayWindow {
     fun label(start: Int, end: Int): String = "$start–$end Uhr"
 }
 
+/** How a gesture on a horizontal control started. */
+internal enum class GestureAxis { UNDECIDED, HORIZONTAL, VERTICAL }
+
+/**
+ * The axis a gesture has committed to after travelling [dx]/[dy]: vertical once its vertical
+ * travel passes [slop] and outweighs the horizontal one, horizontal once that passes [slop].
+ */
+internal fun gestureAxis(dx: Float, dy: Float, slop: Float): GestureAxis = when {
+    abs(dy) > slop && abs(dy) > abs(dx) -> GestureAxis.VERTICAL
+    abs(dx) > slop -> GestureAxis.HORIZONTAL
+    else -> GestureAxis.UNDECIDED
+}
+
 /** "05:30" */
 internal fun clockLabel(hour: Int, minute: Int): String =
     String.format(Locale.GERMANY, "%02d:%02d", hour, minute)

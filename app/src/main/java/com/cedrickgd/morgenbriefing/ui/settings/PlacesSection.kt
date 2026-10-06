@@ -3,6 +3,8 @@ package com.cedrickgd.morgenbriefing.ui.settings
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +45,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChangeIgnoreConsumed
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -186,6 +191,10 @@ private fun DayWindowCard(start: Int, end: Int, placeName: String, onCommit: (In
     // Local while dragging, written once the finger lifts; resets when the stored value changes.
     var range by remember(start, end) { mutableStateOf(DayWindow.normalize(start, end)) }
     val haptics = LocalHapticFeedback.current
+    // A vertical scroll of the page that starts on the track still moves the nearest thumb and
+    // ends in onValueChangeFinished (material3 RangeSlider has no way to opt out): such a
+    // gesture is noticed here and its change dropped instead of saved.
+    val gesture = remember { SliderGesture() }
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Overline("Zeitfenster")
         Row(verticalAlignment = Alignment.Bottom) {
@@ -219,18 +228,59 @@ private fun DayWindowCard(start: Int, end: Int, placeName: String, onCommit: (In
                 if (next != range) haptics.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
                 range = next
             },
-            onValueChangeFinished = { onCommit(range.first, range.second) },
+            onValueChangeFinished = {
+                if (gesture.vertical) {
+                    range = DayWindow.normalize(start, end)
+                } else {
+                    onCommit(range.first, range.second)
+                }
+            },
             valueRange = DayWindow.MIN_HOUR.toFloat()..DayWindow.MAX_HOUR.toFloat(),
             steps = DayWindow.SLIDER_STEPS,
             startThumb = { SunThumb(Icons.Rounded.WbSunny) },
             endThumb = { SunThumb(Icons.Rounded.WbTwilight) },
             track = { state -> DaylightTrack(state) },
-            modifier = Modifier.semantics { contentDescription = "Zeitfenster für den Tagesverlauf" },
+            modifier = Modifier
+                .watchGestureAxis(gesture)
+                .semantics { contentDescription = "Zeitfenster für den Tagesverlauf" },
         )
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text("🌅 ${DayWindow.MIN_HOUR} Uhr", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.weight(1f))
             Text("${DayWindow.MAX_HOUR} Uhr 🌇", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+/** Whether the current gesture on the slider turned into a vertical scroll of the page. */
+private class SliderGesture {
+    var vertical = false
+}
+
+/**
+ * Watches each gesture on this element from its first touch (Initial pass, nothing consumed,
+ * so the slider and the list behave as before) and records in [gesture] whether it became a
+ * vertical scroll.
+ */
+private fun Modifier.watchGestureAxis(gesture: SliderGesture): Modifier = pointerInput(gesture) {
+    awaitEachGesture {
+        val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+        gesture.vertical = false
+        var dx = 0f
+        var dy = 0f
+        while (true) {
+            val change = awaitPointerEvent(PointerEventPass.Initial).changes.firstOrNull { it.id == down.id } ?: break
+            val delta = change.positionChangeIgnoreConsumed()
+            dx += delta.x
+            dy += delta.y
+            when (gestureAxis(dx, dy, viewConfiguration.touchSlop)) {
+                GestureAxis.VERTICAL -> {
+                    gesture.vertical = true
+                    break
+                }
+                GestureAxis.HORIZONTAL -> break
+                GestureAxis.UNDECIDED -> if (!change.pressed) break
+            }
         }
     }
 }
