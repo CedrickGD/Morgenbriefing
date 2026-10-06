@@ -1,6 +1,7 @@
 package com.cedrickgd.morgenbriefing.util
 
 import android.Manifest
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.os.Build
@@ -43,17 +44,11 @@ fun rememberNotificationPermissionRequester(onResult: (granted: Boolean) -> Unit
                 status.canNotify -> latestOnResult(true)
 
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !status.permissionGranted -> {
-                    val memory = PermissionMemory(context)
-                    val showRationale = activity != null &&
-                        ActivityCompat.shouldShowRequestPermissionRationale(
-                            activity,
-                            Manifest.permission.POST_NOTIFICATIONS,
-                        )
-                    if (memory.askedForNotifications && !showRationale) {
+                    if (notificationsNeedSettings(context, activity, status)) {
                         // Denied twice ("don't ask again"): only the settings can help now.
                         SystemIntents.openAppNotificationSettings(context)
                     } else {
-                        memory.askedForNotifications = true
+                        PermissionMemory(context).askedForNotifications = true
                         try {
                             launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         } catch (e: ActivityNotFoundException) {
@@ -69,6 +64,26 @@ fun rememberNotificationPermissionRequester(onResult: (granted: Boolean) -> Unit
             }
         }
     }
+}
+
+/**
+ * True when only the system settings can make notifications work — the requester above opens
+ * them instead of asking: the permission was denied for good (API 33+), or notifications are
+ * switched off for the app or the morning channel. False when all is fine or the system dialog
+ * can still ask.
+ */
+fun notificationsNeedSettings(
+    context: Context,
+    activity: Activity?,
+    status: SystemStatus = SystemStatus.read(context),
+): Boolean {
+    if (status.canNotify) return false
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !status.permissionGranted) {
+        val showRationale = activity != null &&
+            ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.POST_NOTIFICATIONS)
+        return PermissionMemory(context).askedForNotifications && !showRationale
+    }
+    return true
 }
 
 /**

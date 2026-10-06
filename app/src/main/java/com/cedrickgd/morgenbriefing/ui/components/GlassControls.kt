@@ -35,6 +35,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -242,7 +243,17 @@ fun GlassSheet(
     onDismissRequest: () -> Unit,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    GlassSheet(onDismissRequest, rememberModalBottomSheetState(skipPartiallyExpanded = true), content)
+}
+
+/** [GlassSheet] with the caller's [sheetState], to animate it out before acting (`hide()`). */
+@ExperimentalMaterial3Api
+@Composable
+fun GlassSheet(
+    onDismissRequest: () -> Unit,
+    sheetState: SheetState,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     val dark = isGlassDark()
     val lightButtonsImpossible = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
     ModalBottomSheet(

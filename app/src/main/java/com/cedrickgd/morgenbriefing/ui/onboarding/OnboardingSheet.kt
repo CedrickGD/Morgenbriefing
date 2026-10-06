@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ui.onboarding
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +20,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -37,7 +37,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.cedrickgd.morgenbriefing.ui.components.GlassSheet
 import com.cedrickgd.morgenbriefing.util.SystemStatus
+import com.cedrickgd.morgenbriefing.util.notificationsNeedSettings
 import com.cedrickgd.morgenbriefing.util.rememberNotificationPermissionRequester
 import kotlinx.coroutines.launch
 
@@ -57,33 +59,37 @@ fun OnboardingSheet(
     onOpenSettings: () -> Unit,
 ) {
     val context = LocalContext.current
+    val activity = LocalActivity.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
     var status by remember { mutableStateOf(SystemStatus.read(context)) }
-    LifecycleResumeEffect(context) {
+    // Denied for good (or switched off): the button then opens the system settings – say so.
+    var needsSettings by remember { mutableStateOf(notificationsNeedSettings(context, activity, status)) }
+    fun recheck() {
         status = SystemStatus.read(context)
+        needsSettings = notificationsNeedSettings(context, activity, status)
+    }
+    LifecycleResumeEffect(context) {
+        recheck()
         onPauseOrDispose { }
     }
-    val requestNotifications = rememberNotificationPermissionRequester {
-        status = SystemStatus.read(context)
-    }
+    val requestNotifications = rememberNotificationPermissionRequester { recheck() }
 
     // Animate the sheet out first, then leave (otherwise it would vanish abruptly).
     fun closeThen(action: () -> Unit) {
         scope.launch { sheetState.hide() }.invokeOnCompletion { action() }
     }
 
-    ModalBottomSheet(
-        onDismissRequest = onDone,
-        sheetState = sheetState,
-    ) {
+    // Glass like every sheet (docs/DESIGN.md §2); it also keeps the navigation buttons visible
+    // on Android 7, which cannot draw them dark on the light sheet.
+    GlassSheet(onDismissRequest = onDone, sheetState = sheetState) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(bottom = 24.dp),
+                .padding(top = 8.dp, bottom = 12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
@@ -100,11 +106,15 @@ fun OnboardingSheet(
 
             OnboardingStep(
                 number = 1,
-                title = "Benachrichtigungen erlauben",
-                text = "Damit dich dein Briefing morgens auch wirklich erreicht.",
+                title = if (needsSettings) "Benachrichtigungen sind blockiert" else "Benachrichtigungen erlauben",
+                text = if (needsSettings) {
+                    "Schalte sie in den Systemeinstellungen ein – sonst erreicht dich dein Briefing morgens nicht."
+                } else {
+                    "Damit dich dein Briefing morgens auch wirklich erreicht."
+                },
                 done = status.canNotify,
                 doneLabel = "Erlaubt",
-                actionLabel = "Erlauben",
+                actionLabel = if (needsSettings) "Einstellungen öffnen" else "Erlauben",
                 onAction = requestNotifications,
             )
             OnboardingStep(
