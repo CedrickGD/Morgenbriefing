@@ -107,6 +107,9 @@ internal fun AppNavHost(
 /** Screens with their own bottom controls, where the floating mini player would be in the way. */
 internal fun NavBackStackEntry.hasOwnBottomBar(): Boolean = destination.hasRoute<ChatRoute>()
 
+/** Screens that are opaque over the whole sky (the reader), so the sky behind may stand still. */
+internal fun NavBackStackEntry.coversSky(): Boolean = destination.hasRoute<ArticleRoute>()
+
 private const val PUSH_MS = 420
 private const val POP_MS = 340
 private const val UNDERLAY_FADE_MS = 180

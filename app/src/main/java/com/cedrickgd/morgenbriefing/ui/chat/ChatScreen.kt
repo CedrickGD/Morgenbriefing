@@ -97,6 +97,7 @@ import com.cedrickgd.morgenbriefing.ui.glass.glassContent
 import com.cedrickgd.morgenbriefing.ui.settings.InlineAiKeyDialog
 import com.cedrickgd.morgenbriefing.ui.shell.LocalSettingsLink
 import com.cedrickgd.morgenbriefing.ui.shell.SettingsTarget
+import com.cedrickgd.morgenbriefing.ui.shell.reportChromeScroll
 import com.cedrickgd.morgenbriefing.ui.theme.Reading
 import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
@@ -388,6 +389,8 @@ private fun MessageList(
         state = listState,
         modifier = Modifier
             .fillMaxSize()
+            // Scrolling the conversation lets the sky behind the transparent chat hold still.
+            .reportChromeScroll()
             // The bars above frost the messages gliding beneath them.
             .glassContent(),
         contentPadding = PaddingValues(

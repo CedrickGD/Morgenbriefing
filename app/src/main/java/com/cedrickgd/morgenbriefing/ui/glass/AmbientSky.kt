@@ -60,7 +60,8 @@ import kotlin.math.sin
  *
  * A change of weather, time of day or light/dark cross-fades to the new sky; with the system
  * "remove animations" setting everything is static. While [paused] returns true (the shell
- * passes "a list is scrolling") the aurora holds still. On Android 7, low-RAM devices and in
+ * passes "a list is scrolling") the aurora holds still; while [covered] (an opaque screen such
+ * as the reader lies over all of it) nothing moves at all. On Android 7, low-RAM devices and in
  * battery saver the aurora drifts at 10 fps and the particles stand still.
  */
 @Composable
@@ -71,6 +72,7 @@ fun AmbientSky(
     modifier: Modifier = Modifier,
     parallax: () -> Float = { 0f },
     paused: () -> Boolean = { false },
+    covered: Boolean = false,
 ) {
     val reduceMotion = rememberReduceMotion()
     val context = LocalContext.current
@@ -80,7 +82,11 @@ fun AmbientSky(
     val look = SkyLook(SkyKind.of(condition), condition, isDay, isGlassDark())
 
     // One clock for every sky, so the aurora keeps drifting through a cross-fade.
-    val clock: State<Float>? = if (reduceMotion) null else rememberAuroraClock(paused, frameIntervalMs = if (gentle) GENTLE_FRAME_MS else 0L)
+    val clock: State<Float>? = if (reduceMotion) {
+        null
+    } else {
+        rememberAuroraClock({ covered || paused() }, frameIntervalMs = if (gentle) GENTLE_FRAME_MS else 0L)
+    }
 
     Box(
         modifier
@@ -92,7 +98,7 @@ fun AmbientSky(
             animationSpec = if (reduceMotion) snap() else tween(SKY_CROSSFADE_MS),
             label = "sky",
         ) { sky ->
-            SkyLayers(sky, clock, reduceMotion || gentle, parallax)
+            SkyLayers(sky, clock, reduceMotion || gentle || covered, parallax)
         }
     }
 }

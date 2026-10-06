@@ -45,6 +45,7 @@ import com.cedrickgd.morgenbriefing.domain.Condition
 import com.cedrickgd.morgenbriefing.ui.glass.AmbientSky
 import com.cedrickgd.morgenbriefing.ui.glass.LocalGlassState
 import com.cedrickgd.morgenbriefing.ui.nav.AppNavHost
+import com.cedrickgd.morgenbriefing.ui.nav.coversSky
 import com.cedrickgd.morgenbriefing.ui.nav.hasOwnBottomBar
 import com.cedrickgd.morgenbriefing.ui.news.newsImageLoader
 import com.cedrickgd.morgenbriefing.ui.shell.ChromeController
@@ -154,6 +155,7 @@ private fun AppShell(
     val topEntry by navController.currentBackStackEntryAsState()
     val mainOnTop = topEntry?.isMain() ?: true
     val playerAllowed = topEntry?.hasOwnBottomBar() != true
+    val readerOnTop = topEntry?.coversSky() == true
     LaunchedEffect(mainOnTop) { if (mainOnTop) chrome.show() }
     // The chrome returns once scrolling has come to rest (docs/DESIGN.md §3).
     LaunchedEffect(chrome) { chrome.watchScrollRest() }
@@ -181,6 +183,9 @@ private fun AppShell(
             parallax = { pagerState.currentPage + pagerState.currentPageOffsetFraction - MainPage.TODAY.index },
             // The aurora holds still while content scrolls or pages glide: every frame goes to them.
             paused = { chrome.scrolling || pagerState.isScrollInProgress },
+            // The reader is opaque: nothing of the sky shows, so nothing of it needs to move (and
+            // the glass above the article is not re-blurred every frame).
+            covered = readerOnTop,
         )
         CompositionLocalProvider(
             LocalGlassState provides hazeState,
