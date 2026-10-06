@@ -166,6 +166,38 @@ class ClaudeLiveEngineTest {
     }
 
     @Test
+    fun `a refused attempt's tool call before a fallback marker is neither run nor answered`() = runBlocking<Unit> {
+        val refused = LiveFixtures.payload(LiveFixtures.article(id = "region-live-abgelehnter-versuch"))
+        val fallback = LiveFixtures.payload(LiveFixtures.article())
+        server.enqueue(
+            Sse.response(
+                Sse.messageStart(),
+                Sse.textBlock(0, "Ich veröffentliche."),
+                Sse.toolUse(1, "toolu_refused", LivePublish.TOOL_NAME, refused),
+                Sse.fallbackMarker(2),
+                Sse.textBlock(3, "Weiter."),
+                Sse.toolUse(4, "toolu_fallback", LivePublish.TOOL_NAME, fallback),
+                Sse.messageDelta("tool_use", output = 40),
+                Sse.messageStop(),
+            ),
+        )
+        server.enqueue(Sse.simpleAnswer("Erledigt."))
+        val listener = Listener(ArrayDeque(listOf(PublishReply(true, "ok"), PublishReply(true, "ok"))))
+
+        val result = backend.live.research(request, listener, usage)
+
+        assertTrue(result.published)
+        assertEquals(TurnEnd.COMPLETE, result.end)
+        assertEquals(Json.parseToJsonElement(fallback), Json.parseToJsonElement(listener.published.single()))
+        body()
+        val messages = body()["messages"]!!.jsonArray
+        val assistant = (messages[1].jsonObject["content"] as JsonArray).map { it.jsonObject }
+        assertEquals(listOf("toolu_fallback"), assistant.filter { it["type"]!!.jsonPrimitive.content == "tool_use" }.map { it["id"]!!.jsonPrimitive.content })
+        val results = (messages[2].jsonObject["content"] as JsonArray).map { it.jsonObject }
+        assertEquals(listOf("toolu_fallback"), results.map { it["tool_use_id"]!!.jsonPrimitive.content })
+    }
+
+    @Test
     fun `a run that publishes an empty list after the reminder is complete`() = runBlocking<Unit> {
         server.enqueue(Sse.simpleAnswer("Ich habe recherchiert."))
         server.enqueue(

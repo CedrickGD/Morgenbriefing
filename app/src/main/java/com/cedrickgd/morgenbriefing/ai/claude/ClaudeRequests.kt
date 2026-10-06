@@ -81,6 +81,13 @@ internal object ClaudeRequests {
         return MessageParam.builder().role(MessageParam.Role.ASSISTANT).contentOfBlockParams(content).build()
     }
 
+    /** Ids of the client tool calls (`tool_use`) in an assistant turn built by [assistantTurn]. */
+    fun toolUseIds(turn: MessageParam): Set<String> =
+        turn.content().blockParams().orElse(emptyList())
+            .filter { it.isToolUse() }
+            .map { it.asToolUse().id() }
+            .toSet()
+
     fun userText(text: String): MessageParam =
         MessageParam.builder().role(MessageParam.Role.USER).content(text).build()
 

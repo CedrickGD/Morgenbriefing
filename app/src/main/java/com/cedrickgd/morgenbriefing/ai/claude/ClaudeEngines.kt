@@ -115,9 +115,17 @@ internal class ClaudeLiveEngine(private val clients: ClaudeClients) : LiveEngine
                     messages += assistant ?: return ended()
                 }
                 StopReason.TOOL_USE -> {
-                    if (assistant == null || turn.toolCalls.isEmpty()) return ended()
+                    // Run and answer exactly the calls the echoed turn contains: never a call it
+                    // dropped (a refused attempt's, before a fallback marker) — its tool_result
+                    // would be an orphan (400) — and never leave one of its calls unanswered.
+                    val echoed = assistant?.let(ClaudeRequests::toolUseIds).orEmpty()
+                    val calls = turn.toolCalls.filter { it.id in echoed }
+                    if (assistant == null || calls.isEmpty()) return ended()
                     val results = ArrayList<ToolResultBlockParam>()
-                    for (call in turn.toolCalls) {
+                    (echoed - calls.map { it.id }.toSet()).forEach { id ->
+                        results += ClaudeRequests.toolResult(id, "Dieser Aufruf kam nicht vollständig an.", isError = true)
+                    }
+                    for (call in calls) {
                         results += if (call.name == LivePublish.TOOL_NAME) {
                             val reply = listener.onPublish(call.inputJson)
                             if (reply.accepted) published = true

@@ -280,10 +280,28 @@ private class EventTracker(
                 text.nonTextBlock()
                 blocks[index] = Block.Other
             }
-            // Unknown types (e.g. the `fallback` marker) are neutral: the text simply continues.
-            else -> blocks[index] = Block.Other
+            // Unknown types are neutral: the text simply continues.
+            else -> {
+                blocks[index] = Block.Other
+                if (block.rawType() == FALLBACK_TYPE) discardToolCalls()
+            }
         }
     }
+
+    /**
+     * The refusal fallback switched models mid-output: client tool calls of the refused attempt
+     * (finished or cut off mid-JSON) are void. The echoed assistant turn drops them
+     * ([ClaudeRequests.continuationContent]), so they must neither run nor be answered — a
+     * `tool_result` without its `tool_use` is a 400.
+     */
+    private fun discardToolCalls() {
+        toolCalls.clear()
+        blocks.replaceAll { _, block -> if (block is Block.ClientTool) Block.Other else block }
+    }
+
+    /** `type` of a content block from the raw JSON (for types this SDK version does not model). */
+    private fun RawContentBlockStartEvent.ContentBlock.rawType(): String? =
+        _json().orElse(null)?.asObject()?.orElse(null)?.get("type")?.asString()?.orElse(null)
 
     private fun onDelta(event: RawContentBlockDeltaEvent) {
         val delta = event.delta()
@@ -404,5 +422,8 @@ private class EventTracker(
 
     private companion object {
         val LENIENT = Json { isLenient = true }
+
+        /** Block type of the server-side refusal fallback's model-switch marker. */
+        const val FALLBACK_TYPE = "fallback"
     }
 }
