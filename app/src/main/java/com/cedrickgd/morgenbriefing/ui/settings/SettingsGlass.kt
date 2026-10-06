@@ -61,6 +61,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -418,6 +419,7 @@ internal fun GlassDialog(
         // Behind a blurred window the light page stays light (dim 0.16): dark bar icons there.
         // Otherwise the dim darkens the page and the default white icons stay readable.
         FullScreenDialogWindow(lightBars = blurred && !dark)
+        val latestDismiss by rememberUpdatedState(onDismissRequest)
         val colors = MaterialTheme.colorScheme
         val shape = GlassShapes.card
         val fill = if (dark) {
@@ -438,7 +440,7 @@ internal fun GlassDialog(
                     .fillMaxSize()
                     .then(
                         if (dismissOnClickOutside) {
-                            Modifier.pointerInput(onDismissRequest) { detectTapGestures { onDismissRequest() } }
+                            Modifier.pointerInput(Unit) { detectTapGestures { latestDismiss() } }
                         } else {
                             Modifier
                         },
