@@ -326,7 +326,7 @@ private fun LimitControl(limit: Double, onCommit: (Double) -> Unit) {
         },
     )
     Text(
-        text = "Ist es erreicht, schickt die App bis zum Monatsende keine KI-Anfragen mehr.",
+        text = AiLimit.hint(value.toDouble()),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )

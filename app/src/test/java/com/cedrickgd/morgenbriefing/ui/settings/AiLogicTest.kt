@@ -52,6 +52,13 @@ class AiLogicTest {
     }
 
     @Test
+    fun `limit hint does not talk about reaching a cap that is off`() {
+        assertTrue(AiLimit.hint(0.0).startsWith("Ohne Limit"))
+        assertTrue(AiLimit.hint(0.3).startsWith("Ohne Limit"))
+        assertTrue(AiLimit.hint(5.0).startsWith("Ist es erreicht"))
+    }
+
+    @Test
     fun `key check results`() {
         assertNull(AiKeyCheck.OK.toProblem())
         assertEquals(AiKeyProblem.INVALID, AiKeyCheck.INVALID.toProblem())

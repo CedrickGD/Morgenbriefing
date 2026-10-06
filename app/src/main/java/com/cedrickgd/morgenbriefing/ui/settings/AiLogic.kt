@@ -72,6 +72,13 @@ internal object AiLimit {
         val v = normalize(value)
         return if (v <= 0.0) "Kein Limit" else "${usd(v)} im Monat"
     }
+
+    /** The line under the slider: what reaching the cap does, or what having none means. */
+    fun hint(value: Double): String = if (normalize(value) <= 0.0) {
+        "Ohne Limit schickt die App jede KI-Anfrage – die Kosten trägt dein Anthropic-Konto."
+    } else {
+        "Ist es erreicht, schickt die App bis zum Monatsende keine KI-Anfragen mehr."
+    }
 }
 
 /**
