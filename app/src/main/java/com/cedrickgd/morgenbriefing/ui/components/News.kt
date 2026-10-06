@@ -47,6 +47,7 @@ import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
 import com.cedrickgd.morgenbriefing.ui.glass.glass
 import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
 import com.cedrickgd.morgenbriefing.ui.theme.OverlineLetterSpacing
+import com.cedrickgd.morgenbriefing.ui.theme.german
 
 /**
  * Opens the news part of a page: overline ("DEINE NACHRICHTEN · STAND 05:07") and a serif
@@ -104,7 +105,7 @@ fun BriefingPullQuote(
                         fontSize = 22.sp,
                         lineHeight = 31.sp,
                         letterSpacing = 0.sp,
-                    ),
+                    ).german(),
                     color = colors.onSurface,
                 )
                 if (!meta.isNullOrBlank()) {

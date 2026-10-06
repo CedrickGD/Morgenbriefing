@@ -3,13 +3,32 @@ package com.cedrickgd.morgenbriefing.ui.theme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.LocaleList
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val Serif = FontFamily.Serif
 private val Sans = FontFamily.Default
+
+/** The UI is German only, whatever language the device runs in. */
+internal val GermanText = LocaleList("de-DE")
+
+/**
+ * Breaks long German compounds ("Kriegsdienstverweigerer") at their syllables with a hyphen,
+ * using German patterns, instead of splitting them at any letter on narrow lines or at large
+ * font sizes. For running text: the reading styles ([Reading]), the pull quote and the teasers;
+ * short UI titles stay unhyphenated.
+ */
+internal fun TextStyle.german(): TextStyle = copy(
+    hyphens = Hyphens.Auto,
+    lineBreak = LineBreak.Paragraph,
+    localeList = GermanText,
+)
 
 /**
  * Editorial typography: serif SemiBold for display/headlines (the "newspaper" voice of the

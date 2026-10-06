@@ -10,6 +10,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -80,6 +82,7 @@ import com.cedrickgd.morgenbriefing.ui.settings.lamina
 import com.cedrickgd.morgenbriefing.ui.settings.rememberStagger
 import com.cedrickgd.morgenbriefing.ui.settings.staggerIn
 import com.cedrickgd.morgenbriefing.ui.shell.reportChromeScroll
+import com.cedrickgd.morgenbriefing.ui.theme.german
 import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
 import com.cedrickgd.morgenbriefing.util.KeepListEndAboveChrome
 import com.cedrickgd.morgenbriefing.util.bottomContentInset
@@ -323,6 +326,7 @@ private fun DayRow(row: TimelineRow.Day, onOpen: () -> Unit, modifier: Modifier 
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun DayCard(entry: HistoryEntry, isToday: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
@@ -391,13 +395,18 @@ private fun DayCard(entry: HistoryEntry, isToday: Boolean, onClick: () -> Unit, 
                 }
                 Text(
                     text = teaser,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Serif, fontSize = 17.sp, lineHeight = 24.sp),
+                    style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Serif, fontSize = 17.sp, lineHeight = 24.sp).german(),
                     color = colors.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
                 if (mini != null || count != null || !entry.cached) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // Large font sizes: the count moves to a second line instead of being cut ("20").
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        itemVerticalAlignment = Alignment.CenterVertically,
+                    ) {
                         mini?.let { WeatherChip(it) }
                         count?.let {
                             Text(it, style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant, maxLines = 1)

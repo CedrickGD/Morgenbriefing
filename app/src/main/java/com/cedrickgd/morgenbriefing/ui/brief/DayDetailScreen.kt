@@ -70,6 +70,7 @@ import com.cedrickgd.morgenbriefing.ui.news.say
 import com.cedrickgd.morgenbriefing.ui.news.toggled
 import com.cedrickgd.morgenbriefing.ui.news.withTopicVisible
 import com.cedrickgd.morgenbriefing.ui.shell.reportChromeScroll
+import com.cedrickgd.morgenbriefing.ui.theme.german
 import com.cedrickgd.morgenbriefing.util.bottomContentInset
 import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
 import com.cedrickgd.morgenbriefing.util.pageSideInset
@@ -249,7 +250,7 @@ private fun LazyListScope.dayItems(
         item(key = "headline", contentType = "headline") {
             Text(
                 text = headline,
-                style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Serif, fontSize = 20.sp, lineHeight = 28.sp),
+                style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Serif, fontSize = 20.sp, lineHeight = 28.sp).german(),
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(horizontal = 20.dp),
             )

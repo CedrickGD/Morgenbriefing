@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.sp
 /**
  * Editorial text styles shared by the news feed and the article reader (docs/DESIGN.md §5/§7,
  * the user's reference: big serif headline, serif lead). [scale] is the reader text size
- * (settings.readerTextScale, 0.85–1.4); the feed uses 1.
+ * (settings.readerTextScale, 0.85–1.4); the feed uses 1. All of them hyphenate German compounds.
  */
 object Reading {
     @Composable
@@ -59,5 +59,5 @@ object Reading {
             fontWeight = weight,
             letterSpacing = (-0.005).em,
             color = MaterialTheme.colorScheme.onSurface,
-        )
+        ).german()
 }

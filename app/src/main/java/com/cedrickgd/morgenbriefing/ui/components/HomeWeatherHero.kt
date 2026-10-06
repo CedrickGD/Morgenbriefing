@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.data.model.CurrentConditions
@@ -76,12 +77,22 @@ fun HomeWeatherHero(snapshot: WeatherSnapshot, modifier: Modifier = Modifier) {
         contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 20.dp, bottom = 20.dp),
     ) {
         Column {
-            Text(
-                text = heroLabel(home),
-                style = typography.labelMedium.copy(letterSpacing = OverlineLetterSpacing),
-                color = colors.onSurfaceVariant,
-                maxLines = 1,
-            )
+            // At large font sizes only the place shortens ("…"); the time of the reading stays.
+            val overline = typography.labelMedium.copy(letterSpacing = OverlineLetterSpacing)
+            val time = Fmt.clock(home.current.time)
+            Row {
+                Text(
+                    text = "VOR DER TÜR · ${home.place.name.uppercase(Locale.GERMAN)}",
+                    style = overline,
+                    color = colors.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+                if (time.isNotBlank()) {
+                    Text(text = " · $time", style = overline, color = colors.onSurfaceVariant, maxLines = 1, softWrap = false)
+                }
+            }
 
             val summary = heroDescription(home, condition)
             Column(Modifier.clearAndSetSemantics { contentDescription = summary }) {
@@ -185,12 +196,6 @@ private fun FloatingEmoji(emoji: String) {
 }
 
 private data class HeroChip(val emoji: String, val text: String)
-
-private fun heroLabel(home: HomeWeather): String {
-    val place = home.place.name.uppercase(Locale.GERMAN)
-    val time = Fmt.clock(home.current.time)
-    return if (time.isBlank()) "VOR DER TÜR · $place" else "VOR DER TÜR · $place · $time"
-}
 
 private fun heroChips(home: HomeWeather): List<HeroChip> = buildList {
     val current = home.current

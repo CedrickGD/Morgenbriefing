@@ -47,6 +47,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -103,7 +104,9 @@ fun DayCurveCard(snapshot: WeatherSnapshot, modifier: Modifier = Modifier) {
                     text = dayCurveTitle(day),
                     style = typography.labelMedium.copy(letterSpacing = OverlineLetterSpacing),
                     color = colors.onSurfaceVariant,
-                    maxLines = 1,
+                    // Large font sizes: a second line instead of losing "UHR" silently.
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .weight(1f)
                         .semantics { heading() },
