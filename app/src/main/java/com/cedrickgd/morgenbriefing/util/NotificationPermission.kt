@@ -20,9 +20,9 @@ import com.cedrickgd.morgenbriefing.notify.Notifications
 /**
  * Returns an action that makes notifications work, whatever is blocking them:
  *
- * * API 33+ without permission: shows the system permission dialog — or, once the user has
- *   denied it permanently (the system would silently refuse), opens the app's notification
- *   settings instead.
+ * * API 33+ without permission: shows the system permission dialog — or, once it is denied
+ *   for good ([notificationsDeniedForGood]: the system would silently refuse), opens the app's
+ *   notification settings instead. A dialog dismissed with Back asks again next time.
  * * Morning channel switched off: opens that channel's settings.
  * * Notifications disabled for the app (any API level): opens the app's notification settings.
  *
@@ -35,6 +35,9 @@ fun rememberNotificationPermissionRequester(onResult: (granted: Boolean) -> Unit
     val activity = LocalActivity.current
     val latestOnResult by rememberUpdatedState(onResult)
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        // Remembered from the result, not before the request: a process that dies with the
+        // dialog open has not been refused anything.
+        PermissionMemory(context).recordNotificationResult(granted, notificationRationale(activity))
         latestOnResult(granted)
     }
     return remember(context, activity, launcher) {
@@ -45,10 +48,9 @@ fun rememberNotificationPermissionRequester(onResult: (granted: Boolean) -> Unit
 
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !status.permissionGranted -> {
                     if (notificationsNeedSettings(context, activity, status)) {
-                        // Denied twice ("don't ask again"): only the settings can help now.
+                        // Denied for good: only the settings can help now.
                         SystemIntents.openAppNotificationSettings(context)
                     } else {
-                        PermissionMemory(context).askedForNotifications = true
                         try {
                             launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         } catch (e: ActivityNotFoundException) {
@@ -79,26 +81,47 @@ fun notificationsNeedSettings(
 ): Boolean {
     if (status.canNotify) return false
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !status.permissionGranted) {
-        val showRationale = activity != null &&
-            ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.POST_NOTIFICATIONS)
-        return PermissionMemory(context).askedForNotifications && !showRationale
+        return notificationsDeniedForGood(
+            granted = false,
+            showRationale = notificationRationale(activity),
+            asks = PermissionMemory(context).notificationAsks,
+        )
     }
     return true
 }
 
+/** The system would explain the notification permission before asking (API 33+). */
+private fun notificationRationale(activity: Activity?): Boolean =
+    activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+        ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.POST_NOTIFICATIONS)
+
 /**
- * Remembers whether the permission dialog was ever shown. Android offers no API to tell
- * "never asked" from "permanently denied" — both report no rationale — so we keep that bit.
+ * Remembers what the permission dialog returned ([NotificationAsks]). Android offers no API to
+ * tell "never asked" from "permanently denied" — both report no rationale — so we keep that.
  */
 private class PermissionMemory(context: Context) {
     private val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
-    var askedForNotifications: Boolean
-        get() = prefs.getBoolean(KEY_NOTIFICATIONS, false)
-        set(value) = prefs.edit { putBoolean(KEY_NOTIFICATIONS, value) }
+    /** Up to 1.2 only "the dialog was shown once" was stored: that counts as one denial. */
+    val notificationAsks: NotificationAsks
+        get() = NotificationAsks(
+            denials = prefs.getInt(KEY_DENIALS, if (prefs.getBoolean(KEY_LEGACY_ASKED, false)) 1 else 0),
+            sawRationale = prefs.getBoolean(KEY_RATIONALE, false),
+        )
+
+    fun recordNotificationResult(granted: Boolean, showRationale: Boolean) {
+        val next = notificationAsks.after(granted, showRationale)
+        prefs.edit {
+            putInt(KEY_DENIALS, next.denials)
+            putBoolean(KEY_RATIONALE, next.sawRationale)
+            remove(KEY_LEGACY_ASKED)
+        }
+    }
 
     private companion object {
         const val PREFS = "ui_state"
-        const val KEY_NOTIFICATIONS = "asked_post_notifications"
+        const val KEY_LEGACY_ASKED = "asked_post_notifications"
+        const val KEY_DENIALS = "post_notifications_denials"
+        const val KEY_RATIONALE = "post_notifications_rationale_seen"
     }
 }
