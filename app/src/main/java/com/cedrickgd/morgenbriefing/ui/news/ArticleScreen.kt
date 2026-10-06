@@ -298,6 +298,7 @@ private fun ReaderPager(
             }
             ReaderTopBar(
                 collapse = collapse,
+                collapsed = collapsed,
                 readingProgress = progress,
                 listening = listenUi.activeKey == currentEntry.item.key,
                 speaking = listenUi.speaking && listenUi.activeKey == currentEntry.item.key,

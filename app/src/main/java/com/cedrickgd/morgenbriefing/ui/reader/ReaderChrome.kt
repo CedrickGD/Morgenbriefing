@@ -109,11 +109,13 @@ private val SCALE_DOTS = listOf(0.85f, 0.9f, 1.0f, 1.1f, 1.2f, 1.3f, 1.4f)
  *
  * [collapse] and [readingProgress] are read in the draw phase only — scrolling never recomposes.
  * With [onAsk] the capsule gets a "✨" segment for "Frag Claude" (while the mini player takes the
- * bottom of the screen). The bar takes every touch inside it, so nothing beneath is hit by accident.
+ * bottom of the screen). Once [collapsed] the bar takes every touch inside it, so nothing beneath
+ * is hit by accident; over the picture only the button and the capsule do.
  */
 @Composable
 internal fun BoxScope.ReaderTopBar(
     collapse: () -> Float,
+    collapsed: Boolean,
     readingProgress: () -> Float,
     listening: Boolean,
     speaking: Boolean,
@@ -133,7 +135,9 @@ internal fun BoxScope.ReaderTopBar(
             .align(Alignment.TopCenter)
             .fillMaxWidth()
             .height(statusTop + ReaderBarHeight)
-            .blockTouchesBehind(),
+            // Only the frosted bar takes every touch; over the picture the empty band between the
+            // back button and the capsule lets drags and swipes through to the article.
+            .then(if (collapsed) Modifier.blockTouchesBehind() else Modifier),
     ) {
         Box(
             Modifier
