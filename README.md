@@ -114,8 +114,10 @@ Die App bietet unter **Einstellungen** zusätzlich „Akku-Optimierung aus“ an
 ### 4. Cloud-Routine einrichten
 
 Die Routine startet jeden Morgen um 04:00 Uhr, lässt zehn Rubrik-Agenten parallel recherchieren
-und schreiben und pusht das fertige Briefing auf den Branch `briefs` – meist deutlich vor 5 Uhr.
-So legst du sie in claude.ai an:
+und schreiben (leere Rubriken bekommen einen zweiten Durchgang) und pusht das fertige Briefing
+spätestens um 04:50 auf den Branch `briefs` – rechtzeitig vor der E-Mail um 05:20 und der App
+um 05:30. Welche Nachrichtenseiten die Cloud überhaupt lesen kann, steht in der Quellenkarte im
+Prompt. So legst du sie in claude.ai an:
 
 1. Neue Routine (geplante Claude-Code-Aufgabe) erstellen und das Repo
    **`CedrickGD/Morgenbriefing`** verbinden (Standard-Branch `main`).
@@ -135,6 +137,10 @@ So legst du sie in claude.ai an:
    sofort (zwischen 05:00 und 06:59 nur, wenn das heutige Briefing noch fehlt). Danach liegt auf
    GitHub im Branch `briefs` ein neues Briefing, und in der App holt es ein Herunterziehen auf
    **Heute**. Zum Schluss meldet die Routine Artikel pro Rubrik, Bilder und das Push-Ergebnis.
+   Spätere Testläufe besser auf einen Test-Branch: zweite, nicht geplante Routine mit demselben
+   Prompt und der ersten Zeile `Testlauf: briefs-test` (oder Umgebungsvariable
+   `MB_BRIEFS_BRANCH=briefs-test`). Sie veröffentlicht dann auf `briefs-test` und lässt das
+   Briefing des Tages in Ruhe – Details im Abschnitt „Manueller Testlauf“ des Prompts.
 
 Änderst du später `routine/PROMPT.md`, kopiere den neuen Inhalt auch in die Routine.
 
@@ -209,8 +215,8 @@ Alle ohne Abhängigkeiten, Node ≥ 18, `--help` zeigt alle Optionen.
 |---|---|
 | [`validate-brief.mjs`](routine/validate-brief.mjs) | prüft Briefings (Schema 1 und 2), `index.json` und mit `--section` einzelne Rubrik-Dateien |
 | [`find-image.mjs`](routine/find-image.mjs) | sucht frei lizenzierte Bilder auf Wikimedia Commons und gibt sie als JSON aus |
-| [`assemble-brief.mjs`](routine/assemble-brief.mjs) | setzt die Rubrik-Dateien zu einem Briefing zusammen; `--overview` zeigt Überschriften |
-| [`publish-brief.mjs`](routine/publish-brief.mjs) | schreibt ein Briefing in einen Checkout von `briefs` (idempotent; `--merge` fügt Rubriken in ein vorhandenes Tagesbriefing ein) |
+| [`assemble-brief.mjs`](routine/assemble-brief.mjs) | setzt die Rubrik-Dateien zu einem Briefing zusammen; `--overview` zeigt Überschriften, `--previous-date` findet das letzte Briefing vor einem Tag |
+| [`publish-brief.mjs`](routine/publish-brief.mjs) | schreibt ein Briefing in einen Checkout von `briefs` (idempotent; `--merge` fügt Rubriken in ein vorhandenes Tagesbriefing ein; `--branch briefs-test` bzw. `MB_BRIEFS_BRANCH` für Testläufe) |
 | [`email-config.mjs`](routine/email-config.mjs) | prüft die E-Mail-Einstellungen `config/email.json` und gibt Schalter und Empfänger als JSON aus |
 | [`render-email.mjs`](routine/render-email.mjs) | baut die E-Mail (HTML, Text, Betreff) aus einem Briefing und Live-Wetter |
 

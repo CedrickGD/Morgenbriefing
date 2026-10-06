@@ -6,6 +6,7 @@
  *   node routine/assemble-brief.mjs --sections /tmp/sections --teaser "<satz>" --out /tmp/brief.json
  *        [--generated-at <ISO>] [--max-age-hours 36] [--skip-invalid]
  *   node routine/assemble-brief.mjs --overview <brief.json | ordner> [--topic <id>]
+ *   node routine/assemble-brief.mjs --previous-date <index.json> --before <YYYY-MM-DD>
  *
  * Assemble mode reads every `*.json` in the sections directory (one `{ id, title, emoji, items }`
  * per topic, as the topic agents write them), drops empty topics, puts the sections in catalogue
@@ -14,7 +15,12 @@
  * articles themselves are copied unchanged – the main agent never has to retype them.
  *
  * Overview mode prints the headlines of a brief file or a sections directory – to write the
- * teaser, or to see what yesterday's brief already covered.
+ * teaser, or to see what yesterday's brief already covered (with its creation time: anything
+ * published after it cannot be in it).
+ *
+ * Previous-date mode prints the date of the newest brief in an `index.json` that is older than
+ * the given day (nothing if there is none or the file is missing). The routine compares today's
+ * stories with that brief; `latest.json` may already be today's when it runs twice on one day.
  *
  * Exit codes: 0 = written / printed, 1 = invalid sections or brief (nothing written), 2 = usage error.
  */
@@ -26,6 +32,7 @@ import {
   TIER_TOP,
   countImages,
   describe,
+  isCalendarDate,
   isMainModule,
   parseHours,
   parseOffsetDateTime,
@@ -228,7 +235,8 @@ export function overview(target, { topic } = {}) {
     }
     if (isPlainObject(doc) && Array.isArray(doc.sections)) {
       sections = doc.sections.filter(isPlainObject);
-      head = `${describe('brief', doc)}${doc.teaser ? `\nTeaser: ${doc.teaser}` : ''}`;
+      const created = typeof doc.generatedAt === 'string' ? `\nErstellt: ${doc.generatedAt}` : '';
+      head = `${describe('brief', doc)}${created}${doc.teaser ? `\nTeaser: ${doc.teaser}` : ''}`;
     } else if (isPlainObject(doc) && Array.isArray(doc.items)) {
       sections = [doc];
     } else {
@@ -258,6 +266,24 @@ export function overview(target, { topic } = {}) {
   return lines;
 }
 
+/**
+ * Date of the newest brief listed in an `index.json` document that is strictly older than
+ * `before` (`YYYY-MM-DD`), or `null` if there is none. Invalid entries are ignored.
+ *
+ * @param {unknown} index parsed `index.json`
+ * @param {string} before calendar date, usually today
+ * @returns {string | null}
+ */
+export function previousBriefDate(index, before) {
+  if (!isPlainObject(index) || !Array.isArray(index.days)) return null;
+  let newest = null;
+  for (const day of index.days) {
+    const date = isPlainObject(day) ? day.date : undefined;
+    if (isCalendarDate(date) && date < before && (newest === null || date > newest)) newest = date;
+  }
+  return newest;
+}
+
 // ---------------------------------------------------------------------------------------------
 // CLI
 // ---------------------------------------------------------------------------------------------
@@ -267,6 +293,7 @@ const USAGE = `Setzt die Rubrik-Dateien der Routine zu einem Briefing (Schema 2)
 Aufruf:
   node routine/assemble-brief.mjs --sections <ordner> --teaser "<satz>" --out <datei> [Optionen]
   node routine/assemble-brief.mjs --overview <briefing.json | ordner> [--topic <id>]
+  node routine/assemble-brief.mjs --previous-date <index.json> --before <JJJJ-MM-TT>
 
 Optionen:
   --sections <ordner>     Ordner mit einer <id>.json pro Rubrik ({ id, title, emoji, items }).
@@ -277,13 +304,26 @@ Optionen:
   --skip-invalid          Ungültige Rubriken auslassen statt abzubrechen.
   --overview <pfad>       Nur die Überschriften eines Briefings oder Rubrik-Ordners zeigen.
   --topic <id>            Mit --overview: nur diese Rubrik.
+  --previous-date <pfad>  Datum des neuesten Briefings in index.json ausgeben, das älter ist
+                          als --before (nichts, wenn es keins gibt oder die Datei fehlt).
+  --before <datum>        Mit --previous-date: Stichtag, meist heute (JJJJ-MM-TT).
   -h, --help              Diese Hilfe.
 
 Exit-Code: 0 = geschrieben/angezeigt, 1 = ungültig (nichts geschrieben), 2 = falscher Aufruf.`;
 
 function parseCliArgs(argv) {
   const args = { skipInvalid: false };
-  const takesValue = new Set(['--sections', '--teaser', '--out', '--generated-at', '--max-age-hours', '--overview', '--topic']);
+  const takesValue = new Set([
+    '--sections',
+    '--teaser',
+    '--out',
+    '--generated-at',
+    '--max-age-hours',
+    '--overview',
+    '--topic',
+    '--previous-date',
+    '--before',
+  ]);
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '-h' || arg === '--help') return { help: true };
@@ -308,6 +348,13 @@ function parseCliArgs(argv) {
     if (hours === null) return { problem: `--max-age-hours braucht eine positive Zahl (gefunden: ${args.maxAgeHours})` };
     args.maxAgeHours = hours;
   }
+  if (args.previousDate !== undefined) {
+    if (!isCalendarDate(args.before)) {
+      return { problem: `--previous-date braucht --before <JJJJ-MM-TT> (gefunden: ${args.before ?? 'nichts'})` };
+    }
+    return args;
+  }
+  if (args.before !== undefined) return { problem: '--before gilt nur zusammen mit --previous-date.' };
   if (args.overview !== undefined) return args;
   if (args.topic !== undefined) return { problem: '--topic gilt nur zusammen mit --overview.' };
   if (!args.sections) return { problem: '--sections fehlt.' };
@@ -335,6 +382,18 @@ export function main(argv = process.argv.slice(2), out = console.log, err = cons
     return 2;
   }
   try {
+    if (args.previousDate !== undefined) {
+      let index;
+      try {
+        index = readJsonFile(args.previousDate).doc;
+      } catch (error) {
+        if (error.code === 'ENOENT') return 0; // no index yet → no previous brief
+        throw new AssembleError(`${args.previousDate}: ${error.message}`);
+      }
+      const date = previousBriefDate(index, args.before);
+      if (date !== null) out(date);
+      return 0;
+    }
     if (args.overview !== undefined) {
       const lines = overview(args.overview, { topic: args.topic });
       if (lines === null) {

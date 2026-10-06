@@ -282,8 +282,10 @@ zeigt das Skript pro Rubrik weniger ausführliche Artikel (der Rest steht als Ü
 | `node routine/validate-brief.mjs --section <datei…> [--max-age-hours 36] [--now <ISO>]` | einzelne Rubrik-Dateien prüfen |
 | `node routine/find-image.mjs "<suchbegriffe>" [--limit 5]` | freie Commons-Bilder suchen (JSON) |
 | `node routine/assemble-brief.mjs --sections <ordner> --teaser "…" --out <datei>` | Rubriken zu einem Briefing zusammensetzen |
-| `node routine/assemble-brief.mjs --overview <briefing oder ordner> [--topic <id>]` | Überschriften anzeigen (z. B. vom Vortag) |
-| `node routine/publish-brief.mjs --brief <datei> --data-dir <checkout> [--merge]` | in den Checkout von `briefs` schreiben; `--merge` fügt Rubriken nach `id` in ein vorhandenes Tagesbriefing ein, statt es zu ersetzen |
+| `node routine/assemble-brief.mjs --overview <briefing oder ordner> [--topic <id>]` | Überschriften und Erstellungszeit anzeigen (z. B. vom Vortag) |
+| `node routine/assemble-brief.mjs --previous-date <index.json> --before <datum>` | Datum des neuesten Briefings vor `<datum>` ausgeben (Maßstab für „neu“) |
+| `node routine/publish-brief.mjs --brief <datei> --data-dir <checkout> [--merge] [--branch <name>]` | in den Checkout von `briefs` schreiben; `--merge` fügt Rubriken nach `id` in ein vorhandenes Tagesbriefing ein, statt es zu ersetzen; `--branch briefs-<name>` (oder `MB_BRIEFS_BRANCH`) zielt für einen Testlauf auf einen Test-Branch – der Checkout muss auf genau diesem Branch stehen |
+| `node routine/publish-brief.mjs --print-branch [--branch <name>]` | den Ziel-Branch ausgeben (`briefs`, sonst aus `--branch` bzw. `MB_BRIEFS_BRANCH`) |
 | `node routine/email-config.mjs <email.json>` | E-Mail-Einstellungen prüfen, Empfänger als JSON ausgeben |
 | `node routine/render-email.mjs --brief <datei> --out-dir <ordner> [--weather-file <json> \| --no-weather] [--now <ISO>] [--expect-date <datum>]` | die E-Mail erstellen (HTML, Text, Betreff); Exit-Code 3 = Briefing nicht vom erwarteten Tag |
 
