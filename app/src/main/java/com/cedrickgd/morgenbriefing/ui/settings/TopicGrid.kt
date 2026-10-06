@@ -1,6 +1,11 @@
 package com.cedrickgd.morgenbriefing.ui.settings
 
 import android.graphics.Paint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VectorConverter
@@ -69,6 +74,7 @@ import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.data.model.Topic
 import com.cedrickgd.morgenbriefing.data.model.Topics
 import com.cedrickgd.morgenbriefing.ui.components.Emoji
+import com.cedrickgd.morgenbriefing.ui.components.EmojiSupport
 import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
 import com.cedrickgd.morgenbriefing.ui.glass.glass
@@ -418,7 +424,7 @@ private fun TopicTile(
     val dim by animateFloatAsState(if (visible) 1f else 0.5f, label = "tileDim")
     val moveBack = "${topic.title} nach vorne verschieben"
     val moveForward = "${topic.title} nach hinten verschieben"
-    val emojiRenders = remember(topic.emoji) { topic.emoji.isNotBlank() && Paint().hasGlyph(topic.emoji) }
+    val emojiRenders = remember(topic.emoji) { topic.emoji.isNotBlank() && Paint().hasGlyph(EmojiSupport.display(topic.emoji)) }
 
     Box(
         modifier = Modifier
@@ -517,14 +523,20 @@ private fun TopicsFooterRow(visibleCount: Int, total: Int, canReset: Boolean, on
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        GlassPillButton(
-            text = "Zurücksetzen",
-            onClick = onReset,
-            icon = Icons.Rounded.RestartAlt,
-            enabled = canReset,
-            onGlass = false,
-            style = PillStyle.Tonal,
-        )
+        // Only offered once there is something to undo: no faded, broken-looking button.
+        AnimatedVisibility(
+            visible = canReset,
+            enter = fadeIn() + scaleIn(initialScale = 0.9f),
+            exit = fadeOut() + scaleOut(targetScale = 0.9f),
+        ) {
+            GlassPillButton(
+                text = "Zurücksetzen",
+                onClick = onReset,
+                icon = Icons.Rounded.RestartAlt,
+                onGlass = false,
+                style = PillStyle.Tonal,
+            )
+        }
     }
 }
 

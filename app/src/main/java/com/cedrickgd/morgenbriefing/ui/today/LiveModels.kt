@@ -64,7 +64,7 @@ internal fun shouldAutoRefresh(live: LiveUi, now: Instant): Boolean =
 /** Friendly explanation of a block, in the app's voice. */
 internal fun liveBlockText(block: AiBlock): String = when (block) {
     AiBlock.UNSUPPORTED_DEVICE -> "Live-Recherche braucht Android 8 oder neuer. Die frischen Meldungen aus dem Morgen-Briefing siehst du trotzdem hier."
-    AiBlock.NO_KEY -> "Trag in den Einstellungen deinen Claude-API-Key ein – dann sucht Claude hier auf Knopfdruck brandaktuelle Meldungen."
+    AiBlock.NO_KEY -> "Trag einmal deinen Claude-API-Key ein – dann sucht Claude hier auf Knopfdruck brandaktuelle Meldungen."
     AiBlock.LIMIT_REACHED -> "Monatslimit erreicht – in den Einstellungen anpassen."
 }
 

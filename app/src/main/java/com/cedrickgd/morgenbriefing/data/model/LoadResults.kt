@@ -35,6 +35,8 @@ data class HistoryEntry(
     val weather: WeatherSnapshot?,
     /** Brief is available offline. */
     val cached: Boolean,
+    /** The bundled demo brief (no GitHub token yet) — shown so the timeline is never empty. */
+    val demo: Boolean = false,
 )
 
 data class DayBundle(

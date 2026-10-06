@@ -37,7 +37,7 @@ import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 
 /**
  * App theme: [ThemeMode] decides light/dark, [AccentId] the palette (DYNAMIC = Material You on
- * API 31+, else MORGENROT). Warm neutral surfaces (light bg #FCFCFB / dark bg #151412),
+ * API 31+, else MORGENROT). Warm neutral surfaces in light (bg #FCFCFB), night blue in dark (bg #0F1320),
  * serif display typography for headlines, sets status/navigation bar icon contrast.
  *
  * Switching accent or mode cross-fades the colors (skipped when the system "remove animations"

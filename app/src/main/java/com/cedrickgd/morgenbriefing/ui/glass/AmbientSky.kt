@@ -1,11 +1,10 @@
 package com.cedrickgd.morgenbriefing.ui.glass
 
+import android.app.ActivityManager
+import android.content.Context
+import android.os.Build
+import android.os.PowerManager
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -16,8 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -28,6 +33,7 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.domain.Condition
 import com.cedrickgd.morgenbriefing.ui.components.SkyKind
@@ -37,6 +43,8 @@ import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
 import com.cedrickgd.morgenbriefing.util.statusBarTop
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -51,7 +59,9 @@ import kotlin.math.sin
  * glide over a stage that stays put. It is read in the draw phase only.
  *
  * A change of weather, time of day or light/dark cross-fades to the new sky; with the system
- * "remove animations" setting everything is static.
+ * "remove animations" setting everything is static. While [paused] returns true (the shell
+ * passes "a list is scrolling") the aurora holds still. On Android 7, low-RAM devices and in
+ * battery saver the aurora drifts at 10 fps and the particles stand still.
  */
 @Composable
 fun AmbientSky(
@@ -60,31 +70,65 @@ fun AmbientSky(
     hazeState: HazeState,
     modifier: Modifier = Modifier,
     parallax: () -> Float = { 0f },
+    paused: () -> Boolean = { false },
 ) {
     val reduceMotion = rememberReduceMotion()
+    val context = LocalContext.current
+    // Old or low-memory devices (or battery saver): the sky drifts at 10 fps and the weather
+    // particles stand still – it still looks alive, but costs a fraction of the work.
+    val gentle = remember(context) { prefersGentleSky(context) }
     val look = SkyLook(SkyKind.of(condition), condition, isDay, isGlassDark())
 
     // One clock for every sky, so the aurora keeps drifting through a cross-fade.
-    val clock: State<Float>? = if (reduceMotion) {
-        null
-    } else {
-        rememberInfiniteTransition(label = "aurora").animateFloat(
-            initialValue = 0f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(tween(durationMillis = AURORA_LOOP_MS, easing = LinearEasing), RepeatMode.Restart),
-            label = "auroraClock",
-        )
-    }
+    val clock: State<Float>? = if (reduceMotion) null else rememberAuroraClock(paused, frameIntervalMs = if (gentle) GENTLE_FRAME_MS else 0L)
 
-    Box(modifier.fillMaxSize().hazeSource(state = hazeState)) {
+    Box(
+        modifier
+            .fillMaxSize()
+            .then(if (GlassBlurSupported) Modifier.hazeSource(state = hazeState, zIndex = 0f) else Modifier),
+    ) {
         Crossfade(
             targetState = look,
             animationSpec = if (reduceMotion) snap() else tween(SKY_CROSSFADE_MS),
             label = "sky",
         ) { sky ->
-            SkyLayers(sky, clock, reduceMotion, parallax)
+            SkyLayers(sky, clock, reduceMotion || gentle, parallax)
         }
     }
+}
+
+/**
+ * The aurora's time, 0..1 over [AURORA_LOOP_MS]. Advances frame by frame (or every
+ * [frameIntervalMs]) and holds still while [paused] — e.g. while a list scrolls, so the sky
+ * does not compete with the content for frames. Holding (instead of restarting) means the
+ * light never jumps.
+ */
+@Composable
+private fun rememberAuroraClock(paused: () -> Boolean, frameIntervalMs: Long): State<Float> {
+    val time = remember { mutableFloatStateOf(STATIC_AURORA_TIME) }
+    val latestPaused by rememberUpdatedState(paused)
+    LaunchedEffect(frameIntervalMs) {
+        snapshotFlow { latestPaused() }.collectLatest { isPaused ->
+            if (isPaused) return@collectLatest
+            var last = withFrameNanos { it }
+            while (true) {
+                if (frameIntervalMs > 0) delay(frameIntervalMs)
+                val now = withFrameNanos { it }
+                val elapsedMs = ((now - last) / 1_000_000f).coerceIn(0f, MAX_STEP_MS)
+                last = now
+                time.floatValue = (time.floatValue + elapsedMs / AURORA_LOOP_MS) % 1f
+            }
+        }
+    }
+    return time
+}
+
+/** Android 7, a low-RAM device or battery saver: keep the sky gentle on the battery. */
+private fun prefersGentleSky(context: Context): Boolean {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true
+    val activity = context.getSystemService(ActivityManager::class.java)
+    val power = context.getSystemService(PowerManager::class.java)
+    return activity?.isLowRamDevice == true || power?.isPowerSaveMode == true
 }
 
 /** Everything that changes the sky's colors or particles. */
@@ -92,7 +136,7 @@ fun AmbientSky(
 private data class SkyLook(val kind: SkyKind, val condition: Condition, val isDay: Boolean, val dark: Boolean)
 
 @Composable
-private fun SkyLayers(look: SkyLook, clock: State<Float>?, reduceMotion: Boolean, parallax: () -> Float) {
+private fun SkyLayers(look: SkyLook, clock: State<Float>?, stillParticles: Boolean, parallax: () -> Float) {
     val scheme = MaterialTheme.colorScheme
     val palette = remember(look) { skyPalette(look.kind, look.isDay, look.dark) }
 
@@ -111,6 +155,9 @@ private fun SkyLayers(look: SkyLook, clock: State<Float>?, reduceMotion: Boolean
         palette.mid.copy(alpha = auroraAlpha * 0.9f),
         tertiaryLight.copy(alpha = auroraAlpha * 0.85f),
     )
+    // A warm horizon glow low on the page: the end of a long feed never turns into a flat wash.
+    val horizon = lerp(lerp(scheme.tertiaryContainer, scheme.primary, if (look.dark) 0.28f else 0.36f), palette.mid, 0.15f)
+        .copy(alpha = if (look.dark) 0.30f else 0.34f)
 
     Box(Modifier.fillMaxSize()) {
         Canvas(
@@ -131,7 +178,9 @@ private fun SkyLayers(look: SkyLook, clock: State<Float>?, reduceMotion: Boolean
                     1f to lowerB,
                 ),
             )
-            drawAurora(aurora, clock?.value ?: STATIC_AURORA_TIME)
+            val t = clock?.value ?: STATIC_AURORA_TIME
+            drawAurora(aurora, t)
+            drawHorizon(horizon, t)
         }
 
         // Weather particles and glow for the upper part; its built-in fade to the plain
@@ -139,7 +188,7 @@ private fun SkyLayers(look: SkyLook, clock: State<Float>?, reduceMotion: Boolean
         WeatherBackdrop(
             condition = look.condition,
             isDay = look.isDay,
-            animate = !reduceMotion,
+            animate = !stillParticles,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(SKY_HEIGHT + statusBarTop())
@@ -187,6 +236,29 @@ private fun DrawScope.drawAurora(colors: List<Color>, t: Float) {
     }
 }
 
+/**
+ * A wide, breathing glow rising from below the bottom edge (docs/DESIGN.md §1: the bottom of
+ * the page is never one flat color).
+ */
+private fun DrawScope.drawHorizon(color: Color, t: Float) {
+    val w = size.width
+    val h = size.height
+    val phase = t * 2f * PI.toFloat()
+    val center = Offset(w * (0.5f + 0.18f * sin(phase * 1.3f)), h * (1.02f + 0.02f * cos(phase)))
+    val radius = w * (0.95f + 0.08f * sin(phase * 0.7f))
+    drawCircle(
+        brush = Brush.radialGradient(
+            0f to color,
+            0.5f to color.copy(alpha = color.alpha * 0.5f),
+            1f to Color.Transparent,
+            center = center,
+            radius = radius,
+        ),
+        radius = radius,
+        center = center,
+    )
+}
+
 /** Sky shift per page of pager offset, as a fraction of the width (≈ 12 % across all pages). */
 private const val PARALLAX_PER_PAGE = 0.06f
 
@@ -196,4 +268,10 @@ private const val BACKDROP_DEPTH = 0.6f
 private const val AURORA_LOOP_MS = 96_000
 private const val STATIC_AURORA_TIME = 0.18f
 private const val SKY_CROSSFADE_MS = 1_200
+
+/** Frame interval of the gentle sky (10 fps). */
+private const val GENTLE_FRAME_MS = 100L
+
+/** A long pause (app in the background) must not jump the aurora forward. */
+private const val MAX_STEP_MS = 250f
 private val SKY_HEIGHT = 560.dp

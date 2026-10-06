@@ -133,7 +133,7 @@ private fun NewsPreview() {
         Column {
             NewsTeaser(teaser = PreviewData.TEASER, generatedAt = PreviewData.GENERATED_AT, stale = true, meta = "8 Meldungen · 3 Themen")
             Spacer(Modifier.height(16.dp))
-            AskBriefingEntry(onClick = {})
+            AskBriefingPill(onClick = {})
             Spacer(Modifier.height(24.dp))
             FeedSectionHeader(topic = section.topic, count = section.count)
             Spacer(Modifier.height(16.dp))

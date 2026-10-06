@@ -93,6 +93,7 @@ internal fun ReadingCard(
                 onValueChangeFinished = { onCommit(value) },
                 valueRange = ReaderScale.MIN..ReaderScale.MAX,
                 steps = ReaderScale.SLIDER_STEPS,
+                thumb = { CalmSliderThumb() },
                 track = { state -> CalmSliderTrack(state) },
                 modifier = Modifier
                     .weight(1f)

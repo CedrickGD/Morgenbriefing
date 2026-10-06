@@ -1,6 +1,7 @@
 package com.cedrickgd.morgenbriefing.ui.news
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -10,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.request.ImageRequest
@@ -38,6 +40,8 @@ internal fun coverKey(item: NewsItem): String = item.key.ifBlank { item.headline
  * over it and a failed download simply leaves the cover. Size it with [modifier].
  *
  * @param contentDescription null for decorative use (cards: the headline says it all).
+ * @param coverBadgeAlignment where the generated cover puts its topic badge.
+ * @param showCoverBadge false where the caller shows the topic on top itself.
  * @param onStatus reports whether the picture is shown — used to show its credit only then.
  */
 @Composable
@@ -46,8 +50,9 @@ fun ArticleVisual(
     topic: Topic,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
-    emojiAlignment: Alignment = Alignment.TopEnd,
-    emojiFraction: Float = 0.34f,
+    coverBadgeAlignment: Alignment = Alignment.BottomStart,
+    coverBadgePadding: PaddingValues = PaddingValues(14.dp),
+    showCoverBadge: Boolean = true,
     onStatus: ((ImageStatus) -> Unit)? = null,
 ) {
     val url = remember(item.image) { item.image?.safeUrl() }
@@ -58,8 +63,10 @@ fun ArticleVisual(
             topic = topic,
             seedKey = coverKey(item),
             modifier = Modifier.matchParentSize(),
-            emojiAlignment = emojiAlignment,
-            emojiFraction = emojiFraction,
+            title = item.headline,
+            badgeAlignment = coverBadgeAlignment,
+            badgePadding = coverBadgePadding,
+            showBadge = showCoverBadge,
         )
         if (url != null) {
             val context = LocalContext.current

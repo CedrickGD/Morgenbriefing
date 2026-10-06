@@ -26,7 +26,7 @@ enum class AccentId(val label: String, val seed: Long) {
     DYNAMIC("Material You", 0xFFC6613F),
     MORGENROT("Morgenrot", 0xFFC6613F),
     SONNE("Sonne", 0xFFE0A100),
-    OZEAN("Ozean", 0xFF2F6FDE),
+    OZEAN("Ozean", 0xFF0E7C9B),
     WALD("Wald", 0xFF2E8B57),
     LAVENDEL("Lavendel", 0xFF7B61FF),
     BEERE("Beere", 0xFFC2185B),

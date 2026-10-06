@@ -213,13 +213,19 @@ private fun heroChips(home: HomeWeather): List<HeroChip> = buildList {
     }
 }
 
-/** 🌅 sunrise while it is still dark before sunrise, otherwise 🌇 sunset. */
+/**
+ * 🌅 sunrise while it is still dark before sunrise, 🌇 sunset during the day — and after sunset
+ * tomorrow's 🌅 sunrise, never a sunset that is hours past.
+ */
 private fun sunChip(home: HomeWeather): HeroChip? {
     val now = localTimeOf(home.current.time)
     val sunrise = parseClock(home.sunrise)
+    val sunset = parseClock(home.sunset)
     return when {
         now != null && sunrise != null && now.isBefore(sunrise) ->
             HeroChip("🌅", "Sonnenaufgang ${home.sunrise.trim()}")
+        now != null && sunset != null && !now.isBefore(sunset) && home.sunriseTomorrow.isNotBlank() ->
+            HeroChip("🌅", "Sonnenaufgang ${home.sunriseTomorrow.trim()}")
         home.sunset.isNotBlank() -> HeroChip("🌇", "Sonnenuntergang ${home.sunset.trim()}")
         else -> null
     }

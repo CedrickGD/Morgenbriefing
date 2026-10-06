@@ -2,6 +2,7 @@ package com.cedrickgd.morgenbriefing.ui.settings
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.ui.components.Emoji
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
+import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
 import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
 import kotlin.math.roundToInt
 
@@ -63,6 +65,7 @@ internal fun PlacesSection(
     settings: AppSettings,
     homeWeather: PlaceWeather?,
     dayWeather: PlaceWeather?,
+    weatherLoading: Boolean,
     onEditPlace: (PlaceTarget) -> Unit,
     onDayWindow: (start: Int, end: Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -79,6 +82,7 @@ internal fun PlacesSection(
                 icon = Icons.Rounded.Home,
                 name = settings.home.name,
                 weather = homeWeather,
+                loading = weatherLoading,
                 onClick = { onEditPlace(PlaceTarget.HOME) },
                 modifier = Modifier
                     .weight(1f)
@@ -89,6 +93,7 @@ internal fun PlacesSection(
                 icon = Icons.Rounded.LocationCity,
                 name = settings.day.name,
                 weather = dayWeather,
+                loading = weatherLoading,
                 onClick = { onEditPlace(PlaceTarget.DAY) },
                 modifier = Modifier
                     .weight(1f)
@@ -110,6 +115,7 @@ private fun PlaceCard(
     icon: ImageVector,
     name: String,
     weather: PlaceWeather?,
+    loading: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -154,9 +160,18 @@ private fun PlaceCard(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        } else if (loading) {
+            // Same rhythm as the loaded state, so nothing jumps when the weather arrives.
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(26.dp).lamina(CircleShape))
+                Spacer(Modifier.width(8.dp))
+                Box(Modifier.size(width = 54.dp, height = 30.dp).lamina(GlassShapes.chip))
+            }
+            Spacer(Modifier.height(6.dp))
+            Box(Modifier.size(width = 72.dp, height = 12.dp).lamina(CircleShape))
         } else {
             Text(
-                text = "Wetter kommt mit dem nächsten Laden",
+                text = "Wetter gerade nicht erreichbar",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -227,10 +242,11 @@ private fun SunThumb(icon: ImageVector) {
         modifier = Modifier
             .size(THUMB_SIZE)
             .shadow(4.dp, CircleShape, ambientColor = Color.Black.copy(alpha = 0.2f), spotColor = Color.Black.copy(alpha = 0.2f))
-            .background(Brush.linearGradient(listOf(Color(0xFFFFC861), Color(0xFFF08A3C))), CircleShape),
+            .background(Brush.linearGradient(listOf(Color(0xFFFFC861), Color(0xFFF08A3C))), CircleShape)
+            .border(2.dp, Color.White.copy(alpha = 0.9f), CircleShape),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+        Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(15.dp))
     }
 }
 
@@ -264,5 +280,5 @@ private fun DaylightTrack(state: RangeSliderState) {
     }
 }
 
-private val THUMB_SIZE = 30.dp
+private val THUMB_SIZE = SliderKnobSize
 private val TRACK_HEIGHT = 8.dp

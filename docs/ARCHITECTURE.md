@@ -88,3 +88,5 @@ Siehe [DESIGN.md](DESIGN.md): Morgenglas – ein durchgehender, wetterabhängige
 allen Seiten, Glasflächen darüber, Serif-Überschriften, redaktioneller Feed (großes Bild, große
 Serif-Headline, Lead, Meta-Zeile mit Zuhören/Teilen), ruhige Bewegung, Barrierefreiheit
 (Content-Descriptions, Touch-Ziele ≥ 48 dp, Kontrast ≥ 4.5:1, „Animationen entfernen“).
+Farben: hell warme Neutrale (`#FCFCFB` / Wash `#F9F9F7` / Tinte `#2E2C27`), dunkel ein tiefes
+Nachtblau (`#0F1320` / Flächen `#1A2133` / Text `#E9EBF2`); der Akzent kommt aus der gewählten Farbe.

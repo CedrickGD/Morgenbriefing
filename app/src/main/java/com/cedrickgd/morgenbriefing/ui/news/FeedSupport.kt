@@ -5,30 +5,19 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
 import com.cedrickgd.morgenbriefing.listen.ListenController
-import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
-import com.cedrickgd.morgenbriefing.ui.glass.glass
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -46,20 +35,31 @@ internal fun rememberListenController(): ListenController? {
     return remember(context) { (context.applicationContext as? MorgenbriefingApp)?.listen }
 }
 
+/** The article loaded in the player: its `NewsItem.key` and whether it is paused. */
+@Immutable
+internal data class NowListening(val key: String, val paused: Boolean)
+
+/** True while the article [key] is being read (not paused). */
+internal fun NowListening?.reading(key: String): Boolean = this != null && this.key == key && !paused
+
+/** True while the article [key] is loaded but paused. */
+internal fun NowListening?.pausedOn(key: String): Boolean = this != null && this.key == key && paused
+
 /**
- * `NewsItem.key` of the article being read aloud (or paused) right now, else null. Changes
- * only when that article changes — the reading progress does not recompose the feed.
+ * The article being read aloud (or paused) right now, else null. Changes only when that article
+ * or its paused state changes — the reading progress does not recompose the feed.
  */
 @Composable
-internal fun rememberListeningKey(listen: ListenController?): State<String?> {
-    val flow: Flow<String?> = remember(listen) {
+internal fun rememberListeningKey(listen: ListenController?): State<NowListening?> {
+    val flow: Flow<NowListening?> = remember(listen) {
         val state = try {
             listen?.state
         } catch (e: Exception) {
             Log.w(TAG, "Listen state unavailable", e)
             null
         }
-        state?.map { s -> s.articleKey.takeIf { s.speaking || s.paused } }?.distinctUntilChanged() ?: flowOf(null)
+        state?.map { s -> s.articleKey?.takeIf { s.speaking || s.paused }?.let { NowListening(it, paused = s.paused) } }
+            ?.distinctUntilChanged() ?: flowOf(null)
     }
     return flow.collectAsStateWithLifecycle(initialValue = null)
 }
@@ -93,7 +93,7 @@ internal fun rememberFeedActions(
             onOpen = { open(it) },
             onListen = { article ->
                 try {
-                    listen?.play(article.item) ?: message("Vorlesen ist hier gerade nicht verfügbar.")
+                    listen?.play(article.item, article.date) ?: message("Vorlesen ist hier gerade nicht verfügbar.")
                 } catch (e: Exception) {
                     Log.w(TAG, "Could not start reading aloud", e)
                     message("Vorlesen klappt gerade nicht.")
@@ -153,36 +153,3 @@ internal fun SnackbarHostState.say(scope: CoroutineScope, text: String, action: 
     }
 }
 
-/**
- * Content of the feed's sticky header: parks below the TopGlassBar ([stickBelowBar]) and grows a
- * thick frosted strip behind itself while parked, so the chips sit on one calm glass band
- * together with the bar.
- */
-@Composable
-internal fun ParkedChipHeader(
-    listState: LazyListState,
-    key: Any,
-    barHeightPx: Int,
-    content: @Composable () -> Unit,
-) {
-    val density = LocalDensity.current
-    val barHeight = with(density) { barHeightPx.toDp() }
-    val fadePx = with(density) { 28.dp.toPx() }
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .stickBelowBar(listState, key, barHeightPx),
-    ) {
-        Box(
-            Modifier
-                .matchParentSize()
-                .graphicsLayer { alpha = stuckFraction(listState, key, barHeightPx, fadePx) }
-                .glass(shape = ChipStripShape, level = GlassLevel.Thick),
-        )
-        Column(Modifier.fillMaxWidth()) {
-            Spacer(Modifier.height(barHeight))
-            content()
-            Spacer(Modifier.height(6.dp))
-        }
-    }
-}

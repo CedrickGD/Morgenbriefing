@@ -12,12 +12,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.Lifecycle
@@ -40,8 +45,11 @@ import kotlin.math.abs
 /** Scale of a page one full page away from the centre (docs/DESIGN.md §6). */
 private const val NEIGHBOR_SCALE = 0.94f
 
-/** Opacity of a page one full page away – it sinks into the sky while you swipe. */
-private const val NEIGHBOR_ALPHA = 0.45f
+/**
+ * How far a page one full page away fades into the sky color while you swipe. The content is
+ * tinted (not made transparent), so the moon or the aurora never shine through its text.
+ */
+private const val NEIGHBOR_DIM = 0.55f
 
 /** How far (in pages) the back gesture lets the page lean towards "Heute" before letting go. */
 private const val BACK_PEEK = 0.14f
@@ -68,6 +76,7 @@ internal fun MainPager(
     val chrome = LocalChromeController.current
     val view = LocalView.current
     val scope = rememberCoroutineScope()
+    val dim = MaterialTheme.colorScheme.background
 
     LaunchedEffect(pagerState, view) {
         snapshotFlow { pagerState.settledPage }
@@ -104,7 +113,7 @@ internal fun MainPager(
         Box(
             Modifier
                 .fillMaxSize()
-                .pageDepth(pagerState, page)
+                .pageDepth(pagerState, page, dim)
                 .chromeScrollSource(chrome),
         ) {
             ChromeScrollReported {
@@ -151,16 +160,24 @@ private fun MainPageContent(
 }
 
 /**
- * Depth while swiping: pages away from the centre shrink and fade. Reads the pager offset in
+ * Depth while swiping: pages away from the centre shrink and sink into the sky — their drawn
+ * content is tinted towards the sky's base color ([dim]) on an offscreen layer (only while the
+ * page is off centre), so nothing behind shines through the text. Reads the pager offset in
  * the draw phase only, so swiping never recomposes the pages.
  */
-private fun Modifier.pageDepth(state: PagerState, page: Int): Modifier = graphicsLayer {
-    val distance = abs(state.getOffsetDistanceInPages(page)).coerceIn(0f, 1f)
-    val scale = 1f - (1f - NEIGHBOR_SCALE) * distance
-    scaleX = scale
-    scaleY = scale
-    alpha = 1f - (1f - NEIGHBOR_ALPHA) * distance
-}
+private fun Modifier.pageDepth(state: PagerState, page: Int, dim: Color): Modifier = this
+    .graphicsLayer {
+        val distance = abs(state.getOffsetDistanceInPages(page)).coerceIn(0f, 1f)
+        val scale = 1f - (1f - NEIGHBOR_SCALE) * distance
+        scaleX = scale
+        scaleY = scale
+        compositingStrategy = if (distance > 0.001f) CompositingStrategy.Offscreen else CompositingStrategy.Auto
+    }
+    .drawWithContent {
+        drawContent()
+        val distance = abs(state.getOffsetDistanceInPages(page)).coerceIn(0f, 1f)
+        if (distance > 0.001f) drawRect(dim.copy(alpha = NEIGHBOR_DIM * distance), blendMode = BlendMode.SrcAtop)
+    }
 
 /**
  * Back on Verlauf or Einstellungen returns to "Heute". With predictive back the page leans

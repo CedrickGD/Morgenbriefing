@@ -41,15 +41,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.data.model.Topic
+import com.cedrickgd.morgenbriefing.ui.components.Emoji
 import com.cedrickgd.morgenbriefing.ui.components.entrance
 import com.cedrickgd.morgenbriefing.ui.components.motionDisabled
 import com.cedrickgd.morgenbriefing.ui.components.pressScale
@@ -67,42 +68,52 @@ internal val FeedGutter: Dp = 16.dp
 private val EntryGap = 14.dp
 
 /**
- * Glass header of a topic: its emoji in a circle tinted with the topic color, the title and
- * the number of articles.
+ * Opens a topic in the feed like a newspaper section: a hairline, then "🤖 KI & TECH" in the
+ * topic's color on the left and "3 Meldungen" on the right — straight on the sky, light enough
+ * to keep the Discover-like flow of pictures and headlines.
  */
 @Composable
 fun FeedSectionHeader(topic: Topic, count: Int, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
+    val topicColors = rememberTopicColors(topic)
+    val tint = if (isDarkTheme()) topicColors.onContainer else topicColors.strong
     val countLabel = articleCountLabel(count)
-    Row(
-        modifier = modifier
+    Column(
+        modifier
             .fillMaxWidth()
-            .glass(shape = GlassShapes.pill, level = GlassLevel.Thin)
-            .heightIn(min = 56.dp)
-            .padding(start = 8.dp, end = 18.dp, top = 8.dp, bottom = 8.dp)
             .semantics(mergeDescendants = true) { heading() },
-        verticalAlignment = Alignment.CenterVertically,
     ) {
-        TopicBadge(topic, diameter = 40.dp)
-        Spacer(Modifier.width(12.dp))
-        Text(
-            text = topic.title,
-            style = MaterialTheme.typography.titleMedium,
-            color = colors.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(colors.onSurface.copy(alpha = 0.10f)),
         )
-        Spacer(Modifier.width(10.dp))
-        Text(
-            text = count.toString(),
-            style = MaterialTheme.typography.labelLarge,
-            color = colors.onSurfaceVariant,
+        Row(
             modifier = Modifier
-                .background(colors.onSurface.copy(alpha = 0.07f), GlassShapes.pill)
-                .padding(horizontal = 10.dp, vertical = 3.dp)
-                .clearAndSetSemantics { contentDescription = countLabel },
-        )
+                .fillMaxWidth()
+                .heightIn(min = 44.dp)
+                .padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Emoji(topic.emoji.ifBlank { "📰" }, size = 16.sp)
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = topic.title.uppercase(),
+                style = MaterialTheme.typography.labelLarge.copy(letterSpacing = OverlineLetterSpacing, fontWeight = FontWeight.SemiBold),
+                color = tint,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
+            Spacer(Modifier.width(10.dp))
+            Text(
+                text = countLabel,
+                style = MaterialTheme.typography.labelMedium,
+                color = colors.onSurfaceVariant,
+                maxLines = 1,
+            )
+        }
     }
 }
 
@@ -228,7 +239,7 @@ fun FeedViewIntro(overline: String, title: String, modifier: Modifier = Modifier
  * and the expandable "more" block.
  *
  * @param date the brief's date (opens the reader).
- * @param listeningKey `NewsItem.key` of the article being read aloud, if any.
+ * @param listening the article being read aloud (or paused), if any.
  * @param keyPrefix keeps keys unique when several feeds share a list.
  */
 internal fun LazyListScope.forYouItems(
@@ -236,7 +247,7 @@ internal fun LazyListScope.forYouItems(
     date: String,
     now: ZonedDateTime,
     expanded: Set<String>,
-    listeningKey: String?,
+    listening: NowListening?,
     actions: FeedActions,
     onToggleSection: (String) -> Unit,
     keyPrefix: String,
@@ -250,13 +261,13 @@ internal fun LazyListScope.forYouItems(
                 modifier = Modifier
                     .animateItem()
                     .padding(horizontal = FeedGutter)
-                    .padding(top = 8.dp, bottom = 4.dp),
+                    .padding(top = 12.dp),
             )
         }
         section.top.forEachIndexed { index, item ->
             item(key = "$sectionKey-top-$index-${item.key}", contentType = "feed-entry") {
                 val article = remember(item, section.topic, date) { FeedArticle(item, section.topic, date) }
-                AnimatedFeedEntry(article, now, listeningKey == item.key, actions)
+                AnimatedFeedEntry(article, now, listening.reading(item.key), listening.pausedOn(item.key), actions)
             }
         }
         if (section.hasMore) {
@@ -287,7 +298,7 @@ internal fun LazyListScope.forYouItems(
 internal fun LazyListScope.articleItems(
     articles: List<FeedArticle>,
     now: ZonedDateTime,
-    listeningKey: String?,
+    listening: NowListening?,
     actions: FeedActions,
     keyPrefix: String,
     showTopic: Boolean,
@@ -295,7 +306,7 @@ internal fun LazyListScope.articleItems(
 ) {
     articles.forEachIndexed { index, article ->
         item(key = "$keyPrefix-$index-${article.feedKey}", contentType = "feed-entry") {
-            AnimatedFeedEntry(article, now, listeningKey == article.item.key, actions, showTopic, badge(article))
+            AnimatedFeedEntry(article, now, listening.reading(article.item.key), listening.pausedOn(article.item.key), actions, showTopic, badge(article))
         }
     }
 }
@@ -306,6 +317,7 @@ private fun LazyItemScope.AnimatedFeedEntry(
     article: FeedArticle,
     now: ZonedDateTime,
     listening: Boolean,
+    paused: Boolean,
     actions: FeedActions,
     showTopic: Boolean = false,
     badge: String? = null,
@@ -315,6 +327,7 @@ private fun LazyItemScope.AnimatedFeedEntry(
         article = article,
         now = now,
         listening = listening,
+        paused = paused,
         actions = actions,
         showTopic = showTopic,
         badge = badge,

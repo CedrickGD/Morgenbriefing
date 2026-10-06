@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ui.settings
 
+import android.os.Build
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -145,7 +146,9 @@ internal fun StatusHero(
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items.forEach { item -> StatusPill(item = item, onClick = { onPill(item) }) }
             }
-            if (items.any { it.kind == StatusKind.BATTERY && it.level == StatusLevel.ATTENTION }) {
+            // Samsung keeps its own per-app battery limit next to Android's list – only there.
+            val samsung = remember { Build.MANUFACTURER.equals("samsung", ignoreCase = true) }
+            if (samsung && items.any { it.kind == StatusKind.BATTERY && it.level == StatusLevel.ATTENTION }) {
                 SamsungHint(onOpenAppDetails)
             }
         }

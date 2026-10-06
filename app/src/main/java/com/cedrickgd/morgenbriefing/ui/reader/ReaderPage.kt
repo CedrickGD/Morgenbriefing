@@ -216,8 +216,9 @@ private fun ReaderHero(
                     translationX = pageOffset().coerceIn(-1f, 1f) * pageWidth.toPx() * SWIPE_PARALLAX
                 },
             contentDescription = alt,
-            emojiAlignment = Alignment.Center,
-            emojiFraction = 0.28f,
+            // Above the reading surface's rounded lip, clear of the floating controls at the top.
+            // The topic chip sits right below on the reading surface: no second topic badge here.
+            showCoverBadge = false,
             onStatus = onStatus,
         )
         // Dims softly while the picture collapses, so the frosted bar reads as a new layer.

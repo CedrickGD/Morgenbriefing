@@ -205,8 +205,7 @@ internal fun NextArticleCard(next: ReaderEntry, onOpen: () -> Unit) {
                         item = next.item,
                         topic = next.topic,
                         modifier = Modifier.matchParentSize(),
-                        emojiAlignment = Alignment.Center,
-                        emojiFraction = 0.3f,
+                        showCoverBadge = false,
                     )
                     TopicChip(
                         topic = next.topic,

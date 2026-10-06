@@ -54,7 +54,9 @@ import com.cedrickgd.morgenbriefing.ui.components.NewsTeaser
 import com.cedrickgd.morgenbriefing.ui.components.PageFooter
 import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
 import com.cedrickgd.morgenbriefing.ui.glass.PageTitle
+import com.cedrickgd.morgenbriefing.ui.glass.blockTouchesBehind
 import com.cedrickgd.morgenbriefing.ui.glass.glass
+import com.cedrickgd.morgenbriefing.ui.glass.glassContent
 import com.cedrickgd.morgenbriefing.ui.news.FeedArticle
 import com.cedrickgd.morgenbriefing.ui.news.FeedGutter
 import com.cedrickgd.morgenbriefing.ui.news.NewsFeed
@@ -144,6 +146,7 @@ fun DayDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .reportChromeScroll()
+                .glassContent()
                 .horizontalSafeDrawing(),
             contentPadding = PaddingValues(bottom = bottomInset + 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -187,7 +190,7 @@ fun DayDetailScreen(
                             date = brief.date,
                             now = state.now,
                             expanded = expanded,
-                            listeningKey = listening,
+                            listening = listening,
                             actions = actions,
                             onToggleSection = { id -> expanded = expanded.toggled(id) },
                             keyPrefix = "day",
@@ -347,11 +350,12 @@ private fun BoxScope.DetailTopBar(title: String, scrolled: Boolean, statusTop: D
             Modifier
                 .matchParentSize()
                 .graphicsLayer { alpha = reveal }
-                .glass(shape = RoundedCornerShape(bottomStart = 22.dp, bottomEnd = 22.dp), level = GlassLevel.Thick),
+                .glass(shape = RoundedCornerShape(bottomStart = 22.dp, bottomEnd = 22.dp), level = GlassLevel.Thick, floating = true),
         )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .then(if (scrolled) Modifier.blockTouchesBehind() else Modifier)
                 .padding(top = statusTop)
                 .height(52.dp)
                 .padding(start = 12.dp, end = 20.dp),

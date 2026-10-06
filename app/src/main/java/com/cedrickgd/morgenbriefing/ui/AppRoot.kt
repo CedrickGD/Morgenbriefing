@@ -50,8 +50,10 @@ import com.cedrickgd.morgenbriefing.ui.news.newsImageLoader
 import com.cedrickgd.morgenbriefing.ui.shell.ChromeController
 import com.cedrickgd.morgenbriefing.ui.shell.FloatingChrome
 import com.cedrickgd.morgenbriefing.ui.shell.LocalChromeController
+import com.cedrickgd.morgenbriefing.ui.shell.LocalSettingsLink
 import com.cedrickgd.morgenbriefing.ui.shell.MainPage
 import com.cedrickgd.morgenbriefing.ui.shell.PageRequest
+import com.cedrickgd.morgenbriefing.ui.shell.SettingsLink
 import com.cedrickgd.morgenbriefing.ui.shell.ShellNavigator
 import com.cedrickgd.morgenbriefing.ui.shell.isMain
 import com.cedrickgd.morgenbriefing.ui.shell.rememberShellInsets
@@ -139,6 +141,7 @@ private fun AppShell(
 
     val hazeState = rememberHazeState()
     val chrome = remember { ChromeController() }
+    val settingsLink = remember { SettingsLink() }
     val navController = rememberNavController()
     val pagerState = rememberPagerState(initialPage = initialPage.index) { MainPage.entries.size }
     var openTodaySignal by rememberSaveable { mutableIntStateOf(0) }
@@ -152,6 +155,8 @@ private fun AppShell(
     val mainOnTop = topEntry?.isMain() ?: true
     val playerAllowed = topEntry?.hasOwnBottomBar() != true
     LaunchedEffect(mainOnTop) { if (mainOnTop) chrome.show() }
+    // The chrome returns once scrolling has come to rest (docs/DESIGN.md §3).
+    LaunchedEffect(chrome) { chrome.watchScrollRest() }
 
     val latestHandled by rememberUpdatedState(onPageRequestHandled)
     LaunchedEffect(pageRequest) {
@@ -174,10 +179,13 @@ private fun AppShell(
             hazeState = hazeState,
             // Offset from "Heute" in pages; read in the sky's draw phase only.
             parallax = { pagerState.currentPage + pagerState.currentPageOffsetFraction - MainPage.TODAY.index },
+            // The aurora holds still while content scrolls or pages glide: every frame goes to them.
+            paused = { chrome.scrolling || pagerState.isScrollInProgress },
         )
         CompositionLocalProvider(
             LocalGlassState provides hazeState,
             LocalChromeController provides chrome,
+            LocalSettingsLink provides settingsLink,
         ) {
             AppNavHost(
                 navController = navController,
@@ -193,6 +201,8 @@ private fun AppShell(
                 insets = insets,
                 indicatorVisible = mainOnTop && chrome.indicatorVisible && !keyboardOpen,
                 playerAllowed = playerAllowed,
+                navScrim = mainOnTop,
+                onOpenArticle = navigator::openArticle,
                 onSelectPage = { index ->
                     val page = MainPage.ofIndex(index)
                     // Tapping the sun while already on "Heute" scrolls it back to the top.

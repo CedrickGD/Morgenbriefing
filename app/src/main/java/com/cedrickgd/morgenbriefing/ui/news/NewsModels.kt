@@ -247,3 +247,13 @@ internal fun nextTextScale(current: Float, larger: Boolean): Float {
 }
 
 private val WHITESPACE = Regex("\\s+")
+
+/** The two parts of a feed meta line; either may be missing. */
+internal data class FeedMetaParts(val time: String?, val source: String?)
+
+/** "vor 3 Std." and "Handelsblatt" separately, so the time never gets shortened. */
+internal fun feedMetaParts(item: NewsItem, now: ZonedDateTime): FeedMetaParts {
+    val time = Fmt.relative(item.publishedAt, now)
+    val source = item.source.trim().ifEmpty { sourcesOf(item).firstOrNull()?.let(::sourceLabel).orEmpty() }
+    return FeedMetaParts(time = time, source = source.ifEmpty { null })
+}

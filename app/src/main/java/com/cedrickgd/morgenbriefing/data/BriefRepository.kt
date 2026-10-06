@@ -9,6 +9,7 @@ import com.cedrickgd.morgenbriefing.data.model.BriefLoad
 import com.cedrickgd.morgenbriefing.data.model.BriefSourceException
 import com.cedrickgd.morgenbriefing.data.model.DayBundle
 import com.cedrickgd.morgenbriefing.data.model.HistoryEntry
+import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import com.cedrickgd.morgenbriefing.data.remote.GitHubBriefSource
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +21,7 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.IOException
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -65,8 +67,11 @@ class BriefRepository(
         val remote = async { remoteIndex() }
         val localDays = store.listDays()
         val remoteByDate = remote.await()
+        // Without a token Heute shows the demo brief: it belongs on the timeline too.
+        val demo = if (settings.token() == null) withContext(Dispatchers.IO) { sampleBrief() } else null
+        val demoDate = demo?.let { parseDate(it.date) }?.takeIf { !it.isAfter(today) }
 
-        val dates = (localDays.asSequence() + remoteByDate.keys.asSequence())
+        val dates = (localDays.asSequence() + remoteByDate.keys.asSequence() + listOfNotNull(demoDate).asSequence())
             .filter { !it.isAfter(today) }
             .distinct()
             .sortedDescending()
@@ -76,21 +81,41 @@ class BriefRepository(
             async(Dispatchers.IO) {
                 val local = store.loadBrief(date)
                 val entry = remoteByDate[date]
+                val shownDemo = demo?.takeIf { local == null && entry == null && date == demoDate }
                 HistoryEntry(
                     date = date,
-                    teaser = local?.teaser ?: entry?.teaser.orEmpty(),
-                    itemCount = local?.itemCount() ?: entry?.itemCount ?: 0,
-                    weather = store.loadDayWeather(date),
-                    cached = local != null,
+                    teaser = local?.teaser ?: entry?.teaser ?: shownDemo?.teaser.orEmpty(),
+                    itemCount = local?.itemCount() ?: entry?.itemCount ?: shownDemo?.itemCount() ?: 0,
+                    weather = store.loadDayWeather(date) ?: todaysLatestWeather(date, today),
+                    cached = local != null || shownDemo != null,
+                    demo = shownDemo != null,
                 )
             }
         }.awaitAll()
     }
 
-    /** Cache first; if missing and a token exists, fetch `briefs/DATE.json` and store it. */
+    /**
+     * Today's timeline entry may lack a morning snapshot (the app was first opened after noon):
+     * the newest weather fetched today stands in for it.
+     */
+    private suspend fun todaysLatestWeather(date: LocalDate, today: LocalDate): WeatherSnapshot? {
+        if (date != today) return null
+        val latest = store.loadLatestWeather() ?: return null
+        val fetchedOn = try {
+            OffsetDateTime.parse(latest.fetchedAt).atZoneSameInstant(BERLIN).toLocalDate()
+        } catch (_: DateTimeParseException) {
+            return null
+        }
+        return latest.takeIf { fetchedOn == today }
+    }
+
+    /**
+     * Cache first; if missing and a token exists, fetch `briefs/DATE.json` and store it. Without a
+     * token the demo brief answers for its own date (it is on the timeline as well).
+     */
     suspend fun day(date: LocalDate): DayBundle = coroutineScope {
-        val weather = async { store.loadDayWeather(date) }
-        val brief = store.loadBrief(date) ?: fetchDay(date)
+        val weather = async { store.loadDayWeather(date) ?: todaysLatestWeather(date, LocalDate.now(BERLIN)) }
+        val brief = store.loadBrief(date) ?: fetchDay(date) ?: demoFor(date)
         DayBundle(date = date, brief = brief, weather = weather.await())
     }
 
@@ -129,6 +154,13 @@ class BriefRepository(
         }
         saveQuietly(brief)
         return brief
+    }
+
+    /** The demo brief when there is no token and [date] is its date. */
+    private suspend fun demoFor(date: LocalDate): Brief? {
+        if (settings.token() != null) return null
+        val demo = withContext(Dispatchers.IO) { sampleBrief() }
+        return demo.takeIf { parseDate(it.date) == date }
     }
 
     /** Newest brief in the offline history, or null. */

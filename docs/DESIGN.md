@@ -14,7 +14,8 @@ für Android.
   1. Grundfarbe = `colorScheme.background`.
   2. Vertikaler Verlauf über die **volle Höhe**: oben die Himmelsfarben des aktuellen Wetters und
      der Tageszeit (Dämmerung vor Sonnenaufgang, Tag, Abend, Nacht), nach unten in einen
-     tieferen, leicht akzentgetönten Ton – unten ist es nie einfarbig flach.
+     tieferen, leicht akzentgetönten Ton – unten ist es nie einfarbig flach; ein weiches, warmes
+     Horizont-Glühen steigt vom unteren Rand auf.
   3. 3–4 große, weiche Farbflächen („Aurora“, radiale Verläufe, 60–90 % der Breite), die sich
      in 60–120 s langsam bewegen; Farben aus Himmel + `primaryContainer`/`tertiaryContainer`.
   4. Wetterpartikel (Nebelbänder, Regen, Schnee, Sterne, Sonnenschimmer) in der oberen Hälfte.
@@ -23,18 +24,30 @@ für Android.
 
 ## 2. Glas
 
-* Umsetzung mit **Haze** (`dev.chrisbanes.haze`): Der Himmel ist `hazeSource`, Glasflächen sind
-  `hazeEffect`. Ab Android 12 echte Unschärfe, darunter ein milchiger Fallback-Tint.
+* Umsetzung mit **Haze** (`dev.chrisbanes.haze`): Der Himmel ist `hazeSource` (zIndex 0), der
+  scrollende Inhalt jeder Seite ebenfalls (`glassContent()`, zIndex 1). Glas **im** Inhalt (Karten,
+  Chips) zeigt nur den unscharfen Himmel; **schwebendes** Glas darüber (Kopfleiste, Indikator,
+  Mini-Player, Leser-Steuerung) zeigt Himmel **und** Inhalt – Bilder gleiten farbig verschwommen
+  darunter durch. Ab Android 12 echte Unschärfe; darunter kein Haze, sondern ein milchiger Tint:
+  im Inhalt dichter (Tint + 30 %), schwebend praktisch deckend (97 %), damit kein Text durchscheint.
+* Tint: hell = `surface`; dunkel = ein **gehobener Nachtton** (`surfaceContainerHighest` + Hauch
+  `primaryContainer`, etwas Weiß) – dunkles Glas ist heller als der Himmel dahinter, nie ein Loch.
 * Stufen (Licht / Dunkel):
 
-  | Stufe | Blur | Tint (surface) | Rauschen | Einsatz |
+  | Stufe | Blur | Tint | Rauschen | Einsatz |
   |---|---|---|---|---|
-  | `Thin` | 20 dp | 38 % / 30 % | 0.05 | Chips, Pills, Indikator |
-  | `Regular` | 28 dp | 55 % / 45 % | 0.06 | Karten |
-  | `Thick` | 36 dp | 72 % / 62 % | 0.07 | Dialoge, Sheets, Kopfleisten |
+  | `Thin` | 20 dp | 34 % / 40 % | 0.05 | Chips, Pills |
+  | `Regular` | 28 dp | 50 % / 36 % | 0.06 | Karten, Indikator, Mini-Player |
+  | `Thick` | 36 dp | 62 % / 58 % | 0.07 | Dialoge, Sheets, Kopfleisten |
 
-* **Kante**: 1 dp Verlaufsrand (oben links Weiß 55 %/22 % → unten rechts Weiß 8 %/4 %),
-  dazu ein zarter Innen-Glanz oben (2–3 dp, Weiß 18 %/8 %). Kein harter Schatten; höchstens
+  Schwebendes Glas hat einen Mindest-Tint von 62 % / 66 %, damit Symbole und Text auf ihm auch über
+  sehr hellen oder dunklen Fotos lesbar bleiben (Symbole in voller `onSurface`-Farbe).
+
+* **Kante**: 1 dp Verlaufsrand (oben links Weiß 55 %/30 % → unten rechts Weiß 8 %/5 %),
+  dazu ein zarter Innen-Glanz oben (2–3 dp, Weiß 16 %/10 %). Kopfleisten zeigen keine Kante am
+  oberen Bildschirmrand; Inhalt läuft unter ihrer Unterkante weich aus (≈ 18 dp Verlauf).
+* Schwebendes Glas nimmt **jede Berührung** in seiner Fläche an – nichts darunter wird aus
+  Versehen ausgelöst. Kein harter Schatten; höchstens
   ein sehr weicher Umgebungsschatten (8–16 dp, ≤ 10 % Schwarz) für schwebende Elemente.
 * Radien: Karten **28 dp**, Kacheln/Bilder 22 dp, Chips 16 dp, Pills voll rund.
 * Text auf Glas muss ≥ 4.5:1 Kontrast haben – lieber stärkerer Tint als blasser Text.
@@ -47,11 +60,16 @@ für Android.
   12 dp über der Systemleiste): drei kleine Symbole (Verlauf · Sonne · Zahnrad); eine farbige
   „Flüssigkeits“-Kapsel gleitet mit dem Wischen von Symbol zu Symbol (folgt
   `currentPageOffsetFraction`). Antippen springt zur Seite. Er blendet beim Runterscrollen aus
-  und beim Hochscrollen/Stillstand wieder ein – er soll sich nie wie eine Leiste anfühlen.
+  und beim Hochscrollen, an der Spitze und ~0,65 s nach Stillstand (auch am Listenende) wieder
+  ein – er soll sich nie wie eine Leiste anfühlen. Während eine Liste scrollt, hält die Aurora
+  still. Mit 3-Tasten-Navigation hebt ein weicher Verlauf die Systemtasten vom Inhalt ab.
 * Haptik: leichter Tick beim Seitenwechsel.
 * Unterseiten (Artikel-Leser, Tagesdetail) öffnen sich **über** dem Pager; Predictive Back.
-* Innere horizontale Scroller (Top-Story-Karussell, Leser-Pager) haben Vorrang vor dem
-  Seitenwischen.
+* Innere horizontale Scroller (Chip-Reihe, Leser-Pager) haben Vorrang vor dem Seitenwischen:
+  was die Chip-Reihe am Anfang/Ende nicht mehr nutzt, verschluckt sie (kein Seitenwechsel).
+* Querverweise in die Einstellungen landen am Ziel („Token eintragen“ → News-Quelle mit offenem
+  Dialog). Den Claude-Key trägt man dort ein, wo man ihn braucht (Chat, Live) – im Dialog an Ort
+  und Stelle, Zurück führt dorthin zurück.
 
 ## 4. Seitenkopf
 
@@ -59,7 +77,8 @@ für Android.
   * einer kleinen Overline (Label, Versalien, Sperrung) – z. B. „DEIN ARCHIV“, „DEIN MORGEN“,
   * dem Seitentitel in Serif, **displaySmall (36 sp)**, linksbündig.
 * Beim Scrollen erscheint oben eine schmale **Glas-Kopfleiste** (Statusleiste + 52 dp) mit dem
-  Titel klein (titleLarge) – Inhalt gleitet darunter weich weg.
+  Titel klein (titleLarge) – Inhalt gleitet darunter weich weg. Antippen der Leiste scrollt nach
+  oben; Berührungen auf ihr erreichen nie den Inhalt darunter.
 
 ## 5. Typografie & Rhythmus
 
@@ -74,7 +93,8 @@ für Android.
 * Federn statt linearer Tweens (`spring(dampingRatio 0.8, stiffness MediumLow)`).
 * Inhalte erscheinen gestaffelt (40–60 ms Versatz), Zahlen zählen hoch, Karten heben sich beim
   Drücken minimal (Scale 0.98).
-* Seiten im Pager: Nachbarseiten leicht verkleinert (0.94) und abgedunkelt, während man wischt.
+* Seiten im Pager: Nachbarseiten leicht verkleinert (0.94) und in die Himmelsfarbe getönt (nicht
+  transparent – nichts scheint durch ihre Schrift), während man wischt.
 
 ## 7. Seiten im Detail
 
@@ -86,8 +106,14 @@ für Android.
 * **Themen-Chips** in einer horizontalen Reihe: „Für dich“ (alle Themen in Nutzer-Reihenfolge,
   je Thema eine Sektion mit „+ Mehr zu …“), „Top“ (die wichtigsten Meldungen über alle Themen
   nach Wichtigkeit), dann je ein Chip pro sichtbarem Thema (gefiltert, alle Artikel des Themas).
-  Glas-Pills; aktiver Chip gefüllt in Themen-/Akzentfarbe. Die Chip-Reihe bleibt beim Scrollen
-  unter der Glas-Kopfleiste kleben (sticky). Rechts daneben ein runder Glas-Button
+  Glas-Pills; aktiver Chip gefüllt in Themen-/Akzentfarbe. Erreicht die Chip-Reihe die
+  Glas-Kopfleiste, nimmt die Leiste sie auf: **eine** Glasfläche (Titel + Chips) mit einer Kante.
+* „Für dich“ beginnt mit der Zusammenfassung als **Pull-Quote** direkt auf dem Himmel (Akzentlinie,
+  große Serif, „12 Meldungen · 4 Themen“), darin „✨ Frag dein Briefing →“ als Glas-Pill; Hinweise
+  (Demo, offline) als schmales getöntes Band – keine Kartenstapel vor dem ersten Artikel.
+* Themen beginnen mit einer feinen Linie und „🤖 KI & TECH … 3 Meldungen“ (keine Pill).
+* Ohne freies Bild ein **typografisches Cover**: Mesh-Verlauf in Themenfarbe, große Serif-Initiale
+  als Wasserzeichen, kleines Glas-Badge mit Thema – kein Riesen-Emoji. Rechts daneben ein runder Glas-Button
   „Themen“ (Herz-mit-Plus-Symbol) → Bottom-Sheet zum Ein-/Ausblenden und Sortieren.
 * **Feed-Eintrag ohne Kartenrahmen**, direkt auf dem Hintergrund: Bild in voller Breite,
   22–24 dp Radius, ~16:10 (oder generiertes Cover in Themenfarbe); darunter die **Schlagzeile

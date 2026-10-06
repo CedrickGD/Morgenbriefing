@@ -5,10 +5,13 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -28,7 +31,10 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -47,6 +53,7 @@ import com.cedrickgd.morgenbriefing.listen.ListenState
 import com.cedrickgd.morgenbriefing.listen.showsMiniPlayer
 import com.cedrickgd.morgenbriefing.ui.components.motionDisabled
 import com.cedrickgd.morgenbriefing.ui.glass.LocalGlassState
+import com.cedrickgd.morgenbriefing.ui.glass.glassContent
 import com.cedrickgd.morgenbriefing.ui.reader.AskClaudePill
 import com.cedrickgd.morgenbriefing.ui.reader.AskPillHeight
 import com.cedrickgd.morgenbriefing.ui.reader.ReaderBarHeight
@@ -60,8 +67,6 @@ import com.cedrickgd.morgenbriefing.ui.shell.ChromeController
 import com.cedrickgd.morgenbriefing.util.parseDateOrNull
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import com.cedrickgd.morgenbriefing.util.statusBarTop
-import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -186,7 +191,6 @@ private fun ReaderPager(
     }.collectAsStateWithLifecycle(initialValue = ReaderListenUi(listen.state.value))
     val pagerState = rememberPagerState(initialPage = state.startIndex) { articles.size }
     val listStates = rememberPageListStates(articles.size)
-    val readerHaze = rememberHazeState()
     // Local chrome state: the "Frag Claude" pill hides while reading down, returns on the way up.
     val askChrome = remember { ChromeController() }
     var textPanelOpen by rememberSaveable { mutableStateOf(false) }
@@ -214,7 +218,10 @@ private fun ReaderPager(
     val navBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val askEnabled = AiSupport.isSupported
     val playerLift = if (listenUi.playerVisible) ListenMiniPlayerDefaults.Height + ListenMiniPlayerDefaults.Gap else 0.dp
-    val bottomPadding = navBottom + 32.dp + playerLift + (if (askEnabled) AskPillHeight + 16.dp else 0.dp)
+    // While the mini player shows, "Frag Claude" moves into the top capsule: one floating layer
+    // at the bottom, not two stacked over the text.
+    val askPillShown = askEnabled && !listenUi.playerVisible
+    val bottomPadding = navBottom + 32.dp + playerLift + (if (askPillShown) AskPillHeight + 16.dp else 0.dp)
 
     val current = pagerState.currentPage.coerceIn(0, articles.lastIndex)
     val currentEntry = articles[current]
@@ -246,7 +253,10 @@ private fun ReaderPager(
             state = pagerState,
             modifier = Modifier
                 .fillMaxSize()
-                .hazeSource(readerHaze),
+                // The article (on its calm opaque surface) is what the floating glass blurs:
+                // the top bar, "Frag Claude" and the shell's mini player.
+                .glassContent()
+                .background(MaterialTheme.colorScheme.background),
             beyondViewportPageCount = 1,
         ) { page ->
             ReaderPage(
@@ -272,11 +282,15 @@ private fun ReaderPager(
             )
         }
 
-        // Every glass piece above the article blurs the article itself, not the sky.
-        CompositionLocalProvider(LocalGlassState provides readerHaze) {
+        // Text softly fading out towards the floating controls at the bottom, so no letters
+        // peek out around the pill or the mini player.
+        BottomFade(height = navBottom + playerLift + (if (askPillShown) AskPillHeight + 16.dp else 0.dp) + 36.dp)
+
+        // Every glass piece above the article blurs the article itself.
+        run {
             if (askEnabled) {
                 AskClaudePill(
-                    visible = (askChrome.indicatorVisible || atEnd) && !textPanelOpen,
+                    visible = askPillShown && (askChrome.indicatorVisible || atEnd) && !textPanelOpen,
                     bottomInset = navBottom,
                     lift = playerLift,
                     onClick = { onAskAboutArticle(date, currentEntry.item.key) },
@@ -295,11 +309,16 @@ private fun ReaderPager(
                     val now = listen.state.value
                     when {
                         now.speaking && now.articleKey == item.key -> listen.stop()
-                        else -> listen.play(item)
+                        else -> listen.play(item, date)
                     }
                 },
                 onTextSize = { textPanelOpen = !textPanelOpen },
                 onShare = { links.shareArticle(currentEntry.item) },
+                onAsk = if (askEnabled && !askPillShown) {
+                    { onAskAboutArticle(date, currentEntry.item.key) }
+                } else {
+                    null
+                },
             )
             TextSizePanel(
                 open = textPanelOpen,
@@ -365,4 +384,29 @@ private fun ReaderStatusBarIcons(lightIcons: Boolean) {
         controller?.isAppearanceLightStatusBars = !lightIcons && !darkTheme
         onDispose { controller?.isAppearanceLightStatusBars = !darkTheme }
     }
+}
+
+/**
+ * A soft fade from transparent into the reading surface at the bottom of the screen, behind the
+ * floating controls ("Frag Claude", the mini player): text glides out instead of peeking out
+ * around their rounded ends.
+ */
+@Composable
+private fun BoxScope.BottomFade(height: Dp) {
+    val surface = MaterialTheme.colorScheme.background
+    Box(
+        Modifier
+            .align(Alignment.BottomCenter)
+            .fillMaxWidth()
+            .height(height)
+            .drawBehind {
+                drawRect(
+                    Brush.verticalGradient(
+                        0f to surface.copy(alpha = 0f),
+                        0.35f to surface.copy(alpha = 0.75f),
+                        1f to surface.copy(alpha = 0.92f),
+                    ),
+                )
+            },
+    )
 }

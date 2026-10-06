@@ -103,3 +103,10 @@ internal fun usageFraction(spent: Double, limit: Double): Float? {
     if (spent.isNaN() || spent <= 0.0) return 0f
     return (spent / limit).toFloat().coerceIn(0f, 1f)
 }
+
+/** "23 Anfragen · 7 Websuchen" — non-breaking around the dot, so a line never starts with "·". */
+internal fun usageCounts(requests: Int, webSearches: Int): String {
+    val req = if (requests == 1) "1 Anfrage" else "${requests.coerceAtLeast(0)} Anfragen"
+    val web = if (webSearches == 1) "1 Websuche" else "${webSearches.coerceAtLeast(0)} Websuchen"
+    return "$req\u00A0·\u00A0$web"
+}

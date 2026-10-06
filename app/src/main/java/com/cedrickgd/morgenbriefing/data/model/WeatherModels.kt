@@ -26,6 +26,8 @@ data class HomeWeather(
     /** `HH:mm` local. */
     val sunrise: String,
     val sunset: String,
+    /** Tomorrow's sunrise, `HH:mm` local; empty in snapshots stored before v1.2. */
+    val sunriseTomorrow: String = "",
 )
 
 /** The day-time window at the day place (default Leipzig, 10–18 Uhr). */

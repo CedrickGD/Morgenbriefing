@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
@@ -52,6 +53,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -110,6 +112,7 @@ class FeedActions(
  * share and a ⋮ menu. Picture, headline and lead open the reader.
  *
  * @param listening this article is being read aloud right now — the button turns into "Stopp".
+ * @param paused this article is loaded in the player but paused — the button offers "Weiter".
  * @param showTopic adds a small topic overline (mixed views: "Top", "⚡ Live").
  * @param badge replaces the meta line, e.g. "⚡ neu · vor 12 Min." for live articles.
  */
@@ -120,6 +123,7 @@ fun FeedEntry(
     listening: Boolean,
     actions: FeedActions,
     modifier: Modifier = Modifier,
+    paused: Boolean = false,
     showTopic: Boolean = false,
     badge: String? = null,
 ) {
@@ -128,7 +132,7 @@ fun FeedEntry(
     var imageStatus by remember(item.image) {
         mutableStateOf(if (item.image?.safeUrl() != null) ImageStatus.LOADING else ImageStatus.NONE)
     }
-    val meta = remember(item, now, badge) { if (badge != null) "" else feedMeta(item, now) }
+    val meta = remember(item, now, badge) { if (badge != null) FeedMetaParts(null, null) else feedMetaParts(item, now) }
 
     Column(modifier.fillMaxWidth()) {
         Column(
@@ -153,8 +157,6 @@ fun FeedEntry(
                     topic = article.topic,
                     modifier = Modifier.matchParentSize(),
                     contentDescription = item.image?.alt?.takeIf { it.isNotBlank() },
-                    emojiAlignment = Alignment.Center,
-                    emojiFraction = 0.36f,
                     onStatus = { imageStatus = it },
                 )
                 val image = item.image
@@ -185,6 +187,7 @@ fun FeedEntry(
             meta = meta,
             badge = badge,
             listening = listening,
+            paused = paused,
             actions = actions,
             modifier = Modifier.padding(top = 4.dp),
         )
@@ -233,8 +236,6 @@ fun FeedRow(article: FeedArticle, now: ZonedDateTime, onOpen: (FeedArticle) -> U
             modifier = Modifier
                 .size(96.dp)
                 .clip(RoundedCornerShape(18.dp)),
-            emojiAlignment = Alignment.Center,
-            emojiFraction = 0.42f,
         )
     }
 }
@@ -257,20 +258,23 @@ private fun TopicOverline(article: FeedArticle) {
     }
 }
 
-/** Attribution on the picture ("Bild: Ank Kumar · CC BY-SA 4.0"), tiny and quiet. */
+/**
+ * Attribution on the picture ("Bild: Ank Kumar · CC BY-SA 4.0"), tiny and quiet — on a dark,
+ * fully rounded scrim, so the white text stays legible on bright skies and façades.
+ */
 @Composable
 private fun CreditTag(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, lineHeight = 13.sp, letterSpacing = 0.2.sp),
-        color = Color.White.copy(alpha = 0.92f),
+        color = Color.White,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = modifier
             .padding(8.dp)
             .widthIn(max = 260.dp)
-            .background(Color.Black.copy(alpha = 0.38f), RoundedCornerShape(8.dp))
-            .padding(horizontal = 7.dp, vertical = 3.dp),
+            .background(Color.Black.copy(alpha = 0.55f), CircleShape)
+            .padding(horizontal = 9.dp, vertical = 3.dp),
     )
 }
 
@@ -302,7 +306,8 @@ private fun LiveTag(modifier: Modifier = Modifier) {
 @Composable
 internal fun LeadText(text: String, modifier: Modifier = Modifier, maxLines: Int = 3) {
     val style = Reading.feedLead()
-    val suffix = SpanStyle(color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
+    // A quiet continuation like in the reference: lighter than the lead, never bolder.
+    val suffix = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f), fontWeight = FontWeight.Medium)
     val measurer = rememberTextMeasurer(cacheSize = 8)
     BoxWithConstraints(modifier.fillMaxWidth()) {
         val width = constraints.maxWidth
@@ -351,13 +356,17 @@ private fun leadWithMore(
 
 private const val MAX_CUT_STEPS = 24
 
-/** Meta line + "Zuhören" + share + ⋮ menu (with "Thema ausblenden", sources, copy, ask). */
+/**
+ * Meta line + "Zuhören" + share + ⋮ menu (with "Thema ausblenden", sources, copy, ask). The time
+ * stays whole and only the source is shortened, on one line — the row never wraps or jumps.
+ */
 @Composable
 private fun FeedMetaRow(
     article: FeedArticle,
-    meta: String,
+    meta: FeedMetaParts,
     badge: String?,
     listening: Boolean,
+    paused: Boolean,
     actions: FeedActions,
     modifier: Modifier = Modifier,
 ) {
@@ -368,25 +377,33 @@ private fun FeedMetaRow(
             .heightIn(min = 48.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Live articles show only their badge here; the source is one tap away (⋮ → Quellen).
-        val metaText = remember(meta, badge, colors.primary) {
-            if (badge == null) {
-                AnnotatedString(meta)
+        Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            if (badge != null) {
+                // Live articles show only their badge here; the source is one tap away (⋮ → Quellen).
+                Text(
+                    text = badge,
+                    style = Reading.meta().copy(color = colors.primary, fontWeight = FontWeight.SemiBold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             } else {
-                buildAnnotatedString {
-                    withStyle(SpanStyle(color = colors.primary, fontWeight = FontWeight.SemiBold)) { append(badge) }
+                meta.time?.let { time ->
+                    Text(text = time, style = Reading.meta(), maxLines = 1, softWrap = false)
+                }
+                meta.source?.let { source ->
+                    Text(
+                        text = if (meta.time != null) " · $source" else source,
+                        style = Reading.meta(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false),
+                    )
                 }
             }
         }
-        Text(
-            text = metaText,
-            style = Reading.meta(),
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
-        )
         ListenButton(
             listening = listening,
+            paused = paused,
             headline = article.item.headline,
             onClick = { if (listening) actions.onStopListening() else actions.onListen(article) },
         )
@@ -403,34 +420,49 @@ private fun FeedMetaRow(
     }
 }
 
-/** "🎧 Zuhören" — or, while this article is being read, a little equalizer and "Stopp". */
+/**
+ * "🎧 Zuhören"; while this article is read, a little equalizer and "Stopp"; while it is paused,
+ * "Weiter". The button always keeps the width of its longest label, so toggling never reflows
+ * the row.
+ */
 @Composable
-private fun ListenButton(listening: Boolean, headline: String, onClick: () -> Unit) {
+private fun ListenButton(listening: Boolean, paused: Boolean, headline: String, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
-    val tint = if (listening) colors.primary else colors.onSurfaceVariant
-    Row(
+    val tint = if (listening || paused) colors.primary else colors.onSurfaceVariant
+    val label = when {
+        listening -> "Stopp"
+        paused -> "Weiter"
+        else -> "Zuhören"
+    }
+    Box(
         modifier = Modifier
             .heightIn(min = 48.dp)
             .clip(RoundedCornerShape(24.dp))
             .clickable(role = Role.Button, onClick = onClick)
             .clearAndSetSemantics {
-                contentDescription = if (listening) "Vorlesen beenden" else "Vorlesen: $headline"
+                contentDescription = when {
+                    listening -> "Vorlesen beenden"
+                    paused -> "Weiter vorlesen: $headline"
+                    else -> "Vorlesen: $headline"
+                }
             }
             .padding(horizontal = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        contentAlignment = Alignment.CenterStart,
     ) {
-        if (listening) {
-            Equalizer(color = tint, modifier = Modifier.size(20.dp))
-        } else {
-            Icon(Icons.Rounded.Headphones, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
+        // Invisible widest label: reserves the room, so "Stopp"/"Weiter" do not shrink the button.
+        Row(Modifier.graphicsLayer { alpha = 0f }, verticalAlignment = Alignment.CenterVertically) {
+            Spacer(Modifier.width(26.dp))
+            Text(text = "Zuhören", style = MaterialTheme.typography.labelLarge, maxLines = 1)
         }
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text = if (listening) "Stopp" else "Zuhören",
-            style = MaterialTheme.typography.labelLarge,
-            color = tint,
-            maxLines = 1,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (listening) {
+                Equalizer(color = tint, modifier = Modifier.size(20.dp))
+            } else {
+                Icon(Icons.Rounded.Headphones, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
+            }
+            Spacer(Modifier.width(6.dp))
+            Text(text = label, style = MaterialTheme.typography.labelLarge, color = tint, maxLines = 1)
+        }
     }
 }
 

@@ -65,6 +65,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
 import com.cedrickgd.morgenbriefing.data.model.AiModel
@@ -203,11 +204,17 @@ private fun KeyRow(hasKey: Boolean, onEdit: () -> Unit) {
             tint = if (hasKey) StatusPalette.ok() else MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.width(12.dp))
-        Column(Modifier.weight(1f)) {
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(end = 12.dp),
+        ) {
             Text("API-Key", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface)
             Text(
                 text = if (hasKey) "Gespeichert ✓ · verschlüsselt" else "Noch keiner eingetragen",
                 style = MaterialTheme.typography.bodySmall,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 color = if (hasKey) StatusPalette.ok() else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -311,6 +318,7 @@ private fun LimitControl(limit: Double, onCommit: (Double) -> Unit) {
         onValueChangeFinished = { onCommit(value.toDouble()) },
         valueRange = 0f..AiLimit.MAX.toFloat(),
         steps = AiLimit.SLIDER_STEPS,
+        thumb = { CalmSliderThumb() },
         track = { state -> CalmSliderTrack(state) },
         modifier = Modifier.semantics {
             contentDescription = "Monatliches KI-Limit"
@@ -324,7 +332,10 @@ private fun LimitControl(limit: Double, onCommit: (Double) -> Unit) {
     )
 }
 
-/** This month's spending as a filling bar plus "Diesen Monat: 0,84 $ von 5 $ · …". */
+/**
+ * This month's spending: the amount large in serif ("0,84 $" with a quiet "von 5 $"), a labelled
+ * bar that starts as a small accent stub, and the request counts on their own line.
+ */
 @Composable
 private fun UsageMeter(usage: UsageSnapshot, limit: Double, reduceMotion: Boolean) {
     val fraction = usageFraction(usage.spentUsd, limit)
@@ -346,32 +357,51 @@ private fun UsageMeter(usage: UsageSnapshot, limit: Double, reduceMotion: Boolea
             .fillMaxWidth()
             .lamina()
             .padding(16.dp)
-            .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
+            .semantics(mergeDescendants = true) {
+                liveRegion = LiveRegionMode.Polite
+                contentDescription = usageLine(usage.spentUsd, limit, usage.requests, usage.webSearches).replace("$", "Dollar")
+            },
     ) {
+        Overline("Diesen Monat")
+        Spacer(Modifier.height(4.dp))
+        Row(verticalAlignment = Alignment.Bottom) {
+            Text(
+                text = usd(usage.spentUsd),
+                style = MaterialTheme.typography.headlineMedium,
+                color = colors.onSurface,
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = if (limit > 0.0) "von ${usd(limit)}" else "ohne Limit",
+                style = MaterialTheme.typography.bodyMedium,
+                color = colors.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 4.dp),
+            )
+        }
         if (fraction != null) {
+            Spacer(Modifier.height(10.dp))
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .height(10.dp)
+                    .height(8.dp)
                     .drawBehind {
                         val r = CornerRadius(size.height / 2f)
                         drawRoundRect(track, cornerRadius = r)
-                        val w = size.width * animated.value
-                        if (w > 0f) {
-                            drawRoundRect(
-                                Brush.horizontalGradient(listOf(fill.copy(alpha = 0.75f), fill), endX = w.coerceAtLeast(1f)),
-                                size = Size(w.coerceAtLeast(size.height), size.height),
-                                cornerRadius = r,
-                            )
-                        }
+                        // Never an empty track that looks broken: a small stub marks the start.
+                        val w = (size.width * animated.value).coerceAtLeast(UsageStub.toPx())
+                        drawRoundRect(
+                            Brush.horizontalGradient(listOf(fill.copy(alpha = 0.75f), fill), endX = w.coerceAtLeast(1f)),
+                            size = Size(w, size.height),
+                            cornerRadius = r,
+                        )
                     },
             )
-            Spacer(Modifier.height(10.dp))
         }
+        Spacer(Modifier.height(10.dp))
         Text(
-            text = usageLine(usage.spentUsd, limit, usage.requests, usage.webSearches),
-            style = MaterialTheme.typography.bodyMedium,
-            color = colors.onSurface,
+            text = usageCounts(usage.requests, usage.webSearches),
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.onSurfaceVariant,
         )
         if (fraction != null && fraction >= 1f) {
             Text(
@@ -384,12 +414,15 @@ private fun UsageMeter(usage: UsageSnapshot, limit: Double, reduceMotion: Boolea
     }
 }
 
+/** Width of the bar's start stub at 0 $. */
+private val UsageStub = 8.dp
+
 private const val WARN_AT = 0.8f
 
 /**
  * "Claude-API-Key eintragen/ändern": short steps, link to the Anthropic console, a password
  * field with show/hide, "Speichern & testen" (only a working key is stored) and, for an
- * existing key, "Key entfernen".
+ * existing key and a non-null [onRemove], "Key entfernen".
  */
 @Composable
 internal fun AiKeyDialog(
@@ -397,7 +430,7 @@ internal fun AiKeyDialog(
     state: AiKeyState,
     onSaveAndTest: (key: String, skipTest: Boolean) -> Unit,
     onOpenConsole: () -> Unit,
-    onRemove: () -> Unit,
+    onRemove: (() -> Unit)?,
     onDismiss: () -> Unit,
 ) {
     // Deliberately not rememberSaveable: the secret should not end up in saved instance state.
@@ -512,7 +545,7 @@ internal fun AiKeyDialog(
             Spacer(Modifier.height(8.dp))
             GlassPillButton(text = "Ohne Test speichern", onClick = { onSaveAndTest(key, true) }, style = PillStyle.Quiet)
         }
-        if (hasKey && state != AiKeyState.Saved) {
+        if (hasKey && onRemove != null && state != AiKeyState.Saved) {
             Spacer(Modifier.height(8.dp))
             DialogButton("Gespeicherten Key entfernen", onRemove, color = colors.error)
         }
