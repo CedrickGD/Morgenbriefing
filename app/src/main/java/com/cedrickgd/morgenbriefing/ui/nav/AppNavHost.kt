@@ -12,12 +12,14 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.toRoute
 import com.cedrickgd.morgenbriefing.ui.brief.DayDetailScreen
 import com.cedrickgd.morgenbriefing.ui.chat.ChatScreen
@@ -25,6 +27,7 @@ import com.cedrickgd.morgenbriefing.ui.news.ArticleScreen
 import com.cedrickgd.morgenbriefing.ui.shell.MainPage
 import com.cedrickgd.morgenbriefing.ui.shell.MainPager
 import com.cedrickgd.morgenbriefing.ui.shell.ShellNavigator
+import com.cedrickgd.morgenbriefing.ui.shell.isMain
 import com.cedrickgd.morgenbriefing.ui.today.TodayViewModel
 
 /**
@@ -58,9 +61,11 @@ internal fun AppNavHost(
         popExitTransition = { popExit() },
     ) {
         composable<MainRoute> { entry ->
+            val top by navController.currentBackStackEntryAsState()
             MainPager(
                 navigator = navigator,
                 entry = entry,
+                onTop = top?.isMain() ?: true,
                 contentPadding = pagePadding,
                 openTodaySignal = openTodaySignal,
                 todayViewModel = todayViewModel,

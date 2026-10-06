@@ -61,12 +61,14 @@ private const val BACK_PEEK = 0.14f
  * to "Heute" (following the predictive back gesture on Android 14+).
  *
  * @param entry the MainRoute back stack entry (guards against double taps during transitions).
+ * @param onTop the MainRoute entry is the top of the back stack (also while a pop still animates).
  * @param todayViewModel the activity-scoped instance the shell also uses for the sky.
  */
 @Composable
 internal fun MainPager(
     navigator: ShellNavigator,
     entry: NavBackStackEntry,
+    onTop: Boolean,
     contentPadding: PaddingValues,
     openTodaySignal: Int,
     todayViewModel: TodayViewModel,
@@ -91,10 +93,11 @@ internal fun MainPager(
             .collect { chrome.show() }
     }
 
-    // Only while the pager is the settled top screen: during a push/pop transition back must
-    // reach the navigation graph instead.
+    // Only while the pager is the top screen: during a push, back must reach the navigation
+    // graph. While a pop still animates (the entry is only STARTED then) the pager is already on
+    // top and the graph has nothing left to pop, so back is handled here – or it would leave the app.
     val lifecycle by entry.lifecycle.currentStateAsState()
-    BackToToday(pagerState, scope, enabled = lifecycle == Lifecycle.State.RESUMED)
+    BackToToday(pagerState, scope, enabled = onTop && lifecycle.isAtLeast(Lifecycle.State.STARTED))
 
     HorizontalPager(
         state = pagerState,
