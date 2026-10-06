@@ -22,7 +22,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okio.ByteString.Companion.decodeBase64
 import okio.ByteString.Companion.encodeUtf8
 import java.io.IOException
-import java.util.Locale
 
 /** `config/email.json` as stored on the branch, with the blob [sha] needed to overwrite it. */
 data class StoredEmailConfig(
@@ -49,7 +48,8 @@ interface EmailConfigRemote {
  *   A 409/422 (sha mismatch, or the file appeared meanwhile) re-reads the sha and retries once.
  *
  * Needs a fine-grained token with *Contents: Read and write* for writing; 403/404 on a write
- * mean the token may only read ([EmailConfigError.NO_WRITE_PERMISSION]). Every failure is an
+ * mean the token may only read ([EmailConfigError.NO_WRITE_PERMISSION]); 429, or 403 with an
+ * exhausted rate limit, is [EmailConfigError.RATE_LIMITED]. Every failure is an
  * [EmailConfigException]. The token only ever goes into the `Authorization` header — never into
  * a URL, an exception message or a log line.
  */
@@ -73,15 +73,11 @@ class GitHubConfigStore(
 
     override suspend fun read(token: String): StoredEmailConfig? {
         val response = send(token, contentsUrl(withRef = true), method = "GET", body = null, what = "Lesen")
-        return when (response.code) {
-            in 200..299 -> decodeFile(response.body)
-            404 -> null
-            401 -> fail(EmailConfigError.UNAUTHORIZED, response, "Lesen")
-            403 -> fail(
-                if (isRateLimit(response)) EmailConfigError.RATE_LIMITED else EmailConfigError.UNAUTHORIZED,
-                response,
-                "Lesen",
-            )
+        return when {
+            response.isSuccessful -> decodeFile(response.body)
+            response.code == 404 -> null
+            response.isRateLimited -> fail(EmailConfigError.RATE_LIMITED, response, "Lesen")
+            response.code == 401 || response.code == 403 -> fail(EmailConfigError.UNAUTHORIZED, response, "Lesen")
             else -> fail(EmailConfigError.UNKNOWN, response, "Lesen")
         }
     }
@@ -115,15 +111,11 @@ class GitHubConfigStore(
         return send(token, contentsUrl(withRef = false), method = "PUT", body = body, what = "Speichern")
     }
 
-    private fun handleWrite(response: HttpText, written: EmailConfig): StoredEmailConfig = when (response.code) {
-        in 200..299 -> StoredEmailConfig(written, newSha(response.body))
-        401 -> fail(EmailConfigError.UNAUTHORIZED, response, "Speichern")
-        403 -> fail(
-            if (isRateLimit(response)) EmailConfigError.RATE_LIMITED else EmailConfigError.NO_WRITE_PERMISSION,
-            response,
-            "Speichern",
-        )
-        404 -> fail(EmailConfigError.NO_WRITE_PERMISSION, response, "Speichern")
+    private fun handleWrite(response: HttpText, written: EmailConfig): StoredEmailConfig = when {
+        response.isSuccessful -> StoredEmailConfig(written, newSha(response.body))
+        response.isRateLimited -> fail(EmailConfigError.RATE_LIMITED, response, "Speichern")
+        response.code == 401 -> fail(EmailConfigError.UNAUTHORIZED, response, "Speichern")
+        response.code == 403 || response.code == 404 -> fail(EmailConfigError.NO_WRITE_PERMISSION, response, "Speichern")
         else -> fail(EmailConfigError.UNKNOWN, response, "Speichern")
     }
 
@@ -199,10 +191,6 @@ class GitHubConfigStore(
             throw EmailConfigException(EmailConfigError.UNKNOWN, "Unerwarteter Fehler (E-Mail-Einstellung $what)", e)
         }
     }
-
-    /** GitHub answers an exhausted rate limit with 403 and a "rate limit" message. */
-    private fun isRateLimit(response: HttpText): Boolean =
-        response.body.lowercase(Locale.ROOT).contains("rate limit")
 
     private fun fail(kind: EmailConfigError, response: HttpText, what: String): Nothing =
         throw EmailConfigException(kind, "GitHub antwortet mit HTTP ${response.code} (E-Mail-Einstellung $what)")

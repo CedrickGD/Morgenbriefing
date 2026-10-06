@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -16,8 +17,21 @@ import kotlin.coroutines.resumeWithException
 internal const val USER_AGENT = "Morgenbriefing-Android"
 
 /** A fully read HTTP response: status code plus the body as text. */
-internal class HttpText(val code: Int, val body: String) {
+internal class HttpText(
+    val code: Int,
+    val body: String,
+    /** GitHub's `x-ratelimit-remaining` header, if sent. */
+    val rateLimitRemaining: String? = null,
+) {
     val isSuccessful: Boolean get() = code in 200..299
+
+    /**
+     * GitHub's "slow down": 429, or 403 with an exhausted primary limit (`x-ratelimit-remaining: 0`)
+     * or a secondary-limit message in the body.
+     */
+    val isRateLimited: Boolean
+        get() = code == 429 ||
+            (code == 403 && (rateLimitRemaining == "0" || body.lowercase(Locale.ROOT).contains("rate limit")))
 }
 
 /**
@@ -32,7 +46,7 @@ internal class HttpText(val code: Int, val body: String) {
 internal suspend fun OkHttpClient.fetchText(request: Request): HttpText {
     val response = newCall(request).await()
     return response.use { r ->
-        withContext(Dispatchers.IO) { HttpText(r.code, r.body.string()) }
+        withContext(Dispatchers.IO) { HttpText(r.code, r.body.string(), r.header("x-ratelimit-remaining")) }
     }
 }
 

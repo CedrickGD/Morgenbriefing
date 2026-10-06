@@ -93,10 +93,14 @@ class GitHubConfigStoreTest {
         server.enqueue(MockResponse().setResponseCode(401).setBody("""{"message":"Bad credentials"}"""))
         server.enqueue(MockResponse().setResponseCode(403).setBody("""{"message":"Resource not accessible"}"""))
         server.enqueue(MockResponse().setResponseCode(403).setBody("""{"message":"API rate limit exceeded for user"}"""))
+        server.enqueue(MockResponse().setResponseCode(429).setBody("""{"message":"Too many requests"}"""))
+        server.enqueue(MockResponse().setResponseCode(403).setHeader("x-ratelimit-remaining", "0").setBody("""{"message":"Forbidden"}"""))
         server.enqueue(MockResponse().setResponseCode(500))
 
         val e = expectKind(EmailConfigError.UNAUTHORIZED) { store.read(TOKEN) }
         expectKind(EmailConfigError.UNAUTHORIZED) { store.read(TOKEN) }
+        expectKind(EmailConfigError.RATE_LIMITED) { store.read(TOKEN) }
+        expectKind(EmailConfigError.RATE_LIMITED) { store.read(TOKEN) }
         expectKind(EmailConfigError.RATE_LIMITED) { store.read(TOKEN) }
         expectKind(EmailConfigError.UNKNOWN) { store.read(TOKEN) }
         assertFalse(e.message.orEmpty().contains(TOKEN))
@@ -215,10 +219,15 @@ class GitHubConfigStoreTest {
     fun `401 on write is UNAUTHORIZED and a rate limit is RATE_LIMITED`() = runTest {
         server.enqueue(MockResponse().setResponseCode(401))
         server.enqueue(MockResponse().setResponseCode(403).setBody("""{"message":"You have exceeded a secondary rate limit"}"""))
+        server.enqueue(MockResponse().setResponseCode(429))
+        server.enqueue(MockResponse().setResponseCode(403).setHeader("x-ratelimit-remaining", "0"))
         val config = EmailConfig(enabled = true, recipients = listOf("a@b.de"))
 
         val e = expectKind(EmailConfigError.UNAUTHORIZED) { store.write(TOKEN, config, sha = "sha-1") }
         expectKind(EmailConfigError.RATE_LIMITED) { store.write(TOKEN, config, sha = "sha-1") }
+        expectKind(EmailConfigError.RATE_LIMITED) { store.write(TOKEN, config, sha = "sha-1") }
+        expectKind(EmailConfigError.RATE_LIMITED) { store.write(TOKEN, config, sha = "sha-1") }
+        assertEquals(4, server.requestCount)
         assertFalse(e.message.orEmpty().contains(TOKEN))
     }
 
