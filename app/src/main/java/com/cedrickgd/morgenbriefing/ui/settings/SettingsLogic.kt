@@ -57,6 +57,75 @@ internal fun gestureAxis(dx: Float, dy: Float, slop: Float): GestureAxis = when 
     else -> GestureAxis.UNDECIDED
 }
 
+/** How a touch on the window slider ended. */
+internal enum class TouchEnd {
+    /** The finger was lifted inside the app. */
+    RELEASED,
+
+    /** The system took the touch over, e.g. a Home or Back swipe from the gesture strip. */
+    CANCELLED,
+}
+
+/** What becomes of the change a touch made on the window slider. */
+internal enum class SliderVerdict { SAVE, REVERT }
+
+/**
+ * Whether the window slider saves what a touch did: only a deliberate horizontal drag or a tap
+ * that ended with a normal release while the app was in front. Dropped are a page scroll that
+ * started on the track, a touch the system took over (a Home swipe that starts on the slider in
+ * the bottom gesture strip ends in a cancel) and a touch that ended after the window lost focus
+ * or the screen was left.
+ */
+internal fun saveSliderTouch(axis: GestureAxis, end: TouchEnd, appInFront: Boolean): Boolean =
+    end == TouchEnd.RELEASED && appInFront && axis != GestureAxis.VERTICAL
+
+/**
+ * Follows one touch on the window slider from its first contact to its end.
+ *
+ * material3's RangeSlider moves the nearest thumb to the first contact and calls
+ * onValueChangeFinished for every gesture that ends – also for a page scroll and for a cancel,
+ * which it even handles before an element around it learns about the cancel. So a finish during
+ * a touch only waits ([onSliderFinished] is false) and the end of the touch decides
+ * ([onTouchEnd]); a finish without a touch (keyboard, TalkBack) is saved right away.
+ */
+internal class SliderTouchGuard {
+    private var touching = false
+    private var dx = 0f
+    private var dy = 0f
+    private var axis = GestureAxis.UNDECIDED
+
+    /** First contact, seen before the slider moves a thumb. */
+    fun onDown() {
+        touching = true
+        dx = 0f
+        dy = 0f
+        axis = GestureAxis.UNDECIDED
+    }
+
+    /** Movement of the followed finger; the first clear axis sticks. */
+    fun onMove(deltaX: Float, deltaY: Float, slop: Float) {
+        if (!touching || axis != GestureAxis.UNDECIDED) return
+        dx += deltaX
+        dy += deltaY
+        axis = gestureAxis(dx, dy, slop)
+    }
+
+    /** The slider's onValueChangeFinished: true = save now, false = [onTouchEnd] decides. */
+    fun onSliderFinished(): Boolean = !touching
+
+    /** The touch ended; null when no touch was followed. */
+    fun onTouchEnd(end: TouchEnd, appInFront: Boolean): SliderVerdict? {
+        if (!touching) return null
+        touching = false
+        return if (saveSliderTouch(axis, end, appInFront)) SliderVerdict.SAVE else SliderVerdict.REVERT
+    }
+
+    /** The slider left the screen in the middle of a touch. */
+    fun reset() {
+        touching = false
+    }
+}
+
 /** "05:30" */
 internal fun clockLabel(hour: Int, minute: Int): String =
     String.format(Locale.GERMANY, "%02d:%02d", hour, minute)

@@ -3,8 +3,6 @@ package com.cedrickgd.morgenbriefing.ui.settings
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,15 +44,26 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.PointerId
+import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
 import androidx.compose.ui.input.pointer.positionChangeIgnoreConsumed
+import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.PointerInputModifierNode
+import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalViewConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.ui.components.Emoji
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
@@ -191,10 +201,22 @@ private fun DayWindowCard(start: Int, end: Int, placeName: String, onCommit: (In
     // Local while dragging, written once the finger lifts; resets when the stored value changes.
     var range by remember(start, end) { mutableStateOf(DayWindow.normalize(start, end)) }
     val haptics = LocalHapticFeedback.current
-    // A vertical scroll of the page that starts on the track still moves the nearest thumb and
-    // ends in onValueChangeFinished (material3 RangeSlider has no way to opt out): such a
-    // gesture is noticed here and its change dropped instead of saved.
-    val gesture = remember { SliderGesture() }
+    // material3's RangeSlider moves the nearest thumb to any touch and reports every gesture as
+    // finished, also a page scroll that starts on the track and a Home swipe the system takes
+    // over when the slider sits in the gesture strip (it cancels the touch). Only a horizontal
+    // drag or a tap that ends normally while the app is in front is saved (SliderTouchGuard).
+    val guard = remember { SliderTouchGuard() }
+    val windowInfo = LocalWindowInfo.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val finishTouch by rememberUpdatedState { how: TouchEnd ->
+        val inFront = windowInfo.isWindowFocused && lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+        when (guard.onTouchEnd(how, inFront)) {
+            SliderVerdict.SAVE -> onCommit(range.first, range.second)
+            SliderVerdict.REVERT -> range = DayWindow.normalize(start, end)
+            null -> Unit
+        }
+    }
+    val onTouchEnd = remember { { how: TouchEnd -> finishTouch(how) } }
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Overline("Zeitfenster")
         Row(verticalAlignment = Alignment.Bottom) {
@@ -229,11 +251,8 @@ private fun DayWindowCard(start: Int, end: Int, placeName: String, onCommit: (In
                 range = next
             },
             onValueChangeFinished = {
-                if (gesture.vertical) {
-                    range = DayWindow.normalize(start, end)
-                } else {
-                    onCommit(range.first, range.second)
-                }
+                // Keyboard and TalkBack save at once; during a touch its end decides.
+                if (guard.onSliderFinished()) onCommit(range.first, range.second)
             },
             valueRange = DayWindow.MIN_HOUR.toFloat()..DayWindow.MAX_HOUR.toFloat(),
             steps = DayWindow.SLIDER_STEPS,
@@ -241,7 +260,7 @@ private fun DayWindowCard(start: Int, end: Int, placeName: String, onCommit: (In
             endThumb = { SunThumb(Icons.Rounded.WbTwilight) },
             track = { state -> DaylightTrack(state) },
             modifier = Modifier
-                .watchGestureAxis(gesture)
+                .followSliderTouch(guard, onTouchEnd)
                 .semantics { contentDescription = "Zeitfenster für den Tagesverlauf" },
         )
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -252,36 +271,68 @@ private fun DayWindowCard(start: Int, end: Int, placeName: String, onCommit: (In
     }
 }
 
-/** Whether the current gesture on the slider turned into a vertical scroll of the page. */
-private class SliderGesture {
-    var vertical = false
+/**
+ * Feeds [guard] with each touch on this element and reports its end to [onTouchEnd]. Nothing is
+ * consumed, so the slider and the page behave as before. The first contact and the movement are
+ * read in the Initial pass (before the slider moves a thumb), the release in the Final pass
+ * (after the slider reported the gesture finished). A cancel (the system taking the touch over)
+ * arrives through [PointerInputModifierNode.onCancelPointerInput], which Compose calls on this
+ * outer node only after the slider has handled the cancel.
+ */
+private fun Modifier.followSliderTouch(guard: SliderTouchGuard, onTouchEnd: (TouchEnd) -> Unit): Modifier =
+    this then SliderTouchElement(guard, onTouchEnd)
+
+private data class SliderTouchElement(
+    val guard: SliderTouchGuard,
+    val onTouchEnd: (TouchEnd) -> Unit,
+) : ModifierNodeElement<SliderTouchNode>() {
+    override fun create() = SliderTouchNode(guard, onTouchEnd)
+
+    override fun update(node: SliderTouchNode) {
+        node.guard = guard
+        node.onTouchEnd = onTouchEnd
+    }
 }
 
-/**
- * Watches each gesture on this element from its first touch (Initial pass, nothing consumed,
- * so the slider and the list behave as before) and records in [gesture] whether it became a
- * vertical scroll.
- */
-private fun Modifier.watchGestureAxis(gesture: SliderGesture): Modifier = pointerInput(gesture) {
-    awaitEachGesture {
-        val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
-        gesture.vertical = false
-        var dx = 0f
-        var dy = 0f
-        while (true) {
-            val change = awaitPointerEvent(PointerEventPass.Initial).changes.firstOrNull { it.id == down.id } ?: break
-            val delta = change.positionChangeIgnoreConsumed()
-            dx += delta.x
-            dy += delta.y
-            when (gestureAxis(dx, dy, viewConfiguration.touchSlop)) {
-                GestureAxis.VERTICAL -> {
-                    gesture.vertical = true
-                    break
-                }
-                GestureAxis.HORIZONTAL -> break
-                GestureAxis.UNDECIDED -> if (!change.pressed) break
+private class SliderTouchNode(
+    var guard: SliderTouchGuard,
+    var onTouchEnd: (TouchEnd) -> Unit,
+) : Modifier.Node(), PointerInputModifierNode, CompositionLocalConsumerModifierNode {
+    /** The finger that started the touch; null between touches. */
+    private var pointer: PointerId? = null
+
+    override fun onPointerEvent(pointerEvent: PointerEvent, pass: PointerEventPass, bounds: IntSize) {
+        val tracked = pointer
+        when (pass) {
+            PointerEventPass.Initial -> if (tracked == null) {
+                val down = pointerEvent.changes.firstOrNull { it.changedToDownIgnoreConsumed() } ?: return
+                pointer = down.id
+                guard.onDown()
+            } else {
+                val change = pointerEvent.changes.firstOrNull { it.id == tracked } ?: return
+                val delta = change.positionChangeIgnoreConsumed()
+                guard.onMove(delta.x, delta.y, currentValueOf(LocalViewConfiguration).touchSlop)
             }
+            PointerEventPass.Final -> if (tracked != null) {
+                val change = pointerEvent.changes.firstOrNull { it.id == tracked }
+                if (change == null || !change.pressed) end(TouchEnd.RELEASED)
+            }
+            else -> Unit
         }
+    }
+
+    override fun onCancelPointerInput() {
+        if (pointer != null) end(TouchEnd.CANCELLED)
+    }
+
+    override fun onDetach() {
+        pointer = null
+        guard.reset()
+    }
+
+    private fun end(how: TouchEnd) {
+        pointer = null
+        onTouchEnd(how)
     }
 }
 

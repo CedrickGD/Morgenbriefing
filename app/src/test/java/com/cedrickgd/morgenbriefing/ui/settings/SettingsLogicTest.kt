@@ -109,6 +109,64 @@ class SettingsLogicTest {
     }
 
     @Test
+    fun `only a released horizontal drag or tap of the window slider is saved`() {
+        // Drag or tap that ends normally while the app is in front.
+        assertTrue(saveSliderTouch(GestureAxis.HORIZONTAL, TouchEnd.RELEASED, appInFront = true))
+        assertTrue(saveSliderTouch(GestureAxis.UNDECIDED, TouchEnd.RELEASED, appInFront = true))
+        // Page scroll that started on the track.
+        assertFalse(saveSliderTouch(GestureAxis.VERTICAL, TouchEnd.RELEASED, appInFront = true))
+        // Home swipe from the gesture strip: the system cancels the touch.
+        assertFalse(saveSliderTouch(GestureAxis.UNDECIDED, TouchEnd.CANCELLED, appInFront = true))
+        assertFalse(saveSliderTouch(GestureAxis.HORIZONTAL, TouchEnd.CANCELLED, appInFront = true))
+        // Released after the window lost focus or the screen was left.
+        assertFalse(saveSliderTouch(GestureAxis.HORIZONTAL, TouchEnd.RELEASED, appInFront = false))
+    }
+
+    @Test
+    fun `the slider guard waits for the end of a touch before saving`() {
+        val slop = 20f
+        val guard = SliderTouchGuard()
+
+        // Horizontal drag: the slider's finish arrives before the release and only waits.
+        guard.onDown()
+        guard.onMove(15f, 2f, slop)
+        guard.onMove(30f, -4f, slop)
+        assertFalse(guard.onSliderFinished())
+        assertEquals(SliderVerdict.SAVE, guard.onTouchEnd(TouchEnd.RELEASED, appInFront = true))
+
+        // Tap on the track.
+        guard.onDown()
+        assertFalse(guard.onSliderFinished())
+        assertEquals(SliderVerdict.SAVE, guard.onTouchEnd(TouchEnd.RELEASED, appInFront = true))
+
+        // Home swipe over the slider in the gesture strip: no movement seen, then a cancel.
+        guard.onDown()
+        assertFalse(guard.onSliderFinished())
+        assertEquals(SliderVerdict.REVERT, guard.onTouchEnd(TouchEnd.CANCELLED, appInFront = true))
+
+        // Page scroll: once vertical, a later sideways wobble does not make it a drag.
+        guard.onDown()
+        guard.onMove(3f, -40f, slop)
+        guard.onMove(80f, 0f, slop)
+        assertFalse(guard.onSliderFinished())
+        assertEquals(SliderVerdict.REVERT, guard.onTouchEnd(TouchEnd.RELEASED, appInFront = true))
+
+        // Released while the app was no longer in front.
+        guard.onDown()
+        guard.onMove(40f, 0f, slop)
+        assertEquals(SliderVerdict.REVERT, guard.onTouchEnd(TouchEnd.RELEASED, appInFront = false))
+
+        // Keyboard or TalkBack: no touch, the finish saves at once and no touch end follows.
+        assertTrue(guard.onSliderFinished())
+        assertNull(guard.onTouchEnd(TouchEnd.RELEASED, appInFront = true))
+
+        // The slider left the screen mid-touch: the next finish is not held back.
+        guard.onDown()
+        guard.reset()
+        assertTrue(guard.onSliderFinished())
+    }
+
+    @Test
     fun `the countdown follows the alarm, which rings in the device zone`() {
         // 06:48 in Berlin on a phone set to GMT (04:48 there): the 05:30 alarm rings in 42 minutes.
         val now = ZonedDateTime.of(2026, 10, 6, 6, 48, 0, 0, ZoneId.of("Europe/Berlin"))
