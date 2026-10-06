@@ -4,7 +4,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
-import { AssembleError, assembleBrief, formatBerlin, overview } from '../assemble-brief.mjs';
+import { AssembleError, assembleBrief, formatBerlin, overview, previousBriefDate } from '../assemble-brief.mjs';
 import { validateBrief } from '../validate-brief.mjs';
 import { ROUTINE_DIR, SAMPLE_BRIEF, makeBriefV2, makeSection, tempDir } from './fixtures.mjs';
 
@@ -134,7 +134,7 @@ describe('overview', () => {
     const file = path.join(dir, 'latest.json');
     writeFileSync(file, JSON.stringify(makeBriefV2()));
     const lines = overview(file);
-    assert.match(lines[0], /^Briefing 2026-10-06 · 3 Rubriken · 9 Artikel · 3 Bilder\nTeaser: /);
+    assert.match(lines[0], /^Briefing 2026-10-06 · 3 Rubriken · 9 Artikel · 3 Bilder\nErstellt: 2026-10-06T05:07:12\+02:00\nTeaser: /);
     assert.ok(lines.includes('## ki · 🤖 KI & Tech (2 Top, 1 Mehr, 1 Bild)'));
     assert.ok(lines.includes('- [top 6] Meldung Nummer 1 mit klarer Aussage (tagesschau, 2026-10-05T21:15:00+02:00)'));
     const region = overview(file, { topic: 'region' });
@@ -148,6 +148,31 @@ describe('overview', () => {
     const lines = overview(dir);
     assert.equal(lines[0], '## ki · 🤖 KI & Tech (2 Top, 1 Mehr, 1 Bild)');
     assert.equal(overview(path.join(dir, 'fehlt.json')), null);
+  });
+});
+
+describe('previousBriefDate', () => {
+  const index = {
+    updatedAt: '2026-10-06T04:11:00+02:00',
+    days: [
+      { date: '2026-10-06', teaser: 'Heute.', itemCount: 20 },
+      { date: '2026-10-05', teaser: 'Gestern.', itemCount: 30 },
+      { date: '2026-10-02', teaser: 'Älter.', itemCount: 25 },
+    ],
+  };
+
+  it("picks the newest brief before the given day, not today's", () => {
+    assert.equal(previousBriefDate(index, '2026-10-06'), '2026-10-05');
+    assert.equal(previousBriefDate(index, '2026-10-07'), '2026-10-06');
+    assert.equal(previousBriefDate(index, '2026-10-05'), '2026-10-02');
+  });
+
+  it('ignores order and invalid entries and returns null if nothing is older', () => {
+    const shuffled = { days: [index.days[2], { date: 'gestern' }, null, index.days[1], index.days[0]] };
+    assert.equal(previousBriefDate(shuffled, '2026-10-06'), '2026-10-05');
+    assert.equal(previousBriefDate(index, '2026-10-02'), null);
+    assert.equal(previousBriefDate({ days: [] }, '2026-10-06'), null);
+    assert.equal(previousBriefDate('kaputt', '2026-10-06'), null);
   });
 });
 
@@ -212,6 +237,45 @@ describe('assemble CLI', () => {
     }
   });
 
+  it('prints the previous brief date from index.json', () => {
+    const { dir, cleanup } = tempDir();
+    try {
+      const file = path.join(dir, 'index.json');
+      writeFileSync(
+        file,
+        JSON.stringify({
+          updatedAt: '2026-10-06T04:11:00+02:00',
+          days: [
+            { date: '2026-10-06', teaser: 'Heute.', itemCount: 20 },
+            { date: '2026-10-05', teaser: 'Gestern.', itemCount: 30 },
+          ],
+        }),
+      );
+      const found = run('--previous-date', file, '--before', '2026-10-06');
+      assert.equal(found.status, 0, found.stderr);
+      assert.equal(found.stdout.trim(), '2026-10-05');
+
+      const none = run('--previous-date', file, '--before', '2026-10-05');
+      assert.equal(none.status, 0);
+      assert.equal(none.stdout, '');
+
+      const missing = run('--previous-date', path.join(dir, 'fehlt.json'), '--before', '2026-10-06');
+      assert.equal(missing.status, 0);
+      assert.equal(missing.stdout, '');
+
+      writeFileSync(file, '{ kaputt');
+      const broken = run('--previous-date', file, '--before', '2026-10-06');
+      assert.equal(broken.status, 1);
+      assert.equal(broken.stdout, '');
+
+      assert.equal(run('--previous-date', file).status, 2, '--before missing');
+      assert.equal(run('--previous-date', file, '--before', 'heute').status, 2);
+      assert.equal(run('--before', '2026-10-06').status, 2);
+    } finally {
+      cleanup();
+    }
+  });
+
   it('shows an overview and copes with a missing previous brief', () => {
     const { dir, cleanup } = tempDir();
     try {
@@ -220,6 +284,7 @@ describe('assemble CLI', () => {
       const shown = run('--overview', file, '--topic', 'wirtschaft');
       assert.equal(shown.status, 0);
       assert.match(shown.stdout, /## wirtschaft · 📈 Wirtschaft & Märkte/);
+      assert.match(shown.stdout, /^Erstellt: 2026-10-06T05:07:12\+02:00$/m);
       assert.doesNotMatch(shown.stdout, /## ki/);
       const missing = run('--overview', path.join(dir, 'previous.json'));
       assert.equal(missing.status, 0);

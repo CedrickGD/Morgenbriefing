@@ -3,7 +3,9 @@
  * Publishes a daily brief into a checkout of the `briefs` data branch
  * (contract: docs/brief-format.md). Zero dependencies, Node >= 18, ESM.
  *
- *   node routine/publish-brief.mjs --brief <pfad> --data-dir <checkout> [--max-age-hours <h>] [--merge] [--dry-run]
+ *   node routine/publish-brief.mjs --brief <pfad> --data-dir <checkout> [--max-age-hours <h>] [--merge]
+ *        [--branch <name>] [--dry-run]
+ *   node routine/publish-brief.mjs --print-branch [--branch <name>]
  *
  * 1. validates the brief (validate-brief.mjs) and refuses to publish an invalid one,
  * 2. writes `briefs/<date>.json` (2-space JSON + trailing newline) – with `--merge` the brief's
@@ -19,9 +21,18 @@
  * Idempotent: files whose content would not change are not touched, so running it twice
  * leaves a clean `git status`. Git itself (commit/push) is the caller's job.
  *
+ * Target branch: `briefs` – the branch the app and the e-mail routine read. For a manual test
+ * run the routine publishes to a test branch instead, chosen with `--branch` or the environment
+ * variable `MB_BRIEFS_BRANCH` (the flag wins). Only `briefs` and `briefs-<name>` are accepted, so
+ * a typo can never put data into `main`. If the data dir is the root of a git checkout, that
+ * checkout must be on exactly the target branch – otherwise nothing is written. `--print-branch`
+ * only prints the resolved name (the routine uses it for its git commands).
+ *
  * Exit codes: 0 = published (or nothing to do), 1 = invalid brief / I/O problem, 2 = usage error.
  */
+import { spawnSync } from 'node:child_process';
 import {
+  existsSync,
   mkdirSync,
   readFileSync,
   readdirSync,
@@ -52,6 +63,64 @@ export class PublishError extends Error {
     this.name = 'PublishError';
     this.details = details;
   }
+}
+
+/** The data branch the app and the e-mail routine read. */
+export const DEFAULT_BRANCH = 'briefs';
+
+/** Environment variable that selects another target branch (manual test run). */
+export const BRANCH_ENV = 'MB_BRIEFS_BRANCH';
+
+const BRANCH_RE = /^briefs(?:-[a-z0-9]+)*$/;
+
+/** `null` if `name` is an allowed data branch (`briefs`, `briefs-<name>`), else the problem. */
+export function branchProblem(name) {
+  if (typeof name !== 'string' || name === '') return 'der Branch-Name fehlt';
+  if (!BRANCH_RE.test(name)) {
+    return `"${name}" ist kein erlaubter Daten-Branch – erlaubt sind "briefs" und "briefs-<name>" (Kleinbuchstaben, Ziffern, Bindestriche), z. B. "briefs-test"`;
+  }
+  return null;
+}
+
+/**
+ * Resolves the target branch: `branch` (from `--branch`) wins over `env.MB_BRIEFS_BRANCH`; the
+ * default is `briefs`. `test` is true for every branch the app does not read.
+ *
+ * @param {{ branch?: string, env?: Record<string, string | undefined> }} [options]
+ * @returns {{ branch: string, from: string, test: boolean }}
+ * @throws {PublishError} for names other than `briefs` / `briefs-<name>`
+ */
+export function resolveBranch({ branch, env = process.env } = {}) {
+  let name = DEFAULT_BRANCH;
+  let from = 'Standard';
+  if (branch !== undefined) {
+    name = branch;
+    from = '--branch';
+  } else if (typeof env[BRANCH_ENV] === 'string' && env[BRANCH_ENV].trim() !== '') {
+    name = env[BRANCH_ENV].trim();
+    from = BRANCH_ENV;
+  }
+  const problem = branchProblem(name);
+  if (problem !== null) throw new PublishError(`${from}: ${problem}.`);
+  return { branch: name, from, test: name !== DEFAULT_BRANCH };
+}
+
+/**
+ * The branch of the git checkout whose root is `dir`: `checkout: false` if `dir` has no `.git`
+ * (a plain directory, e.g. for a local trial), `branch: null` for a detached HEAD,
+ * `gitMissing: true` if git cannot be started. An unborn orphan branch counts as that branch.
+ *
+ * @param {string} dir
+ * @returns {{ checkout: boolean, branch: string | null, gitMissing?: boolean }}
+ */
+export function checkoutBranch(dir) {
+  if (!existsSync(path.join(dir, '.git'))) return { checkout: false, branch: null };
+  const result = spawnSync('git', ['-C', dir, 'symbolic-ref', '--quiet', '--short', 'HEAD'], {
+    encoding: 'utf8',
+  });
+  if (result.error) return { checkout: true, branch: null, gitMissing: true };
+  const name = result.status === 0 ? result.stdout.trim() : '';
+  return { checkout: true, branch: name === '' ? null : name };
 }
 
 /** Canonical on-disk form of every data file: 2-space JSON plus trailing newline. */
@@ -263,27 +332,49 @@ function resolveMerge(brief, dayFile, notes) {
  * @param {string} params.dataDir existing directory
  * @param {number} [params.maxAgeHours] freshness policy passed to the validator
  * @param {boolean} [params.merge] upsert the sections into an existing day file instead of replacing it
+ * @param {string} [params.branch] target branch (`briefs` or `briefs-<name>`); if given and
+ *   `dataDir` is the root of a git checkout, the checkout must be on this branch
  * @param {boolean} [params.dryRun] compute the changes without writing anything
  * @returns {{ date: string, itemCount: number, brief: object, warnings: string[], notes: string[],
- *   merge: { replaced: string[], added: string[], kept: string[] } | null,
+ *   branch: string | null, merge: { replaced: string[], added: string[], kept: string[] } | null,
  *   changes: { file: string, status: 'neu'|'aktualisiert'|'unverändert'|'behalten', note?: string }[] }}
  *   `brief` is what was written to `briefs/<date>.json` (the merged brief in merge mode)
- * @throws {PublishError} if the brief is invalid or a file cannot be read/written
+ * @throws {PublishError} if the brief is invalid, the checkout is on another branch or a file
+ *   cannot be read/written
  */
-export function publishBrief({ brief, dataDir, maxAgeHours, merge = false, dryRun = false }) {
+export function publishBrief({ brief, dataDir, maxAgeHours, merge = false, branch, dryRun = false }) {
   const { errors, warnings } = validateBrief(brief, { maxAgeHours });
   if (errors.length > 0) {
     throw new PublishError('Das Briefing ist ungültig – nichts veröffentlicht.', errors);
   }
+  if (branch !== undefined) {
+    const problem = branchProblem(branch);
+    if (problem !== null) throw new PublishError(`Ziel-Branch: ${problem}.`);
+  }
+  const target = branch ?? DEFAULT_BRANCH;
   let stat;
   try {
     stat = statSync(dataDir);
   } catch {
-    throw new PublishError(`Datenverzeichnis ${dataDir} existiert nicht (Checkout des Branches "briefs" anlegen).`);
+    throw new PublishError(`Datenverzeichnis ${dataDir} existiert nicht (Checkout des Branches "${target}" anlegen).`);
   }
   if (!stat.isDirectory()) throw new PublishError(`${dataDir} ist kein Verzeichnis.`);
 
   const notes = [];
+  if (branch !== undefined) {
+    const checkout = checkoutBranch(dataDir);
+    if (checkout.gitMissing) {
+      notes.push(`git nicht gefunden – ob ${dataDir} auf Branch "${branch}" steht, wurde nicht geprüft`);
+    } else if (checkout.checkout && checkout.branch !== branch) {
+      const actual =
+        checkout.branch === null
+          ? 'auf keinem Branch (detached HEAD oder kein gültiger Checkout)'
+          : `auf Branch "${checkout.branch}"`;
+      throw new PublishError(
+        `${dataDir} steht ${actual}, Ziel ist "${branch}" – nichts veröffentlicht. Den Checkout für "${branch}" anlegen oder --branch anpassen.`,
+      );
+    }
+  }
   const changes = [];
   const briefsDir = path.join(dataDir, 'briefs');
   const dayFile = path.join(briefsDir, `${brief.date}.json`);
@@ -345,6 +436,7 @@ export function publishBrief({ brief, dataDir, maxAgeHours, merge = false, dryRu
     date: final.date,
     itemCount: countItems(final),
     brief: final,
+    branch: branch ?? null,
     merge: resolved.merge,
     warnings,
     notes,
@@ -360,13 +452,20 @@ const USAGE = `Veröffentlicht ein Briefing im Checkout des Daten-Branches "brie
 
 Aufruf:
   node routine/publish-brief.mjs --brief <pfad> --data-dir <checkout> [Optionen]
+  node routine/publish-brief.mjs --print-branch [--branch <name>]
 
 Optionen:
   --brief <pfad>          Das Briefing (JSON, Format: docs/brief-format.md).
-  --data-dir <pfad>       Checkout des Branches "briefs" (muss existieren).
+  --data-dir <pfad>       Checkout des Ziel-Branches (muss existieren).
   --max-age-hours <h>     Zusätzlich die Frische-Regel prüfen (wie validate-brief.mjs).
   --merge                 Rubriken nach id in ein schon vorhandenes Briefing desselben Tages
                           einfügen bzw. ersetzen, statt es komplett zu überschreiben.
+  --branch <name>         Ziel-Branch: "briefs" (Standard, liest die App) oder für einen
+                          manuellen Testlauf "briefs-<name>", z. B. "briefs-test". Ohne die
+                          Option gilt die Umgebungsvariable ${BRANCH_ENV}. Ist --data-dir ein
+                          Git-Checkout, muss er auf genau diesem Branch stehen.
+  --print-branch          Nur den Ziel-Branch ausgeben (aus --branch, ${BRANCH_ENV} oder
+                          "briefs") – für die Git-Befehle der Routine.
   --dry-run               Nur anzeigen, was sich ändern würde.
   -h, --help              Diese Hilfe.
 
@@ -374,7 +473,7 @@ Schreibt briefs/<datum>.json, latest.json (nur wenn nicht schon ein neuerer Tag 
 und index.json. Mehrfaches Ausführen ändert nichts weiter (idempotent).`;
 
 function parseCliArgs(argv) {
-  const args = { dryRun: false, merge: false };
+  const args = { dryRun: false, merge: false, printBranch: false };
   const valueOf = (i, name) => {
     const raw = argv[i];
     if (raw.includes('=')) return { value: raw.slice(raw.indexOf('=') + 1), next: i };
@@ -389,12 +488,15 @@ function parseCliArgs(argv) {
       args.dryRun = true;
     } else if (arg === '--merge') {
       args.merge = true;
-    } else if (name === '--brief' || name === '--data-dir' || name === '--max-age-hours') {
+    } else if (arg === '--print-branch') {
+      args.printBranch = true;
+    } else if (name === '--brief' || name === '--data-dir' || name === '--max-age-hours' || name === '--branch') {
       const r = valueOf(i, name);
       if (r.problem) return { problem: r.problem };
       i = r.next;
       if (name === '--brief') args.brief = r.value;
       if (name === '--data-dir') args.dataDir = r.value;
+      if (name === '--branch') args.branch = r.value;
       if (name === '--max-age-hours') {
         const hours = parseHours(r.value);
         if (hours === null) return { problem: `--max-age-hours braucht eine positive Zahl (gefunden: ${r.value})` };
@@ -404,6 +506,7 @@ function parseCliArgs(argv) {
       return { problem: `Unbekanntes Argument: ${arg}` };
     }
   }
+  if (args.printBranch) return args;
   if (!args.brief) return { problem: '--brief fehlt.' };
   if (!args.dataDir) return { problem: '--data-dir fehlt.' };
   return args;
@@ -413,8 +516,9 @@ function parseCliArgs(argv) {
  * Runs the CLI and returns the exit code (does not call `process.exit`).
  *
  * @param {string[]} argv arguments without `node` and the script path
+ * @param {Record<string, string | undefined>} [env] environment (for `MB_BRIEFS_BRANCH`)
  */
-export function main(argv = process.argv.slice(2), out = console.log, err = console.error) {
+export function main(argv = process.argv.slice(2), out = console.log, err = console.error, env = process.env) {
   const args = parseCliArgs(argv);
   if (args.help) {
     out(USAGE);
@@ -423,6 +527,18 @@ export function main(argv = process.argv.slice(2), out = console.log, err = cons
   if (args.problem) {
     err(`${args.problem}\n\n${USAGE}`);
     return 2;
+  }
+  let target;
+  try {
+    target = resolveBranch({ branch: args.branch, env });
+  } catch (error) {
+    if (!(error instanceof PublishError)) throw error;
+    err(`FEHLER: ${error.message}`);
+    return 2;
+  }
+  if (args.printBranch) {
+    out(target.branch);
+    return 0;
   }
 
   try {
@@ -437,11 +553,17 @@ export function main(argv = process.argv.slice(2), out = console.log, err = cons
       dataDir: args.dataDir,
       maxAgeHours: args.maxAgeHours,
       merge: args.merge,
+      branch: target.branch,
       dryRun: args.dryRun,
     });
 
     out(`${describe('brief', result.brief)}`);
-    out(`Ziel: ${path.resolve(args.dataDir)}${args.dryRun ? '  (Probelauf – nichts geschrieben)' : ''}`);
+    out(
+      `Ziel: ${path.resolve(args.dataDir)} · Branch ${target.branch}${args.dryRun ? '  (Probelauf – nichts geschrieben)' : ''}`,
+    );
+    if (target.test) {
+      out(`Testlauf: Ziel ist "${target.branch}" (${target.from}) – App und E-Mail lesen weiter "${DEFAULT_BRANCH}".`);
+    }
     if (result.merge) {
       const list = (ids) => (ids.length > 0 ? ids.join(', ') : '–');
       out(
