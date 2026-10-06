@@ -20,6 +20,7 @@ jeden Morgen eine Claude-Cloud-Routine frisch, das Wetter kommt immer live.
 | **Einstellungen** | Hell, Dunkel oder wie das System; Akzentfarben (Material You, Morgenrot, Sonne, Ozean, Wald, Lavendel, Beere, Graphit); Rubriken sortieren und ausblenden; Schriftgröße im Artikel; Uhrzeit der Benachrichtigung; Orte und Zeitfenster; GitHub-Token; Akku-Optimierung; Updates. |
 | **Updates in der App** | Die App sieht selbst nach, ob es auf GitHub eine neuere Version gibt, lädt sie herunter und startet die Installation – kein Umweg über den Browser. |
 | **5:30-Benachrichtigung** | Ein exakter Alarm holt Live-Wetter und das frische Briefing und zeigt eine ausklappbare Benachrichtigung mit Wetter, Kleidungstipp und den Top-Schlagzeilen. |
+| **E-Mail-Briefing** | Auf Wunsch kommt das Briefing um 5:20 Uhr zusätzlich als E-Mail (Wetter, Kleidungstipp, Top-Meldungen mit Bildern und Quellen) – an dich oder an bis zu zehn Adressen. Schalter und Empfänger stellst du in der App ein. |
 
 Läuft ab **Android 7.0** (API 24). Randlos (Edge-to-Edge) und sauber mit **Gesten- und
 3-Tasten-Navigation**, wie Samsung One UI beides anbietet, inklusive Predictive Back.
@@ -94,7 +95,9 @@ Updates trotzdem, nur das E-Mail-Briefing meldet dann „Schreibrecht fehlt“.
 6. **Permissions** → **Repository permissions** → **Contents:** **Read and write**.
    („Metadata: Read-only“ setzt GitHub automatisch.) Sonst nichts anhaken. In neueren
    GitHub-Oberflächen geht das über **Add permissions** → **Contents** → **Read and write**.
-   Geschrieben wird nur `config/email.json` (E-Mail-Briefing).
+   Geschrieben wird nur `config/email.json` (E-Mail-Briefing). Ein bestehendes Token kannst du
+   unter **Fine-grained tokens** → Token → **Edit** auf **Read and write** hochstufen, ohne es
+   neu einzutragen.
 7. **Generate token** und das Token (beginnt mit `github_pat_`) kopieren – GitHub zeigt es nur
    einmal an.
 8. In der App: **Einstellungen** → Token einfügen → **Verbindung testen**.
@@ -141,6 +144,34 @@ So legst du sie in claude.ai an:
 Daten auf `briefs` und schlägt fehl, wenn das heutige Briefing fehlt oder kaputt ist. GitHub
 schickt dir dann die übliche „Run failed“-Mail.
 
+### 5. E-Mail-Briefing (optional)
+
+Eine zweite, kleine Routine verschickt das Briefing um 05:20 Uhr als E-Mail aus deinem
+Gmail-Konto. Sie recherchiert nichts: Sie liest `config/email.json` und das heutige
+`latest.json` vom Branch `briefs`, baut mit [`routine/render-email.mjs`](routine/render-email.mjs)
+die E-Mail (Wetter live von Open-Meteo, dazu pro Rubrik die Top-Meldungen) und schickt sie
+einzeln an jede eingetragene Adresse – an nichts anderes. Danach vermerkt sie den Versand in
+`config/email-sent.json`, damit der Wiederholungsstart nicht doppelt sendet.
+
+1. Neue Routine erstellen, Repo **`CedrickGD/Morgenbriefing`** verbinden (Branch `main`).
+2. **Prompt:** den kompletten Inhalt von [`routine/EMAIL_PROMPT.md`](routine/EMAIL_PROMPT.md).
+3. **Zeitplan:** täglich um **03:20 und 04:20 UTC** (Cron `20 3,4 * * *`) – das ist im Sommer wie
+   im Winter 05:20 Uhr in Berlin; den überzähligen Start erkennt die Routine selbst.
+4. **Werkzeuge:** nur den **Gmail-Connector** verbinden (die Routine nutzt davon nur
+   `send_message`). Keine Websuche, kein Webseitenabruf, keine Subagenten.
+5. **Netz und Push:** Pushes auf `briefs` erlauben (wie bei der News-Routine). Für den
+   Wetterblock braucht die Umgebung Zugriff auf `api.open-meteo.com` – ohne ihn kommt die E-Mail
+   ohne Wetter.
+6. **Einschalten:** in der App unter **Einstellungen → E-Mail-Briefing** den Schalter setzen und
+   die Empfänger eintragen (das Token braucht dafür *Contents: Read and write*, siehe oben).
+   Ohne `config/email.json` oder mit ausgeschaltetem Schalter verschickt die Routine nichts.
+7. **Testen:** Routine einmal von Hand starten (außerhalb von 04:00–06:59 Uhr sendet sie sofort,
+   sobald es ein heutiges Briefing gibt). Sie antwortet mit einer Zeile wie
+   `Gesendet: 2026-10-06 an 1 Empfänger`.
+
+Vorschau ohne Versand: `node routine/render-email.mjs --brief app/src/main/assets/sample-brief.json --out-dir routine/out/email`
+und `routine/out/email/email.html` im Browser öffnen. Abbestellen geht jederzeit in der App.
+
 ### Updates
 
 Neue Versionen veröffentlichst du mit **`scripts/release.ps1`** (PowerShell): Das Skript erhöht
@@ -182,6 +213,8 @@ Alle ohne Abhängigkeiten, Node ≥ 18, `--help` zeigt alle Optionen.
 | [`find-image.mjs`](routine/find-image.mjs) | sucht frei lizenzierte Bilder auf Wikimedia Commons und gibt sie als JSON aus |
 | [`assemble-brief.mjs`](routine/assemble-brief.mjs) | setzt die Rubrik-Dateien zu einem Briefing zusammen; `--overview` zeigt Überschriften |
 | [`publish-brief.mjs`](routine/publish-brief.mjs) | schreibt ein Briefing in einen Checkout von `briefs` (idempotent; `--merge` fügt Rubriken in ein vorhandenes Tagesbriefing ein) |
+| [`email-config.mjs`](routine/email-config.mjs) | prüft die E-Mail-Einstellungen `config/email.json` und gibt Schalter und Empfänger als JSON aus |
+| [`render-email.mjs`](routine/render-email.mjs) | baut die E-Mail (HTML, Text, Betreff) aus einem Briefing und Live-Wetter |
 
 ```bash
 node --test routine/test/*.test.mjs                                              # Tests (ohne Netz)
@@ -266,7 +299,8 @@ scripts/             Release-Skript (Version erhöhen, signiert bauen, veröffen
 .github/workflows/   Build und Tests, Releases, Routine-Skripte, Prüfung des Branches briefs
 ```
 
-Der Branch **`briefs`** enthält nur Daten: `briefs/YYYY-MM-DD.json`, `latest.json`, `index.json`.
+Der Branch **`briefs`** enthält nur Daten: `briefs/YYYY-MM-DD.json`, `latest.json`, `index.json`
+und die Einstellungen des E-Mail-Briefings unter `config/`.
 
 | Workflow | Wann | Was |
 |---|---|---|
@@ -281,4 +315,7 @@ Der Branch **`briefs`** enthält nur Daten: `briefs/YYYY-MM-DD.json`, `latest.js
   dieses Repo, das verschlüsselt auf dem Gerät liegt. Geschrieben wird damit nur
   `config/email.json` (E-Mail-Briefing).
 - Bilder: werden direkt von Wikimedia Commons (`upload.wikimedia.org`) geladen.
+- E-Mail: Die Empfänger stehen nur in deinem privaten Repo (`config/email.json`). Die E-Mail geht
+  aus deinem eigenen Gmail-Konto einzeln an jede Adresse; Bilder darin lädt das E-Mail-Programm
+  von Wikimedia Commons, es gibt keine Zählpixel und keine Tracking-Links.
 - Kein Tracking, keine Werbung, keine Analyse-Dienste.

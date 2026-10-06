@@ -10,6 +10,8 @@ Die Cloud-Routine schreibt jeden Morgen auf den Branch **`briefs`** (verwaister 
 briefs/2026-10-06.json   # das Briefing des Tages
 latest.json              # Kopie des neuesten Briefings
 index.json               # Übersicht, neueste zuerst (max. 400 Einträge)
+config/email.json        # E-Mail-Briefing: Schalter und Empfänger (schreibt die App)
+config/email-sent.json   # E-Mail-Briefing: letzter Versand (schreibt die E-Mail-Routine)
 ```
 
 Es gibt zwei Schemata; die App liest beide:
@@ -202,6 +204,76 @@ Regeln: Felder wie oben, aber ohne `id`, `tier`, `body`, `sources`, `readingMinu
 `itemCount` zählt **alle** Artikel des Tages (`top` und `more`). `updatedAt` bewegt sich nie
 rückwärts.
 
+## E-Mail-Briefing (`config/email.json`, `config/email-sent.json`)
+
+Auf Wunsch kommt das Briefing zusätzlich als E-Mail. Eine eigene Cloud-Routine
+([`routine/EMAIL_PROMPT.md`](../routine/EMAIL_PROMPT.md)) liest um 05:20 Uhr die Einstellungen
+und das heutige `latest.json`, baut mit `routine/render-email.mjs` eine HTML-E-Mail (Live-Wetter
+von Open-Meteo plus die Top-Meldungen jeder Rubrik) und verschickt sie mit dem Gmail-Connector
+aus dem Gmail-Konto des Lesers – einzeln an jeden Empfänger.
+
+### `config/email.json` – Schalter und Empfänger
+
+Die **App** schreibt diese Datei über die GitHub-Contents-API (Token mit *Contents: Read and
+write*), wenn der Leser in den Einstellungen unter „E-Mail-Briefing“ etwas ändert.
+
+```json
+{
+  "schema": 1,
+  "enabled": true,
+  "recipients": ["du@example.com"],
+  "updatedAt": "2026-10-06T21:14:03+02:00"
+}
+```
+
+| Feld | Pflicht | Regel |
+|---|---|---|
+| `schema` | ja | `1` |
+| `enabled` | ja | `true` = E-Mail verschicken, `false` = aus |
+| `recipients` | ja | 0–10 einzelne Adressen `name@domain.tld`, getrimmt, kleingeschrieben, ohne Dubletten. Erlaubt vor dem `@`: `a–z 0–9 . _ % + -` (keine Punkte am Rand oder doppelt); Domain mit Endung, Umlaut-Domains als Punycode (`xn--…`). Keine Namen (`Name <a@b.de>`), keine Listen mit Komma oder Semikolon |
+| `updatedAt` | nein | ISO-8601 **mit** Offset, Zeitpunkt der letzten Änderung |
+
+* Startwert: `enabled: true` mit der eigenen Gmail-Adresse als einzigem Empfänger.
+* **Fehlt die Datei, ist sie ungültig, ist `enabled` `false` oder die Liste leer, verschickt die
+  Routine nichts.** Unbekannte Felder werden ignoriert (Hinweis).
+* Geprüft wird mit `node routine/email-config.mjs <datei>`: Bei Erfolg gibt das Skript genau eine
+  Zeile `{"enabled":true,"recipients":[…]}` aus – nur an diese Adressen geht eine E-Mail.
+  Großschreibung und Leerzeichen am Rand gleicht es an, Dubletten zählt es einmal (Hinweis); alles
+  andere ist ein Fehler (Exit-Code 1).
+
+### `config/email-sent.json` – letzter Versand
+
+Schreibt die **E-Mail-Routine** nach dem Versand, damit ihr Wiederholungsstart dieselbe E-Mail
+nicht ein zweites Mal verschickt. Die App liest sie nicht.
+
+```json
+{ "lastSentDate": "2026-10-06", "count": 1, "at": "2026-10-06T05:21:40+02:00" }
+```
+
+| Feld | Regel |
+|---|---|
+| `lastSentDate` | Berliner Datum der zuletzt verschickten E-Mail, `YYYY-MM-DD` |
+| `count` | Zahl der an diesem Tag erfolgreich verschickten E-Mails (eine pro Empfänger) |
+| `at` | ISO-8601 mit Offset, Zeitpunkt des Versands |
+
+Commit-Nachricht: `email: 2026-10-06 an 1 Empfänger`.
+
+### Die E-Mail (`routine/render-email.mjs`)
+
+```bash
+node routine/render-email.mjs --brief latest.json --out-dir /tmp/email [--expect-date 2026-10-06]
+```
+
+schreibt `email.html`, `email.txt` (Textfassung) und `subject.txt`, z. B.
+`☀️ 9° in Bad Düben · 21 Meldungen · Di, 6.10.` (höchstens 80 Zeichen). Inhalt: Datum und eine
+Überschrift zum Tag, „Vor der Tür“ in Bad Düben (jetzt und die nächsten Stunden), Leipzig 10–18 Uhr
+Stunde für Stunde, ein Kleidungstipp, dann der Teaser und pro Rubrik (Katalog-Reihenfolge) die
+`top`-Artikel mit Überschrift, Vorspann, Commons-Bild samt Bildnachweis und Link zur Hauptquelle,
+dazu die `more`-Überschriften in einer Zeile. Alle Texte aus dem Briefing werden HTML-maskiert,
+Links nur mit `https`, Bilder nur von `upload.wikimedia.org`. Ist Open-Meteo nicht erreichbar,
+fehlt nur der Wetterblock. Gmail kürzt Nachrichten über ~102 KB; wird die HTML-Datei größer,
+zeigt das Skript pro Rubrik weniger ausführliche Artikel (der Rest steht als Überschrift drin).
+
 ## Werkzeuge
 
 | Befehl | Zweck |
@@ -212,6 +284,8 @@ rückwärts.
 | `node routine/assemble-brief.mjs --sections <ordner> --teaser "…" --out <datei>` | Rubriken zu einem Briefing zusammensetzen |
 | `node routine/assemble-brief.mjs --overview <briefing oder ordner> [--topic <id>]` | Überschriften anzeigen (z. B. vom Vortag) |
 | `node routine/publish-brief.mjs --brief <datei> --data-dir <checkout> [--merge]` | in den Checkout von `briefs` schreiben; `--merge` fügt Rubriken nach `id` in ein vorhandenes Tagesbriefing ein, statt es zu ersetzen |
+| `node routine/email-config.mjs <email.json>` | E-Mail-Einstellungen prüfen, Empfänger als JSON ausgeben |
+| `node routine/render-email.mjs --brief <datei> --out-dir <ordner> [--weather-file <json> \| --no-weather] [--now <ISO>] [--expect-date <datum>]` | die E-Mail erstellen (HTML, Text, Betreff); Exit-Code 3 = Briefing nicht vom erwarteten Tag |
 
 Alle Skripte: Node ≥ 18, keine Abhängigkeiten, Exit-Code 0 = ok, 1 = Fehler, 2 = falscher Aufruf,
 deutsche Meldungen. Mit `--merge` gilt die Frische-Regel nur für das neu hinzukommende Briefing;
