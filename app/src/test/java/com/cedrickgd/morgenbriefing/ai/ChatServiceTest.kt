@@ -23,6 +23,7 @@ import org.junit.rules.TemporaryFolder
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
+import java.util.concurrent.atomic.AtomicInteger
 
 class ChatServiceTest {
     @get:Rule
@@ -59,7 +60,16 @@ class ChatServiceTest {
         }
     }
 
-    private fun service(engine: ChatEngine? = this.engine, apiKey: String? = "test-key") = ChatServiceImpl(
+    private val articleContexts = ChatContextSource { ctx ->
+        if (ctx.articleKey == null) LoadedChatContext(AiPrompts.BRIEF_TITLE, "Kontext: Briefing")
+        else LoadedChatContext("Neue Buslinie nach Leipzig", "Kontext: Artikel ${ctx.articleKey}")
+    }
+
+    private fun service(
+        engine: ChatEngine? = this.engine,
+        apiKey: String? = "test-key",
+        contexts: ChatContextSource = articleContexts,
+    ) = ChatServiceImpl(
         scope = scope,
         settings = settings,
         apiKey = { apiKey },
@@ -67,10 +77,7 @@ class ChatServiceTest {
         usageState = usageState,
         engine = engine,
         store = ChatStore(folder.root.resolve("chat"), AppJson),
-        contexts = { ctx ->
-            if (ctx.articleKey == null) LoadedChatContext(AiPrompts.BRIEF_TITLE, "Kontext: Briefing")
-            else LoadedChatContext("Neue Buslinie nach Leipzig", "Kontext: Artikel ${ctx.articleKey}")
-        },
+        contexts = contexts,
         clock = clock,
     )
 
@@ -192,6 +199,39 @@ class ChatServiceTest {
         val stopped = session.await { it.settled(2) }
         assertEquals("Bis hier", stopped.messages.last().text)
         assertEquals(ChatMessage.Status.DONE, stopped.messages.last().status)
+    }
+
+    @Test
+    fun `stop while the context still loads ends the turn and the chat keeps working`() = runBlocking<Unit> {
+        val calls = AtomicInteger()
+        val loading = CompletableDeferred<Unit>()
+        val contexts = ChatContextSource { ctx ->
+            when (calls.getAndIncrement()) {
+                // At restore the article is not available (offline) ...
+                0 -> null
+                // ... on send its download hangs until the user taps stop ...
+                1 -> {
+                    loading.complete(Unit)
+                    awaitCancellation()
+                }
+                // ... and later it loads fine.
+                else -> articleContexts.load(ctx)
+            }
+        }
+        val session = service(contexts = contexts).session(article) as RetryableChatSession
+        session.send("Frage")
+        withTimeout(10_000) { loading.await() }
+        assertTrue(session.state.value.busy)
+
+        session.stop()
+        val stopped = session.await { it.settled(1) }
+        assertEquals(ChatMessage.Role.USER, stopped.messages.single().role)
+        assertTrue(engine.requests.isEmpty())
+
+        // Not stuck: the question can be asked again.
+        session.retry()
+        val answered = session.await { it.settled(2) }
+        assertEquals(listOf("Frage", "Die Antwort."), answered.messages.map { it.text })
     }
 
     @Test

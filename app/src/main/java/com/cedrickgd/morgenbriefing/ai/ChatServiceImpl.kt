@@ -199,20 +199,6 @@ internal class ChatServiceImpl(
             _state.update {
                 it.copy(messages = it.messages + user + placeholder, busy = true, activity = null, suggestions = emptyList())
             }
-            // The question survives even if the app is closed mid-answer (retry() picks it up).
-            persist()
-
-            val ctx = loaded ?: contexts.loadQuietly(context)?.also { applyContext(it) }
-            if (ctx == null) {
-                finish(answerId) {
-                    it.copy(
-                        status = ChatMessage.Status.FAILED,
-                        error = AiError.Unknown("Zu diesem Artikel finde ich keinen Text mehr – vielleicht ist er nicht mehr gespeichert."),
-                    )
-                }
-                return
-            }
-
             val buffer = StringBuilder()
             val listener = object : ChatTurnListener {
                 override fun onText(delta: String) {
@@ -234,15 +220,31 @@ internal class ChatServiceImpl(
                 }
             }
 
-            val model = settings.first().aiModel.apiId
-            val request = ChatTurnRequest(
-                apiKey = key,
-                model = model,
-                systemPrompt = AiPrompts.CHAT_SYSTEM,
-                context = ctx.text,
-                history = history + ApiMessage(fromUser = true, text = apiText),
-            )
+            // Everything from here on runs inside one try: a stop() while the question is saved or
+            // the context still loads must end the turn too, or the chat would stay busy for good.
             try {
+                // The question survives even if the app is closed mid-answer (retry() picks it up).
+                persist()
+
+                val ctx = loaded ?: contexts.loadQuietly(context)?.also { applyContext(it) }
+                if (ctx == null) {
+                    finish(answerId) {
+                        it.copy(
+                            status = ChatMessage.Status.FAILED,
+                            error = AiError.Unknown("Zu diesem Artikel finde ich keinen Text mehr – vielleicht ist er nicht mehr gespeichert."),
+                        )
+                    }
+                    return
+                }
+
+                val model = settings.first().aiModel.apiId
+                val request = ChatTurnRequest(
+                    apiKey = key,
+                    model = model,
+                    systemPrompt = AiPrompts.CHAT_SYSTEM,
+                    context = ctx.text,
+                    history = history + ApiMessage(fromUser = true, text = apiText),
+                )
                 val result = engine.answer(request, listener, usageSink)
                 finish(answerId) { message ->
                     val text = result.text.ifBlank { buffer.toString() }.trim()
