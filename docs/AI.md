@@ -75,7 +75,9 @@ beide Funktionen sichtbar, erklären sich aber freundlich und verweisen auf die 
 
 * In der Chip-Reihe des Feeds ein Chip **„⚡ Live“**. Antippen zeigt **nur brandaktuelle
   Meldungen** (veröffentlicht in den letzten 6 Stunden, neueste zuerst) aus allen vorhandenen
-  Quellen (Morgen-Briefing + bisherige Live-Ergebnisse). Ein Glas-Button „Jetzt aktualisieren“
+  Quellen (Morgen-Briefing + bisherige Live-Ergebnisse). Was eine Live-Recherche gefunden hat,
+  bleibt 6 Stunden nach der Recherche sichtbar, auch wenn die Meldung selbst etwas älter ist
+  (die Recherche schaut bis zum Morgen-Briefing zurück). Ein Glas-Button „Jetzt aktualisieren“
   startet eine **Live-Recherche** (sonst automatisch, wenn die letzte älter als 30 Min. ist und
   der Nutzer es in den Einstellungen erlaubt hat).
 * Live-Recherche: Claude mit Websuche/Web-Fetch sucht für die sichtbaren Themen (bzw. das
@@ -86,7 +88,8 @@ beide Funktionen sichtbar, erklären sich aber freundlich und verweisen auf die 
   App entgegennimmt und als Tool-Ergebnis „ok“ quittiert.
 * Fortschritt live anzeigen (Suchbegriffe/gelesene Seiten aus den Server-Tool-Blöcken),
   abbrechbar. Ergebnisse werden lokal gespeichert (`store/live/YYYY-MM-DD-HHmm.json`), im Feed
-  mit „⚡ neu · vor 12 Min.“ markiert und im Verlauf des Tages mit angezeigt.
+  mit „⚡ neu · vor 12 Min.“ markiert und im Leser nach den Artikeln des Briefings erreichbar
+  (Wischen). Verlauf und Tagesdetail zeigen nur das Morgen-Briefing.
 
 ## Vorlesen („Zuhören“)
 

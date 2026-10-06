@@ -106,8 +106,9 @@ internal fun liveTopic(topicId: String): Topic =
 
 /**
  * The "⚡ Live" view: articles published within [LIVE_WINDOW] before [now] — from the visible
- * topics of [brief] and from today's [live] research — newest first. The same story (same key
- * or link) appears once; the newer copy wins, a live copy on a tie. Pure.
+ * topics of [brief] and from today's [live] research (those also when a run found them within
+ * the window) — newest first. The same story (same key or link) appears once; the newer copy
+ * wins, a live copy on a tie. Pure.
  *
  * @param today `YYYY-MM-DD`, the date live articles are filed under.
  */
@@ -123,9 +124,14 @@ internal fun liveFeed(
 
     live.forEach { article ->
         if (article.topicId in prefs.hidden) return@forEach
-        // Publish time when known and readable, else when the run found it.
-        val published = parseInstantOrNull(article.item.publishedAt) ?: parseInstantOrNull(article.fetchedAt)
-        val at = published?.takeIf { isFresh(it, reference) } ?: return@forEach
+        val published = parseInstantOrNull(article.item.publishedAt)
+        val found = parseInstantOrNull(article.fetchedAt)
+        // A run looks back to the morning brief (up to 24 h), so a story it found may be older than
+        // the window: what a run found stays in the list for LIVE_WINDOW after the run.
+        val latest = listOfNotNull(published, found).maxOrNull() ?: return@forEach
+        if (!isFresh(latest, reference)) return@forEach
+        // Sorted by publish time when known and readable, else by when the run found it.
+        val at = published ?: found ?: return@forEach
         candidates += FeedArticle(article.item, liveTopic(article.topicId), today, live = true, fetchedAt = article.fetchedAt) to at
     }
     if (brief != null) {

@@ -79,13 +79,29 @@ class FeedModelsTest {
         val live = listOf(
             LiveArticle(item("l1", publishedAt = "2026-10-06T11:40:00+02:00"), "politik", "2026-10-06T11:50:00+02:00"),
             LiveArticle(item("l2"), "ki", "2026-10-06T10:00:00+02:00"),
-            LiveArticle(item("l3", publishedAt = "2026-10-05T20:00:00+02:00"), "ki", "2026-10-06T11:00:00+02:00"),
+            // An old story from an early run: neither published nor found within the window.
+            LiveArticle(item("l3", publishedAt = "2026-10-05T20:00:00+02:00"), "ki", "2026-10-06T05:20:00+02:00"),
         )
         val feed = liveFeed(b, TopicPrefs(), live, now, "2026-10-06")
         assertEquals(listOf("l1", "l2", "fresh"), feed.map { it.item.id })
         assertTrue(feed[0].live)
         assertEquals("politik", feed[0].topic.id)
         assertEquals("2026-10-06", feed[2].date)
+    }
+
+    @Test
+    fun `what a live run found stays visible for six hours after the run`() {
+        val live = listOf(
+            // Published 7 h ago (after the 04:41 brief), found by the run ten minutes ago.
+            LiveArticle(item("found-now", publishedAt = "2026-10-06T05:00:00+02:00"), "ki", "2026-10-06T11:50:00+02:00"),
+            // Same age, but the run that found it is older than the window too.
+            LiveArticle(item("found-early", publishedAt = "2026-10-06T05:00:00+02:00"), "ki", "2026-10-06T05:10:00+02:00"),
+            LiveArticle(item("fresh", publishedAt = "2026-10-06T11:00:00+02:00"), "politik", "2026-10-06T11:50:00+02:00"),
+        )
+        val feed = liveFeed(null, TopicPrefs(), live, now, "2026-10-06")
+        // Still newest first by publish time.
+        assertEquals(listOf("fresh", "found-now"), feed.map { it.item.id })
+        assertEquals("⚡ neu · vor 7 Std.", liveBadge(feed[1], now))
     }
 
     @Test
