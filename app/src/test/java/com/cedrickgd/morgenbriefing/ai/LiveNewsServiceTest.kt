@@ -64,14 +64,16 @@ class LiveNewsServiceTest {
         }
     }
 
-    private fun service(engine: LiveEngine?) = LiveNewsServiceImpl(
+    private val liveStore by lazy { LiveStore(folder.root.resolve("live"), AppJson) }
+
+    private fun service(engine: LiveEngine?, clock: Clock = this.clock) = LiveNewsServiceImpl(
         scope = scope,
         settings = settings,
         apiKey = { "test-key" },
         usageSink = usage,
         usageState = usageState,
         engine = engine,
-        store = LiveStore(folder.root.resolve("live"), AppJson),
+        store = liveStore,
         briefOf = { date -> brief.takeIf { date.toString() == it.date } },
         clock = clock,
     )
@@ -139,6 +141,63 @@ class LiveNewsServiceTest {
         slow.cancel()
         val cancelled = slow.await { !it.running }
         assertEquals("Abgebrochen", cancelled.progress.last())
+    }
+
+    @Test
+    fun `a clean run without news is remembered as checked`() = runBlocking<Unit> {
+        val live = service(FakeLiveEngine { _, listener ->
+            assertTrue(listener.onPublish(LiveFixtures.payload()).accepted)
+            LiveResearchResult(published = true, end = TurnEnd.COMPLETE)
+        })
+        live.refresh(listOf("region"))
+        val done = live.await { !it.running && it.lastRunAt != null }
+
+        assertNull(done.error)
+        assertEquals(0, done.newCount)
+        assertEquals("Nichts Neues seit dem letzten Stand", done.progress.last())
+        assertEquals("2026-10-05T14:30:00+02:00", liveStore.lastRunAt(today))
+    }
+
+    @Test
+    fun `refused, cut off and unfinished runs do not count as checked`() = runBlocking<Unit> {
+        val clock = MutableClock(LiveFixtures.NOW)
+        val failures = listOf(
+            LiveResearchResult(false, TurnEnd.REFUSED, "cyber"),
+            LiveResearchResult(false, TurnEnd.TRUNCATED),
+            // Ended without publishing even after the reminder.
+            LiveResearchResult(false, TurnEnd.INCOMPLETE),
+            // Published nothing new, then ran out of requests.
+            LiveResearchResult(true, TurnEnd.INCOMPLETE),
+        )
+        val prompts = mutableListOf<String>()
+        failures.forEachIndexed { i, end ->
+            clock.now = LiveFixtures.NOW.plusSeconds(600L * i)
+            // A fresh service each time, like after an app restart: it reads lastRunAt from the store.
+            val live = service(FakeLiveEngine { request, _ -> prompts += request.userPrompt; end }, clock)
+            live.refresh(listOf("region"))
+            val failed = live.await { !it.running && it.error != null }
+            when (end.end) {
+                TurnEnd.REFUSED -> assertEquals(AiError.Refusal("cyber"), failed.error)
+                TurnEnd.TRUNCATED -> assertEquals(AiError.Truncated, failed.error)
+                // Stopped before publishing anything: an explained, retryable error.
+                else -> {
+                    val error = failed.error
+                    assertTrue(error.toString(), error is AiError.Unknown && !error.message.isNullOrBlank())
+                }
+            }
+            assertNull(failed.lastRunAt)
+            assertEquals("Ohne Ergebnis beendet", failed.progress.last())
+            assertNull(liveStore.lastRunAt(today))
+        }
+
+        // The next run still looks back to the morning brief (04:41), not to a failed run.
+        clock.now = LiveFixtures.NOW.plusSeconds(3_600)
+        val ok = service(FakeLiveEngine { request, _ -> prompts += request.userPrompt; LiveResearchResult(true, TurnEnd.COMPLETE) }, clock)
+        ok.refresh(listOf("region"))
+        ok.await { !it.running && it.lastRunAt != null }
+        assertEquals("2026-10-05T15:30:00+02:00", liveStore.lastRunAt(today))
+        assertEquals(5, prompts.size)
+        prompts.forEach { assertTrue(it, it.contains("04:41 Uhr")) }
     }
 
     @Test

@@ -88,6 +88,11 @@ beide Funktionen sichtbar, erklären sich aber freundlich und verweisen auf die 
   docs/brief-format.md, Schema 2, eigene Worte, max. ein kurzes Zitat). Ausgabe über ein
   Client-Tool `publish_articles` (strict JSON-Schema = Schema-2-`NewsItem` + `topicId`), das die
   App entgegennimmt und als Tool-Ergebnis „ok“ quittiert.
+* Als „geprüft bis jetzt“ (Startpunkt der nächsten Recherche, „keine neuen Meldungen“) zählt
+  nur ein Lauf, der `publish_articles` aufgerufen (auch mit leerer Liste) und regulär beendet
+  hat. Abgelehnte, gekürzte oder unfertige Läufe (Anfragen-Budget von 10 aufgebraucht, trotz
+  Erinnerung nichts veröffentlicht) ohne neue Artikel hinterlassen nichts und zeigen einen
+  Fehler; die nächste Recherche schaut wieder bis zum letzten echten Stand zurück.
 * Fortschritt live anzeigen (Suchbegriffe/gelesene Seiten aus den Server-Tool-Blöcken),
   abbrechbar. Ergebnisse werden lokal gespeichert (`store/live/YYYY-MM-DD-HHmm.json`), im Feed
   mit „⚡ neu · vor 12 Min.“ markiert und im Leser nach den Artikeln des Briefings erreichbar

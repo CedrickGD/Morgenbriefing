@@ -57,5 +57,9 @@ class LiveModelsTest {
             AiError.InvalidKey, AiError.RateLimited, AiError.Overloaded, AiError.Network,
             AiError.Refusal(null), AiError.Truncated, AiError.Unknown("x"),
         ).forEach { assertTrue(liveErrorText(it).isNotBlank()) }
+        // A known cause speaks for itself; without one the generic sentence stays.
+        assertEquals("Das gewählte Claude-Modell ist für deinen Key nicht verfügbar.", liveErrorText(AiError.Unknown("Das gewählte Claude-Modell ist für deinen Key nicht verfügbar.")))
+        assertEquals("Da ist etwas schiefgelaufen. Versuch's gleich nochmal.", liveErrorText(AiError.Unknown(null)))
+        assertEquals("Da ist etwas schiefgelaufen. Versuch's gleich nochmal.", liveErrorText(AiError.Unknown(" ")))
     }
 }

@@ -177,11 +177,20 @@ internal class LiveNewsServiceImpl(
                 usageSink,
             )
             val finishedAt = clock.instant()
-            if (newCount == 0) markChecked(finishedAt, model, topicIds)
+            // Only a run that really finished counts as "checked up to now": it becomes the next
+            // run's "since" and, after a restart, the status line. Refused, cut-off or
+            // unfinished runs without articles leave no trace (runs with articles are stored anyway).
+            if (result.end == TurnEnd.COMPLETE && newCount == 0) markChecked(finishedAt, model, topicIds)
             val error = when (result.end) {
                 TurnEnd.REFUSED -> AiError.Refusal(result.refusalCategory)
                 TurnEnd.TRUNCATED -> if (newCount == 0) AiError.Truncated else null
+                TurnEnd.INCOMPLETE -> if (newCount == 0) AiError.Unknown(INCOMPLETE_TEXT) else null
                 TurnEnd.COMPLETE -> null
+            }
+            val lastLine = when {
+                newCount > 0 -> "Fertig"
+                error == null -> "Nichts Neues seit dem letzten Stand"
+                else -> "Ohne Ergebnis beendet"
             }
             _state.update {
                 it.copy(
@@ -189,7 +198,7 @@ internal class LiveNewsServiceImpl(
                     lastRunAt = if (error == null || newCount > 0) iso(finishedAt) else it.lastRunAt,
                     newCount = newCount,
                     error = error,
-                    progress = it.progress.withLine(if (newCount == 0) "Nichts Neues seit dem letzten Stand" else "Fertig"),
+                    progress = it.progress.withLine(lastLine),
                 )
             }
         } catch (e: CancellationException) {
@@ -231,6 +240,9 @@ internal class LiveNewsServiceImpl(
         const val TAG = "LiveNews"
         const val MAX_PROGRESS_LINES = 8
         const val MAX_CORRECTIONS = 2
+
+        /** A run that stopped before Claude published anything (request budget, no publish call). */
+        const val INCOMPLETE_TEXT = "Die Recherche ist nicht fertig geworden. Versuch's gleich nochmal."
 
         fun List<String>.withLine(line: String): List<String> =
             if (lastOrNull() == line) this else (this + line).takeLast(MAX_PROGRESS_LINES)

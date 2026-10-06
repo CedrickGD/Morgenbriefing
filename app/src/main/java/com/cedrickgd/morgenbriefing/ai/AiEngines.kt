@@ -55,7 +55,17 @@ internal interface ChatTurnListener : ToolActivityListener {
     fun onSources(sources: List<SourceRef>) {}
 }
 
-internal enum class TurnEnd { COMPLETE, TRUNCATED, REFUSED }
+internal enum class TurnEnd {
+    COMPLETE,
+    TRUNCATED,
+    REFUSED,
+
+    /**
+     * Stopped before the model finished its job: the request budget ran out, or a live run
+     * ended without the required `publish_articles` call even after the reminder.
+     */
+    INCOMPLETE,
+}
 
 internal data class ChatTurnResult(
     val text: String,
@@ -91,6 +101,10 @@ internal interface LiveResearchListener : ToolActivityListener {
 internal data class LiveResearchResult(
     /** At least one `publish_articles` call was accepted. */
     val published: Boolean,
+    /**
+     * [TurnEnd.COMPLETE] only when the model published (possibly an empty list) and ended its
+     * turn; a run that stopped without publishing is [TurnEnd.INCOMPLETE].
+     */
     val end: TurnEnd,
     val refusalCategory: String? = null,
 )

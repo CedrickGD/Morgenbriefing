@@ -76,7 +76,8 @@ internal fun liveErrorText(error: AiError): String = when (error) {
     AiError.Network -> "Keine Verbindung – check kurz dein Netz und versuch's nochmal."
     is AiError.Refusal -> "Diese Recherche hat Claude nicht durchgeführt. Versuch's später mit anderen Themen."
     AiError.Truncated -> "Die Recherche wurde gekürzt – vielleicht fehlen ein paar Meldungen."
-    is AiError.Unknown -> "Da ist etwas schiefgelaufen. Versuch's gleich nochmal."
+    // Unknown errors carry a user-facing German sentence when the cause is known.
+    is AiError.Unknown -> error.message?.takeIf { it.isNotBlank() } ?: "Da ist etwas schiefgelaufen. Versuch's gleich nochmal."
 }
 
 /** The status line under "Live": running, last update with count, or what the view shows. */

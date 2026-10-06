@@ -155,11 +155,55 @@ class ClaudeLiveEngineTest {
         val result = backend.live.research(request, listener, usage)
 
         assertFalse(result.published)
+        // Never published: the run did not finish its job.
+        assertEquals(TurnEnd.INCOMPLETE, result.end)
         assertEquals(2, server.requestCount)
         body()
         val second = body()
         val last = second["messages"]!!.jsonArray.last().jsonObject
         assertEquals("user", last["role"]!!.jsonPrimitive.content)
         assertEquals(AiPrompts.LIVE_NUDGE, last["content"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun `a run that publishes an empty list after the reminder is complete`() = runBlocking<Unit> {
+        server.enqueue(Sse.simpleAnswer("Ich habe recherchiert."))
+        server.enqueue(
+            Sse.response(
+                Sse.messageStart(),
+                Sse.toolUse(0, "toolu_empty", LivePublish.TOOL_NAME, LiveFixtures.payload()),
+                Sse.messageDelta("tool_use"),
+                Sse.messageStop(),
+            ),
+        )
+        server.enqueue(Sse.simpleAnswer("Nichts Neues."))
+        val listener = Listener(ArrayDeque(listOf(PublishReply(true, "ok"))))
+
+        val result = backend.live.research(request, listener, usage)
+
+        assertTrue(result.published)
+        assertEquals(TurnEnd.COMPLETE, result.end)
+        assertEquals(3, server.requestCount)
+    }
+
+    @Test
+    fun `a run that uses up its request budget is incomplete`() = runBlocking<Unit> {
+        repeat(10) {
+            server.enqueue(
+                Sse.response(
+                    Sse.messageStart(),
+                    Sse.textBlock(0, "Ich suche weiter."),
+                    Sse.messageDelta("pause_turn"),
+                    Sse.messageStop(),
+                ),
+            )
+        }
+        val listener = Listener(ArrayDeque())
+
+        val result = backend.live.research(request, listener, usage)
+
+        assertFalse(result.published)
+        assertEquals(TurnEnd.INCOMPLETE, result.end)
+        assertEquals(10, server.requestCount)
     }
 }

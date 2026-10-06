@@ -86,7 +86,8 @@ internal class ClaudeChatEngine(private val clients: ClaudeClients) : ChatEngine
  * "⚡ Live": a research conversation with web search/fetch and the client tool
  * `publish_articles`. Each tool call is answered with the app's verdict ("ok" or the problems
  * to fix); the conversation runs until the model ends its turn. If it ends without having
- * published, it is reminded once.
+ * published, it is reminded once; a run that still does not publish, or that uses up
+ * [MAX_REQUESTS], ends [TurnEnd.INCOMPLETE].
  */
 internal class ClaudeLiveEngine(private val clients: ClaudeClients) : LiveEngine {
 
@@ -102,16 +103,19 @@ internal class ClaudeLiveEngine(private val clients: ClaudeClients) : LiveEngine
         var published = false
         var reminded = false
 
+        // The turn is over: complete only if the model got to publish (possibly an empty list).
+        fun ended() = LiveResearchResult(published, if (published) TurnEnd.COMPLETE else TurnEnd.INCOMPLETE)
+
         repeat(MAX_REQUESTS) {
             usage.beforeRequest()
             val turn = ClaudeStreamer.run(client, params.messages(messages).build(), request.model, callbacks, usage, SourceCollector(), AnswerText())
             val assistant = turn.message?.let(ClaudeRequests::assistantTurn)
             when (turn.stopReason) {
                 StopReason.PAUSE_TURN -> {
-                    messages += assistant ?: return LiveResearchResult(published, TurnEnd.COMPLETE)
+                    messages += assistant ?: return ended()
                 }
                 StopReason.TOOL_USE -> {
-                    if (assistant == null || turn.toolCalls.isEmpty()) return LiveResearchResult(published, TurnEnd.COMPLETE)
+                    if (assistant == null || turn.toolCalls.isEmpty()) return ended()
                     val results = ArrayList<ToolResultBlockParam>()
                     for (call in turn.toolCalls) {
                         results += if (call.name == LivePublish.TOOL_NAME) {
@@ -128,14 +132,15 @@ internal class ClaudeLiveEngine(private val clients: ClaudeClients) : LiveEngine
                 StopReason.MAX_TOKENS -> return LiveResearchResult(published, TurnEnd.TRUNCATED)
                 StopReason.REFUSAL -> return LiveResearchResult(published, TurnEnd.REFUSED, turn.refusalCategory)
                 else -> {
-                    if (published || reminded || assistant == null) return LiveResearchResult(published, TurnEnd.COMPLETE)
+                    if (published || reminded || assistant == null) return ended()
                     reminded = true
                     messages += assistant
                     messages += ClaudeRequests.userText(AiPrompts.LIVE_NUDGE)
                 }
             }
         }
-        return LiveResearchResult(published, TurnEnd.COMPLETE)
+        // Request budget used up while the model was still working.
+        return LiveResearchResult(published, TurnEnd.INCOMPLETE)
     }
 
     private companion object {

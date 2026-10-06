@@ -255,7 +255,8 @@ internal class ChatServiceImpl(
                             status = ChatMessage.Status.FAILED,
                             error = AiError.Refusal(result.refusalCategory),
                         )
-                        TurnEnd.TRUNCATED -> message.copy(
+                        // INCOMPLETE: not produced by the chat engine; shown like a cut-off answer.
+                        TurnEnd.TRUNCATED, TurnEnd.INCOMPLETE -> message.copy(
                             text = text,
                             sources = result.sources,
                             status = if (text.isEmpty()) ChatMessage.Status.FAILED else ChatMessage.Status.DONE,
