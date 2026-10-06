@@ -101,12 +101,13 @@ class AiServices(private val context: Context, private val container: AppContain
     }
 
     /**
-     * Article or whole-day context for a chat: the stored brief of that day (downloaded if
-     * missing), the bundled demo brief when it is that day's, plus that day's live articles.
+     * Article or whole-day context for a chat: the brief of that day as the screens show it
+     * ([briefFor]: the demo brief without a token, else the stored one, downloaded if missing),
+     * plus that day's live articles.
      */
     private suspend fun loadChatContext(chat: ChatContext): LoadedChatContext? {
         val date = parseDateOrNull(chat.date) ?: return null
-        val brief = briefFor(date)
+        val brief = briefFor(date, chat.articleKey)
         val live = liveService.articles(date)
         val key = chat.articleKey
         if (key == null) {
@@ -129,7 +130,13 @@ class AiServices(private val context: Context, private val container: AppContain
         return null
     }
 
-    private suspend fun briefFor(date: LocalDate): Brief? {
+    /**
+     * The brief of [date] the screens show. Without a token "Heute" and the reader show the
+     * bundled demo brief (TodayViewModel, ArticleViewModel.findBrief), so the chat takes it first
+     * too — even when an older real brief of that day is stored with the same article ids.
+     */
+    private suspend fun briefFor(date: LocalDate, articleKey: String?): Brief? {
+        if (!hasToken()) demoBriefForChat(container.briefs.sampleBrief(), date, articleKey)?.let { return it }
         container.store.loadBrief(date)?.let { return it }
         val fetched = try {
             container.briefs.day(date).brief
@@ -142,6 +149,15 @@ class AiServices(private val context: Context, private val container: AppContain
         return fetched ?: container.briefs.sampleBrief().takeIf { it.date == date.toString() }
     }
 
+    private suspend fun hasToken(): Boolean = try {
+        container.settings.current().hasToken
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Log.w(TAG, "Settings could not be read", e)
+        false
+    }
+
     private fun Brief.findItem(key: String): Pair<NewsSection, NewsItem>? {
         for (section in sections) {
             section.items.firstOrNull { it.key == key }?.let { return section to it }
@@ -152,4 +168,14 @@ class AiServices(private val context: Context, private val container: AppContain
     private companion object {
         const val TAG = "AiServices"
     }
+}
+
+/**
+ * Without a token "Heute" and the reader show the bundled demo brief [sample]; a chat about
+ * [date] (and [articleKey], when given) talks about that same text when it is that day's.
+ */
+internal fun demoBriefForChat(sample: Brief, date: LocalDate, articleKey: String?): Brief? {
+    if (sample.date != date.toString()) return null
+    if (articleKey != null && sample.sections.none { section -> section.items.any { it.key == articleKey } }) return null
+    return sample
 }
