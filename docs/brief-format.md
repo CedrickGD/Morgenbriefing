@@ -210,7 +210,8 @@ Auf Wunsch kommt das Briefing zusätzlich als E-Mail. Eine eigene Cloud-Routine
 ([`routine/EMAIL_PROMPT.md`](../routine/EMAIL_PROMPT.md)) liest um 05:20 Uhr die Einstellungen
 und das heutige `latest.json`, baut mit `routine/render-email.mjs` eine HTML-E-Mail (Live-Wetter
 von Open-Meteo plus die Top-Meldungen jeder Rubrik) und verschickt sie mit dem Gmail-Connector
-aus dem Gmail-Konto des Lesers – einzeln an jeden Empfänger.
+aus dem Gmail-Konto des Lesers – als **eine** E-Mail: die erste Adresse in `to`, alle weiteren in
+`bcc` (niemand sieht die anderen Empfänger).
 
 ### `config/email.json` – Schalter und Empfänger
 
@@ -233,9 +234,16 @@ write*), wenn der Leser in den Einstellungen unter „E-Mail-Briefing“ etwas �
 | `recipients` | ja | 0–10 einzelne Adressen `name@domain.tld`, getrimmt, kleingeschrieben, ohne Dubletten. Erlaubt vor dem `@`: `a–z 0–9 . _ % + -` (keine Punkte am Rand oder doppelt); Domain mit Endung, Umlaut-Domains als Punycode (`xn--…`). Keine Namen (`Name <a@b.de>`), keine Listen mit Komma oder Semikolon |
 | `updatedAt` | nein | ISO-8601 **mit** Offset, Zeitpunkt der letzten Änderung |
 
-* Startwert: `enabled: true` mit der eigenen Gmail-Adresse als einzigem Empfänger.
+* Startwert: keine Datei – das E-Mail-Briefing ist aus und hat keine Empfänger. Die App legt die
+  Datei an, sobald der Leser die erste Adresse einträgt, mit `enabled` so, wie der Schalter gerade
+  steht (anfangs aus). Danach hat eine von der App geschriebene Datei immer 1–10 Empfänger (die
+  letzte Adresse lässt sich nicht entfernen, nur der Schalter ausschalten).
 * **Fehlt die Datei, ist sie ungültig, ist `enabled` `false` oder die Liste leer, verschickt die
   Routine nichts.** Unbekannte Felder werden ignoriert (Hinweis).
+* **Schon eine einzige ungültige Adresse macht die ganze Datei ungültig** – dann bekommt niemand
+  eine E-Mail. Die App prüft neue Adressen darum nach genau diesen Regeln
+  (`EmailRecipients` in `data/model/EmailConfig.kt`) und markiert gespeicherte Adressen, die sie
+  nicht erfüllen (z. B. von Hand eingetragene).
 * Geprüft wird mit `node routine/email-config.mjs <datei>`: Bei Erfolg gibt das Skript genau eine
   Zeile `{"enabled":true,"recipients":[…]}` aus – nur an diese Adressen geht eine E-Mail.
   Großschreibung und Leerzeichen am Rand gleicht es an, Dubletten zählt es einmal (Hinweis); alles
@@ -253,7 +261,7 @@ nicht ein zweites Mal verschickt. Die App liest sie nicht.
 | Feld | Regel |
 |---|---|
 | `lastSentDate` | Berliner Datum der zuletzt verschickten E-Mail, `YYYY-MM-DD` |
-| `count` | Zahl der an diesem Tag erfolgreich verschickten E-Mails (eine pro Empfänger) |
+| `count` | Zahl der Empfänger (`to` + `bcc`) der an diesem Tag verschickten E-Mail |
 | `at` | ISO-8601 mit Offset, Zeitpunkt des Versands |
 
 Commit-Nachricht: `email: 2026-10-06 an 1 Empfänger`.

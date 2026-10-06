@@ -150,8 +150,9 @@ Eine zweite, kleine Routine verschickt das Briefing um 05:20 Uhr als E-Mail aus 
 Gmail-Konto. Sie recherchiert nichts: Sie liest `config/email.json` und das heutige
 `latest.json` vom Branch `briefs`, baut mit [`routine/render-email.mjs`](routine/render-email.mjs)
 die E-Mail (Wetter live von Open-Meteo, dazu pro Rubrik die Top-Meldungen) und schickt sie
-einzeln an jede eingetragene Adresse – an nichts anderes. Danach vermerkt sie den Versand in
-`config/email-sent.json`, damit der Wiederholungsstart nicht doppelt sendet.
+einmal an die eingetragenen Adressen – die erste steht in „An“, alle weiteren in „Bcc“, an nichts
+anderes. Danach vermerkt sie den Versand in `config/email-sent.json`, damit der
+Wiederholungsstart nicht doppelt sendet.
 
 1. Neue Routine erstellen, Repo **`CedrickGD/Morgenbriefing`** verbinden (Branch `main`).
 2. **Prompt:** den kompletten Inhalt von [`routine/EMAIL_PROMPT.md`](routine/EMAIL_PROMPT.md).
@@ -316,6 +317,7 @@ und die Einstellungen des E-Mail-Briefings unter `config/`.
   `config/email.json` (E-Mail-Briefing).
 - Bilder: werden direkt von Wikimedia Commons (`upload.wikimedia.org`) geladen.
 - E-Mail: Die Empfänger stehen nur in deinem privaten Repo (`config/email.json`). Die E-Mail geht
-  aus deinem eigenen Gmail-Konto einzeln an jede Adresse; Bilder darin lädt das E-Mail-Programm
-  von Wikimedia Commons, es gibt keine Zählpixel und keine Tracking-Links.
+  einmal aus deinem eigenen Gmail-Konto an die erste Adresse, alle weiteren stehen in „Bcc“ –
+  niemand sieht die anderen Empfänger. Bilder darin lädt das E-Mail-Programm von Wikimedia
+  Commons, es gibt keine Zählpixel und keine Tracking-Links.
 - Kein Tracking, keine Werbung, keine Analyse-Dienste.
