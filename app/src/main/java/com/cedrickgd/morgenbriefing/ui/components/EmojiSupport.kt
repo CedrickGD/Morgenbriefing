@@ -17,11 +17,17 @@ object EmojiSupport {
     /** Close relatives, best first. Only used when the original has no glyph. */
     private val fallbacks: Map<String, List<String>> = mapOf(
         "🧥" to listOf("🧣", "👕"),
+        // Emoji 11–12 (Android 9–10): knitting, lotion, ice, puzzle piece.
+        "🧶" to listOf("👕"),
+        "🧴" to listOf("☀️"),
+        "🧊" to listOf("❄️", "⚠️"),
+        "🧩" to listOf("⚠️"),
         "🩺" to listOf("💊", "🏥", "❤️"),
         "🔭" to listOf("🌌", "🚀"),
         "🌡️" to listOf("☀️"),
-        "🧤" to listOf("🧣"),
-        "🧣" to listOf("👕"),
+        // Scarf and gloves only come up in the cold: a snowflake beats a T-shirt (Android 7).
+        "🧤" to listOf("🧣", "❄️"),
+        "🧣" to listOf("❄️", "👕"),
         "🩳" to listOf("👕"),
         "🥾" to listOf("👟"),
         "🫧" to listOf("💧"),
@@ -39,6 +45,14 @@ object EmojiSupport {
     fun display(emoji: String): String {
         if (emoji.isBlank()) return emoji
         return resolved.getOrPut(emoji) { resolve(emoji) }
+    }
+
+    /**
+     * [text] with every emoji the device cannot draw swapped for its relative, for text the
+     * system draws itself (notifications), where the [Emoji] composable is not involved.
+     */
+    fun displayIn(text: String): String = fallbacks.keys.fold(text) { acc, emoji ->
+        if (acc.contains(emoji)) acc.replace(emoji, display(emoji)) else acc
     }
 
     private fun resolve(emoji: String): String {

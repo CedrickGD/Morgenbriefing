@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.work.ForegroundInfo
 import com.cedrickgd.morgenbriefing.R
 import com.cedrickgd.morgenbriefing.domain.NotificationText
+import com.cedrickgd.morgenbriefing.ui.components.EmojiSupport
 
 /**
  * Everything the app posts to the notification shade: the morning briefing on
@@ -63,9 +64,10 @@ object Notifications {
         val builder = NotificationCompat.Builder(context, CHANNEL_MORNING)
             .setSmallIcon(R.drawable.ic_stat_sun)
             .setColor(ContextCompat.getColor(context, R.color.brand))
-            .setContentTitle(text.title)
-            .setContentText(text.text)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(text.bigText))
+            // The system draws these with its own font: swap emoji it cannot draw (Android 7–9).
+            .setContentTitle(EmojiSupport.displayIn(text.title))
+            .setContentText(EmojiSupport.displayIn(text.text))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(EmojiSupport.displayIn(text.bigText)))
             .setAutoCancel(true)
             .setOnlyAlertOnce(silent)
             .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
