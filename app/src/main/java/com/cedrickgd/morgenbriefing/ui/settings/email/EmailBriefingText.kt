@@ -44,8 +44,17 @@ internal object EmailBriefingText {
     /** Where fine-grained tokens are managed (permissions of an existing token). */
     const val TOKEN_SETTINGS_URL = "https://github.com/settings/personal-access-tokens"
 
-    /** The e-mail routine runs ~05:20; a change saved before this time still counts today. */
-    private val SAME_DAY_CUTOFF: LocalTime = LocalTime.of(5, 0)
+    /**
+     * The e-mail routine starts at 05:20 Berlin time and reads the config then; a change saved
+     * before this time (with a few minutes to spare) still counts today.
+     */
+    private val SAME_DAY_CUTOFF: LocalTime = LocalTime.of(5, 15)
+
+    /**
+     * Until 06:59 a later start of the routine (the summer-time retry at 06:20) still sends
+     * today's e-mail if none went out yet, so a change in this window may or may not count today.
+     */
+    private val RUN_WINDOW_END: LocalTime = LocalTime.of(7, 0)
 
     /** Inline message under the address field; null when there is nothing to say. */
     fun recipientMessage(check: RecipientCheck): String? = when (check) {
@@ -101,10 +110,17 @@ internal object EmailBriefingText {
     /** "Neu laden" makes sense for these errors (not for the ones with their own block). */
     fun canReload(error: EmailConfigError?): Boolean = error != null && !hasOwnBlock(error)
 
-    /** "gilt ab morgen früh" — or "heute früh" when saved before the morning run. */
+    /**
+     * "gilt ab heute früh" when saved before the morning run, "gilt ab dem nächsten Versand"
+     * while today's run may still be going (or retried), otherwise "gilt ab morgen früh".
+     */
     fun appliesFrom(savedAt: Instant, zone: ZoneId = BERLIN): String {
         val local = savedAt.atZone(zone).toLocalTime()
-        return if (local.isBefore(SAME_DAY_CUTOFF)) "gilt ab heute früh" else "gilt ab morgen früh"
+        return when {
+            local.isBefore(SAME_DAY_CUTOFF) -> "gilt ab heute früh"
+            local.isBefore(RUN_WINDOW_END) -> "gilt ab dem nächsten Versand"
+            else -> "gilt ab morgen früh"
+        }
     }
 
     /** What the status line says right now; null = nothing (the controls speak for themselves). */

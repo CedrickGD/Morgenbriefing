@@ -53,6 +53,13 @@ class EmailBriefingTextTest {
     fun `a change saved before the morning run counts today`() {
         assertEquals("gilt ab morgen früh", EmailBriefingText.appliesFrom(evening))
         assertEquals("gilt ab heute früh", EmailBriefingText.appliesFrom(night))
+        // 05:10 CEST: the 05:20 run still reads the change.
+        assertEquals("gilt ab heute früh", EmailBriefingText.appliesFrom(Instant.parse("2026-10-05T03:10:00Z")))
+        // 05:40 and 06:30 CEST: today's run may have sent already, or the 06:20 retry may still send.
+        assertEquals("gilt ab dem nächsten Versand", EmailBriefingText.appliesFrom(Instant.parse("2026-10-05T03:40:00Z")))
+        assertEquals("gilt ab dem nächsten Versand", EmailBriefingText.appliesFrom(Instant.parse("2026-10-05T04:30:00Z")))
+        // 07:05 CEST: nothing goes out any more today.
+        assertEquals("gilt ab morgen früh", EmailBriefingText.appliesFrom(Instant.parse("2026-10-05T05:05:00Z")))
     }
 
     @Test
