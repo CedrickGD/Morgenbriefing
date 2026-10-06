@@ -47,6 +47,7 @@ import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.PhoneAndroid
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Savings
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Shield
@@ -440,6 +441,27 @@ internal fun AnswerActions(onCopy: () -> Unit, onShare: () -> Unit, modifier: Mo
         }
         IconButton(onClick = onShare) {
             Icon(Icons.Rounded.Share, contentDescription = "Antwort teilen", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(19.dp))
+        }
+    }
+}
+
+/**
+ * Under the last question when it never got an answer (stopped before the first word, or the
+ * app was closed mid-answer): one tap asks it again.
+ */
+@Composable
+internal fun UnansweredQuestion(onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            "Noch ohne Antwort",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.width(4.dp))
+        TextButton(onClick = onRetry) {
+            Icon(Icons.Rounded.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(6.dp))
+            Text("Nochmal fragen")
         }
     }
 }

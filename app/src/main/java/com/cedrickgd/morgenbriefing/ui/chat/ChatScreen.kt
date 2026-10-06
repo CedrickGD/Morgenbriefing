@@ -75,12 +75,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cedrickgd.morgenbriefing.ai
 import com.cedrickgd.morgenbriefing.ai.AiBlock
 import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.ChatContext
 import com.cedrickgd.morgenbriefing.ai.ChatMessage
+import com.cedrickgd.morgenbriefing.ai.ChatSession
 import com.cedrickgd.morgenbriefing.ai.ChatUiState
 import com.cedrickgd.morgenbriefing.ai.RetryableChatSession
 import com.cedrickgd.morgenbriefing.ui.components.entrance
@@ -114,6 +117,8 @@ fun ChatScreen(
 ) {
     val context = LocalContext.current
     val session = remember(context, date, articleKey) { context.ai.chat.session(ChatContext(date, articleKey)) }
+    // Leaving the chat stops a running answer (the partial text stays); rotating does not.
+    viewModel { ChatLeaveStopper(session) }
     val state by session.state.collectAsStateWithLifecycle()
     val settingsLink = LocalSettingsLink.current
     var keyDialog by rememberSaveable { mutableStateOf(false) }
@@ -138,6 +143,18 @@ fun ChatScreen(
         modifier = modifier,
     )
     if (keyDialog) InlineAiKeyDialog(onDismiss = { keyDialog = false })
+}
+
+/**
+ * Lives as long as the chat's back stack entry: cleared once the chat is left for good (Back,
+ * or the entry is popped otherwise), not when the activity is recreated. Then nothing would
+ * read the answer any more, so it is stopped instead of streaming (and billing) in the
+ * background; what has streamed so far is kept.
+ */
+internal class ChatLeaveStopper(private val session: ChatSession) : ViewModel() {
+    override fun onCleared() {
+        session.stop()
+    }
 }
 
 /**
@@ -387,7 +404,15 @@ private fun MessageList(
                 .animateItem()
                 .entrance(appear, distance = 12.dp)
             when (message.role) {
-                ChatMessage.Role.USER -> UserBubble(message.text, itemModifier)
+                // A question without answer at the end (stopped early, app closed mid-answer).
+                ChatMessage.Role.USER -> if (index == state.messages.lastIndex && !state.busy && state.blocked == null) {
+                    Column(itemModifier) {
+                        UserBubble(message.text)
+                        UnansweredQuestion(onRetry = onRetry)
+                    }
+                } else {
+                    UserBubble(message.text, itemModifier)
+                }
                 ChatMessage.Role.ASSISTANT -> AssistantMessage(
                     message = message,
                     isLast = index == state.messages.lastIndex,

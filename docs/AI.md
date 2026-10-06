@@ -67,6 +67,9 @@ beide Funktionen sichtbar, erklären sich aber freundlich und verweisen auf die 
   Antworten streamen Wort für Wort; einfache Formatierung (Absätze, **fett**, Listen); Quellen
   der Websuche als antippbare Chips; „Suche im Netz …“-Statuszeile während Server-Tools laufen;
   Kopieren/Teilen einer Antwort; Verlauf pro Artikel lokal gespeichert.
+* Wer den Chat verlässt (Zurück), bricht eine laufende Antwort ab – das bisher Gestreamte bleibt
+  stehen. Eine Frage ganz am Ende ohne Antwort (früh gestoppt, App mittendrin geschlossen) zeigt
+  „Nochmal fragen“.
 
 ## 2. „⚡ Live“ (brandaktuell)
 
