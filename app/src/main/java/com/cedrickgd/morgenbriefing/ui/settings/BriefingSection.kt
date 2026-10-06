@@ -46,7 +46,6 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
-import com.cedrickgd.morgenbriefing.notify.AlarmScheduler
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
 import kotlinx.coroutines.delay
 import java.time.ZonedDateTime
@@ -69,7 +68,7 @@ internal fun BriefingCard(
     val enabled = settings.notificationsEnabled
     val time = clockLabel(settings.notifyHour, settings.notifyMinute)
     val countdown = remember(now, settings.notifyHour, settings.notifyMinute) {
-        nextBriefingCountdown(now, AlarmScheduler.nextTrigger(now, settings.notifyHour, settings.notifyMinute))
+        nextBriefingCountdown(now, nextBriefingAt(now, settings.notifyHour, settings.notifyMinute))
     }
     val haptic = rememberToggleHaptics()
     val timeAlpha by animateFloatAsState(

@@ -7,7 +7,9 @@ import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
 import com.cedrickgd.morgenbriefing.data.model.BriefSourceException
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.domain.Fmt
+import com.cedrickgd.morgenbriefing.notify.AlarmScheduler
 import java.io.IOException
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -63,9 +65,9 @@ internal fun clockLabel(hour: Int, minute: Int): String =
 internal fun nextBriefingLabel(now: ZonedDateTime, next: ZonedDateTime): String =
     "Nächstes Briefing: ${dayWord(now, next)} um ${clockLabel(next.hour, next.minute)}"
 
-/** "heute", "morgen", "übermorgen" or "am Di, 6. Okt." for [next] as seen from [now]. */
+/** "heute", "morgen", "übermorgen" or "am Di, 6. Okt." for [next] as seen from [now] (in [next]'s zone). */
 internal fun dayWord(now: ZonedDateTime, next: ZonedDateTime): String =
-    when (ChronoUnit.DAYS.between(now.toLocalDate(), next.toLocalDate())) {
+    when (ChronoUnit.DAYS.between(now.withZoneSameInstant(next.zone).toLocalDate(), next.toLocalDate())) {
         0L -> "heute"
         1L -> "morgen"
         2L -> "übermorgen"
@@ -88,6 +90,13 @@ internal fun countdownLabel(minutes: Long): String {
         else -> "in ${(m + 30) / 60} Std."
     }
 }
+
+/**
+ * When the morning alarm fires next, exactly as [AlarmScheduler.sync] schedules it: at
+ * [hour]:[minute] in the device's time zone, which is not Berlin when travelling.
+ */
+internal fun nextBriefingAt(now: ZonedDateTime, hour: Int, minute: Int, zone: ZoneId = ZoneId.systemDefault()): ZonedDateTime =
+    AlarmScheduler.nextTrigger(now.withZoneSameInstant(zone), hour, minute)
 
 /** "Nächstes Briefing: morgen · in 9 Std." */
 internal fun nextBriefingCountdown(now: ZonedDateTime, next: ZonedDateTime): String {

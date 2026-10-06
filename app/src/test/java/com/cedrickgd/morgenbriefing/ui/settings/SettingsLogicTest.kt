@@ -11,6 +11,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.IOException
 import java.net.SocketTimeoutException
+import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -105,6 +106,19 @@ class SettingsLogicTest {
         // Dragging a thumb, even a little wobbly.
         assertEquals(GestureAxis.HORIZONTAL, gestureAxis(dx = 30f, dy = 10f, slop = slop))
         assertEquals(GestureAxis.HORIZONTAL, gestureAxis(dx = -40f, dy = 35f, slop = slop))
+    }
+
+    @Test
+    fun `the countdown follows the alarm, which rings in the device zone`() {
+        // 06:48 in Berlin on a phone set to GMT (04:48 there): the 05:30 alarm rings in 42 minutes.
+        val now = ZonedDateTime.of(2026, 10, 6, 6, 48, 0, 0, ZoneId.of("Europe/Berlin"))
+        val next = nextBriefingAt(now, 5, 30, ZoneId.of("GMT"))
+        assertEquals(Instant.parse("2026-10-06T05:30:00Z"), next.toInstant())
+        assertEquals("Nächstes Briefing: heute · in 42 Min.", nextBriefingCountdown(now, next))
+        assertEquals("heute", dayWord(now, next))
+        // In Berlin itself nothing changes.
+        val berlin = nextBriefingAt(now, 5, 30, ZoneId.of("Europe/Berlin"))
+        assertEquals("Nächstes Briefing: morgen · in 23 Std.", nextBriefingCountdown(now, berlin))
     }
 
     @Test

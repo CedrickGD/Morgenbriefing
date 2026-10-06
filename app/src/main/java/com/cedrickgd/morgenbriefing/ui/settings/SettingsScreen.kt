@@ -37,7 +37,6 @@ import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
-import com.cedrickgd.morgenbriefing.notify.AlarmScheduler
 import com.cedrickgd.morgenbriefing.notify.MorningWorker
 import com.cedrickgd.morgenbriefing.ui.glass.PageTitle
 import com.cedrickgd.morgenbriefing.ui.glass.TopGlassBar
@@ -477,7 +476,7 @@ private fun SettingsBlock(
     when (key) {
         Block.HERO -> {
             val items = statusItems(content.status, content.source, AiSupport.isSupported, settings.hasAiKey)
-            val next = AlarmScheduler.nextTrigger(content.now, settings.notifyHour, settings.notifyMinute)
+            val next = nextBriefingAt(content.now, settings.notifyHour, settings.notifyMinute)
             val hero = heroText(
                 enabled = settings.notificationsEnabled,
                 items = items,
