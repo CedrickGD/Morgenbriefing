@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "date": "2026-10-05",
-  "generatedAt": "2026-10-05T20:43:22+02:00",
-  "teaser": "Merz sagt der Ukraine in Kyjiw Drohnen und Geld zu, Geheimdienste warnen vor Russlands Schattenkrieg, Spanien wählt neu.",
+  "date": "2026-10-06",
+  "generatedAt": "2026-10-06T04:12:00+02:00",
+  "teaser": "Neue Kriegsdienstverweigerer-Rekorde, Verfassungsschutz vor möglicher AfD-Regierungsbeteiligung in Magdeburg und Schneider Electric kauft PTC für 22,6 Milliarden Dollar.",
   "sections": [
     {
       "id": "ki",
@@ -10,97 +10,106 @@
       "emoji": "🤖",
       "items": [
         {
-          "id": "ki-telekom-ki-investorentag-milliarden",
+          "id": "ki-aleph-alpha-kolibri",
           "tier": "top",
-          "headline": "Telekom beziffert KI-Effekt auf Milliarden Euro",
-          "summary": "Auf dem KI-Investorentag in Bonn nennt die Telekom erstmals konkrete Zahlen: 1,1 Milliarden Euro Einsparung bis 2027, rund 2,5 Milliarden bis 2030. Die Prognose bleibt unverändert.",
-          "body": "Die Deutsche Telekom hat am Montag auf ihrem KI-Investorentag in Bonn vorgerechnet, was künstliche Intelligenz für die Bilanz bringen soll. Nach Angaben des Konzerns sollen KI und Automatisierung im kommenden Jahr Bruttoeinsparungen von rund 1,1 Milliarden Euro gegenüber 2023 bringen. Das sind laut Handelsblatt 300 Millionen Euro mehr als bisher angekündigt.\n\nBis 2030 soll die Kombination aus KI und Automatisierung die indirekten Kosten außerhalb der USA um etwa 2,5 Milliarden Euro senken. Die bestehende Finanzprognose und die mittelfristigen Ziele bestätigte das Unternehmen.\n\n## Neue Umsätze mit Geschäftskunden\n\nAuch auf der Einnahmenseite nennt die Telekom Zahlen. Mit KI-Angeboten für Unternehmenskunden außerhalb der USA soll der Umsatz bis 2030 auf rund 800 Millionen Euro wachsen. Insgesamt sieht der Konzern ein zusätzliches Umsatzpotenzial von etwa einer Milliarde Euro, wie das Handelsblatt berichtet.\n\nIm Privatkundengeschäft setzt die Telekom auf den Magenta AI Assistant, der live übersetzt und Telefonate zusammenfasst. Daraus sollen Premiumangebote und neue Tarife entstehen. Details zu Preisen nannte die Telekom in ihrer Mitteilung nicht.\n\n## Netz und Kundendienst als Praxisbeispiele\n\nAls Beleg für den praktischen Nutzen führt die Telekom zwei Anwendungen an. Der „RAN Guardian Agent“ überwacht die Kapazität im Mobilfunknetz und soll die Reaktionszeit bei Überlastung von mehreren Stunden auf etwa eine Minute drücken. Im Kundendienst habe KI-gestützte Problemerkennung in ersten Einführungen die Zahl der Beschwerden um 30 Prozent gesenkt, teilte der Konzern mit.\n\nCEO Timotheus Höttges verwies laut Handelsblatt darauf, dass die Telekom anders als die großen US-Konzerne schon lange Erfahrung im Betrieb riesiger Infrastrukturen habe. Zum Vergleich: Amazon, Microsoft, Alphabet und Meta investieren 2026 nach der Schätzung, die das Blatt nennt, zusammen rund 772 Milliarden Dollar in KI-Infrastruktur.\n\n## Einordnung\n\nVor dem Termin hatten Analysten wie Bank of America laut Börse Express dem Konzern eine vergleichsweise geringe Gefährdung durch KI-getriebenen Preisdruck bescheinigt. Investoren wollten dennoch handfeste Belege, dass KI Kosten senkt und Kunden bindet, statt nur Technik zu zeigen.\n\nFür Deutschland ist das mehr als eine Börsenmeldung. Die Telekom betreibt seit Februar 2026 gemeinsam mit Nvidia eine Industrial AI Cloud in München für europäische Industriekunden, mit bis zu 10.000 Blackwell-Grafikprozessoren. Sie ist damit einer der wenigen Anbieter, die KI-Rechenleistung für Mittelstand und Industrie auch in Sachsen auf deutschem Boden bereitstellen können. Ob die Einsparungen am Ende auch Stellen kosten, ließ die Telekom in den vorliegenden Mitteilungen offen.",
-          "source": "Handelsblatt",
-          "url": "https://www.handelsblatt.com/technik/it-internet/telekom-hoettges-verspricht-investoren-milliarden-effekt-durch-ki/100259677.html",
+          "headline": "Aleph Alpha veröffentlicht offenes Sprachmodell Kolibri-1",
+          "summary": "Das Heidelberger Unternehmen stellt ein 78-Milliarden-Parameter-Modell für Deutsch und Englisch unter Apache-2.0-Lizenz frei zur Verfügung. Es richtet sich vor allem an Verwaltung und Industrie.",
+          "body": "Aleph Alpha meldet sich im Rennen um europäische KI-Modelle zurück: Das Unternehmen hat mit Kolibri-1 ein neues Sprachmodell veröffentlicht, dessen Gewichte frei auf Hugging Face herunterladbar sind. Nach der Modellkarte erschien es am 3. Oktober 2026; The Decoder berichtete am 5. Oktober darüber.\n\nDas Modell umfasst insgesamt 78 Milliarden Parameter, nutzt aber eine Mixture-of-Experts-Architektur. Bei jedem verarbeiteten Token ist nur ein kleiner Teil aktiv, laut Modellkarte rund 3,5 Milliarden Parameter. Das senkt den Rechenaufwand im Betrieb deutlich. Als Mindestausstattung nennt Aleph Alpha zwei GPUs vom Typ A100 mit je 80 Gigabyte Speicher.\n\n## Was Kolibri-1 kann\n\nKolibri-1 ist ein Reasoning-Modell mit einstellbarem Denkaufwand (niedrig, mittel, hoch). Es unterstützt Tool-Aufrufe und strukturierte Ausgaben. Der native Kontext liegt bei gut 262.000 Token und lässt sich auf rund eine Million Token erweitern. Als Trainingsmaterial nennt die Modellkarte etwa 62 Prozent Englisch, knapp 24 Prozent Deutsch und knapp 14 Prozent Programmcode. Insgesamt flossen 20 Billionen Token in das Vortraining.\n\nLaut The Decoder wurde das Modell auf 768 B200-GPUs in Deutschland und Finnland trainiert. Für deutsche Texte baute das Unternehmen eine eigene Datenpipeline auf; synthetische Trainingsdaten stammen teilweise aus chinesischen Modellen. Aleph Alpha positioniert Kolibri nach eigenen Angaben auf der sogenannten Pareto-Front aus Qualität und Betriebskosten, verglichen mit ähnlich großen Modellen vom Frühjahr 2026. Unabhängige Tests dazu lagen am Morgen nicht vor.\n\n## Einordnung für Deutschland\n\nDas Modell ist ausdrücklich auf öffentliche Verwaltung, Luftfahrt und Industrie ausgerichtet und nach Angaben des Berichts mit Blick auf den EU AI Act entwickelt. Für deutsche Behörden und Mittelständler, auch in Sachsen, ist das interessant: Ein offenes Modell unter Apache-2.0-Lizenz lässt sich im eigenen Rechenzentrum betreiben, ohne Daten an US-Anbieter zu geben.\n\nAleph Alpha galt lange als deutsche Hoffnung für Basismodelle, geriet aber gegenüber US-Konkurrenten ins Hintertreffen. Kolibri-1 ist ein Lebenszeichen, ob es sich im Alltag gegen die großen Anbieter behauptet, werden erst praktische Vergleiche zeigen.",
+          "source": "The Decoder",
+          "url": "https://the-decoder.de/ki-lebenszeichen-aus-deutschland-aleph-alpha-veroeffentlicht-deutsch-englisches-sprachmodell-kolibri/",
           "sources": [
             {
-              "name": "Handelsblatt",
-              "url": "https://www.handelsblatt.com/technik/it-internet/telekom-hoettges-verspricht-investoren-milliarden-effekt-durch-ki/100259677.html"
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/ki-lebenszeichen-aus-deutschland-aleph-alpha-veroeffentlicht-deutsch-englisches-sprachmodell-kolibri/"
             },
             {
-              "name": "Deutsche Telekom",
-              "url": "https://www.telekom.com/de/newsroom/aktuelles/medieninformationen/2026/10/telekom-steigert-wachstum-effizienz-und-qualitaet-durch-einsatz"
-            },
-            {
-              "name": "Börse Express",
-              "url": "https://www.boerse-express.com/news/articles/deutsche-telekom-aktie-ki-check-vor-investor-day-950205"
-            },
-            {
-              "name": "MS Aktuell",
-              "url": "https://ms-aktuell.de/welt/telekom-ki-investorentag-04-10-2026/"
+              "name": "Hugging Face (Aleph Alpha)",
+              "url": "https://huggingface.co/Aleph-Alpha/Kolibri-1"
             }
           ],
-          "publishedAt": "2026-10-05T14:55:00+02:00",
+          "publishedAt": "2026-10-05T00:00:00+02:00",
           "importance": 6,
-          "readingMinutes": 3,
-          "image": null
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Grafica_Nvidia_B200.jpg/1280px-Grafica_Nvidia_B200.jpg",
+            "credit": "Javils00",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grafica_Nvidia_B200.jpg",
+            "alt": "Grafik eines Nvidia-Blackwell-Beschleunigers mit acht GPUs"
+          }
         },
         {
-          "id": "ki-netscaler-zero-day-saml",
-          "tier": "top",
-          "headline": "Citrix NetScaler: Neue Zero-Day-Lücke wird aktiv ausgenutzt",
-          "summary": "Eine Pufferüberlauf-Lücke in NetScaler mit SAML-Konfiguration legt Geräte lahm. Citrix bestätigt gezielte Angriffe, Patches liegen vor, die US-Behörde CISA hat die Lücke gelistet.",
-          "body": "Administratoren von Citrix NetScaler müssen erneut schnell handeln. Seit dem Abend des 2. Oktober kursiert nach Angaben von heise ein Exploit für eine neue Sicherheitslücke, Forscher und Admins berichten von massenhaften spontanen Neustarts betroffener Geräte. Am frühen Morgen des 4. Oktober veröffentlichte Citrix eine Sicherheitsmitteilung mit Updates.\n\nDie Lücke trägt die Kennung CVE-2026-88779 und wird mit 8,7 von 10 Punkten (CVSS 4.0) als hoch eingestuft. Es handelt sich um einen Speicherüberlauf. Betroffen sind NetScaler ADC und NetScaler Gateway, wenn sie als SAML Service Provider oder SAML Identity Provider konfiguriert sind, also bei Einträgen wie „add authentication samlAction“ oder „add authentication samlIdPProfile“.\n\n## Was Admins jetzt tun sollten\n\nFehlerbereinigt sind laut Citrix die Versionen 14.1-73.41 und neuer sowie 13.1-64.28 und neuer. Für FIPS-Varianten gelten 14.1-73.41 beziehungsweise bei 13.1-FIPS und NDcPP 13.1-37.282 oder neuer. Citrix bestätigt „gezielte Angriffe auf nicht abgesicherte NetScaler-Installationen“, wie The Hacker News aus der Mitteilung zitiert. Eine Beeinträchtigung der Datenintegrität habe Citrix nicht festgestellt.\n\nNach heise-Angaben sind Fernausführung von Code und Schadcode-Einschleusung möglich, The Hacker News beschreibt vor allem Dienstausfälle durch manipulierte SAML-Anfragen. Beide Quellen stimmen darin überein, dass Exploits bereits im Umlauf sind. Entdeckt wurde die Lücke laut The Hacker News von Bishop Fox und watchTowr.\n\n## Hintergrund: Serie von Notfall-Patches\n\nDie Meldung folgt auf zwei bereits ausgenutzte Zero-Days, CVE-2026-88771 und CVE-2026-88772, vor denen Admins eine Woche zuvor gewarnt worden waren. Der britische Sicherheitsforscher Kevin Beaumont hält es laut heise für möglich, dass der neue Angriff den Fix der früheren Lücken umgeht. Einige Kunden berichten zudem von wiederholten Abstürzen nach dem damaligen Notfall-Update.\n\nDie US-Behörde CISA hat die Lücke am 4. Oktober in ihren Katalog ausgenutzter Schwachstellen aufgenommen. Für US-Bundesbehörden gilt eine Frist bis zum 7. Oktober, wie The Hacker News berichtet. Zusammen mit einer Lücke in der Helpdesk-Software Zammad warnte CISA, so heise, vor Angriffen.\n\nFür Unternehmen und Verwaltungen in Sachsen ist das relevant, weil NetScaler häufig als Zugangstor für Fernzugriff und Single Sign-on dient. Wer SAML nutzt, sollte die genannten Versionen umgehend einspielen und die Geräte auf Auffälligkeiten prüfen.",
-          "source": "heise online",
-          "url": "https://www.heise.de/en/news/Netscaler-admins-beware-Zero-day-causes-crashes-and-code-execution-11474996.html",
-          "sources": [
-            {
-              "name": "heise online",
-              "url": "https://www.heise.de/en/news/Netscaler-admins-beware-Zero-day-causes-crashes-and-code-execution-11474996.html"
-            },
-            {
-              "name": "heise online (CISA-Warnung)",
-              "url": "https://heise.de/news/Warnung-vor-Angriffen-auf-Zammad-und-Citrix-NetScaler-11475555.html"
-            },
-            {
-              "name": "The Hacker News",
-              "url": "https://thehackernews.com/2026/10/new-netscaler-zero-day-exploited-in.html"
-            }
-          ],
-          "publishedAt": "2026-10-04T10:35:00+02:00",
-          "importance": 7,
-          "readingMinutes": 3,
-          "image": null
-        },
-        {
-          "id": "ki-exchange-server-rechteausweitung",
+          "id": "ki-microsoft-meta-kuerzen-claude",
           "tier": "more",
-          "headline": "Microsoft schließt Exchange-Lücke mit Zugriff auf fremde Postfächer",
-          "summary": "Ein Update für Exchange Server behebt eine Rechteausweitung (CVE-2026-96940), mit der Angreifer fremde Mails lesen könnten; Betreiber lokaler Server müssen selbst patchen.",
-          "body": "Microsoft hat ein Sicherheitsupdate für den Exchange Server veröffentlicht, das eine Rechteausweitung behebt. Die Lücke mit der Kennung CVE-2026-96940 wird mit 8,8 von 10 Punkten bewertet und knapp unterhalb der Einstufung „kritisch“ geführt, berichtet heise online.\n\nAufgrund schwacher Autorisierung können Angreifer, die sich bereits über das Netzwerk authentifiziert haben, ihre Rechte ausweiten. Sie könnten dann auf Postfächer anderer Nutzer zugreifen und E-Mails samt Anhängen lesen. Die Grenzen zwischen Mandanten in der Cloud bleiben nach der Darstellung geschützt.\n\nBetroffen sind Exchange Server 2016 CU23, Exchange Server 2019 CU14 und CU15 sowie die RTM-Version. Cloud-Instanzen hat Microsoft bereits selbst abgesichert, Betreiber lokaler Server müssen das Update manuell einspielen. Das gilt laut heise auch für Server, die nur als Verwaltungswerkzeug in hybriden Umgebungen laufen.\n\nDas Update bringt Nebenwirkungen mit: Veröffentlichte Kalender können HTTP-Fehler 500 liefern, und bei koreanischer Spracherkennung kann es zu Blockaden kommen. Microsoft will beides später beheben. Für Firmen und Behörden in Sachsen mit eigenem Exchange gilt: Das Update zügig testen und einspielen, da Exchange-Server ein häufiges Angriffsziel sind.",
-          "source": "heise online",
-          "url": "https://www.heise.de/en/news/Microsoft-pushes-Exchange-update-11475574.html",
+          "headline": "Microsoft und Meta kürzen Claude-Nutzung deutlich",
+          "summary": "Beide Konzerne setzen laut Medienberichten verstärkt auf eigene KI-Werkzeuge. Microsoft soll sein Budget um mehr als ein Drittel gesenkt haben.",
+          "body": "Microsoft und Meta fahren ihre Nutzung von Anthropics Claude zurück. Das berichtet The Decoder unter Berufung auf The Information. Die Bezahlschranke von The Information verhinderte, den Originalbericht ganz zu lesen; bestätigt ist dort lediglich die Schlagzeile, Microsoft habe seine internen Claude-Ausgaben um ein Drittel gesenkt.\n\nNach dem Bericht liegen Microsofts Claude-Ausgaben auf geschätzt mehr als eine Milliarde Dollar im Jahr. Das Budget sei um mehr als ein Drittel gekürzt worden. In der Cloud-Sparte soll das monatliche Budget pro Mitarbeiter von 100.000 auf rund 10.000 Dollar gesunken sein. Die Führungskräfte Scott Guthrie und Jay Parikh sollen den Umstieg auf GitHub Copilot und OpenAI-Modelle angeordnet haben.\n\nBei Meta sank die Zahl der Claude-Code-Nutzer demnach von etwa 60.000 auf 30.000. In 28 Tagen seien über 105 Millionen Dollar für Claude Code angefallen. Meta treibe eigene Werkzeuge namens Muse Code und MetaCode voran.\n\nAls Gründe nennt der Bericht Kosten, den Wunsch, eigene Produkte zu etablieren, und Sorgen vor Anthropics schnellem Wachstum, etwa durch Claude Cowork als Office-Alternative. Die Konzerne selbst haben sich in dem Bericht nicht geäußert. Für Unternehmen in Deutschland zeigt der Fall, wie schnell KI-Kosten bei breitem Einsatz in der Softwareentwicklung ins Gewicht fallen und wie groß der Druck ist, günstigere Alternativen zu nutzen.",
+          "source": "The Decoder",
+          "url": "https://the-decoder.de/meta-und-microsoft-kuerzen-claude-nutzung-drastisch-und-setzen-auf-eigene-ki-tools/",
           "sources": [
             {
-              "name": "heise online",
-              "url": "https://www.heise.de/en/news/Microsoft-pushes-Exchange-update-11475574.html"
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/meta-und-microsoft-kuerzen-claude-nutzung-drastisch-und-setzen-auf-eigene-ki-tools/"
             }
           ],
-          "publishedAt": "2026-10-05T09:20:00+02:00",
+          "publishedAt": "2026-10-05T00:00:00+02:00",
           "importance": 5,
           "readingMinutes": 1,
           "image": null
         },
         {
-          "id": "ki-trump-super-intelligence-force",
+          "id": "ki-openai-textgrain-wasserzeichen",
           "tier": "more",
-          "headline": "Trump gründet „Super Intelligence Force“ für KI-Politik",
-          "summary": "Das Weiße Haus kündigt eine KI-Taskforce an, die US-Führung bei KI sichern soll. Details zur Umsetzung fehlen bisher.",
-          "body": "US-Präsident Donald Trump hat die Gründung einer „Super Intelligence Force“ angekündigt. Die KI-Taskforce soll nach Angaben von ABC News die amerikanische Führungsrolle bei künstlicher Intelligenz sichern und zugleich die Interessen der Bürger schützen.\n\nZur Leitung gehören Geheimdienstkoordinator Jay Clayton, der als KI-Beauftragter fungiert, FTC-Chef Andrew Ferguson, der Verteidigungs-Staatssekretär Emil Michael und der Chef der Personalbehörde OPM, Scott Kupor. Die Gruppe soll sich mit Verbrauchern, Interessengruppen, religiösen Organisationen, Infrastrukturbetreibern und KI-Firmen abstimmen.\n\nDer Schritt folgt auf ein Treffen im Weißen Haus am 29. September mit Tech-Chefs. Dabei unterzeichneten sechs Unternehmen eine KI-„Verfassung“ zur Selbstregulierung. Clayton sagte laut ABC, das Risiko, nicht Erster zu sein, sei hoch.\n\nDie Ankündigung enthielt nur wenige Angaben zur Umsetzung, das Weiße Haus beantwortete eine Anfrage von ABC zunächst nicht. Für Europa bleibt der Kurs relevant: Er setzt auf Selbstverpflichtung der Konzerne statt auf verbindliche Regeln wie den europäischen AI Act, an dem sich Firmen in Deutschland orientieren müssen.",
-          "source": "ABC News",
-          "url": "https://abcnews.com/Politics/president-donald-trump-announces-creation-super-intelligence-force/story?id=136986122",
+          "headline": "OpenAI führt unsichtbares Wasserzeichen für ChatGPT-Texte ein",
+          "summary": "Das Verfahren heißt textGrain und startet zunächst in der EU. Es soll KI-Texte maschinell erkennbar machen, ist aber leicht zu stören.",
+          "body": "OpenAI kennzeichnet ChatGPT-Texte künftig mit einem unsichtbaren Wasserzeichen. Das Verfahren heißt textGrain und bettet ein statistisches Signal in die Wortwahl des Modells ein, berichtet The Decoder. Aktiviert wird es zunächst nur in der EU, für Nutzer von ChatGPT und Codex. API-Kunden weltweit können es optional einschalten, standardmäßig ist es dort aus. Auch Cloud-Partner wie Microsoft Azure sollen es anbieten.\n\nDer Hintergrund ist der EU AI Act: Seit dem 2. August 2026 gilt Artikel 50, der Anbietern generativer KI eine maschinenlesbare Kennzeichnung synthetischer Inhalte vorschreibt. Anthropic hatte bereits damit begonnen, OpenAI war bislang zurückhaltend.\n\nZur Treffsicherheit nennt der Bericht Werte bei einem Prozent Fehlalarmen: Bei Psychologietexten mit 400 Token liegt die Erkennungsrate bei etwa 95 Prozent, bei 200 Token bei rund 80 Prozent. Bei mathematischen Inhalten fällt sie deutlich niedriger aus. Das Wasserzeichen ist zudem leicht angreifbar: Ersetzt jemand zehn Prozent der Wörter, sinkt die Erkennung von 92 auf 66 Prozent, bei 25 Prozent Ersetzung unter 20 Prozent.\n\nDen Detektor erhalten nur ausgewählte Forscher und Expertenorganisationen auf Antrag. Für Nutzer in Deutschland heißt das: Texte aus ChatGPT sind künftig technisch markiert, ein zuverlässiger Schutz gegen Täuschung ist es aber nicht.",
+          "source": "The Decoder",
+          "url": "https://the-decoder.de/openai-versieht-chatgpt-texte-mit-unsichtbarem-wasserzeichen/",
           "sources": [
             {
-              "name": "ABC News",
-              "url": "https://abcnews.com/Politics/president-donald-trump-announces-creation-super-intelligence-force/story?id=136986122"
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/openai-versieht-chatgpt-texte-mit-unsichtbarem-wasserzeichen/"
             }
           ],
-          "publishedAt": "2026-10-04T17:53:00+02:00",
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "ki-robco-wird-einhorn",
+          "tier": "more",
+          "headline": "Münchner Robotik-Startup Robco erreicht Milliardenbewertung",
+          "summary": "Das Unternehmen Robco ist nach einem Anteilsverkauf von 40 Millionen Dollar mehr als eine Milliarde Dollar wert. Es verdoppelte seinen Wert in rund neun Monaten.",
+          "body": "Das Münchner Robotik-Startup Robco gehört nun zu den Einhörnern. Nach Angaben von heise online liegt die Bewertung bei über einer Milliarde US-Dollar, doppelt so hoch wie Anfang 2026. Damals hatte das Unternehmen in einer Series C 100 Millionen Dollar bei 500 Millionen Dollar Bewertung eingesammelt.\n\nJetzt verkaufte Robco Anteile im Wert von 40 Millionen Dollar, überwiegend aus Mitarbeiterbesitz, an bestehende und neue Investoren. Zu den bisherigen Geldgebern zählen Sequoia, Lightspeed und der Lingotto-Fonds, neu dabei sind Cherry Ventures und European Tech Collective.\n\nRobco wurde 2020 von Forschern der Technischen Universität München gegründet, der Name steht für „The Robot Company“. Das Produkt ist der Industrieroboter Alfie, der mit integrierter KI Aufgaben selbstständig lernen soll. Laut Unternehmen wurden mehr als 1.000 Roboter an Industriekunden verkauft, darunter BMW.\n\nFür den Standort Deutschland ist die Meldung ein seltenes Signal: Bei physischer KI, also Robotik mit lernfähiger Software, entsteht hierzulande ein Unternehmen mit internationaler Bewertung. Davon könnten auch Industriekunden in Sachsen profitieren, etwa im Automobil- und Maschinenbau.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/Deutsches-Robotik-Startup-Robco-wird-zum-Einhorn-11476815.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/Deutsches-Robotik-Startup-Robco-wird-zum-Einhorn-11476815.html"
+            }
+          ],
+          "publishedAt": "2026-10-05T18:51:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "ki-ecipe-studie-6g-europa",
+          "tier": "more",
+          "headline": "Studie: Europa droht bei 6G den Anschluss zu verlieren",
+          "summary": "Europäische Netzausrüster forschen stark, verdienen aber kaum. Eine ECIPE-Studie sieht Überregulierung und schwachen 5G-Ausbau als Bremsen.",
+          "body": "Europa hat bei der Mobilfunktechnik starke Kompetenz, droht aber bei 6G kommerziell abgehängt zu werden. Das ist die Kernaussage einer Studie des European Center for International Political Economy (ECIPE), über die heise online berichtet.\n\nEuropäische Netzausrüster wie Ericsson und Nokia stecken demnach im Schnitt 18 Prozent ihres Nettoumsatzes in Forschung und Entwicklung, erzielen aber nur rund drei Prozent Gewinnmarge. US-Cloud-Plattformen kommen bei ähnlichen Investitionen auf knapp 28 Prozent. Für das nächste Jahrzehnt beziffert die Studie den Investitionsrückstand beim europäischen Mobilfunk auf 200 Milliarden Euro.\n\nAls Ursachen nennt sie Überregulierung, etwa durch Data Act, NIS2-Richtlinie und Cyber Resilience Act mit ihren Zertifizierungs- und Compliance-Kosten, sowie schwachen 5G-Ausbau. In China seien über 80 Prozent der 5G-Verbindungen Standalone, in den USA knapp 32 Prozent, in keinem EU-Staat zweistellig. Von 747 erfassten 5G-Campusnetzen in der EU stehen 500 in Deutschland.\n\nDie Markteinführung von 6G ist für 2030 geplant. Für Deutschland mit seinen vielen Industrie-Campusnetzen ist die Studie ein Argument, Live-Erfahrung mit 5G Standalone schneller zu sammeln. Die Studie ist die Position eines Think-Tanks, nicht unumstritten.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/Studie-ueber-Europas-6G-Dilemma-Starke-Technik-gelaehmter-Markt-11476728.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/Studie-ueber-Europas-6G-Dilemma-Starke-Technik-gelaehmter-Markt-11476728.html"
+            }
+          ],
+          "publishedAt": "2026-10-05T17:56:00+02:00",
           "importance": 4,
           "readingMinutes": 1,
           "image": null
@@ -113,58 +122,45 @@
       "emoji": "📈",
       "items": [
         {
-          "id": "wirtschaft-tankrabatt-verpufft-spritpreise-steigen",
+          "id": "wirtschaft-schneider-kauft-ptc",
           "tier": "top",
-          "headline": "Tankrabatt verpufft: Spritpreise steigen binnen Tagen wieder",
-          "summary": "Vier Tage nach dem Start des Tankrabatts liegen Benzin und Diesel laut ADAC wieder über dem Startniveau. Der Automobilclub findet für den Anstieg bei E10 keine offensichtliche Erklärung.",
-          "body": "Die Entlastung an den Zapfsäulen schmilzt schneller als erwartet. Nach Angaben des ADAC kostete ein Liter Super E10 am Sonntag im bundesweiten Schnitt 2,137 Euro und damit 2,3 Cent mehr als am Donnerstag, dem ersten Tag des Tankrabatts. Diesel stieg im selben Zeitraum um 0,9 Cent auf 2,253 Euro je Liter.\n\nZum Start der Maßnahme am 1. Oktober waren die Preise zunächst spürbar gefallen. Laut Reuters sank der Tagesschnitt um rund 13 Cent: E10 kostete 2,114 Euro, Diesel 2,262 Euro. Preise unter zwei Euro für E10 gab es anfangs vielerorts. Am Montagmorgen waren solche Angebote in größeren Städten laut ADAC kaum noch zu finden.\n\n## Ungeklärter Preisanstieg\n\nBesonders rätselhaft ist dem ADAC der Aufschlag bei E10: Weder der Ölpreis noch der Euro-Dollar-Kurs hätten sich in dieser Zeit nennenswert verändert. Der Club sprach nach einigen Tagen von einem bereits teilweise aufgezehrten Entlastungseffekt.\n\nÜber die Weitergabe der Steuersenkung wird gestritten. Der Branchenverband en2x erklärte, seine Mitgliedsunternehmen hätten die Senkung sofort vollständig an die Kunden weitergegeben. Verbraucherschützer und Forscher kamen bei früheren Entlastungen dagegen zu dem Ergebnis, dass viele Tankstellen Vorteile nicht komplett weiterreichten.\n\n## Was der Rabatt umfasst\n\nDer Tankrabatt gilt von Oktober bis Dezember 2026 und soll Sprit um knapp 17 Cent je Liter verbilligen. Das setzt sich nach Reuters-Angaben aus rund 14 Cent weniger Energiesteuer und etwa 3 Cent eingesparter Mehrwertsteuer zusammen. Bund und Länder teilen sich die Kosten von etwa 2,5 Milliarden Euro je zur Hälfte. Spätestens Anfang 2027 sollen Direktüberweisungen und ein Preisdeckel nach dem Vorbild Luxemburgs und Belgiens folgen.\n\n## Einordnung\n\nHintergrund der hohen Preise ist der Krieg zwischen den USA und dem Iran, der Öltransporte vom Persischen Golf behindert. Brent notierte am Montagvormittag bei rund 102,6 US-Dollar je Barrel, etwas niedriger als am Freitag. Nach Angaben von finanzen.at drücken Freigaben von Notreserven der G7-Staaten, wieder anziehende Exporte aus der Golfregion und niedrigere Verkaufspreise des saudischen Konzerns Aramco den Preis. Angriffe auf Schiffe im Roten Meer und in der Straße von Hormus halten die Risiken aber hoch.\n\nFür Pendler zwischen Nordsachsen und Leipzig bedeutet das: Wer täglich tankt, sollte weiter Preise vergleichen. Nach Erfahrung des ADAC sind die Unterschiede innerhalb eines Tages oft groß, am Abend ist Tanken meist günstiger als am Morgen oder Mittag. Ob der Rabatt bis Jahresende spürbar bleibt, hängt neben der Ölpreisentwicklung auch davon ab, ob die Mineralölwirtschaft die Steuersenkung tatsächlich vollständig weitergibt.",
-          "source": "t-online",
-          "url": "https://www.t-online.de/mobilitaet/aktuelles/id_101466806/spritpreis-aktuell-tankrabatt-verpufft-diesel-und-benzin-steigen-wieder.html",
+          "headline": "Schneider Electric kauft Softwarekonzern PTC für 22,6 Milliarden Dollar",
+          "summary": "Der französische Energietechnik-Konzern bietet 205 Dollar je PTC-Aktie, die größte Übernahme seiner Geschichte. Die Schneider-Aktie fällt, deutsche Softwarewerte wie SAP und Nemetschek legen zu.",
+          "body": "Der französische Konzern Schneider Electric übernimmt den US-Industriesoftwarehersteller PTC. Pro Aktie sollen 205 US-Dollar in bar fließen, das Eigenkapital von PTC wird damit mit rund 22,6 Milliarden Dollar bewertet. Das ist nach Angaben des Unternehmens die größte Übernahme in der Firmengeschichte. Bekanntgegeben wurde der Deal am Montag, dem 5. Oktober.\n\nDer Angebotspreis liegt gut 42 Prozent über dem Schlusskurs vom Freitag. Die PTC-Aktie sprang entsprechend um ein Drittel und mehr nach oben, Schneider-Papiere verloren dagegen zeitweise mehr als sieben Prozent. Anleger sorgen sich um den hohen Preis und das Risiko der Integration.\n\n## Das steckt hinter dem Zukauf\n\nPTC liefert Programme für Produktentwicklung und das Management von Produktlebenszyklen, die Industriekunden zum Entwerfen und Bauen von Maschinen nutzen. Schneider-Chef Olivier Blum spricht von einem „letzten Baustein“ der Konzernstrategie. Der Konzern will Konstruktion, Steuerung, Daten und künstliche Intelligenz verbinden. Nach der Übernahme würde Software nach Unternehmensangaben etwa 24 Prozent des Umsatzes ausmachen.\n\nSchneider rechnet binnen drei Jahren mit Kosteneinsparungen von 250 Millionen Euro und mit zusätzlichen Erlösen von rund 800 Millionen Euro. Der Abschluss ist für das dritte Quartal 2027 geplant. Zustimmen müssen noch die PTC-Aktionäre und die Aufsichtsbehörden; der PTC-Verwaltungsrat hat den Deal empfohlen.\n\n## Finanzierung auf Pump\n\nBezahlt wird mit einer Mischung aus neuen Aktien im Umfang von fünf bis sechs Milliarden Euro und frischen Schulden von 16 bis 17 Milliarden Euro. Aktienrückkäufe setzt Schneider in den Jahren 2027 und 2028 aus, die Dividende soll weiter steigen. Das Unternehmen will an seiner starken Kreditbewertung festhalten und kündigte Verkäufe von Geschäftsteilen an.\n\nLaut dem Analysten Timo Emden bleibt die Stimmung am Markt „wankelmütig wie eine Wetterfahne“. Die Übernahme gab dem Softwaresektor trotzdem Rückenwind: Der Dax schloss bei 25.254 Punkten kaum verändert mit einem Plus von 0,09 Prozent, SAP legte um 0,6 Prozent zu, der im MDax gelistete Anbieter Nemetschek sogar um 4,3 Prozent. Hintergrund ist die Erwartung, dass andere Softwarefirmen ebenfalls zum Ziel werden könnten.\n\n## Einordnung\n\nFür Deutschland ist der Deal vor allem ein Signal an die Börse: Wenn Industriekonzerne Milliarden für Software ausgeben, steigt die Bewertung vergleichbarer Anbieter wie SAP, Nemetschek oder TeamViewer. Auch hiesige Maschinenbauer und Zulieferer, etwa in Sachsen, nutzen solche Konstruktionsprogramme und könnten langfristig neue Preismodelle zu spüren bekommen. Ob der Zukauf sich rechnet, hängt von den Synergien und den Finanzierungskosten ab, die bei weiterhin erhöhten Zinsen in Europa spürbar sind.",
+          "source": "onvista",
+          "url": "https://www.onvista.de/news/2026/10-05-aktien-im-fokus-schneider-uebernahme-von-ptc-naehrt-fantatsie-im-software-sektor-0-10-26560557",
           "sources": [
             {
-              "name": "t-online",
-              "url": "https://www.t-online.de/mobilitaet/aktuelles/id_101466806/spritpreis-aktuell-tankrabatt-verpufft-diesel-und-benzin-steigen-wieder.html"
+              "name": "onvista",
+              "url": "https://www.onvista.de/news/2026/10-05-aktien-im-fokus-schneider-uebernahme-von-ptc-naehrt-fantatsie-im-software-sektor-0-10-26560557"
             },
             {
-              "name": "AD HOC NEWS (dpa)",
-              "url": "https://www.ad-hoc-news.de/wirtschaft/spritpreise-nach-tankrabatt-wieder-gestiegen-adac-sieht-entlastung-schwinden/70234127"
+              "name": "onvista Börsenbericht",
+              "url": "https://onvista.de/news/2026/10-05-aktien-frankfurt-schluss-stagnation-anleger-sind-auf-der-hut-0-10-26560804"
             },
             {
-              "name": "onvista (Reuters)",
-              "url": "https://www.onvista.de/news/2026/10-02-adac-spritpreise-zum-start-des-tankrabatts-rund-13-cent-niedriger-0-20-26559848"
+              "name": "Yahoo Finance",
+              "url": "https://finance.yahoo.com/technology/articles/schneider-electric-acquire-ptc-205-180219993.html"
             },
             {
-              "name": "finanzen.at",
-              "url": "https://www.finanzen.at/nachrichten/aktien/rohstoffe-vormittag-brent-oelpreis-fallt-auf-102-58-us-dollar-1036596520"
-            }
-          ],
-          "publishedAt": "2026-10-05T16:29:00+02:00",
-          "importance": 7,
-          "readingMinutes": 2,
-          "image": null
-        },
-        {
-          "id": "wirtschaft-dax-stagniert-anleger-vorsichtig",
-          "tier": "more",
-          "headline": "Dax tritt auf der Stelle: Anleger bleiben vorsichtig",
-          "summary": "Der Dax schloss am Montag fast unverändert bei etwa 25.250 Punkten. Hohe Ölpreise, steigende Renditen in Frankreich und politische Unsicherheit bremsen.",
-          "body": "Der deutsche Leitindex hat den Wochenstart ohne klare Richtung beendet. Nach Angaben von finanzen.net schloss der Dax mit einem Plus von 0,06 Prozent bei 25.245,90 Punkten, im Xetra-Handel waren es laut dpa-AFX 0,09 Prozent auf 25.254,21 Punkte. Die Spanne des Tages reichte von 25.143 bis 25.325 Punkte. Vom Rekordhoch im August bei 26.618 Punkten ist der Index damit weiter entfernt.\n\nAls Gründe für die Zurückhaltung nannte dpa-AFX die hohen Ölpreise und steigende Anleiherenditen in Teilen Europas, vor allem in Frankreich. Auch politische Unsicherheit in Deutschland, Frankreich und Spanien belaste die Stimmung. Marktbeobachter Timo Emden beschrieb die Lage so, dass Anleger zwischen Inflationssorgen, geldpolitischen Fragezeichen und politischen Themen im Euroraum nach einem verlässlichen Orientierungspunkt suchten.\n\nAn der Spitze lagen Rheinmetall mit plus 2,4 Prozent, Fresenius Medical Care mit plus 1,8 Prozent und Volkswagen mit plus 1,6 Prozent. Am Ende standen Bayer mit minus 2,2 Prozent, Heidelberg Materials mit minus 1,8 Prozent und Infineon mit minus 1,8 Prozent. Softwarewerte profitierten von der Übernahme von PTC durch Schneider Electric: SAP gewann 0,6 Prozent, Nemetschek im MDax 4,3 Prozent.\n\nSeit Jahresbeginn steht der Dax rund 2,9 Prozent im Plus. Für Sparer und Anleger mit Fondssparplänen heißt das: Die Kurse bewegen sich seit Wochen deutlich unter dem Höchststand, und der Ölpreis um 100 US-Dollar je Barrel bleibt der wichtigste Unsicherheitsfaktor für Inflation und Zinsen.",
-          "source": "finanzen.ch (dpa-AFX)",
-          "url": "https://www.finanzen.ch/nachrichten/aktien/aktien-frankfurt-schluss-stagnation-anleger-sind-auf-der-hut-1036597864",
-          "sources": [
-            {
-              "name": "finanzen.ch (dpa-AFX)",
-              "url": "https://www.finanzen.ch/nachrichten/aktien/aktien-frankfurt-schluss-stagnation-anleger-sind-auf-der-hut-1036597864"
+              "name": "Trending Topics",
+              "url": "https://www.trendingtopics.eu/schneider-electric-ptc-uebernahme/"
             },
             {
               "name": "finanzen.net",
-              "url": "https://www.finanzen.net/nachricht/aktien/boerse-frankfurt-in-gruen-dax-verbucht-zum-handelsende-gewinne-15967973"
+              "url": "https://www.finanzen.net/nachricht/aktien/schneider-electric-kauft-us-softwarehersteller-ptc-fuer-22-6-mrd-usd-15966774"
             }
           ],
-          "publishedAt": "2026-10-05T18:03:00+02:00",
-          "importance": 4,
-          "readingMinutes": 1,
-          "image": null
+          "publishedAt": "2026-10-05T07:40:00+02:00",
+          "importance": 6,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Schneider_Elec_HQ.jpg/1280px-Schneider_Elec_HQ.jpg",
+            "credit": "Wilmotte & associés architectes",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Schneider_Elec_HQ.jpg",
+            "alt": "Firmensitz von Schneider Electric bei Nacht"
+          }
         }
       ]
     },
@@ -174,157 +170,129 @@
       "emoji": "🏛️",
       "items": [
         {
-          "id": "politik-merz-in-kyjiw",
+          "id": "politik-kriegsdienstverweigerer-rekord",
           "tier": "top",
-          "headline": "Merz sagt Ukraine in Kyjiw Drohnen und Geld zu",
-          "summary": "Der Kanzler ist überraschend in Kyjiw eingetroffen, während Russland die Stadt angriff. Er sagte Abfangdrohnen, Mittel für weitreichende Waffen und Hilfe für Kraftwerke zu.",
-          "body": "Bundeskanzler Friedrich Merz ist am Sonntag zu einem unangekündigten Besuch in Kyjiw gewesen und hat der Ukraine weitere militärische und energiepolitische Hilfe zugesagt. Nach Angaben der Deutschen Presse-Agentur reiste er mit einem Sonderzug an, begleitet von Wirtschaftsministerin Katherina Reiche und mehreren Unternehmern aus der Rüstungs- und Energiebranche. Kurz nach seiner Ankunft schlug eine russische Drohne auf der Nordbrücke über den Dnipro ein; nach dpa-Angaben gab es während des Besuchs sechsmal Alarm, mindestens zwei Menschen wurden verletzt.\n\nMerz kündigte die Lieferung von Tausenden Abfangdrohnen an. Sie sollen gegen die besonders schnellen, strahlgetriebenen russischen Kampfdrohnen helfen. Außerdem will Deutschland die Produktion von Waffen mit mehr als 1.000 Kilometern Reichweite vorantreiben, mit denen sich Nachschubwege hinter der Front in Russland treffen lassen. Dafür stellt die Bundesregierung laut dpa eine Milliarde Euro aus bereits vorhandenen Haushaltsmitteln bereit. Hinzu kommen 350 Millionen Euro für Reparatur und Wiederaufbau zerstörter Kraftwerke.\n\n## Wirtschaftsabkommen und Gesprächsangebot\n\nNach Darstellung von Präsident Wolodymyr Selenskyj, die die taz wiedergibt, wurden an dem Tag Vereinbarungen im Gesamtwert von 8,5 Milliarden Euro getroffen. Die dpa nennt 14 Unternehmensabkommen mit einem geschätzten Wert von 6,6 Milliarden Euro, vor allem für Rüstungsgüter. Die Zahlen unterscheiden sich, weil unterschiedliche Vereinbarungen gezählt werden; belastbar ist vor allem, dass es um gemeinsame Rüstungsproduktion, Drohnenabwehr, weitreichende Systeme und die Absicherung der Energieversorgung geht.\n\nAn Wladimir Putin gerichtet sagte Merz: „Herr Putin, hören Sie diesen sinnlosen Krieg auf!“ Er zeigte sich laut Berichten zugleich gesprächsbereit, forderte aber ein Ende der Angriffe auf Zivilisten. Selenskyj signalisierte nach taz-Angaben Bereitschaft zu direkten Gesprächen mit Putin und verwies auf mögliche Dreiergespräche mit den USA noch vor Ende Oktober. Gemeinsam besuchten Merz und Selenskyj die beschädigte Nationale Akademie der Wissenschaften.\n\n## Warum es für Deutschland zählt\n\nMerz begründete die Reise auch mit Blick auf die Sicherheit im eigenen Land. Wenn Russland nicht gestoppt werde, richte sich seine Kriegsmaschinerie früher oder später gegen Deutschland, sagte er laut dpa. Das knüpft an die Warnungen der deutschen Nachrichtendienste an, die am selben Tag vor dem Bundestag Russland als größte unmittelbare Bedrohung bezeichneten.\n\nFür Leser in Sachsen ist das nicht abstrakt. Der Sprengstoff-Drohnenfund am Flughafen Leipzig/Halle im August zeigte, dass hybride Angriffe auch die Region treffen. Die Zusage von einer Milliarde Euro stammt laut dpa aus bereits vorhandenen Haushaltsmitteln.",
+          "headline": "Kriegsdienstverweigerer: Anträge steigen auf über 12.000",
+          "summary": "Von Januar bis August gingen 12.102 Anträge auf Kriegsdienstverweigerung ein, mehr als das Dreifache des Vorjahres. Hintergrund ist das neue Wehrdienstgesetz.",
+          "body": "Die Zahl der Anträge auf Kriegsdienstverweigerung in Deutschland steigt sprunghaft. Von Januar bis Ende August 2026 gingen beim Bundesamt für Familie und zivilgesellschaftliche Aufgaben (BAFzA) 12.102 Anträge ein, wie Funke Medien und das Redaktionsnetzwerk Deutschland unter Berufung auf einen Behördensprecher berichten. Im gesamten Jahr 2025 waren es 3.879, im Jahr 2024 noch 2.249.\n\nAuffällig ist die Dynamik der vergangenen Monate. Bis Ende Juni lag der Stand bei 5.862 Anträgen, in nur zwei Monaten kamen mehr als 6.000 weitere hinzu. Die Zahl hat sich damit in diesem kurzen Zeitraum mehr als verdoppelt.\n\n## Neues Wehrdienstgesetz als Hintergrund\n\nSeit dem 1. Januar 2026 gilt das neue Wehrdienstgesetz. Es sieht für Männer ab dem Geburtsjahrgang 2008 eine verpflichtende Musterung vor. Die Bundesregierung setzt zunächst auf Freiwillige. Verfehlt die Bundeswehr aber ihre Personalziele, könnte der Bundestag eine Bedarfswehrpflicht beschließen. Die Wehrpflicht ist seit 2011 ausgesetzt, im Grundgesetz aber weiterhin verankert.\n\nDas Recht, den Dienst an der Waffe aus Gewissensgründen zu verweigern, garantiert Artikel 4 Absatz 3 des Grundgesetzes. Wer es in Anspruch nehmen will, muss einen schriftlichen Antrag mit Lebenslauf und einer ausführlichen, persönlich verfassten Begründung einreichen. Anträge kommen laut den Berichten nicht nur von jungen Männern, sondern auch von Reservisten und Soldaten.\n\n## Fehlerhafte Anträge und Proteste\n\nDas BAFzA meldet zugleich eine hohe Zahl fehlgeleiteter Anträge mit nicht erkennbarem oder unzulässigem Inhalt. Als Ursache nennt die Behörde Falschinformationen in sozialen Netzwerken über das Verfahren. Die reine Antragszahl sagt deshalb nur bedingt etwas darüber aus, wie viele Verweigerungen am Ende anerkannt werden.\n\nParallel dazu gab es in Berlin und anderen Städten Demonstrationen gegen eine mögliche Rückkehr der Wehrpflicht. Nach Angaben von ZDFheute beteiligten sich mehr als 45.000 Schülerinnen und Schüler.\n\n## Was das bedeutet\n\nFür die Bundeswehr ist der Trend ein Signal in einer Phase, in der Bundesregierung und Geheimdienste vor Russland als wachsender Bedrohung warnen und die Truppe wachsen soll. Je stärker junge Menschen ihre Ablehnung erklären, desto größer wird der politische Druck, die Freiwilligkeit attraktiver zu machen, bevor über eine Pflicht entschieden werden müsste. Für Familien in Sachsen mit Söhnen ab Jahrgang 2008 ist die Musterung bereits Realität. Zahlen für einzelne Bundesländer nennen die Berichte allerdings nicht.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/deutschland/wehrdienst-verweigerer-anstieg-medienbericht-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/wehrdienst-verweigerer-anstieg-medienbericht-100.html"
+            },
+            {
+              "name": "Berliner Sonntagsblatt",
+              "url": "https://www.berliner-sonntagsblatt.de/Deutschland/Zahl-der-Kriegsdienstverweigerer-steigt-rasant-an-369915.html"
+            }
+          ],
+          "publishedAt": "2026-10-06T02:33:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/1/18/Geloebnis_mainz_2008.jpg",
+            "credit": "Felix Koenig (King)",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Geloebnis_mainz_2008.jpg",
+            "alt": "Feierliches Gelöbnis von Bundeswehr-Rekruten vor einem Gebäude in Mainz (Archivbild von 2008)"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "politik-verfassungsschutz-afd-sachsen-anhalt",
+          "tier": "top",
+          "headline": "Verfassungsschutz rüstet sich für AfD-Regierungsbeteiligung in Magdeburg",
+          "summary": "Verfassungsschutzpräsident Selen kündigt Schutzmechanismen für sensible Daten an, falls die AfD in Sachsen-Anhalt mitregiert. Es geht um Russland-Bezüge und Partnerdienste.",
+          "body": "Der Verfassungsschutz bereitet sich auf eine mögliche Regierungsbeteiligung der AfD in Sachsen-Anhalt vor. Das Bundesamt für Verfassungsschutz habe Antworten gesucht und dafür auch Mechanismen entwickelt, sagte dessen Präsident Sinan Selen laut dpa. Details nannte er nach der Meldung nicht.\n\nHintergrund ist die Landtagswahl vom September, bei der die AfD stärkste Kraft wurde und 39 Sitze im Landtag erhielt. Eine absolute Mehrheit verfehlte sie. Käme die Partei in Regierungsverantwortung, könnte sie je nach Ressortverteilung Zugriff auf die Landesbehörden für innere Sicherheit bekommen, darunter das Landesamt für Verfassungsschutz.\n\n## Sorge vor Informationsabfluss\n\nSicherheitskreise fürchten vor allem, dass sensible Informationen abfließen könnten, etwa an Russland oder extremistische Netzwerke. Auch die Zusammenarbeit mit ausländischen Partnerdiensten könnte leiden. Selen sagte, Datensysteme und Informationsaustausch müssten entsprechend angepasst werden, damit sensible Daten geschützt blieben und die Behörden handlungsfähig blieben.\n\nAls warnendes Beispiel gilt Österreich: Dort ließ der FPÖ-Innenminister Herbert Kickl zwischen 2017 und 2019 Räume des Verfassungsschutzes durchsuchen. Das Vertrauen ausländischer Dienste sank, die Zusammenarbeit wurde zurückgefahren.\n\n## Vorschläge aus den Ländern\n\nSchon im September hatten Länderpolitiker und Verfassungsschützer Ideen vorgelegt. Thüringens Verfassungsschutzpräsident Stephan Kramer sprach von „klassischem Risikomanagement“. Dazu zählten abgestufte Informationsrechte, ein striktes Need-to-know-Prinzip und gegebenenfalls eingeschränkte Weitergabe besonders sensibler Informationen. Thüringens Innenminister Georg Maier (SPD) hält es für sicherheitspolitisch notwendig und rechtlich vertretbar, der AfD den Zugang zu bestimmten Daten über Rechtsextremismus und Spionageabwehr zu verwehren. Nach Angaben aus Sicherheitskreisen ginge es vor allem um den Schutz von Quellen und von Informationen mit Russland-Bezug.\n\nDer Landesverband der AfD in Sachsen-Anhalt gilt seit 2023 als gesichert rechtsextremistisch. Käme die Partei an das Innenressort, kontrollierte sie also genau die Behörde, die diese Einstufung getroffen hat.\n\n## Einordnung für Sachsen\n\nAuch im Nachbarland Sachsen blickt man auf diese Debatte. Der Verfassungsschutzverbund tauscht Informationen zwischen Bund und Ländern aus. Wie stark Sachsen-Anhalt davon abgeschottet werden könnte, ist offen und dürfte die Innenminister der Länder beschäftigen. Nach Angaben vom September wollten sie sich innerhalb weniger Wochen abstimmen.",
           "source": "Tagesspiegel (dpa)",
-          "url": "https://www.tagesspiegel.de/politik/dpa-herr-putin-horen-sie-diesen-sinnlosen-krieg-auf-kurz-nach-merz-ankunft-in-kyjiw-greift-russland-eine-brucke-an-16122366.html",
+          "url": "https://www.tagesspiegel.de/dpa-verfassungsschutz-wappnet-sich-schon-fur-afd-regierungsbeteiligung-16127528.html",
           "sources": [
             {
               "name": "Tagesspiegel (dpa)",
-              "url": "https://www.tagesspiegel.de/politik/dpa-herr-putin-horen-sie-diesen-sinnlosen-krieg-auf-kurz-nach-merz-ankunft-in-kyjiw-greift-russland-eine-brucke-an-16122366.html"
+              "url": "https://www.tagesspiegel.de/dpa-verfassungsschutz-wappnet-sich-schon-fur-afd-regierungsbeteiligung-16127528.html"
             },
             {
-              "name": "Handelsblatt (dpa)",
-              "url": "https://www.handelsblatt.com/politik/deutschland/gefaehrliche-kiew-reise-merz-unterstuetzt-ukraine-und-appelliert-an-putin/100259542.html"
-            },
-            {
-              "name": "taz",
-              "url": "https://taz.de/Deutsche-Kooperation-mit-der-Ukraine/!6218648/"
+              "name": "leinetal24",
+              "url": "https://www.leinetal24.de/welt/nach-afd-sieg-so-koennte-der-verfassungschutz-reagieren-zr-94483688.html"
             }
           ],
-          "publishedAt": "2026-10-04T16:33:00+02:00",
-          "importance": 8,
-          "readingMinutes": 3,
-          "image": null
-        },
-        {
-          "id": "politik-geheimdienste-warnen-vor-russland",
-          "tier": "top",
-          "headline": "Geheimdienstchefs warnen im Bundestag vor Russlands Schattenkrieg",
-          "summary": "BND, Verfassungsschutz und MAD sehen Russland als größte akute Gefahr. Der Drohnenfund am Flughafen Leipzig/Halle gilt ihnen als Beleg für gezielte Angriffe.",
-          "body": "Die Spitzen der drei deutschen Nachrichtendienste haben Russland in der jährlichen öffentlichen Anhörung des Parlamentarischen Kontrollgremiums als größte unmittelbare Bedrohung für Deutschland bezeichnet. BND-Präsident Martin Jäger sagte laut Handelsblatt, Russland führe einen „Schattenkrieg gegen uns“. Deutschland laufe Gefahr, in einen gewaltsamen Konflikt mit Russland zu geraten.\n\nÜblicherweise befragt das Gremium die Dienstchefs unter Ausschluss der Öffentlichkeit; eine öffentliche Sitzung ist einmal im Jahr vorgesehen. Neben Jäger sprachen Verfassungsschutzpräsident Sinan Selen und die Präsidentin des Militärischen Abschirmdienstes, Martina Rosenberg.\n\n## Leipzig/Halle als Beispiel\n\nSelen verwies auf den Fund einer mit Sprengstoff präparierten Drohne am Flughafen Leipzig/Halle Anfang August, in der Nähe ukrainischer Frachtmaschinen. Die Spuren führten „sehr klar nach Russland“, sagte er nach Angaben des Handelsblatts. Die Bundesregierung hatte Moskau am 1. September dafür verantwortlich gemacht und anschließend Russlands letztes verbliebenes Generalkonsulat sowie das Kulturzentrum in Berlin geschlossen.\n\nNach Darstellung der Behörden reicht das russische Vorgehen von Desinformation über Sabotage bis zu Tötungsplänen. Jäger warnte zudem vor Operationen unter falscher Flagge, mit denen andere Akteure belastet werden sollen. Selen sagte, Deutschland werde „jetzt angegriffen, nicht erst 2029“. Das Jahr gilt in Sicherheitskreisen als Zeitpunkt, zu dem Russland größere militärische Fähigkeiten aufgebaut haben könnte.\n\nEin Angriff auf NATO-Gebiet in großem Maßstab ist nach Einschätzung der Dienste derzeit nicht erkennbar. Erwartet werden aber militärische Aktivitäten unterhalb der Kriegsschwelle, etwa im Ostseeraum, wie der ORF berichtet.\n\n## Neue Befugnisse geplant\n\nDie Bundesregierung will den Diensten mehr Möglichkeiten geben. Geplant sind erweiterte Befugnisse bei der Datenerhebung sowie aktive Gegenmaßnahmen im Netz gegen Sabotage und Hackerangriffe. Wie weit diese Rechte gehen dürfen, wird im Bundestag voraussichtlich noch strittig sein. Kanzler Merz erklärte nach Angaben des Handelsblatts, Deutschland lasse sich weder einschüchtern noch spalten.\n\nFür Sachsen hat die Anhörung konkreten Bezug: Der Fall Leipzig/Halle zeigt, dass kritische Infrastruktur in der Region ein Ziel sein kann. Wer dort arbeitet oder pendelt, ist von Sicherheitsmaßnahmen an Flughäfen und Logistikknoten unmittelbar betroffen.",
-          "source": "Handelsblatt",
-          "url": "https://www.handelsblatt.com/politik/deutschland/anhoerung-im-bundestag-bnd-chef-sieht-deutschland-im-schattenkrieg-mit-russland/100259741.html",
-          "sources": [
-            {
-              "name": "Handelsblatt",
-              "url": "https://www.handelsblatt.com/politik/deutschland/anhoerung-im-bundestag-bnd-chef-sieht-deutschland-im-schattenkrieg-mit-russland/100259741.html"
-            },
-            {
-              "name": "Handelsblatt (Hintergrund)",
-              "url": "https://www.handelsblatt.com/politik/deutschland/wir-werden-jetzt-angegriffen-deutsche-geheimdienste-warnen-vor-russland/100257696.html"
-            },
-            {
-              "name": "ORF",
-              "url": "https://orf.at/stories/3444139/"
-            }
-          ],
-          "publishedAt": "2026-10-05T11:36:00+02:00",
+          "publishedAt": "2026-10-05T16:17:00+02:00",
           "importance": 7,
-          "readingMinutes": 2,
-          "image": null
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Landtag_von_Sachsen-Anhalt_in_Magdeburg.jpg/1280px-Landtag_von_Sachsen-Anhalt_in_Magdeburg.jpg",
+            "credit": "Torsten Maue",
+            "license": "CC BY-SA 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Landtag_von_Sachsen-Anhalt_in_Magdeburg.jpg",
+            "alt": "Der Landtag von Sachsen-Anhalt am Domplatz in Magdeburg"
+          },
+          "readingMinutes": 2
         },
         {
-          "id": "politik-sachsen-anhalt-afd-landtagspraesident",
+          "id": "politik-merz-sichert-litauen-unterstuetzung-zu",
           "tier": "top",
-          "headline": "Sachsen-Anhalt: BSW will AfD-Kandidaten zum Landtagspräsidenten wählen",
-          "summary": "Zur Konstituierung des Landtags am Dienstag steht erstmals ein AfD-Politiker vor der Wahl zum Parlamentspräsidenten. Die BSW-Stimmen sichern ihm laut Ankündigung die Mehrheit.",
-          "body": "Im Landtag von Sachsen-Anhalt zeichnet sich zum ersten Mal in Deutschland ein AfD-Landtagspräsident ab. Das BSW kündigte nach einer dpa-AFX-Meldung vom Montagmittag an, bei der konstituierenden Sitzung am Dienstag den AfD-Kandidaten Tobias Rausch mitzuwählen. Fraktionschef Thomas Schulze sagte, man wähle „morgen den Kandidaten der AfD“; die AfD sei mit rund 44 Prozent stärkste Kraft und habe nach parlamentarischem Brauch Anspruch auf das Amt.\n\nDie Sitzung beginnt laut Landtag am 6. Oktober um 11 Uhr und wird im Internet übertragen. Der neue Landtag hat 83 Sitze: AfD 39, CDU 15, SPD, Grüne und Linke je 8, BSW 5. Rausch benötigt als einfache Mehrheit mehr Ja- als Nein-Stimmen. Mit den 39 AfD- und 5 BSW-Stimmen kommt er auf 44. Die CDU empfiehlt ihren Abgeordneten Enthaltung, die zählt nicht als abgegebene Stimme. SPD, Grüne und Linke lehnen den Kandidaten ab.\n\n## Was sich dahinter verbirgt\n\nDie Abstimmung ist geheim. Wie viele Stimmen Rausch über die 44 hinaus bekommt, gilt deshalb als Gradmesser dafür, ob aus anderen Fraktionen Unterstützung kommt. Das könnte Hinweise darauf geben, wie sich Abgeordnete später bei der Wahl des Ministerpräsidenten verhalten, die nach Berichten im Dezember erwartet wird. AfD-Spitzenkandidat Ulrich Siegmund bräuchte dafür 42 Stimmen, also die absolute Mehrheit; die AfD liegt drei Sitze darunter.\n\nDie Sitzordnung wurde neu geordnet, die AfD sitzt künftig in der Mitte statt am rechten Rand. Politisch aufgeladen ist der Vorgang auch durch Äußerungen: Grünen-Fraktionschefin Susan Sziborra-Seidlitz zog laut Ostdeutscher Allgemeiner einen Vergleich zu Hermann Göring, was für Kritik sorgte. Der Verfassungsschutz stuft die AfD als gesichert rechtsextremistisch ein.\n\nFür den Nachbarn Sachsen ist der Fall ein Signal: Er zeigt, wie sich im Osten Mehrheiten jenseits der bisherigen Lager verschieben können, und wird deshalb auch bundesweit beobachtet.",
-          "source": "dpa-AFX (finanznachrichten.de)",
-          "url": "https://www.finanznachrichten.de/nachrichten-2026-10/69754953-sachsen-anhalt-bsw-waehlen-den-afd-kandidaten-zum-landtagspraesidenten-016.htm",
-          "sources": [
-            {
-              "name": "dpa-AFX (finanznachrichten.de)",
-              "url": "https://www.finanznachrichten.de/nachrichten-2026-10/69754953-sachsen-anhalt-bsw-waehlen-den-afd-kandidaten-zum-landtagspraesidenten-016.htm"
-            },
-            {
-              "name": "Ostdeutsche Allgemeine",
-              "url": "https://ostdeutscheallgemeine.com/article/sachsen-anhalt-waehlt-erstmals-afd-landtagspraesidenten-10459836"
-            },
-            {
-              "name": "Landtag Sachsen-Anhalt",
-              "url": "https://www.landtag.sachsen-anhalt.de/artikel/konstituierung-findet-am-6-oktober-statt"
-            }
-          ],
-          "publishedAt": "2026-10-05T12:46:00+02:00",
-          "importance": 6,
-          "readingMinutes": 2,
-          "image": null
-        },
-        {
-          "id": "politik-koalition-plant-plastiksteuer",
-          "tier": "more",
-          "headline": "Koalition plant Plastiksteuer ab Juli 2027",
-          "summary": "CDU/CSU und SPD wollen Kunststoffverpackungen mit 550 Euro je Tonne belasten. Der Bund erwartet Milliardeneinnahmen, die Industrie kritisiert das Vorhaben.",
-          "body": "Die Koalitionsfraktionen von CDU/CSU und SPD wollen ab Juli 2027 eine neue Abgabe auf Kunststoffverpackungen einführen. Nach einer Meldung vom Montagnachmittag soll sie 550 Euro je Tonne Kunststoff betragen. Erfasst werden unter anderem Folien, Transportmittel, Verschlüsse und Kapseln mit einem Kunststoffanteil von mehr als fünf Prozent. Verpackungen aus recyceltem Material können befreit werden.\n\nDer Bund rechnet für 2027 mit zusätzlichen Einnahmen von 805 Millionen Euro, ab 2028 mit rund 1,5 Milliarden Euro im Jahr. Besteuert werden sollen etwa drei Millionen Tonnen Kunststoffverpackungen jährlich.\n\nDie Deutsche Umwelthilfe begrüßt den Schritt grundsätzlich, fordert aber eine Ausweitung auf Papier, Pappe und Metalle. Der Verband Plastics Europe kritisiert das Vorhaben dagegen scharf. Geschäftsführerin Christine Bunte nannte es kein ausgereiftes Gesetz, sondern ein nationales Steuerexperiment.\n\nFür Verbraucher und Händler in Sachsen dürfte die Abgabe vor allem über höhere Verpackungskosten spürbar werden, wenn Hersteller sie weitergeben. Wie stark, hängt von der Ausgestaltung im Gesetzgebungsverfahren ab, das noch bevorsteht.",
-          "source": "ARIVA.DE (dpa-AFX)",
-          "url": "https://ariva.de/news/roundup-koalitionsfraktionen-planen-neue-plastiksteuer-12159117",
-          "sources": [
-            {
-              "name": "ARIVA.DE (dpa-AFX)",
-              "url": "https://ariva.de/news/roundup-koalitionsfraktionen-planen-neue-plastiksteuer-12159117"
-            }
-          ],
-          "publishedAt": "2026-10-05T16:59:00+02:00",
-          "importance": 4,
-          "readingMinutes": 1,
-          "image": null
-        }
-      ]
-    },
-    {
-      "id": "welt",
-      "title": "Welt",
-      "emoji": "🌍",
-      "items": [
-        {
-          "id": "welt-spanien-neuwahl-wohnungskrise",
-          "tier": "top",
-          "headline": "Spaniens Sánchez kündigt Neuwahl für den 29. November an",
-          "summary": "Nach der Niederlage zweier Wohnungsdekrete im Parlament ruft Ministerpräsident Sánchez vorgezogene Wahlen aus. Umfragen sehen ein Lager aus PP und Vox vorn.",
-          "body": "Spaniens Ministerpräsident Pedro Sánchez hat vorgezogene Parlamentswahlen für den 29. November angekündigt. Auslöser ist eine Abstimmungsniederlage seiner Minderheitsregierung: Das Parlament lehnte zwei Dekrete gegen die Wohnungskrise ab. In Umfragen liegt ein Lager aus konservativer Volkspartei und rechtsextremer Vox vorn.\n\n## Zwei Dekrete scheitern knapp\n\nDie beiden Wohnungsdekrete der Regierung aus Sozialisten und dem Linksbündnis Sumar fielen am vergangenen Freitag durch, mit 172 zu 178 und 166 zu 184 Stimmen, wie deutsche Medien berichten. Die Maßnahmen sollten gefährdete Haushalte besser vor Zwangsräumungen schützen und Mietverträge verlängern. Die Abstimmung zeigte erneut, wie schwer es Sánchez fällt, ohne feste Mehrheit zu regieren.\n\nIn einer Fernsehansprache sagte Sánchez, man müsse „das Vertrauen der Menschen erneuern“. Er räumte nach Angaben von Al Jazeera ein, Fehler gemacht und frühere Versprechen nicht eingelöst zu haben. Oppositionsführer Alberto Núñez Feijóo von der Volkspartei (PP) fragte, ob die Wähler „vier weitere Jahre“ des Bisherigen wollten.\n\n## Wohnen als Reizthema\n\nDie Wohnungsfrage beschäftigt das Land seit Monaten. Laut Al Jazeera haben sich die Durchschnittsmieten binnen eines Jahrzehnts fast verdoppelt, die Kaufpreise stiegen um rund 90 Prozent. Zusätzliche Empörung löste die im Fernsehen übertragene Zwangsräumung einer 87-jährigen Frau in Madrid aus. Am Samstag gingen in der Hauptstadt nach Angaben des Senders mehr als 70.000 Menschen auf die Straße.\n\nSánchez will laut Tagesspiegel noch vor der Auflösung des Parlaments versuchen, Mieterschutz über den Ständigen Ausschuss durchzusetzen, eine Art Notparlament mit 68 Mitgliedern. Dort hat das Regierungslager demnach mit 35 zu 34 Stimmen eine hauchdünne Mehrheit. Das Kabinett soll am Dienstag darüber beraten.\n\n## Was die Wahl für Europa bedeutet\n\nDen Umfragen zufolge könnten PP und Vox zusammen auf rund 200 von 350 Sitzen kommen, die Sozialisten liegen zurück. Es wäre laut Al Jazeera das erste Mal seit dem Tod Francos, dass eine rechtsextreme Partei in Spaniens Zentralregierung einzieht.\n\nFür Deutschland ist das mehr als ein Randthema. Spanien ist die viertgrößte Volkswirtschaft der Eurozone und gehörte zuletzt zu den Ländern mit kräftigem Wachstum. Ein Regierungswechsel würde die Gewichte im Europäischen Rat verschieben, etwa bei Migration, Klimapolitik und Haushaltsregeln. Auch Zehntausende Deutsche, die in Spanien leben oder dort Urlaub machen, würden Veränderungen am Immobilien- und Mietmarkt spüren. Die Wohnungsnot, die Spanien nun politisch erschüttert, ist zudem ein Muster, das auch in Leipzig und anderen deutschen Großstädten bekannt ist: Wenn Mieten schneller steigen als Einkommen, wächst der Druck auf Regierungen, und Wahlen werden zum Ventil.",
+          "headline": "Merz sichert Litauen Rückendeckung und Brigade-Aufbau zu",
+          "summary": "Beim Besuch des litauischen Premiers im Kanzleramt bekräftigt Merz die Sicherheitszusagen. Die Bundeswehr-Brigade soll bis Ende 2027 voll einsatzbereit sein.",
+          "body": "Bundeskanzler Friedrich Merz hat Litauen weitere Rückendeckung zugesichert. Bei einem Treffen mit dem litauischen Ministerpräsidenten Mindaugas Sinkevičius im Kanzleramt sagte er laut Tagesspiegel, die Sicherheit des Baltikums sei die Sicherheit Deutschlands. Das Treffen fand am Montagnachmittag in Berlin statt, anschließend gab es eine gemeinsame Pressekonferenz.\n\nNach Angaben aus dem Gespräch soll die dauerhaft in Litauen stationierte Bundeswehr-Brigade bis Ende 2027 ihre volle Einsatzbereitschaft erreichen. Vorgesehen sind 4.800 Soldaten und 200 zivile Beschäftigte. Merz nannte das ein Zeichen der Solidarität innerhalb der NATO. Die Bundesregierung hatte als Themen des Treffens die Sicherheit, die Stärkung der NATO-Ostflanke und den Aufbau der Brigade angekündigt.\n\n## Hybride Angriffe und Ukraine\n\nMerz beschrieb das russische Vorgehen als Test der Entschlossenheit des Westens. Moskau versuche mit hybriden Angriffen, die Unterstützung für die Ukraine zu untergraben und den Zusammenhalt der NATO zu schwächen. Er forderte Russland auf, den Krieg zu beenden und in Friedensverhandlungen einzutreten.\n\nSinkevičius dankte Deutschland für die Hilfe. Litauen hat nach seinen Angaben einen Rekord-Verteidigungshaushalt von 4,8 Milliarden Euro beschlossen, rund 5,38 Prozent der Wirtschaftsleistung.\n\n## Warum das auch Sachsen betrifft\n\nBesprochen wurde zudem Litauens EU-Ratspräsidentschaft in der ersten Jahreshälfte 2027. Die Brigade ist das erste dauerhaft im Ausland stationierte Großverband der Bundeswehr seit Jahrzehnten und bindet Personal und Geld. Gleichzeitig zeigen Vorfälle wie die Drohne in Leipzig im August, dass die Bedrohung durch hybride Angriffe nicht nur an der Ostflanke besteht, sondern auch in Mitteldeutschland. Außenminister Johann Wadephul verwies in diesem Zusammenhang darauf, dass Deutschland bereits Ziel hybrider Attacken sei.\n\nWie rasch die Brigade aufwächst, hängt von Personal, Kasernenbau und Ausrüstung ab. Die Debatte über freiwilligen Wehrdienst und mögliche Pflicht bekommt dadurch zusätzliches Gewicht.",
           "source": "Tagesspiegel",
-          "url": "https://www.tagesspiegel.de/internationales/inmitten-der-wohnungskrise-spaniens-ministerprasident-sanchez-kundigt-neuwahlen-an-16124817.html",
+          "url": "https://www.tagesspiegel.de/politik/merz-bekraftigt-unterstutzung-litauens-die-sicherheit-von-berlin-wird-auch-in-vilnius-verteidigt-16129034.html",
           "sources": [
             {
               "name": "Tagesspiegel",
-              "url": "https://www.tagesspiegel.de/internationales/inmitten-der-wohnungskrise-spaniens-ministerprasident-sanchez-kundigt-neuwahlen-an-16124817.html"
+              "url": "https://www.tagesspiegel.de/politik/merz-bekraftigt-unterstutzung-litauens-die-sicherheit-von-berlin-wird-auch-in-vilnius-verteidigt-16129034.html"
             },
             {
-              "name": "Al Jazeera",
-              "url": "https://www.aljazeera.com/news/2026/10/5/spanish-prime-minister-pedro-sanchez-announces-snap-election"
+              "name": "Bundesregierung",
+              "url": "https://www.bundesregierung.de/breg-de/aktuelles/bundeskanzler-merz-empfaengt-den-litauischen-ministerpraesidenten-mindaugas-sinkevi%C4%8Dius-2455528"
             }
           ],
-          "publishedAt": "2026-10-05T17:57:00+02:00",
+          "publishedAt": "2026-10-05T19:18:00+02:00",
           "importance": 6,
-          "readingMinutes": 2,
-          "image": null
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Bundeskanzleramt_-_Berlin_-_Deutschland_-_Germany_-_08.jpg/1280px-Bundeskanzleramt_-_Berlin_-_Deutschland_-_Germany_-_08.jpg",
+            "credit": "Norbert Nagel",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bundeskanzleramt_-_Berlin_-_Deutschland_-_Germany_-_08.jpg",
+            "alt": "Das Bundeskanzleramt in Berlin mit der Skulptur „Berlin“ von Eduardo Chillida im Vordergrund"
+          },
+          "readingMinutes": 1
         },
         {
-          "id": "welt-jemen-offensive-bab-al-mandab",
-          "tier": "top",
-          "headline": "Jemens Regierung startet Großoffensive gegen die Huthis",
-          "summary": "Mit saudischer Luftunterstützung meldet Jemens Regierung Geländegewinne an der Meerenge Bab al-Mandab. Die Route ist für den Handel zwischen Asien und Europa zentral.",
-          "body": "Jemens international anerkannte Regierung hat eine Großoffensive gegen die Huthi-Miliz gestartet und meldet erste Erfolge an der strategisch wichtigen Meerenge Bab al-Mandab. Unterstützt wird sie von einer saudisch geführten Koalition. Die Huthis drohen im Gegenzug Fluggesellschaften.\n\n## Was bekannt ist\n\nDer Präsidialrat unter Raschad al-Alimi kündigte die Operation „Morgenröte Jemens“ am Sonntag an. Sie umfasse „alle aktiven Frontlinien“, berichtet das ZDF. Al-Alimi sagte, Jemen werde „einer neuen Morgenröte der Freiheit, des Friedens und der Stabilität“ entgegengehen.\n\nAm Montag meldeten Regierungstruppen die Kontrolle über wichtige Gebiete an der Meerenge, über die Region Dhubab samt Flughafen sowie über die Hafenstadt Mokha. Nach ihren Angaben sind in Dhubab Hunderte Huthi-Kämpfer eingekesselt. Laut The National setzt die Koalition rund 100 Kampfflugzeuge ein und will 324 wichtige Huthi-Ziele zerstört haben. Armeesprecher nannten über 1.100 Angriffe mit Flugzeugen, Artillerie, Raketen und Drohnen. Parallel hat laut The National eine Offensive auf die von den Huthis gehaltene Hauptstadt Sanaa begonnen. Die Angaben stammen von den Konfliktparteien und lassen sich nicht unabhängig prüfen.\n\nDie Huthis warnten Airlines vor der Nutzung des saudischen Luftraums, solange die saudische „Aggression“ andauere.\n\n## Humanitäre Lage und Folgen\n\nDie Kämpfe treffen eine ohnehin verheerende Lage. Laut The National sind Zehntausende vertrieben, die Weltgesundheitsorganisation zählt seit dem 6. August mehr als 5.000 Opfer.\n\n## Warum das auch Deutschland betrifft\n\nDurch Bab al-Mandab, die Meerenge zwischen Jemen und Dschibuti, laufen große Teile des Schiffsverkehrs zwischen Asien und Europa. Wer die Küste kontrolliert, kann Handelsschiffe bedrohen. Für deutsche Importeure, auch für die Industrie in Sachsen, bedeuten Angriffe oder Umwege um Afrika längere Lieferzeiten und höhere Frachtkosten. Bundeskanzler Merz äußerte sich laut ZDF nur vorsichtig optimistisch zu den Erfolgsmeldungen Zugleich bleibt der Konflikt zwischen den USA und dem Iran, der die Huthis unterstützt, ungelöst, und die Region bleibt angespannt.",
-          "source": "The National",
-          "url": "https://www.thenationalnews.com/news/gulf/2026/10/05/yemen-government-forces-claim-bab-al-mandeb-gains-as-saudi-coalition-says-100-jets-join-houthi-offensive/",
+          "id": "politik-afd-nominiert-tillschneider-landtagsvize",
+          "tier": "more",
+          "headline": "AfD will Tillschneider zum Landtagsvizepräsidenten in Magdeburg wählen lassen",
+          "summary": "Vor der konstituierenden Sitzung des Landtags von Sachsen-Anhalt nominiert die AfD den Rechtsaußen Hans-Thomas Tillschneider für das Präsidium.",
+          "body": "Die AfD-Fraktion im Landtag von Sachsen-Anhalt will Hans-Thomas Tillschneider zum Vizepräsidenten des Parlaments machen. Die Fraktion habe ihn einstimmig nominiert, meldet die Nachrichtenagentur dpa. Tillschneider ist Islamwissenschaftler und stellvertretender AfD-Landeschef. Er gilt als eine der führenden Figuren des rechten Flügels der Partei und fiel im Parlament wiederholt durch Provokationen auf.\n\nDie Wahl soll in der konstituierenden Sitzung am Dienstag erfolgen, in der das Präsidium bestimmt wird. Für das Amt des Landtagspräsidenten will die AfD Tobias Rausch aufstellen, der dabei auch Stimmen des BSW erhalten soll.\n\nAls weitere Kandidaten für Vizeposten nennt dpa Carsten Borchert (CDU), Bildungspolitiker, und Armin Willingmann (SPD), bislang Wissenschaftsminister. Ob die Kandidaten die nötigen Mehrheiten bekommen, ist offen. In der Vergangenheit sind AfD-Bewerber in Magdeburg bei der Wahl ins Präsidium gescheitert, weil andere Fraktionen sie nicht unterstützten. Die AfD hat nach der Septemberwahl mit 39 Sitzen die größte Fraktion.\n\nFür Sachsen ist die Abstimmung ein Fingerzeig: Wie die anderen Parteien in Magdeburg mit der stärksten AfD-Fraktion umgehen, wird auch im Nachbarland aufmerksam verfolgt.",
+          "source": "Tagesspiegel (dpa)",
+          "url": "https://www.tagesspiegel.de/politik/dpa-afd-schlagt-tillschneider-als-vizeprasidenten-im-landtag-vor-16128342.html",
           "sources": [
             {
-              "name": "The National",
-              "url": "https://www.thenationalnews.com/news/gulf/2026/10/05/yemen-government-forces-claim-bab-al-mandeb-gains-as-saudi-coalition-says-100-jets-join-houthi-offensive/"
-            },
-            {
-              "name": "ZDFheute Iran-Liveblog",
-              "url": "https://www.zdfheute.de/politik/ausland/iran-israel-usa-angriff-liveblog-100.html"
+              "name": "Tagesspiegel (dpa)",
+              "url": "https://www.tagesspiegel.de/politik/dpa-afd-schlagt-tillschneider-als-vizeprasidenten-im-landtag-vor-16128342.html"
             }
           ],
-          "publishedAt": "2026-10-05T00:00:00+02:00",
-          "importance": 6,
-          "readingMinutes": 1,
-          "image": null
+          "publishedAt": "2026-10-05T16:13:00+02:00",
+          "importance": 5,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "politik-wadephul-warnt-vor-russlands-plaenen",
+          "tier": "more",
+          "headline": "Wadephul warnt vor weitergehenden Plänen Russlands",
+          "summary": "Der Außenminister sieht Moskau nicht nur auf die Ukraine fixiert und verweist auf hybride Angriffe, darunter Drohnenvorfälle in Leipzig.",
+          "body": "Außenminister Johann Wadephul (CDU) hat vor weitergehenden Plänen Russlands gewarnt. Laut ZDFheute sagte er: „Deswegen müssen wir doch davon ausgehen, dass Russland weitergehende Pläne hat.“ Er verwies darauf, dass Präsident Wladimir Putin den Zerfall der Sowjetunion als größte Katastrophe des 20. Jahrhunderts betrachte und versuchen könnte, ihn rückgängig zu machen. Neben der Ukraine nannte Wadephul Georgien, Moldau und die baltischen Staaten.\n\nDeutschland sei bereits Ziel hybrider Angriffe, sagte der Minister und nannte Drohnenvorfälle in Leipzig im August 2026 sowie fortlaufende Cyberangriffe. Wegen der NATO-Beistandspflicht würde ein Angriff auf das Baltikum auch Deutschland betreffen. Zuvor hatte BND-Präsident Martin Jäger gewarnt, kein anderer Staat bedrohe Deutschland so konkret wie Russland.\n\nDie Aussagen passen zur laufenden Debatte über Verteidigung und Wehrdienst. Für Sachsen ist der Bezug unmittelbar: Die Drohnenvorfälle in Leipzig nannte Wadephul ausdrücklich als Beispiel.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/ausland/wadephul-russland-warnung-ausweitung-gefahr-ukraine-krieg-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/ausland/wadephul-russland-warnung-ausweitung-gefahr-ukraine-krieg-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-06T01:07:00+02:00",
+          "importance": 5,
+          "image": null,
+          "readingMinutes": 1
         }
       ]
     },
@@ -334,165 +302,147 @@
       "emoji": "📍",
       "items": [
         {
-          "id": "region-covenant-eroeffnet-standort-leipzig",
+          "id": "region-torgau-schlosskapelle-welterbe",
           "tier": "top",
-          "headline": "US-Rüstungsfirma Covenant eröffnet Marschflugkörper-Standort in Leipzig",
-          "summary": "Der US-Konzern Covenant hat im Leipziger Norden eine Produktionshalle für Marschflugkörper eröffnet. Die Serienfertigung soll 2027 beginnen, die Behörden müssen die Nutzungsänderung noch genehmigen.",
-          "body": "Das US-Rüstungsunternehmen Covenant hat am Montag seinen Standort im Norden Leipzigs eröffnet. In einer angemieteten Halle von mehr als 10.000 Quadratmetern will die Firma künftig Marschflugkörper des Typs Anthem herstellen. Nach Angaben von t-online soll Leipzig der größte Standort des Unternehmens weltweit werden.\n\nDie Zahlen aus der Planung sind groß. Im ersten Produktionsjahr sollen laut Unternehmen 1.000 Stück entstehen, im zweiten Jahr 5.000. Die Serienfertigung ist für 2027 vorgesehen. Die Leipziger Zeitung berichtet, dass das Unternehmen bis zu 250 Arbeitsplätze schaffen will. t-online spricht allgemeiner von mehreren hundert Beschäftigten.\n\n## Was produziert wird\n\nDie Anthem ist nach Firmenangaben ein Waffensystem für präzise Schläge tief im gegnerischen Gebiet und trägt einen Sprengkopf von 200 Kilogramm. Dieser Sprengkopf wird laut Unternehmen nicht in Leipzig eingebaut, sondern erst bei den Kunden. Die Halle selbst ist ein bestehendes Gewerbeobjekt, das Covenant gemietet hat. Neben Leipzig betreibt die Firma Standorte in Dallas im US-Bundesstaat Texas und in Israel.\n\nVon Leipzig aus sollen europäische Kunden beliefert werden. „Leipzig wird der weltweit größte Standort von Covenant“, sagte Firmenchef Michael Kaufman nach Angaben von t-online.\n\n## Genehmigung steht noch aus\n\nDass die Eröffnung bereits gemeldet wurde, bedeutet nicht, dass die Produktion sofort startet. Die örtlichen Behörden müssen die Umnutzung der Halle vom Lager zur Fertigungsstätte noch genehmigen, bevor dort gearbeitet werden darf. Die Leipziger Zeitung hält den Standort deshalb nur für „scheinbar“ schon eröffnet und verweist auf die offene Frage, wie weit die Anlage tatsächlich ist.\n\nGegen die Pläne gibt es Widerstand. Nach Angaben der Leipziger Zeitung richtet sich öffentlicher Protest in Form einer Petition und einer Demonstration gegen die geplante Rüstungsproduktion in der Stadt.\n\n## Einordnung\n\nFür Leipzig und die Region ist die Ansiedlung gleich in mehrfacher Hinsicht von Gewicht. Sie bringt Arbeitsplätze und eine Rüstungsproduktion mit europäischer Ausrichtung in eine Stadt, in der es bislang kaum Standorte dieser Art gab. Zugleich hat sie eine politische Debatte über Waffenfertigung in einer Großstadt ausgelöst. Wie sich Genehmigungsverfahren und Protest entwickeln, dürfte darüber entscheiden, ob der Zeitplan für 2027 hält.",
-          "source": "t-online",
-          "url": "https://leipzig.t-online.de/region/leipzig/id_101467310/leipzig-wird-groesster-standort-us-ruestungsfirma-eroeffnet-produktionsstaette.html",
-          "sources": [
-            {
-              "name": "t-online",
-              "url": "https://leipzig.t-online.de/region/leipzig/id_101467310/leipzig-wird-groesster-standort-us-ruestungsfirma-eroeffnet-produktionsstaette.html"
-            },
-            {
-              "name": "Leipziger Zeitung",
-              "url": "https://www.l-iz.de/der-tag/2026/10/montag-der-5-oktober-2026-leipzig-schliesst-partnerschaft-mit-jerewan-linke-zieht-gegen-katherina-reiche-vor-gericht-und-leipziger-standort-von-ruestungskonzern-covenant-scheint-bereits-eroeffnet-672408"
-            }
-          ],
-          "publishedAt": "2026-10-05T16:56:00+02:00",
-          "importance": 7,
-          "readingMinutes": 2,
-          "image": null
-        },
-        {
-          "id": "region-leipzig-jerewan-partnerschaft",
-          "tier": "more",
-          "headline": "Leipzig besiegelt Städtepartnerschaft mit Jerewan",
-          "summary": "Leipzig und die armenische Hauptstadt Jerewan haben ihre Städtepartnerschaft besiegelt. Oberbürgermeister Burkhard Jung reiste mit einer Delegation von mehr als 30 Personen.",
-          "body": "Leipzig hat am Montag seine Partnerschaft mit Jerewan, der Hauptstadt Armeniens, besiegelt. Oberbürgermeister Burkhard Jung (SPD) reiste dafür mit einer Delegation von mehr als 30 Vertreterinnen und Vertretern aus Politik, Verwaltung, Wirtschaft und Kultur in den Südkaukasus, wie die Leipziger Zeitung berichtet.\n\nDer Leipziger Stadtrat hatte die Partnerschaft nach Angaben der Stadt am 27. Mai 2026 einstimmig beschlossen. Jerewan ist damit die 16. Partnerstadt Leipzigs.\n\nDie Verbindung ist nicht neu. Zwischen Einrichtungen in Leipzig und Armenien gibt es seit Jahrzehnten Austausch, vor allem in Wissenschaft und Kultur. Eine wichtige Rolle spielt der Verein Armenische Kulturgemeinde Leipzig, der seit 2018 besteht und Veranstaltungen sowie Bürgerreisen nach Jerewan organisiert. Im März 2025 hatten Jung und Jerewans Bürgermeister Tigran Awinjan zudem ein gemeinsames Kulturjahr 2025/2026 vereinbart.\n\nFür Leipzig ist die Partnerschaft ein außenpolitisches Signal auf kommunaler Ebene. Sie gibt dem bestehenden Austausch einen festen Rahmen und kann den Weg zu weiteren Projekten in Bildung, Wirtschaft und Kultur öffnen.",
+          "headline": "Torgauer Schlosskapelle besteht UNESCO-Vorprüfung für Welterbe",
+          "summary": "Die von Martin Luther geweihte Schlosskapelle darf einen Welterbeantrag vorbereiten. Ein Titel wäre frühestens 2030 möglich, sicher ist er nicht.",
+          "body": "Die Schlosskapelle von Schloss Hartenfels in Torgau ist dem Ziel, UNESCO-Welterbe zu werden, einen Schritt nähergekommen. Nach Angaben des Landkreises Nordsachsen und des sächsischen Infrastrukturministeriums hat die Kapelle das Voreinschätzungsverfahren bestanden. Das Welterbezentrum in Paris sieht demnach Potenzial für einen Titel. Die Nachricht wurde Anfang Oktober bekannt; die Quellen nennen dafür den 1. oder 2. Oktober.\n\n## Pflichtstufe, aber keine Zusage\n\nDas Verfahren ist laut dem Ministerium zwingend: Erst nach seinem Abschluss darf überhaupt ein Antrag eingereicht werden. Ein Welterbetitel ist damit nicht sicher, die Kapelle darf lediglich einen vollständigen Antrag vorbereiten. Dafür hat der Landkreis nach Angaben der Leipziger Zeitung Zeit bis Anfang 2029. Eine Aufnahme in die Welterbeliste wäre dann frühestens 2030 möglich.\n\nLandrat Kai Emanuel sprach von einer realistischen Chance, die das Ergebnis gemeinsamer Arbeit sei. Beteiligt waren neben dem Landratsamt das Landesamt für Denkmalpflege und das sächsische Infrastrukturministerium. Kulturbetriebsleiterin Lydia Klöppel dämpfte die Erwartungen: „Ein Selbstläufer wird das nicht“, sagte sie, es gebe noch viel zu tun.\n\n## Warum gerade diese Kapelle\n\nDie Kapelle wurde 1544 geweiht, und zwar von Martin Luther selbst. Es ist die einzige Kirche, die er eigenhändig einweihte. Sie gilt deshalb als bedeutendes Zeugnis der Reformation, der protestantischen Kirchenarchitektur und der Kirchenmusik. Landrat Emanuel nannte sie einen Anziehungspunkt für alle, die sich für Luther, Reformation und Kirchenbau interessieren.\n\nZugleich bestand die Papiermühle Niederzwönitz im Erzgebirge die Voreinschätzung. Die 1568 erstmals erwähnte Mühle gilt als älteste erhaltene Papiermühle Deutschlands und ist noch in Betrieb. Sie ist Teil einer gemeinsamen Bewerbung von fünf historischen Papiermühlen aus Tschechien, Polen, Spanien und Deutschland unter dem Titel „European Paper Mills“, die von Polen geleitet wird.\n\nFür Nordsachsen wäre ein Welterbetitel ein seltenes Aushängeschild. Er könnte Besucher nach Torgau ziehen, das mit seiner Lage an der Elbe ohnehin von Reformations- und Geschichtstourismus lebt. Bis dahin liegt allerdings noch ein langer Weg aus Antragstellung und Prüfung vor dem Landkreis.",
           "source": "Leipziger Zeitung",
-          "url": "https://www.l-iz.de/der-tag/2026/10/montag-der-5-oktober-2026-leipzig-schliesst-partnerschaft-mit-jerewan-linke-zieht-gegen-katherina-reiche-vor-gericht-und-leipziger-standort-von-ruestungskonzern-covenant-scheint-bereits-eroeffnet-672408",
+          "url": "https://www.l-iz.de/politik/region/2026/10/jubel-in-torgau-schlosskapelle-welterbe-titel-schritt-naher-672277",
           "sources": [
             {
               "name": "Leipziger Zeitung",
-              "url": "https://www.l-iz.de/der-tag/2026/10/montag-der-5-oktober-2026-leipzig-schliesst-partnerschaft-mit-jerewan-linke-zieht-gegen-katherina-reiche-vor-gericht-und-leipziger-standort-von-ruestungskonzern-covenant-scheint-bereits-eroeffnet-672408"
-            }
-          ],
-          "publishedAt": "2026-10-05T00:00:00+02:00",
-          "importance": 4,
-          "readingMinutes": 1,
-          "image": null
-        }
-      ]
-    },
-    {
-      "id": "sport",
-      "title": "Sport",
-      "emoji": "⚽",
-      "items": [
-        {
-          "id": "sport-dfb-team-remis-griechenland",
-          "tier": "top",
-          "headline": "DFB-Elf holt in Griechenland nur ein 0:0",
-          "summary": "Die deutsche Nationalmannschaft kommt in der Nations League in Thessaloniki nicht über ein torloses Remis hinaus. Für Bundestrainer Klopp wird die Lage in der Gruppe A2 enger.",
-          "body": "Die deutsche Fußball-Nationalmannschaft hat in der Nations League auch das Rückspiel gegen Griechenland nicht gewonnen. Am Sonntagabend trennten sich beide Teams im Stadion von Thessaloniki 0:0. Deutschland war über weite Strecken die bessere Mannschaft, belohnte sich aber nicht.\n\nDamit bleibt die Bilanz von Bundestrainer Jürgen Klopp nach vier Spielen durchwachsen: Nach Angaben von beIN Sports gewann die Mannschaft nur eine dieser Partien und holte fünf von zwölf möglichen Punkten.\n\n## Aberkanntes Tor und vergebene Chancen\n\nDie Griechen hatten die erste Möglichkeit: Schon in der zweiten Minute musste Torwart Jonas Urbig gegen einen Kopfball von Giorgos Masouras eingreifen, wie ORF berichtet. In der 32. Minute glaubte sich Deutschland durch Jonathan Burkardt in Führung, doch der Treffer wurde wegen eines Handspiels von Tom Bischof aberkannt.\n\nAuch danach blieb der Ertrag gering. Nach Zahlen von beIN Sports hatte Deutschland 70,1 Prozent Ballbesitz und gab 21 Schüsse ab, aber nur vier davon aufs Tor. Griechenland kam auf fünf Abschlüsse. In der Schlussphase scheiterten Philipp Treu und Derry Scherhant, ihre Versuche gingen am Tor vorbei oder darüber.\n\n„Wir haben am Ende einfach das Tor nicht gemacht“, sagte Kapitän Florian Wirtz laut ORF.\n\n## Enge Lage in der Gruppe\n\nIn der Gruppe A2 liegen die Niederlande und Griechenland nach vier Spieltagen mit jeweils acht Punkten vorn. Die Niederlande besiegten am selben Abend Serbien 2:1, die Tore erzielten Teun Koopmeiners und Joshua Zirkzee. Deutschland ist mit fünf Punkten Dritter und hat drei Zähler Rückstand auf die Spitze.\n\nZuvor hatte die Mannschaft bereits das Heimspiel gegen Griechenland mit 0:1 verloren. Die Revanche gelang also nicht, immerhin blieb eine zweite Niederlage gegen den Gegner aus.\n\nDie nächsten Aufgaben warten Mitte November gegen Serbien und die Niederlande. Beide Spiele sind für die Mannschaft nun von großer Bedeutung, wenn sie in der Tabelle noch nach oben kommen will. Für Fans in Sachsen und im Rest Deutschlands bedeutet das: Die Länderspielpause bringt dem Nationalteam keine Entspannung, sondern vor allem Druck für den Herbst.",
-          "source": "ORF",
-          "url": "https://sport.orf.at/stories/3163249",
-          "sources": [
-            {
-              "name": "ORF",
-              "url": "https://sport.orf.at/stories/3163249"
+              "url": "https://www.l-iz.de/politik/region/2026/10/jubel-in-torgau-schlosskapelle-welterbe-titel-schritt-naher-672277"
             },
             {
-              "name": "beIN Sports",
-              "url": "https://www.beinsports.com/en-us/soccer/uefa-nations-league/articles/greece-0-0-germany-klopps-men-frustrated-in-nations-league-draw-2026-10-04"
-            }
-          ],
-          "publishedAt": "2026-10-04T23:07:00+02:00",
-          "importance": 6,
-          "readingMinutes": 2,
-          "image": null
-        }
-      ]
-    },
-    {
-      "id": "wissenschaft",
-      "title": "Wissenschaft & Raumfahrt",
-      "emoji": "🔭",
-      "items": [
-        {
-          "id": "wissenschaft-medizin-nobelpreis-optogenetik",
-          "tier": "top",
-          "headline": "Medizin-Nobelpreis geht für Optogenetik an zwei Deutsche und einen US-Forscher",
-          "summary": "Peter Hegemann, Georg Nagel und Karl Deisseroth werden für die Steuerung von Nervenzellen mit Licht geehrt. Zwei der drei Preisträger arbeiten an deutschen Universitäten.",
-          "body": "Der Nobelpreis für Physiologie oder Medizin 2026 geht an Peter Hegemann von der Humboldt-Universität zu Berlin, Georg Nagel von der Universität Würzburg und Karl Deisseroth von der Stanford University. Das Nobelkomitee des Karolinska-Instituts in Stockholm gab die Entscheidung am Montag bekannt. Ausgezeichnet werden die drei „für ihre Entdeckungen zu lichtgesteuerten Ionenkanälen und zur Optogenetik“.\n\nDer Preis ist mit zwölf Millionen schwedischen Kronen dotiert, nach Angaben der Berichterstatter rund eine Million Euro, und wird geteilt. Hegemann ist 71 Jahre alt, Nagel 73, Deisseroth 54.\n\n## Vom Algenprotein zum Werkzeug\n\nHegemann und Nagel entdeckten Anfang der 2000er-Jahre in einer einzelligen Alge das Protein Channelrhodopsin. Es macht Zellen empfindlich für Licht: Trifft ein Lichtreiz auf das Eiweiß, öffnet sich ein Kanal in der Zellmembran. Deisseroth baute das zugehörige Gen anschließend in Nervenzellen ein, zunächst bei Ratten, später auch in lebenden Mäusegehirnen. Damit ließen sich einzelne Nervenzellen gezielt per Lichtimpuls an- und abschalten.\n\nDas Nobelkomitee sieht darin den Beginn einer neuen Ära der Neurowissenschaft. Die Methode erlaube es, das Gehirn so zu kartieren, wie man es zuvor nur erträumen konnte. Forschende können damit erstmals ursächlich untersuchen, welche Nervenschaltkreise an Gedächtnis, Emotionen und Verhalten beteiligt sind, statt nur Korrelationen zu beobachten.\n\n## Therapeutische Perspektive\n\nNeben der Grundlagenforschung gibt es erste medizinische Anwendungen. Laut ORF wurde mit einer optogenetischen Therapie bei einem blinden Patienten das Sehvermögen teilweise wiederhergestellt: Er konnte mithilfe einer speziellen Brille Gegenstände erkennen und sich orientieren. Als Zielgruppe gelten Erkrankungen wie Retinitis pigmentosa. Auch für neurologische und psychiatrische Leiden wird der Ansatz erforscht, bislang überwiegend im präklinischen Stadium.\n\n## Einordnung für Deutschland\n\nDie Auszeichnung ist ein Erfolg für die deutsche Grundlagenforschung. Berlins Wissenschaftssenatorin Ina Czyborra sagte, der Preis zeige den grundlegenden Wert dauerhaft geförderter Grundlagenforschung für die Medizin. Bayerns Wissenschaftsminister würdigte Nagels Arbeit als „revolutionär“ und verwies auf die Stärke des Standorts Würzburg.\n\nDie Entdeckung entstand aus reiner Neugier an einer Alge, ohne dass ein medizinischer Nutzen absehbar war. Genau dieses Muster nutzen Forschungspolitiker gern als Argument für langfristige, ergebnisoffene Förderung. Für Sachsen, wo Universität Leipzig, Max-Planck-Institute und TU Dresden ebenfalls neurowissenschaftlich arbeiten, ist die Entscheidung ein Beleg dafür, dass auch Methoden aus der Grundlagenforschung die Hirnforschung prägen.\n\nAm Dienstag folgt die Bekanntgabe des Physik-Nobelpreises, die Verkündung der übrigen Preise zieht sich durch die Woche.",
-          "source": "Forschung & Lehre",
-          "url": "https://www.forschung-und-lehre.de/karriere/medizin-nobelpreis-geht-an-zwei-deutsche-und-einen-us-amerikaner-7937",
-          "sources": [
-            {
-              "name": "Forschung & Lehre",
-              "url": "https://www.forschung-und-lehre.de/karriere/medizin-nobelpreis-geht-an-zwei-deutsche-und-einen-us-amerikaner-7937"
+              "name": "Nordbayerischer Kurier (dpa)",
+              "url": "https://www.kurier.de/inhalt.unesco-titel-schlosskapelle-und-papiermuehle-wollen-unesco-welterbe-werden.4447e9c0-6034-4189-9ff7-cc3f7bd29d48.html"
             },
             {
-              "name": "science.ORF.at",
-              "url": "https://science.orf.at/stories/3237613/"
-            },
-            {
-              "name": "Lindau Nobel Laureate Meetings",
-              "url": "https://www.lindau-nobel.org/news-nobel-prize-in-physiology-or-medicine-2026/"
-            }
-          ],
-          "publishedAt": "2026-10-05T00:00:00+02:00",
-          "importance": 7,
-          "readingMinutes": 3,
-          "image": null
-        }
-      ]
-    },
-    {
-      "id": "klima",
-      "title": "Klima & Umwelt",
-      "emoji": "🌱",
-      "items": [
-        {
-          "id": "klima-pre-cop-fidschi-tuvalu",
-          "tier": "top",
-          "headline": "Pre-COP in Fidschi: Pazifik drängt vor COP31 auf 1,5 Grad",
-          "summary": "In Nadi hat die Vorkonferenz zum Weltklimagipfel COP31 begonnen. Die Pazifikstaaten fordern mehr Anpassungsgeld und das 1,5-Grad-Ziel, die Erwartungen gelten als gering.",
-          "body": "In Nadi auf Fidschi läuft von Montag bis Donnerstag (5. bis 8. Oktober) die Pazifik-Vorkonferenz zum Weltklimagipfel COP31. Parallel findet in Tuvalu am 5. und 6. Oktober ein Treffen von Staats- und Regierungschefs statt. Nach Angaben der australischen Regierung kommen mehr als 50 Länder sowie Tausende Fachleute und Aktivisten zusammen. Es ist die letzte größere Abstimmung vor dem Gipfel in Antalya, der vom 9. bis 20. November in der Türkei stattfindet.\n\nAustralien ist gemeinsam mit Fidschi und Tuvalu Gastgeber der Vorkonferenz und führt bei COP31 die Verhandlungen. Premierminister Anthony Albanese reist laut seinem Büro zum vierten Mal offiziell nach Fidschi und erstmals nach Tuvalu. Begleitet wird er von Klimaminister Chris Bowen und der Sondergesandten Kate Thwaites. Das Treffen solle es ermöglichen, direkt von den Menschen an der Frontlinie des Klimawandels zu hören, so die Regierung.\n\n## Was die Pazifikstaaten fordern\n\nDie Inselstaaten pochen auf drei Punkte: die Begrenzung der Erwärmung auf 1,5 Grad, besseren Zugang zu Anpassungsfinanzierung und den Schutz der Ozeane. Fidschis Klimaministerin Lynda Tabuya sagte laut TRT World, ihr Premier werde die Botschaft tragen: „keep 1.5 degrees within reach“. Der Meeresspiegel steigt im Pazifik demnach doppelt so schnell wie im globalen Mittel.\n\nBeim Geld klafft eine große Lücke. Entwicklungsländer brauchen laut den von TRT World genannten Zahlen jährlich 310 bis 365 Milliarden Dollar für Anpassung, 2023 standen ihnen aber nur 26 Milliarden Dollar zur Verfügung.\n\nAmnesty International verlangt von den Regierungen unter anderem ein Ende des Ausbaus fossiler Energien und deutlich mehr öffentliche Zuschüsse statt neuer Schulden. Die Organisation verweist darauf, dass Tuvalu weniger als 0,003 Prozent der weltweiten Treibhausgase verursacht, aber massiv betroffen ist.\n\n## Geringe Erwartungen\n\nDer Newsletter Climate Diplomacy Brief beschreibt die Erwartungen an das Treffen als niedrig. Zwar habe Australien viel Geld in die Veranstaltung gesteckt, doch kämen kaum tatsächliche Staats- und Regierungschefs nach Tuvalu. Substanzielle Ergebnisse vor COP31 seien deshalb unwahrscheinlich.\n\n## Einordnung\n\nFür Deutschland ist die Vorkonferenz vor allem ein Stimmungstest: Wie die Verhandlungen um Anpassungsfinanzierung ausgehen, entscheidet mit darüber, welche Beiträge von Industriestaaten wie Deutschland künftig erwartet werden. Die Pazifikstaaten setzen dabei auf Druck durch Sichtbarkeit, auch weil der August 2026 laut Amnesty zu den heißesten Monaten seit Beginn der Aufzeichnungen zählte und Europa von ausgedehnten Hitzewellen betroffen war.",
-          "source": "Premierminister Australiens",
-          "url": "https://www.pm.gov.au/media/pre-cop-leaders-event-fiji-and-tuvalu",
-          "sources": [
-            {
-              "name": "Premierminister Australiens",
-              "url": "https://www.pm.gov.au/media/pre-cop-leaders-event-fiji-and-tuvalu"
-            },
-            {
-              "name": "TRT World",
-              "url": "https://www.trtworld.com/article/1de20c217588"
-            },
-            {
-              "name": "Amnesty International",
-              "url": "https://www.amnesty.org/en/latest/news/2026/10/pre-cop31-pacific/"
-            },
-            {
-              "name": "Climate Diplomacy Brief",
-              "url": "https://climatediplobrief.substack.com/p/climate-diplomacy-brief-october-2026"
+              "name": "Berliner Zeitung",
+              "url": "https://www.berliner-zeitung.de/article/torgauer-schlosskapelle-und-papiermuehle-niederzwoenitz-bestehen-unesco-vorpruefung-10456616"
             }
           ],
           "publishedAt": "2026-10-05T00:00:00+02:00",
           "importance": 5,
-          "readingMinutes": 3,
-          "image": null
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/20080525125DR_Torgau_Schlo%C3%9F_Hartenfels_Schlo%C3%9Fkapelle.jpg/1280px-20080525125DR_Torgau_Schlo%C3%9F_Hartenfels_Schlo%C3%9Fkapelle.jpg",
+            "credit": "Jörg Blobelt",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:20080525125DR_Torgau_Schlo%C3%9F_Hartenfels_Schlo%C3%9Fkapelle.jpg",
+            "alt": "Schlosshof von Schloss Hartenfels in Torgau mit dem Flügel der Schlosskapelle"
+          },
+          "readingMinutes": 2
         },
         {
-          "id": "klima-karlsruhe-grossbatteriespeicher",
+          "id": "region-leipzig-kopfsteinpflaster-abfraesen",
           "tier": "more",
-          "headline": "Stadtwerke Karlsruhe nehmen Großbatteriespeicher in Betrieb",
-          "summary": "Am Heizkraftwerk West steht ein neuer Speicher mit 12 Megawatt Leistung und 28 Megawattstunden Kapazität. Er soll Schwankungen von Wind- und Solarstrom ausgleichen.",
-          "body": "Die Stadtwerke Karlsruhe haben auf dem Gelände ihres Heizkraftwerks West einen Großbatteriespeicher in Betrieb genommen. Die Anlage besteht aus sechs Batteriecontainern und hat nach Angaben des Unternehmens eine Leistung von rund 12 Megawatt bei einer Speicherkapazität von 28 Megawattstunden.\n\nDer Speicher nimmt überschüssigen Strom aus erneuerbaren Quellen auf, wenn viel Wind und Sonne zur Verfügung stehen, und gibt ihn bei hoher Nachfrage wieder ab. Zusätzlich soll er am Strommarkt gehandelt werden, um die Anlage wirtschaftlich zu betreiben. Investiert haben die Stadtwerke nach eigenen Angaben einen Betrag im hohen einstelligen Millionenbereich.\n\nStadtwerke-Chef Michael Homann nannte den Speicher einen wichtigen Meilenstein für die Energiewende vor Ort. Mit dem Ausbau erneuerbarer Energien in der Region brauche das Netz zusätzliche Flexibilität.\n\nDass Speicher dieser Größe an bestehenden Kraftwerksstandorten entstehen, ist eine verbreitete Lösung, weil dort Netzanschlüsse schon vorhanden sind. Für Sachsen ist das Beispiel relevant, weil auch hier mit wachsendem Solar- und Windanteil Kurzzeitspeicher gebraucht werden, um Preisspitzen und Netzengpässe abzufedern.",
-          "source": "meinKA",
-          "url": "https://meinka.de/grossbatteriespeicher",
+          "headline": "Leipzig will Kopfsteinpflaster abfräsen statt neu bauen",
+          "summary": "Der Stadtrat hat ein Pilotprojekt zum Abfräsen holpriger Pflasterstraßen beschlossen, aber nur unter Haushaltsvorbehalt.",
+          "body": "Die Stadt Leipzig soll prüfen, ob sich holprige Kopfsteinpflasterstraßen mit einem Präzisionsfräsverfahren abfräsen lassen, statt sie aufwendig neu zu bauen. Der Stadtrat hat einen entsprechend geänderten Antrag der SPD beschlossen, wie die Leipziger Zeitung berichtet. Der Oberbürgermeister soll demnach schlecht befahrbare Natursteinpflaster identifizieren und mit dem Verfahren behandeln. Vorbilder sind Brandenburg an der Havel, Berlin und Eichwalde.\n\nDie Befürworter nennen mehrere Vorteile: bessere Griffigkeit und mehr Komfort für alle Verkehrsteilnehmer, 4 bis 5 Dezibel weniger Fahrgeräusch, erhalten bleibende Wasserdurchlässigkeit der Fugen und mehr Sicherheit bei Nässe. Zudem könnte das Vorgehen günstiger sein als ein kompletter Umbau. SPD-Sprecher Marius Wittwer sagte laut Bericht, so ließen sich die Nachteile des Kopfsteinpflasters beseitigen und die historischen Oberflächen bewahren.\n\nKonkret wird es vorerst nicht. Das Pilotprojekt soll erst starten, wenn es die Haushaltslage erlaubt, Geld ist derzeit nicht vorhanden. Das Verkehrs- und Tiefbauamt erklärte, aktuell eigne sich keine Maßnahme aus dem Rahmenplan für das Verfahren. Grünen-Fraktionschefin Kristina Weyh regte an, die Technik in bestehende Straßensanierungsprogramme einzubauen, statt ein eigenes Pilotprojekt zu finanzieren.\n\nFür Leipzig mit seinen vielen Pflasterstraßen ist das ein Thema im Alltag: Radfahrende, Anwohner und Busse leiden unter rauen Oberflächen, während Denkmalschutz und Stadtbild für den Erhalt sprechen.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/politik/leipzig/2026/10/der-stadtrat-tagte-stadt-pilotprojekt-abfrasen-kopfsteinpflasterstrasse-672327",
           "sources": [
             {
-              "name": "meinKA",
-              "url": "https://meinka.de/grossbatteriespeicher"
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/politik/leipzig/2026/10/der-stadtrat-tagte-stadt-pilotprojekt-abfrasen-kopfsteinpflasterstrasse-672327"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 4,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "region-markkleeberg-wald-cospudener-see",
+          "tier": "more",
+          "headline": "Markkleeberg stimmt über Waldrodung für Parkplätze am Cossi ab",
+          "summary": "Für 220 Stellplätze am Zöbigker Hafen sollen 1,3 Hektar Wald weichen. Der Ökolöwe fordert vor der Abstimmung am Mittwoch ein Nein.",
+          "body": "In Markkleeberg wird am Mittwoch, dem 7. Oktober, im Stadtrat über einen Bebauungsplan am Cospudener See abgestimmt, der Wald kosten würde. Wie die Leipziger Zeitung berichtet, geht es um das Gebiet „An der Hafenstraße“ am Zöbigker Hafen. Dort sollen 1,3 Hektar Wald weichen, um 220 neue Parkplätze zu schaffen.\n\nDer Ökolöwe Umweltbund Leipzig fordert die Stadträte auf, den Plan abzulehnen. Geschäftsführer Tino Supplies sagte laut Mitteilung: „Die Stadt Markkleeberg will um jeden Preis lebendigen Wald platt machen.“ Der Verband kritisiert außerdem das Verfahren: Der Plan sei in nichtöffentlichen Sitzungen behandelt worden, die öffentlichen Unterlagen seien erst wenige Tage vor der Abstimmung verfügbar gewesen. Der Ökolöwe hat eine Online-Petition gestartet.\n\nDer See im Süden Leipzigs ist ein beliebtes Naherholungsziel, entsprechend umstritten sind Eingriffe in seine Umgebung. Die Position der Stadt Markkleeberg ging aus der geprüften Meldung nicht hervor, es handelt sich um die Darstellung des Umweltverbands. Das Ergebnis der Abstimmung am Mittwoch wird zeigen, ob der Plan so umgesetzt wird.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/melder/wortmelder/2026/10/oekoloewe-markkleeberger-stadtrat-muss-jetzt-den-wald-am-cossi-retten-672413",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/melder/wortmelder/2026/10/oekoloewe-markkleeberger-stadtrat-muss-jetzt-den-wald-am-cossi-retten-672413"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 4,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "region-leipzig-baeder-smart-glasses",
+          "tier": "more",
+          "headline": "Leipziger Bäder verbieten Smart Glasses ausdrücklich",
+          "summary": "Der Stadtrat hat einstimmig beschlossen, Kamerabrillen namentlich in die Hausordnungen der Schwimmhallen aufzunehmen.",
+          "body": "Leipzigs Schwimmhallen sollen Smart Glasses ausdrücklich verbieten. Der Stadtrat hat laut Leipziger Zeitung einstimmig beschlossen, dass die Brillen mit Kamera künftig namentlich in den Hausordnungen der Bäder genannt werden, neben den bestehenden Foto- und Videoverboten.\n\nHintergrund ist ein Antrag der Grünen-Fraktion. Sie verweist auf Fälle, in denen Männer mit Kamerabrillen heimlich Frauen filmen und die Aufnahmen in sozialen Netzwerken verbreiten. Genannt wurden im Stadtrat Voyeurvideos vom Oktoberfest sowie der Fall einer Frau, die auf der Straße gefilmt wurde und deren Video später ohne ihre Zustimmung im Netz auftauchte.\n\nDie Stadtverwaltung erklärte, Smart Glasses seien bereits durch die bisherigen Fotoverbote mit erfasst. Schon im Juni sei das Personal der Bäder intern angewiesen worden, wie es mit solchen Brillen umgehen soll. Künftig sollen sie zusätzlich ausdrücklich in der Hausordnung stehen. Die Grünen akzeptierten diese Zusage, der Stadtrat folgte der Verwaltungsvorlage einstimmig.\n\nFür Badegäste bedeutet das vor allem Klarheit: Das Personal kann sich künftig auf eine eindeutige Regel berufen, wenn jemand mit Kamerabrille im Bad angetroffen wird.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/leben/gesellschaft/2026/10/der-stadtrat-tagte-sportbaeder-sind-fuer-heimliche-aufnahmen-sensibilisiert-672355",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/leben/gesellschaft/2026/10/der-stadtrat-tagte-sportbaeder-sind-fuer-heimliche-aufnahmen-sensibilisiert-672355"
             }
           ],
           "publishedAt": "2026-10-05T00:00:00+02:00",
           "importance": 3,
+          "image": null,
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "gesundheit",
+      "title": "Gesundheit",
+      "emoji": "🩺",
+      "items": [
+        {
+          "id": "gesundheit-bundestag-nipt-abstimmung",
+          "tier": "top",
+          "headline": "Bundestag stimmt Donnerstag über Bluttest NIPT als Kassenleistung ab",
+          "summary": "Am 8. Oktober entscheidet der Bundestag namentlich über einen Gruppenantrag zum Pränataltest NIPT: Die Folgen der Kassenzulassung sollen beobachtet und von einem Expertengremium geprüft werden.",
+          "body": "Der Bundestag stimmt am Donnerstag, 8. Oktober, über einen fraktionsübergreifenden Gruppenantrag zum nicht-invasiven Pränataltest ab, kurz NIPT. Nach Angaben des Fachportals MedLabPortal ist die Abstimmung ein Schwerpunkt der gesundheitspolitischen Woche. Der Antrag fordert kein Verbot des Tests, sondern ein Monitoring seiner Folgen und ein Expertengremium.\n\n## Was der Antrag verlangt\n\nDer Antrag trägt die Drucksachennummer 21/3873. Er sieht vor, die Umsetzung und die Konsequenzen der Kassenzulassung systematisch zu beobachten. Die Ergebnisse sollen dem Parlament bis zum 30. Juni 2027 vorliegen. Zusätzlich soll ein interdisziplinäres Gremium die rechtlichen, ethischen und gesundheitspolitischen Grundlagen der Kassenfinanzierung prüfen. Unterstützt wird der Antrag laut Bundestag von Abgeordneten mehrerer Fraktionen, darunter CDU, CSU, SPD, Grüne und Linke.\n\nDer Test untersucht Blut der Schwangeren auf Hinweise auf Trisomien beim ungeborenen Kind. Auf Grundlage eines Beschlusses des Gemeinsamen Bundesausschusses zahlen die gesetzlichen Kassen ihn seit Juli 2022, wenn Schwangere und Frauenärztin oder Frauenarzt ihn im Einzelfall für nötig halten.\n\n## Warum die Nutzung Sorgen auslöst\n\nIn der Bundestagsdebatte im März verwiesen die Antragsteller auf Zahlen der Krankenkasse Barmer. Demnach nutzten 2024 knapp 50 Prozent der Schwangeren den Test, ein Jahr zuvor waren es 32 Prozent. Im Antrag heißt es, der Test sei in der Praxis zu einem Screening geworden. Entgegen den Erwartungen sei die Zahl der invasiven Untersuchungen nicht gesunken, sondern gestiegen. Auch seien falsch-positive Befunde viermal so häufig wie theoretisch angenommen.\n\nIn der Aussprache standen sich mehrere Anliegen gegenüber: die Selbstbestimmung und der Zugang zu Informationen, die Sorge vor Diskriminierung von Menschen mit Behinderung, die Unsicherheit der Ergebnisse, die nur eine Wahrscheinlichkeit und keine Diagnose liefern, sowie der gleiche Zugang unabhängig vom Einkommen. Bundestagsvizepräsident Bodo Ramelow nannte solche fraktionsübergreifenden ethischen Debatten im Parlament außerordentlich selten.\n\n## Einordnung\n\nBei Gruppenanträgen gibt es keinen Fraktionszwang; die Abgeordneten entscheiden nach ihrem Gewissen. Die Abstimmung ist namentlich, jede Stimme wird also einzeln dokumentiert. Für Schwangere in Sachsen und im Rest Deutschlands ändert sich durch den Beschluss zunächst nichts an der Kostenübernahme. Es geht darum, bessere Daten zu gewinnen und die Grundsatzfrage neu aufzuwerfen. Nach MedLabPortal folgt in der Woche darauf am 15. Oktober die nächste öffentliche Sitzung des G-BA.",
+          "source": "Deutscher Bundestag",
+          "url": "https://www.bundestag.de/dokumente/textarchiv/2026/kw26-de-praenataltests-1184324",
+          "sources": [
+            {
+              "name": "Deutscher Bundestag",
+              "url": "https://www.bundestag.de/dokumente/textarchiv/2026/kw26-de-praenataltests-1184324"
+            },
+            {
+              "name": "MedLabPortal",
+              "url": "https://medlabportal.de/gesundheitspolitische-vorschau-ab-montag-5-oktober-2026/"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 6,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Berlin-Reichstag-Plenarsaal_des_Bundestags-06-2022-gje.jpg/1280px-Berlin-Reichstag-Plenarsaal_des_Bundestags-06-2022-gje.jpg",
+            "credit": "Gerd Eichmann",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Berlin-Reichstag-Plenarsaal_des_Bundestags-06-2022-gje.jpg",
+            "alt": "Plenarsaal des Bundestags im Berliner Reichstag"
+          }
+        },
+        {
+          "id": "gesundheit-glp1-aspiration-narkose",
+          "tier": "more",
+          "headline": "GLP-1-Mittel erhöhen Aspirationsrisiko bei Vollnarkose deutlich",
+          "summary": "Eine in „Anaesthesia“ veröffentlichte Analyse zeigt bei Patienten unter GLP-1-Rezeptoragonisten ein etwa elffach erhöhtes Risiko für Reflux oder Aspiration von Mageninhalt in Narkose.",
+          "body": "Wer Wirkstoffe wie Semaglutid oder Tirzepatid nimmt, hat bei einer Vollnarkose ein deutlich höheres Risiko, dass Mageninhalt zurückfließt oder in die Atemwege gelangt. Das berichtet das Deutsche Ärzteblatt unter Verweis auf eine am 5. Oktober im Fachjournal „Anaesthesia“ veröffentlichte Arbeit. Das Risiko für Reflux oder Aspiration war demnach um das Elffache erhöht.\n\nDas Ärzteblatt betont, dass das absolute Risiko insgesamt niedrig bleibt. Die Zahl bezieht sich also auf einen relativen Vergleich mit Patienten, die diese Medikamente nicht einnehmen. Der Artikel ist nur mit Anmeldung vollständig lesbar; Angaben zu Studiendesign und Fallzahlen konnten deshalb nicht geprüft werden.\n\nHintergrund ist die Wirkweise der Substanzen. GLP-1-Rezeptoragonisten verzögern die Magenentleerung. Das hilft beim Sättigungsgefühl und damit bei Diabetes und Adipositas, kann aber bedeuten, dass der Magen trotz Nüchternheit nicht leer ist. Bei Narkosen, in denen Schutzreflexe ausgeschaltet sind, steigt dadurch die Gefahr, dass Mageninhalt in die Lunge gelangt. Ähnliche Überlegungen gibt es laut Ärzteblatt bereits für Magenspiegelungen, vor denen erwogen wird, die Mittel zu pausieren.\n\nDa die Präparate in Industrieländern zunehmend verordnet werden, betrifft die Frage immer mehr Menschen vor Operationen. Patientinnen und Patienten sollten Therapien nicht eigenmächtig absetzen, sondern vor einem Eingriff das Narkoseteam über die Einnahme informieren und das Vorgehen besprechen.",
+          "source": "Deutsches Ärzteblatt",
+          "url": "https://www.aerzteblatt.de/news/glp-1-ra-erhohtes-risiko-fur-aspiration-von-mageninhalt-unter-vollnarkose-218d0ba8-94c5-4f0d-9728-402f6cbebeca",
+          "sources": [
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/glp-1-ra-erhohtes-risiko-fur-aspiration-von-mageninhalt-unter-vollnarkose-218d0ba8-94c5-4f0d-9728-402f6cbebeca"
+            }
+          ],
+          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "importance": 5,
           "readingMinutes": 1,
           "image": null
         }
@@ -504,69 +454,83 @@
       "emoji": "🎮",
       "items": [
         {
-          "id": "entertainment-verity-schlaegt-digger-kinokasse",
+          "id": "entertainment-gears-of-war-e-day-startet",
           "tier": "top",
-          "headline": "„Verity“ siegt an der US-Kinokasse, „Digger“ floppt",
-          "summary": "Der Thriller mit Anne Hathaway startet mit 32,6 Millionen Dollar. Tom Cruises „Digger“ spielt nur 8 Millionen ein und gilt als teurer Fehlstart.",
-          "body": "Der Kinostart-Freitag brachte eine klare Rangfolge: „Verity“, die Verfilmung eines Romans von Colleen Hoover, hat das Wochenende vom 2. bis 4. Oktober in den USA mit 32,6 Millionen Dollar angeführt. Tom Cruises neuer Film „Digger“ landete mit 8 Millionen Dollar nur auf Platz fünf und gilt als teure Enttäuschung.\n\n„Verity“ ist ein Psychothriller von Regisseur Michael Showalter mit Anne Hathaway, Dakota Johnson und Josh Hartnett. Der Film kam nach Angaben von Rotten Tomatoes auf eine weltweite Summe von mehr als 62 Millionen Dollar und kostete rund 40 Millionen Dollar. Er lag in den USA etwa 20 Millionen Dollar vor dem Zweitplatzierten, dem Horrorfilm „Resident Evil“, der in seiner dritten Woche 12,5 Millionen Dollar einspielte. Das Publikum nahm den Film an, obwohl die Kritik zurückhaltend blieb: Die Tomatometer-Wertung liegt bei 34 Prozent.\n\n## „Digger“ bleibt weit hinter den Erwartungen\n\nDie Satire „Digger“ ist die erste Zusammenarbeit von Cruise mit dem Regisseur Alejandro González Iñárritu. Mit 8 Millionen Dollar ist es laut Berichten der schwächste Start Cruises als Hauptdarsteller seit „Rain Man“ im Jahr 1988. Nach Angaben des Branchendiensts Gold Derby kamen international 12 Millionen Dollar aus 73 Märkten hinzu, weltweit also etwa 20 Millionen Dollar. Das Budget wuchs Berichten zufolge von ursprünglich 125 Millionen auf 140 bis 180 Millionen Dollar. Auf Rotten Tomatoes steht der Film bei 51 Prozent.\n\n## Weitere Platzierungen\n\nAuf Rang drei folgte „Heart of the Beast“ mit 11,0 Millionen Dollar, danach „Primetime“ mit etwa 8,0 Millionen Dollar. Die Wiederaufführung von „Avengers: Endgame“ rutschte vom ersten auf den siebten Platz ab und erzielte 4,4 Millionen Dollar. „The Odyssey“ verließ nach zwölf Wochen die Top Ten; der Film hat bis dahin 620,5 Millionen Dollar eingenommen.\n\n## Einordnung\n\nDie Zahlen gelten für den US-Markt, hiesige Starttermine und Ergebnisse können abweichen. Sie zeigen aber, wie schwer es teure Originalstoffe selbst mit großem Star haben, während günstig produzierte Buchverfilmungen mit treuem Publikum zuverlässig Gewinn bringen. Ob „Digger“ im Verlauf noch aufholt, wird sich erst in den kommenden Wochen zeigen; für einen Kassenerfolg fehlt nach Einschätzung von Branchenbeobachtern ein deutlich stärkerer Start.",
-          "source": "Rotten Tomatoes",
-          "url": "https://editorial.rottentomatoes.com/article/weekend-box-office-verity-week-1/",
+          "headline": "„Gears of War: E-Day“ startet mit starken Wertungen",
+          "summary": "Der Prequel-Shooter erscheint heute für Xbox Series X|S und PC, Metacritic-Schnitt 88. Er bleibt Xbox-Konsolenexklusiv und ist am ersten Tag im Game Pass.",
+          "body": "„Gears of War: E-Day“ erscheint heute offiziell für Xbox Series X|S und PC. Der Prequel-Shooter des Studios The Coalition startet mit starken Wertungen: Der Metacritic-Schnitt der Kampagnenreviews liegt laut Pure Xbox bei 88. Für Xbox ist der Titel ein wichtiger Test, denn er bleibt eine reine Xbox-Konsolenexklusivität.\n\nSpielerinnen und Spieler mit Game Pass Ultimate oder PC Game Pass können ab dem 6. Oktober ohne Zusatzkosten einsteigen. Wer die Premium Edition vorbestellt hatte, durfte bereits seit dem 2. Oktober spielen. Das Spiel entstand bei The Coalition gemeinsam mit People Can Fly und läuft auf der Unreal Engine 5.\n\n## Kritiken überwiegend glänzend\n\nDie Handlung setzt am „Emergence Day“ an, dem Tag, an dem die Locust-Horde aus dem Untergrund hervorbricht. Laut Gaming Trend spielt das Prequel vierzehn Jahre vor dem ersten „Gears of War“ und erzählt, wie die Freundschaft zwischen Marcus Fenix und Dominic Santiago beginnt.\n\nIn der Wertungsrunde von Pure Xbox vergibt das eigene Team ebenso wie Day One und The Outhaven die Höchstnote 10 von 10. IGN gibt 9 von 10, VGC und GAMINGbible je 8 von 10. Eine Ausnahme ist The Guardian mit 6 von 10. Als Schwäche nennen mehrere Kritiker, dass die Geschichte hinter der Action zurücksteht und die Beziehung der beiden Hauptfiguren weniger Raum bekommt als erwartet. Auf Xbox Series X|S und PC steht der Metascore nach Angaben von Gameranx vom 2. Oktober jeweils bei 86, basierend auf 54 beziehungsweise 27 Rezensionen.\n\n## Frühstart auf Steam und strategische Bedeutung\n\nAuch die Spielerzahlen sind ein erstes Signal: Beim Frühzugang erreichte das Spiel laut Gameranx binnen 24 Stunden einen Spitzenwert von 20.374 gleichzeitigen Steam-Spielern, gemessen von SteamDB. Das Portal wertet das als gutes Zeichen für die Verkaufschancen auf der Konsole.\n\nDie Exklusivität ist bemerkenswert, weil Microsoft in den vergangenen Jahren viele eigene Marken auch auf anderen Plattformen veröffentlicht hatte. Pure Xbox spricht von einer Rückkehr zu echten Plattformexklusivtiteln, die in der Community kontrovers diskutiert wurde. Für PlayStation-Besitzer bleibt „E-Day“ damit außen vor, ebenso für die Switch 2.\n\nFür Spielerinnen und Spieler in Deutschland heißt das: Wer eine Xbox oder einen Gaming-PC besitzt, kann den Titel über das Abo ohne Einzelkauf ausprobieren. Der Start fällt in einen Oktober, den Branchenmedien als ungewöhnlich dicht mit Neuerscheinungen beschreiben, weil viele Publisher dem im November erwarteten „Grand Theft Auto 6“ ausweichen. Zugleich war das Studio laut Insider Gaming zuletzt von Entlassungen betroffen, was den Erfolg des Spiels für die Zukunft der Reihe noch wichtiger macht.",
+          "source": "Pure Xbox",
+          "url": "https://www.purexbox.com/news/2026/10/roundup-heres-what-the-critics-have-to-say-about-gears-of-war-e-day",
           "sources": [
             {
-              "name": "Rotten Tomatoes",
-              "url": "https://editorial.rottentomatoes.com/article/weekend-box-office-verity-week-1/"
+              "name": "Pure Xbox",
+              "url": "https://www.purexbox.com/news/2026/10/roundup-heres-what-the-critics-have-to-say-about-gears-of-war-e-day"
             },
             {
-              "name": "Cinemanerdz",
-              "url": "https://cinemanerdz.com/box-office-weekend-verity-does-very-well/"
-            }
-          ],
-          "publishedAt": "2026-10-05T00:00:00+02:00",
-          "importance": 4,
-          "readingMinutes": 2,
-          "image": null
-        },
-        {
-          "id": "entertainment-arc-raiders-finals-adaption",
-          "tier": "more",
-          "headline": "Arc Raiders und The Finals bekommen Film- und Serienadaptionen",
-          "summary": "Chernin Entertainment produziert Adaptionen der Embark-Shooter. Ob Serie oder Kino, ist noch offen.",
-          "body": "Die Shooter „Arc Raiders“ und „The Finals“ vom schwedischen Studio Embark sollen als Serien und Filme adaptiert werden. Als federführende Produktionsfirma wurde Chernin Entertainment ausgewählt, wie Branchenmedien am 5. Oktober berichteten.\n\nChernin Entertainment gehört zur North Road Company und setzte sich laut den Berichten gegen mehrere Studios und Produktionsfirmen durch, die um die Rechte konkurrierten. Embark gehört zum Konzern Nexon. Zuerst hatte Variety über den Deal berichtet.\n\nOffen ist bislang, welches Projekt als Serie und welches als Kinofilm umgesetzt wird oder ob beide Spiele in beiden Formaten erscheinen. Auch Besetzung, Regie und Starttermine sind nicht bekannt. Zu den früheren Arbeiten von Chernin zählen die Netflix-Trilogie „Fear Street“ sowie die Mitproduktion von „Backrooms“.\n\n„Arc Raiders“ ist ein Third-Person-Extraction-Shooter, in dem Spielende gegen feindliche Roboter und andere Menschen um Beute kämpfen und sich dann in Sicherheit bringen müssen. Das Spiel erschien 2025, wurde laut Game Developer bei den Game Awards 2025 als bestes Multiplayer-Spiel ausgezeichnet und hat weltweit 14 Millionen Mal verkauft. „The Finals“ ist ein kostenloser Ego-Shooter mit zerstörbaren Umgebungen im Setting einer Spielshow und erschien 2023.\n\nFür Fans in Deutschland bedeutet die Ankündigung zunächst nur eine Absichtserklärung: Bis zu konkreten Produktionen vergeht erfahrungsgemäß viel Zeit, und viele Spieleadaptionen kommen nie über diese Phase hinaus. Sie zeigt aber, wie stark Hollywood derzeit auf Spielemarken setzt.",
-          "source": "Game Developer",
-          "url": "https://www.gamedeveloper.com/business/arc-raiders-and-the-finals-set-for-tv-and-film-adaptations-from-backrooms-co-producer",
-          "sources": [
-            {
-              "name": "Game Developer",
-              "url": "https://www.gamedeveloper.com/business/arc-raiders-and-the-finals-set-for-tv-and-film-adaptations-from-backrooms-co-producer"
+              "name": "Gameranx",
+              "url": "https://gameranx.com/updates/id/564269/article/gears-of-war-e-day-has-successful-start-in-metacritic-steam-early-access/"
             },
             {
-              "name": "Shacknews",
-              "url": "https://www.shacknews.com/article/150911/arc-raiders-the-finals-movie-tv-adaptations"
+              "name": "Gaming Trend",
+              "url": "https://gamingtrend.com/news/gear-of-war-e-day-is-a-full-xboxconsole-exclusive-launches-in-october/"
+            },
+            {
+              "name": "Insider Gaming",
+              "url": "https://insider-gaming.com/gears-of-war-e-day-review-embargo/"
             }
           ],
-          "publishedAt": "2026-10-05T00:00:00+02:00",
-          "importance": 3,
-          "readingMinutes": 1,
-          "image": null
+          "publishedAt": "2026-10-06T00:00:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Xbox_Series_X%E3%81%A8Series_S.jpg/1280px-Xbox_Series_X%E3%81%A8Series_S.jpg",
+            "credit": "Kyu3a",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Xbox_Series_X%E3%81%A8Series_S.jpg",
+            "alt": "Xbox Series X und Xbox Series S nebeneinander in einem Elektronikmarkt"
+          },
+          "readingMinutes": 2
         },
         {
-          "id": "entertainment-ps-plus-oktober-2026",
-          "tier": "more",
-          "headline": "PS Plus im Oktober: F1 25 und Hunt: Showdown 1896",
-          "summary": "Ab 6. Oktober gibt es drei Spiele für alle Mitglieder. Die Extra- und Premium-Titel folgen am 14. Oktober.",
-          "body": "Sony hat die PS-Plus-Spiele für Oktober bestätigt. Ab Dienstag, 6. Oktober, können alle Mitglieder drei Titel kostenlos zu ihrer Bibliothek hinzufügen: F1 25, Hunt: Showdown 1896 und Earth Defense Force: World Brothers 2.\n\nDie Spiele gehören zur Essential-Stufe, sind also ohne Aufpreis für alle Abonnenten verfügbar. F1 25 und Hunt: Showdown 1896 gibt es für die PS5, Earth Defense Force: World Brothers 2 für PS4 und PS5. Wer die Spiele aus dem September noch mitnehmen will, hat dafür laut NME nur bis zum 5. Oktober Zeit, also bis heute.\n\nDie Titel für die höheren Stufen Extra und Premium will Sony am 14. Oktober vorstellen. Das Medium NME nennt zudem Preise nach einer Erhöhung, allerdings in britischen Pfund: Essential kostet demnach 7,99 Pfund im Monat, Extra 11,99 Pfund und Premium 14,99 Pfund. Für Deutschland nennt der Artikel keine Beträge.\n\nWer PS-Plus-Spiele nutzt, sollte die Angebote rechtzeitig sichern: Sie bleiben nur so lange im Konto spielbar, wie das Abonnement läuft, und die Frist für den Vormonat endet jetzt.",
-          "source": "NME",
-          "url": "https://www.nme.com/news/gaming-news/ps-plus-games-october-2026-premium-extra-essential-3971968",
+          "id": "entertainment-star-wars-galactic-racer-erscheint",
+          "tier": "top",
+          "headline": "„Star Wars: Galactic Racer“ erscheint mit Top-Wertungen",
+          "summary": "Das Roguelite-Rennspiel von Fuse Games startet heute und kommt auf Metacritic auf 88. Es gehört laut Pure Xbox zu den besten Spielen des Jahres.",
+          "body": "Mit „Star Wars: Galactic Racer“ erscheint heute ein Rennspiel des britischen Studios Fuse Games. Die Kritiken sind überwiegend sehr gut, der Metacritic-Wert liegt laut Pure Xbox bei 88. Das Spiel macht aus dem Podrennen-Motiv einen Roguelite-Rennspielmix.\n\n## Roguelite im Outer Rim\n\nVeröffentlicht wird der Titel von Secret Mode, unter anderem für Xbox Series X|S. Nach Angaben von Xbox Wire spielt das Spiel im Outer Rim, wo die inoffizielle Galactic League Rennen auf mehreren Welten austrägt. Die Kampagne folgt einem Rennfahrer namens Shade, der sich an seinem Rivalen Kestar Bool rächen will.\n\nGespielt wird in Durchläufen: Die Kampagne besteht aus zufällig zusammengesetzten Galactic Tours in drei Akten über sechs Planeten. Zwischen den Rennen lassen sich Afterburner, Batterie, Kurvenverhalten und Ramjet verbessern. Verliert man den Ligazugang, den sogenannten League Entry Token, muss man erneut Qualifikationsrennen bestehen. Hinzu kommen drei Fahrzeugklassen mit unterschiedlicher Physik: Landspeeder mit Drift-Fokus, Speederbikes mit hohem Tempo und wendige Skim-Speeder. Neben der Kampagne gibt es Arcade- und Mehrspielermodi.\n\n## Wertungen\n\nPure Xbox listet mehrere Spitzenwertungen: Giant Bomb vergibt 10 von 10, Push Square und GameSpot je 9 von 10, Game Informer 8,5 von 10, IGN 8 von 10 und GamesRadar 4 von 5 Sternen. Laut Pure Xbox gehört das Spiel damit zu den 25 bestbewerteten Titeln des Jahres 2026 auf Metacritic. Game Informer schreibt, das Spiel sei auch unabhängig von der Lizenz ein starkes Rennspiel.\n\n## Einordnung\n\nFür das Studio ist es die erste eigene Veröffentlichung, wie Pure Xbox schreibt. Das Spiel ist einer von mehreren großen Starts am 6. Oktober, an dem auch „Gears of War: E-Day“ erscheint. Für Spielerinnen und Spieler in Deutschland ist der Titel interessant, weil ein Lizenzspiel nach dem schwierigen Ruf vieler Star-Wars-Games ungewöhnlich gut abschneidet. Ob sich der Erfolg bei den Spielerzahlen niederschlägt, ist noch offen, denn Zahlen zu den ersten Verkäufen liegen bislang nicht vor.",
+          "source": "Pure Xbox",
+          "url": "https://www.purexbox.com/news/2026/10/star-wars-galactic-racer-is-getting-some-phenomenal-review-scores-ahead-of-launch",
           "sources": [
             {
-              "name": "NME",
-              "url": "https://www.nme.com/news/gaming-news/ps-plus-games-october-2026-premium-extra-essential-3971968"
+              "name": "Pure Xbox",
+              "url": "https://www.purexbox.com/news/2026/10/star-wars-galactic-racer-is-getting-some-phenomenal-review-scores-ahead-of-launch"
+            },
+            {
+              "name": "Xbox Wire",
+              "url": "https://news.xbox.com/en-us/2026/06/23/star-wars-galactic-racer-turns-podracing-into-roguelite/"
             }
           ],
-          "publishedAt": "2026-10-05T00:00:00+02:00",
+          "publishedAt": "2026-10-06T00:00:00+02:00",
+          "importance": 5,
+          "image": null,
+          "readingMinutes": 2
+        },
+        {
+          "id": "entertainment-epic-mickey-rebrushed-switch-2",
+          "tier": "more",
+          "headline": "Epic Mickey: Rebrushed erscheint für die Switch 2",
+          "summary": "Das Remake des Disney-Plattformers kommt heute auf Nintendos neue Konsole, mit höherer Auflösung, besserer Bildrate und Maussteuerung.",
+          "body": "Disney Epic Mickey: Rebrushed erscheint heute für die Nintendo Switch 2. Das Remake des Plattformers von 2010 kam laut Nintendo Life ursprünglich am 24. September 2024 für PlayStation, Xbox, Switch und PC heraus.\n\nMickey Maus zieht darin mit einem magischen Pinsel durch die Wasteland, eine Welt vergessener Disney-Figuren. Mit Farbe und Verdünner formt man die Umgebung und beeinflusst den Verlauf der Geschichte.\n\nDie Switch-2-Fassung bietet nach Angaben des Portals höhere Auflösung und eine bessere Bildrate. Dazu kommen mausähnliche Steuerung mit den Joy-Con-2-Controllern und das Kostümpaket als DLC.\n\nFür Besitzer der neuen Nintendo-Konsole in Deutschland ist das eine weitere Familienoption im ohnehin vollen Oktober-Veröffentlichungsplan. Zu Preis und Verkaufszahlen lagen in den geprüften Quellen keine Angaben vor, daher bleibt offen, wie stark die Nachfrage ausfällt. Wer das Spiel bereits auf einer anderen Plattform besitzt, erhält durch die Switch-2-Version vor allem technische Verbesserungen, nicht neue Inhalte, soweit bekannt.",
+          "source": "Nintendo Life",
+          "url": "https://www.nintendolife.com/games/nintendo-switch-2/disney-epic-mickey-rebrushed",
+          "sources": [
+            {
+              "name": "Nintendo Life",
+              "url": "https://www.nintendolife.com/games/nintendo-switch-2/disney-epic-mickey-rebrushed"
+            }
+          ],
+          "publishedAt": "2026-10-06T00:00:00+02:00",
           "importance": 3,
-          "readingMinutes": 1,
-          "image": null
+          "image": null,
+          "readingMinutes": 1
         }
       ]
     }
