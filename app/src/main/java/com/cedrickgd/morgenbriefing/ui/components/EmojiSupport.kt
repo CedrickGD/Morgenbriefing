@@ -14,11 +14,18 @@ import java.util.concurrent.ConcurrentHashMap
 object EmojiSupport {
     private const val TAG = "EmojiSupport"
 
-    /** Close relatives, best first. Only used when the original has no glyph. */
+    /**
+     * Close relatives, best first. Only used when the original has no glyph. Clothing chips
+     * that appear side by side must stay apart: on Android 7, whose emoji font lacks 🧥, 🧶 and
+     * 🩳, a jacket shows 🥋, a pullover 👚, shorts 👖 and the T-shirt stays 👕.
+     */
     private val fallbacks: Map<String, List<String>> = mapOf(
-        "🧥" to listOf("🧣", "👕"),
-        // Emoji 11–12 (Android 9–10): knitting, lotion, ice, puzzle piece.
-        "🧶" to listOf("👕"),
+        // Coat and jacket (Emoji 5, Android 8): the grey wrap jacket of 🥋 (Unicode 9, in the
+        // Android 7 font) still reads as a jacket; 👔 for fonts older than that. A scarf would be
+        // wrong for "leichte Jacke" and "Regenjacke", a T-shirt is the pullover's last resort.
+        "🧥" to listOf("🥋", "👔"),
+        // Emoji 11–12 (Android 9–10): knitting (the pullover), lotion, ice, puzzle piece.
+        "🧶" to listOf("👚", "👕"),
         "🧴" to listOf("☀️"),
         "🧊" to listOf("❄️", "⚠️"),
         "🧩" to listOf("⚠️"),
@@ -28,7 +35,7 @@ object EmojiSupport {
         // Scarf and gloves only come up in the cold: a snowflake beats a T-shirt (Android 7).
         "🧤" to listOf("🧣", "❄️"),
         "🧣" to listOf("❄️", "👕"),
-        "🩳" to listOf("👕"),
+        "🩳" to listOf("👖", "👕"),
         "🥾" to listOf("👟"),
         "🫧" to listOf("💧"),
         "🪁" to listOf("🌬️"),
@@ -55,9 +62,12 @@ object EmojiSupport {
         if (acc.contains(emoji)) acc.replace(emoji, display(emoji)) else acc
     }
 
-    private fun resolve(emoji: String): String {
+    private fun resolve(emoji: String): String = pick(emoji, ::canDraw)
+
+    /** [emoji] if [canDraw], else its first drawable relative, else [emoji] itself. */
+    internal fun pick(emoji: String, canDraw: (String) -> Boolean): String {
         if (canDraw(emoji)) return emoji
-        return fallbacks[emoji]?.firstOrNull(::canDraw) ?: emoji
+        return fallbacks[emoji]?.firstOrNull(canDraw) ?: emoji
     }
 
     private fun canDraw(emoji: String): Boolean = try {
