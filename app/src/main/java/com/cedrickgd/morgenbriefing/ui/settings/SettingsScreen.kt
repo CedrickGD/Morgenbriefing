@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -272,11 +273,19 @@ fun SettingsScreen(
     val current = settings
     val keys = if (current == null) listOf(Block.TITLE, Block.LOADING) else Block.ALL
 
+    // After process death the saved position points into the real blocks, and measuring the two
+    // loading items first would clamp it to their end: until the settings are known, the list
+    // runs on a state of its own and the saved one is attached with the real blocks.
+    val loadingListState = remember { LazyListState() }
+
     Box(modifier.fillMaxSize()) {
         LazyColumn(
-            state = listState,
+            state = if (current == null) loadingListState else listState,
             modifier = Modifier
                 .fillMaxSize()
+                // Edge-to-edge, the window no longer shrinks for the keyboard: the list does, so
+                // a focused field (the e-mail address) is scrolled into view above it.
+                .imePadding()
                 .reportChromeScroll()
                 // The floating glass above (bar, indicator, player) blurs this content.
                 .glassContent()
