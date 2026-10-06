@@ -12,6 +12,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -72,6 +74,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -86,6 +89,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
 import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
 import com.cedrickgd.morgenbriefing.ui.glass.LocalGlassState
@@ -411,6 +415,9 @@ internal fun GlassDialog(
     ) {
         val blurred = rememberWindowBlurBehind()
         val dark = isGlassDark()
+        // Behind a blurred window the light page stays light (dim 0.16): dark bar icons there.
+        // Otherwise the dim darkens the page and the default white icons stay readable.
+        FullScreenDialogWindow(lightBars = blurred && !dark)
         val colors = MaterialTheme.colorScheme
         val shape = GlassShapes.card
         val fill = if (dark) {
@@ -424,57 +431,74 @@ internal fun GlassDialog(
         val fadeColor = if (dark) colors.surfaceContainer else colors.surface
         val sheen = Color.White.copy(alpha = if (dark) 0.06f else 0.5f)
         CompositionLocalProvider(LocalGlassState provides null, LocalContentColor provides colors.onSurface) {
-            Column(
-                modifier = modifier
-                    .safeDrawingPadding()
-                    .padding(horizontal = 20.dp, vertical = 24.dp)
-                    .widthIn(max = 520.dp)
-                    .fillMaxWidth()
-                    .clip(shape)
-                    .background(fill)
-                    .drawBehind {
-                        drawRect(Brush.verticalGradient(0f to sheen, (28.dp.toPx() / size.height).coerceIn(0.01f, 1f) to Color.Transparent))
-                    }
-                    .border(1.dp, glassEdgeBrush(), shape)
-                    .padding(top = 24.dp, bottom = 12.dp),
+            // The window covers the whole screen, so a tap beside the pane is no longer "outside"
+            // for the platform: the pane is centred here and such a tap closes it.
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(
+                        if (dismissOnClickOutside) {
+                            Modifier.pointerInput(onDismissRequest) { detectTapGestures { onDismissRequest() } }
+                        } else {
+                            Modifier
+                        },
+                    ),
+                contentAlignment = Alignment.Center,
             ) {
-                if (icon != null) {
-                    IconBadge(icon, Modifier.padding(start = 24.dp, bottom = 14.dp), size = 44.dp)
-                }
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier
-                        .padding(horizontal = 24.dp)
-                        .semantics { heading() },
-                )
-                Box(Modifier.weight(1f, fill = false)) {
-                    Column(
-                        modifier = Modifier
-                            .verticalScroll(scroll)
-                            .padding(horizontal = 24.dp)
-                            .padding(top = 12.dp, bottom = 8.dp),
-                        content = content,
-                    )
-                    // Text scrolling up under the fixed title fades out instead of being cut in half
-                    // (e.g. when the keyboard pushes the dialog up).
-                    Box(
-                        Modifier
-                            .align(Alignment.TopCenter)
-                            .fillMaxWidth()
-                            .height(14.dp)
-                            .graphicsLayer { alpha = (scroll.value / 24f).coerceIn(0f, 1f) }
-                            .background(Brush.verticalGradient(listOf(fadeColor, fadeColor.copy(alpha = 0f)))),
-                    )
-                }
-                Row(
-                    modifier = Modifier
+                Column(
+                    modifier = modifier
+                        .safeDrawingPadding()
+                        .padding(horizontal = 20.dp, vertical = 24.dp)
+                        .widthIn(max = 520.dp)
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                    content = buttons,
-                )
+                        .clip(shape)
+                        // Taps on the pane itself never count as "beside" it.
+                        .pointerInput(Unit) { detectTapGestures { } }
+                        .background(fill)
+                        .drawBehind {
+                            drawRect(Brush.verticalGradient(0f to sheen, (28.dp.toPx() / size.height).coerceIn(0.01f, 1f) to Color.Transparent))
+                        }
+                        .border(1.dp, glassEdgeBrush(), shape)
+                        .padding(top = 24.dp, bottom = 12.dp),
+                ) {
+                    if (icon != null) {
+                        IconBadge(icon, Modifier.padding(start = 24.dp, bottom = 14.dp), size = 44.dp)
+                    }
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier
+                            .padding(horizontal = 24.dp)
+                            .semantics { heading() },
+                    )
+                    Box(Modifier.weight(1f, fill = false)) {
+                        Column(
+                            modifier = Modifier
+                                .verticalScroll(scroll)
+                                .padding(horizontal = 24.dp)
+                                .padding(top = 12.dp, bottom = 8.dp),
+                            content = content,
+                        )
+                        // Text scrolling up under the fixed title fades out instead of being cut in half
+                        // (e.g. when the keyboard pushes the dialog up).
+                        Box(
+                            Modifier
+                                .align(Alignment.TopCenter)
+                                .fillMaxWidth()
+                                .height(14.dp)
+                                .graphicsLayer { alpha = (scroll.value / 24f).coerceIn(0f, 1f) }
+                                .background(Brush.verticalGradient(listOf(fadeColor, fadeColor.copy(alpha = 0f)))),
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                        content = buttons,
+                    )
+                }
             }
         }
     }
@@ -497,6 +521,33 @@ private fun rememberWindowBlurBehind(): Boolean {
         onDispose { }
     }
     return enabled
+}
+
+/**
+ * Lets the dialog window cover the whole screen and sets its bar icons ([lightBars]: dark icons).
+ * The system takes the status-bar icon colour of a dimming window only from a window that
+ * reaches under the status bar; a dialog sized to its pane always got white icons, which nearly
+ * vanish over the light, blurred page.
+ */
+@Composable
+private fun FullScreenDialogWindow(lightBars: Boolean) {
+    val view = LocalView.current
+    val window = (view.parent as? DialogWindowProvider)?.window ?: return
+    DisposableEffect(window, view, lightBars) {
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
+        // Transparent bars: the blurred, dimmed page shows behind them as everywhere else.
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        @Suppress("DEPRECATION")
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        @Suppress("DEPRECATION")
+        window.navigationBarColor = android.graphics.Color.TRANSPARENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) window.isNavigationBarContrastEnforced = false
+        WindowCompat.getInsetsController(window, view).apply {
+            isAppearanceLightStatusBars = lightBars
+            isAppearanceLightNavigationBars = lightBars
+        }
+        onDispose { }
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.S)
