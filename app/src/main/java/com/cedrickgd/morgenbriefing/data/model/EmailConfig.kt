@@ -24,6 +24,12 @@ data class EmailConfig(
     /** Recipients trimmed, lowercased and de-duplicated (first occurrence wins), blanks dropped. */
     fun normalized(): EmailConfig = copy(recipients = EmailRecipients.normalizeAll(recipients))
 
+    /**
+     * Stored recipients the e-mail routine would reject (a hand-edited or older file). While
+     * there is one, the routine sends nothing at all — not even to the valid addresses.
+     */
+    fun invalidRecipients(): List<String> = recipients.filterNot(EmailRecipients::isValid)
+
     /** Same switch state and recipients — `schema` and `updatedAt` are bookkeeping only. */
     fun sameSettingsAs(other: EmailConfig?): Boolean =
         other != null && enabled == other.enabled && recipients == other.recipients
@@ -47,7 +53,7 @@ enum class RecipientCheck {
     /** Nothing typed (after trimming). */
     EMPTY,
 
-    /** Not a plausible e-mail address. */
+    /** Not an address the e-mail routine accepts ([EmailRecipients.isValid]). */
     INVALID,
 
     /** Already in the list (case-insensitive). */
@@ -69,14 +75,16 @@ object EmailRecipients {
     private const val MAX_LOCAL_LENGTH = 64
 
     /**
-     * A pragmatic subset of RFC 5322: a dot-atom local part (no quoted strings, comments or
-     * IP literals) and a DNS host name with at least two labels and an alphabetic TLD
-     * (punycode `xn--…` allowed). Applied to [normalize]d (lowercase) input.
+     * Exactly the rules of the e-mail routine (`routine/email-config.mjs`, docs/brief-format.md
+     * "E-Mail-Briefing"), which rejects the whole file — nobody gets an e-mail — if a single
+     * recipient breaks them: before the @ only a–z 0–9 . _ % + - (no dot at either end, none
+     * doubled); a host name of at least two DNS labels; a TLD of letters only or punycode
+     * `xn--…`. Applied to [normalize]d (lowercase) input.
      */
     private val ADDRESS = Regex(
-        "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*" +
+        "^[a-z0-9_%+-]+(?:\\.[a-z0-9_%+-]+)*" +
             "@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+" +
-            "[a-z](?:[a-z0-9-]{0,61}[a-z0-9])$",
+            "(?:[a-z]{2,63}|xn--[a-z0-9-]{0,58}[a-z0-9])$",
     )
 
     /** Trims whitespace, drops a pasted `mailto:` prefix and lowercases. */
@@ -90,7 +98,7 @@ object EmailRecipients {
         return withoutScheme.lowercase(Locale.ROOT)
     }
 
-    /** True for a plausible address; expects [normalize]d input. */
+    /** True for an address the e-mail routine accepts; expects [normalize]d input. */
     fun isValid(address: String): Boolean {
         if (address.length > MAX_LENGTH) return false
         val local = address.substringBefore('@', missingDelimiterValue = "")

@@ -5,6 +5,7 @@ import com.cedrickgd.morgenbriefing.data.EmailSettingsState
 import com.cedrickgd.morgenbriefing.data.RemoveRecipientResult
 import com.cedrickgd.morgenbriefing.data.model.EmailConfig
 import com.cedrickgd.morgenbriefing.data.model.EmailConfigError
+import com.cedrickgd.morgenbriefing.data.model.EmailRecipients
 import com.cedrickgd.morgenbriefing.data.model.RecipientCheck
 import java.time.Instant
 import java.time.LocalTime
@@ -56,10 +57,24 @@ internal object EmailBriefingText {
      */
     private val RUN_WINDOW_END: LocalTime = LocalTime.of(7, 0)
 
-    /** Inline message under the address field; null when there is nothing to say. */
-    fun recipientMessage(check: RecipientCheck): String? = when (check) {
+    /** What the e-mail routine accepts before the @ (docs/brief-format.md "E-Mail-Briefing"). */
+    private val LOCAL_PART_CHARS = Regex("[a-z0-9._%+-]+")
+
+    /**
+     * Inline message under the address field for what was typed ([input]); null when there is
+     * nothing to say. An address with characters the routine refuses before the @ (e.g. an
+     * apostrophe or an umlaut) says which ones are allowed.
+     */
+    fun recipientMessage(check: RecipientCheck, input: String = ""): String? = when (check) {
         RecipientCheck.OK, RecipientCheck.EMPTY -> null
-        RecipientCheck.INVALID -> "Keine gültige Adresse"
+        RecipientCheck.INVALID -> {
+            val local = EmailRecipients.normalize(input).substringBefore('@', missingDelimiterValue = "")
+            if (local.isNotEmpty() && !LOCAL_PART_CHARS.matches(local)) {
+                "Vor dem @ gehen nur a–z, 0–9 und . _ % + -"
+            } else {
+                "Keine gültige Adresse"
+            }
+        }
         RecipientCheck.DUPLICATE -> "Schon in der Liste"
         RecipientCheck.LIMIT_REACHED -> limitMessage()
         RecipientCheck.UNAVAILABLE -> "Einen Moment – die Liste lädt noch."
@@ -82,10 +97,26 @@ internal object EmailBriefingText {
         config == null -> "Das Briefing zusätzlich in dein Postfach"
         !config.enabled -> "Aus – das Briefing gibt's nur in der App"
         config.recipients.isEmpty() -> "An – es fehlt noch eine Adresse"
+        config.invalidRecipients().isNotEmpty() -> "An – wegen einer ungültigen Adresse geht gerade nichts raus"
         else -> "An – geht an ${addressCount(config.recipients.size)}"
     }
 
     fun addressCount(count: Int): String = if (count == 1) "1 Adresse" else "$count Adressen"
+
+    /**
+     * Stored addresses the e-mail routine refuses (hand-edited or older file): it then sends
+     * nothing at all, so say which ones and that they have to go.
+     */
+    fun invalidStoredMessage(addresses: List<String>): String {
+        val names = addresses.joinToString(", ") { "„$it“" }
+        return if (addresses.size == 1) {
+            "Die E-Mail-Routine kann $names nicht verwenden – solange die Adresse in der Liste steht, " +
+                "bekommt niemand eine E-Mail. Entfern sie bitte."
+        } else {
+            "Die E-Mail-Routine kann $names nicht verwenden – solange sie in der Liste stehen, " +
+                "bekommt niemand eine E-Mail. Entfern sie bitte."
+        }
+    }
 
     /** German explanation of [error] for the status line. */
     fun errorMessage(error: EmailConfigError): String = when (error) {
@@ -138,6 +169,10 @@ internal object EmailBriefingText {
                     "Noch keine Adresse hinterlegt."
                 },
                 StatusTone.HINT,
+            )
+            config.invalidRecipients().isNotEmpty() -> EmailStatusLine(
+                invalidStoredMessage(config.invalidRecipients()),
+                if (config.enabled) StatusTone.ERROR else StatusTone.HINT,
             )
             state.lastSavedAt != null ->
                 EmailStatusLine("Gespeichert ✓ · ${appliesFrom(state.lastSavedAt)}", StatusTone.SUCCESS)

@@ -30,6 +30,34 @@ class EmailBriefingTextTest {
         assertNotNull(EmailBriefingText.recipientMessage(RecipientCheck.UNAVAILABLE))
         assertNull(EmailBriefingText.recipientMessage(RecipientCheck.OK))
         assertNull(EmailBriefingText.recipientMessage(RecipientCheck.EMPTY))
+        // Characters the e-mail routine refuses before the @ are named.
+        val allowed = "Vor dem @ gehen nur a–z, 0–9 und . _ % + -"
+        assertEquals(allowed, EmailBriefingText.recipientMessage(RecipientCheck.INVALID, "O'Brien@example.ie"))
+        assertEquals(allowed, EmailBriefingText.recipientMessage(RecipientCheck.INVALID, "jürgen@example.com"))
+        assertEquals("Keine gültige Adresse", EmailBriefingText.recipientMessage(RecipientCheck.INVALID, "max@gmail.com1"))
+        assertEquals("Keine gültige Adresse", EmailBriefingText.recipientMessage(RecipientCheck.INVALID, "kein-at-zeichen"))
+    }
+
+    @Test
+    fun `stored addresses the routine would reject are flagged`() {
+        val broken = config.copy(recipients = listOf("anna@example.de", "o'brien@example.ie"))
+        assertEquals("An – wegen einer ungültigen Adresse geht gerade nichts raus", EmailBriefingText.switchSubtitle(broken))
+        assertEquals("Aus – das Briefing gibt's nur in der App", EmailBriefingText.switchSubtitle(broken.copy(enabled = false)))
+
+        val line = EmailBriefingText.status(EmailSettingsState(config = broken, lastSavedAt = evening))
+        assertEquals(StatusTone.ERROR, line?.tone)
+        assertEquals(
+            "Die E-Mail-Routine kann „o'brien@example.ie“ nicht verwenden – solange die Adresse in der Liste steht, " +
+                "bekommt niemand eine E-Mail. Entfern sie bitte.",
+            line?.text,
+        )
+        // Switched off nothing is sent anyway: a hint, not an error.
+        assertEquals(StatusTone.HINT, EmailBriefingText.status(EmailSettingsState(config = broken.copy(enabled = false)))?.tone)
+        assertTrue(
+            EmailBriefingText.invalidStoredMessage(listOf("a'b@c.de", "x@y.z1")).startsWith("Die E-Mail-Routine kann „a'b@c.de“, „x@y.z1“ nicht verwenden"),
+        )
+        // Saving and errors still come first.
+        assertEquals(StatusTone.PROGRESS, EmailBriefingText.status(EmailSettingsState(config = broken, saving = true))?.tone)
     }
 
     @Test

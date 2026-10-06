@@ -50,17 +50,80 @@ class EmailConfigTest {
         assertEquals("", EmailRecipients.normalize("   "))
     }
 
+    /*
+     * The app must accept exactly what the e-mail routine accepts (routine/email-config.mjs):
+     * one address the routine rejects makes it send nothing at all. The routine's own test
+     * vectors (routine/test/email-config.test.mjs) are repeated here — keep both in step.
+     */
+
     @Test
-    fun `plausible addresses are valid`() {
+    fun `addresses the routine accepts are valid`() {
         listOf(
+            // routine/test/email-config.test.mjs "accepts plain addresses"
+            "du@example.com",
+            "vorname.nachname+news@gmail.com",
+            "x_y-z@sub.example.co.uk",
+            "a%b@example.de",
+            "1234@web.de",
+            "info@xn--mller-kva.de",
+            "kurz@a.io",
+            // app extras
             "a@b.de",
             "business.grabe@gmail.com",
             "first.last+tag@sub.example.co.uk",
             "x_y-z@xn--mller-kva.de",
-            "o'brien@example.ie",
+            "a@b.xn--p1ai",
             "1234@123.example.com",
             "${"l".repeat(64)}@example.de",
         ).forEach { assertTrue(it, EmailRecipients.isValid(it)) }
+    }
+
+    @Test
+    fun `addresses the routine rejects are invalid`() {
+        listOf(
+            // routine/test/email-config.test.mjs "rejects everything that is not a single plain address"
+            "",
+            "ohne-at.de",
+            "zwei@@example.com",
+            "a@b@example.com",
+            "@example.com",
+            "du@",
+            "du@localhost",
+            "name <du@example.com>",
+            "du@example.com, wer@example.com",
+            "du@example.com;wer@example.com",
+            "du@example.com\nbcc: wer@example.com",
+            "du @example.com",
+            "\"du\"@example.com",
+            ".du@example.com",
+            "du.@example.com",
+            "d..u@example.com",
+            "du@-example.com",
+            "du@example-.com",
+            "du@example..com",
+            "du@example.c",
+            "du@example.123",
+            "du@[192.168.0.1]",
+            "jürgen@example.com",
+            "du@müller.de",
+            "${"a".repeat(65)}@example.com",
+            "du@${"a".repeat(250)}.com",
+            // Characters RFC 5322 allows but the routine does not: accepting them would stop
+            // the e-mail for every recipient.
+            "o'brien@example.ie",
+            "x~y@web.de",
+            "a&b@firma.de",
+            "a#b@example.com",
+            "a/b@example.com",
+            "a{b}@example.com",
+            "a=b@example.com",
+            // Typos in the TLD: digits or hyphens.
+            "max@gmail.com1",
+            "max@web.de2",
+            "a@b.c0m",
+            "a@ex.ab-c",
+            "a@b.xn--p1ai-",
+        ).forEach { assertFalse(it, EmailRecipients.isValid(it)) }
     }
 
     @Test
@@ -110,6 +173,14 @@ class EmailConfigTest {
         val config = EmailConfig(enabled = true, recipients = listOf(" A@b.de", "a@B.de", "", "c@d.de"))
         assertEquals(listOf("a@b.de", "c@d.de"), config.normalized().recipients)
         assertEquals(listOf("a@b.de"), EmailRecipients.normalizeAll(listOf("a@b.de", " A@B.DE ", "   ")))
+    }
+
+    @Test
+    fun `stored addresses the routine would reject are found`() {
+        val config = EmailConfig(enabled = true, recipients = listOf("anna@beispiel.de", "o'brien@example.ie", "max@gmail.com1"))
+        assertEquals(listOf("o'brien@example.ie", "max@gmail.com1"), config.invalidRecipients())
+        assertTrue(config.copy(recipients = listOf("anna@beispiel.de")).invalidRecipients().isEmpty())
+        assertTrue(EmailConfig.UNCONFIGURED.invalidRecipients().isEmpty())
     }
 
     @Test

@@ -256,7 +256,7 @@ private fun RecipientEditor(recipients: List<String>, actions: EmailBriefingActi
             input = ""
             inputMessage = null
         } else {
-            inputMessage = EmailBriefingText.recipientMessage(check)
+            inputMessage = EmailBriefingText.recipientMessage(check, input)
         }
     }
 
