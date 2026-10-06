@@ -47,9 +47,9 @@ internal fun needsNewsFollowUp(load: BriefLoad, hasToken: Boolean, today: LocalD
  * Notification text from [WeatherInsights]; falls back to a plain greeting if building the
  * text fails, so a formatting problem never costs the user the whole morning notification.
  */
-internal fun morningText(snapshot: WeatherSnapshot?, brief: Brief?, today: String): NotificationText =
+internal fun morningText(snapshot: WeatherSnapshot?, brief: Brief?, today: String, newsPending: Boolean = true): NotificationText =
     try {
-        WeatherInsights.notification(snapshot, brief, today)
+        WeatherInsights.notification(snapshot, brief, today, newsPending)
     } catch (e: Exception) {
         Log.e(TAG, "Building the notification text failed, using the fallback", e)
         fallbackText(brief, today)

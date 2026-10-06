@@ -80,7 +80,9 @@ class MorningWorker(context: Context, params: WorkerParameters) : CoroutineWorke
         }
 
         val snapshot = liveWeather ?: cachedWeather(container)
-        val text = morningText(snapshot, load.shownBrief(), todayIso)
+        // Promise "Die News kommen gleich" only when a follow-up will actually bring them.
+        val followUp = needsNewsFollowUp(load, settings.hasToken, today)
+        val text = morningText(snapshot, load.shownBrief(), todayIso, newsPending = followUp)
         if (!Notifications.canPost(context)) {
             // Data is fetched and cached for the app; there is just nothing we may show.
             Log.i(TAG, "Notifications are blocked, briefing prepared without notification")
@@ -89,7 +91,7 @@ class MorningWorker(context: Context, params: WorkerParameters) : CoroutineWorke
         Notifications.showMorning(context, text)
         if (!force) markNotified(container, todayIso)
 
-        if (needsNewsFollowUp(load, settings.hasToken, today)) {
+        if (followUp) {
             try {
                 NewsFollowUpWorker.enqueue(context, attempt = 1)
             } catch (e: IllegalStateException) {

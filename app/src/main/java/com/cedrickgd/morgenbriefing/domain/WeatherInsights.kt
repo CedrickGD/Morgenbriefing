@@ -81,10 +81,14 @@ object WeatherInsights {
         return out.distinctBy { it.title }.sortedByDescending { it.level.ordinal }
     }
 
-    /** Text for the 5:30 notification. [brief] may be null or older than today. */
-    fun notification(s: WeatherSnapshot?, brief: Brief?, today: String): NotificationText {
+    /**
+     * Text for the 5:30 notification. [brief] may be null or older than today. [newsPending]:
+     * a follow-up will bring today's news (there is a token); without one (demo) the news line
+     * must not promise any.
+     */
+    fun notification(s: WeatherSnapshot?, brief: Brief?, today: String, newsPending: Boolean = true): NotificationText {
         val todaysBrief = brief?.takeIf { it.date.trim() == today.trim() }
-        val news = newsLine(todaysBrief)
+        val news = newsLine(todaysBrief, newsPending)
         if (s == null) {
             val text = todaysBrief?.teaser?.takeIf { it.isNotBlank() }
                 ?: "Wetter gerade nicht erreichbar – öffne die App für ein Update."
@@ -649,8 +653,10 @@ object WeatherInsights {
         }
     }
 
-    private fun newsLine(todaysBrief: Brief?): String {
-        if (todaysBrief == null) return "📰 Die News kommen gleich."
+    private fun newsLine(todaysBrief: Brief?, newsPending: Boolean): String {
+        if (todaysBrief == null) {
+            return if (newsPending) "📰 Die News kommen gleich." else "📰 Demo-Modus – mit deinem GitHub-Token kommen hier deine News."
+        }
         val top = todaysBrief.sections
             .flatMap { it.items }
             .filter { it.headline.isNotBlank() }

@@ -101,6 +101,18 @@ class WeatherInsightsTest {
     }
 
     @Test
+    fun `without a token the notification does not promise news`() {
+        // Demo mode: no follow-up will ever bring today's news.
+        val demo = WeatherInsights.notification(foggyAutumn, WeatherFixtures.brief("2026-10-05"), "2026-10-06", newsPending = false)
+        assertEquals("📰 Demo-Modus – mit deinem GitHub-Token kommen hier deine News.", demo.bigText.lines().last())
+        val noWeather = WeatherInsights.notification(null, null, "2026-10-06", newsPending = false)
+        assertEquals("📰 Demo-Modus – mit deinem GitHub-Token kommen hier deine News.", noWeather.bigText.lines().last())
+        // Today's brief at hand: its headlines, whatever the follow-up does.
+        val today = WeatherInsights.notification(foggyAutumn, WeatherFixtures.brief("2026-10-06"), "2026-10-06", newsPending = false)
+        assertTrue(today.bigText.lines().last().startsWith("📰 Euro fällt auf Jahrestief"))
+    }
+
+    @Test
     fun `notification without weather still works`() {
         val n = WeatherInsights.notification(null, WeatherFixtures.brief("2026-10-06"), "2026-10-06")
         assertEquals("☀️ Dein Morgenbriefing", n.title)
