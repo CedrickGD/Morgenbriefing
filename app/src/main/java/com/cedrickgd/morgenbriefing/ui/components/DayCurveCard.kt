@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -46,6 +47,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.data.model.DayWeather
@@ -120,8 +123,7 @@ fun DayCurveCard(snapshot: WeatherSnapshot, modifier: Modifier = Modifier) {
                     hours = hours,
                     modifier = Modifier
                         .padding(horizontal = 6.dp)
-                        .fillMaxWidth()
-                        .height(190.dp),
+                        .fillMaxWidth(),
                 )
             } else {
                 Text(
@@ -156,6 +158,30 @@ private class ChartLabels(
 
 private class RainColors(val bar: Color, val text: Color)
 
+/**
+ * Vertical layout of the chart in px. At the default font size it is the original fixed one
+ * (emoji row 22 dp, curve from 48 dp, 46 dp for the rain bars below it, 20 dp hour axis, 190 dp
+ * in all); with larger fonts each band grows with its labels, and the chart with them, so the
+ * temperature labels never run into the emoji row.
+ */
+private class ChartGeometry(val emojiRow: Float, val curveTop: Float, val belowCurve: Float, val axis: Float, val height: Dp) {
+    companion object {
+        fun of(labels: ChartLabels, density: Density): ChartGeometry = with(density) {
+            val emojiRow = max(22.dp.toPx(), labels.emojis.maxOf { it.size.height } + 2.dp.toPx())
+            val tempHeight = labels.temps.maxOf { it.size.height }
+            val curveTop = max(48.dp.toPx(), emojiRow + tempHeight + DOT_RADIUS.toPx() + 4.dp.toPx())
+            val popHeight = labels.pops.maxOfOrNull { it?.size?.height ?: 0 } ?: 0
+            val belowCurve = max(46.dp.toPx(), BAR_MAX.toPx() + popHeight)
+            val axis = max(20.dp.toPx(), labels.hours.maxOf { it.size.height } + 2.dp.toPx())
+            val extra = (curveTop - 48.dp.toPx()) + (belowCurve - 46.dp.toPx()) + (axis - 20.dp.toPx())
+            ChartGeometry(emojiRow, curveTop, belowCurve, axis, 190.dp + extra.toDp())
+        }
+    }
+}
+
+private val DOT_RADIUS = 4.5.dp
+private val BAR_MAX = 30.dp
+
 @Composable
 private fun DayCurveChart(day: DayWeather, hours: List<HourPoint>, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
@@ -187,6 +213,9 @@ private fun DayCurveChart(day: DayWeather, hours: List<HourPoint>, modifier: Mod
         )
     }
 
+    val density = LocalDensity.current
+    val geometry = remember(labels, density) { ChartGeometry.of(labels, density) }
+
     val now by rememberBerlinMinute()
     val nowIndex = remember(day, hours, now) { nowFraction(day, hours, now) }
     val description = remember(day, hours) { chartDescription(day, hours) }
@@ -203,6 +232,7 @@ private fun DayCurveChart(day: DayWeather, hours: List<HourPoint>, modifier: Mod
 
     Spacer(
         modifier
+            .height(geometry.height)
             .semantics { contentDescription = description }
             .drawWithCache {
                 val n = hours.size
@@ -212,11 +242,11 @@ private fun DayCurveChart(day: DayWeather, hours: List<HourPoint>, modifier: Mod
                 val step = (right - left) / (n - 1)
                 val xs = FloatArray(n) { left + it * step }
 
-                val emojiRow = 22.dp.toPx()
-                val curveTop = 48.dp.toPx()
-                val plotBottom = size.height - 20.dp.toPx()
-                val curveBottom = plotBottom - 46.dp.toPx()
-                val barMax = 30.dp.toPx()
+                val emojiRow = geometry.emojiRow
+                val curveTop = geometry.curveTop
+                val plotBottom = size.height - geometry.axis
+                val curveBottom = plotBottom - geometry.belowCurve
+                val barMax = BAR_MAX.toPx()
 
                 val minT = hours.minOf { it.temp }
                 val maxT = hours.maxOf { it.temp }
@@ -244,7 +274,7 @@ private fun DayCurveChart(day: DayWeather, hours: List<HourPoint>, modifier: Mod
                 val lineStroke = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
                 val ringStroke = Stroke(width = 2.dp.toPx())
                 val dash = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 4.dp.toPx()))
-                val dotRadius = 4.5.dp.toPx()
+                val dotRadius = DOT_RADIUS.toPx()
                 val revealSoftness = 12.dp.toPx()
 
                 val tempEvery = if (step >= 30.dp.toPx()) 1 else 2
