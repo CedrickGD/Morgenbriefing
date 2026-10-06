@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -55,6 +54,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -70,6 +70,7 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.ui.components.Emoji
@@ -78,12 +79,17 @@ import com.cedrickgd.morgenbriefing.ui.components.pressScale
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
 import com.cedrickgd.morgenbriefing.ui.theme.OverlineLetterSpacing
 import com.cedrickgd.morgenbriefing.ui.theme.Reading
+import com.cedrickgd.morgenbriefing.util.windowHeight
 import java.time.ZonedDateTime
 import kotlin.math.PI
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 /** Feed pictures: 16:10 like the reference, 22 dp corners (docs/DESIGN.md §7). */
 private const val FEED_IMAGE_RATIO = 16f / 10f
+
+/** In a short window (landscape) a feed picture takes at most this share of its height. */
+private const val FEED_IMAGE_MAX_WINDOW_SHARE = 0.45f
 
 /** The tappable suffix of a feed lead (docs/DESIGN.md §7). */
 internal const val MORE_LABEL = "Mehr anzeigen"
@@ -133,6 +139,7 @@ fun FeedEntry(
         mutableStateOf(if (item.image?.safeUrl() != null) ImageStatus.LOADING else ImageStatus.NONE)
     }
     val meta = remember(item, now, badge) { if (badge != null) FeedMetaParts(null, null) else feedMetaParts(item, now) }
+    val maxImageHeight = windowHeight() * FEED_IMAGE_MAX_WINDOW_SHARE
 
     Column(modifier.fillMaxWidth()) {
         Column(
@@ -149,7 +156,7 @@ fun FeedEntry(
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .aspectRatio(FEED_IMAGE_RATIO)
+                    .aspectRatioAtMost(FEED_IMAGE_RATIO, maxImageHeight)
                     .clip(GlassShapes.tile),
             ) {
                 ArticleVisual(
@@ -537,4 +544,17 @@ private fun MenuItem(label: String, icon: ImageVector, tint: Color = MaterialThe
 /** Accent for everything "⚡ Live": a deep amber that carries white text (5:1) in light and dark. */
 internal object LiveColors {
     val fill: Color = Color(0xFFB4530F)
+}
+
+/**
+ * The full width at [ratio] (width / height), but never taller than [maxHeight]: in landscape
+ * a picture as wide as the column would be taller than the window, so it is cropped wider.
+ */
+private fun Modifier.aspectRatioAtMost(ratio: Float, maxHeight: Dp): Modifier = layout { measurable, constraints ->
+    val width = constraints.maxWidth
+    val height = (width / ratio).roundToInt()
+        .coerceAtMost(maxHeight.roundToPx())
+        .coerceIn(constraints.minHeight, constraints.maxHeight)
+    val placeable = measurable.measure(Constraints.fixed(width, height))
+    layout(width, height) { placeable.place(0, 0) }
 }

@@ -84,6 +84,7 @@ import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
 import com.cedrickgd.morgenbriefing.util.KeepListEndAboveChrome
 import com.cedrickgd.morgenbriefing.util.bottomContentInset
 import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
+import com.cedrickgd.morgenbriefing.util.pageSideInset
 import com.cedrickgd.morgenbriefing.util.statusBarTop
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -149,7 +150,12 @@ fun HistoryScreen(
                     .reportChromeScroll()
                     .glassContent()
                     .horizontalSafeDrawing(),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = bottomContentInset(contentPadding) + 32.dp),
+                // Landscape and tablets: the timeline stays a centred column.
+                contentPadding = PaddingValues(
+                    start = 16.dp + pageSideInset(),
+                    end = 16.dp + pageSideInset(),
+                    bottom = bottomContentInset(contentPadding) + 32.dp,
+                ),
             ) {
                 item(key = "title", contentType = "title") {
                     PageTitle(

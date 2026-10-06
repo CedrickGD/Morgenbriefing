@@ -106,6 +106,7 @@ import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
 import com.cedrickgd.morgenbriefing.util.KeepListEndAboveChrome
 import com.cedrickgd.morgenbriefing.util.bottomContentInset
 import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
+import com.cedrickgd.morgenbriefing.util.pageSideInset
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import com.cedrickgd.morgenbriefing.util.statusBarTop
 import kotlinx.coroutines.launch
@@ -257,6 +258,8 @@ private fun TodayContent(
     val headerGonePx = with(density) { HeaderGoneAfter.roundToPx() }
     val bottomInset = bottomContentInset(contentPadding)
     val pullState = rememberPullToRefreshState()
+    // Landscape and tablets: the feed stays a column, pictures do not grow with the window.
+    val pageSide = pageSideInset()
     val snackbar = remember { SnackbarHostState() }
 
     val weather = state.weather
@@ -367,7 +370,7 @@ private fun TodayContent(
                     // The floating glass above (bar, indicator, player) blurs this content.
                     .glassContent()
                     .horizontalSafeDrawing(),
-                contentPadding = PaddingValues(bottom = bottomInset + 24.dp),
+                contentPadding = PaddingValues(start = pageSide, end = pageSide, bottom = bottomInset + 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 item(key = "header", contentType = "header") {
@@ -450,7 +453,7 @@ private fun TodayContent(
             },
             bottom = if (parked) {
                 {
-                    Column(Modifier.horizontalSafeDrawing()) {
+                    Column(Modifier.horizontalSafeDrawing().padding(horizontal = pageSide)) {
                         chipRow(true)
                         Spacer(Modifier.height(6.dp))
                     }

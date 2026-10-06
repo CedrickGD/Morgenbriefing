@@ -72,6 +72,7 @@ import com.cedrickgd.morgenbriefing.ui.news.withTopicVisible
 import com.cedrickgd.morgenbriefing.ui.shell.reportChromeScroll
 import com.cedrickgd.morgenbriefing.util.bottomContentInset
 import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
+import com.cedrickgd.morgenbriefing.util.pageSideInset
 import com.cedrickgd.morgenbriefing.util.parseDateOrNull
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import com.cedrickgd.morgenbriefing.util.statusBarTop
@@ -148,7 +149,8 @@ fun DayDetailScreen(
                 .reportChromeScroll()
                 .glassContent()
                 .horizontalSafeDrawing(),
-            contentPadding = PaddingValues(bottom = bottomInset + 24.dp),
+            // Landscape and tablets: the feed stays a centred column.
+            contentPadding = PaddingValues(start = pageSideInset(), end = pageSideInset(), bottom = bottomInset + 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item(key = "title", contentType = "title") {

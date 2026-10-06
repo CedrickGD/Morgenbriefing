@@ -53,6 +53,7 @@ import com.cedrickgd.morgenbriefing.util.SystemIntents
 import com.cedrickgd.morgenbriefing.util.SystemStatus
 import com.cedrickgd.morgenbriefing.util.bottomContentInset
 import com.cedrickgd.morgenbriefing.util.horizontalSafeDrawing
+import com.cedrickgd.morgenbriefing.util.pageSideInset
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import com.cedrickgd.morgenbriefing.util.rememberNotificationPermissionRequester
 import com.cedrickgd.morgenbriefing.util.statusBarTop
@@ -290,7 +291,12 @@ fun SettingsScreen(
                 // The floating glass above (bar, indicator, player) blurs this content.
                 .glassContent()
                 .horizontalSafeDrawing(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = bottomContentInset(contentPadding) + 32.dp),
+            // Landscape and tablets: the cards stay a centred column.
+            contentPadding = PaddingValues(
+                start = 16.dp + pageSideInset(),
+                end = 16.dp + pageSideInset(),
+                bottom = bottomContentInset(contentPadding) + 32.dp,
+            ),
         ) {
             items(keys, key = { it }, contentType = { if (it.startsWith("h-")) "heading" else it }) { key ->
                 val index = keys.indexOf(key)
