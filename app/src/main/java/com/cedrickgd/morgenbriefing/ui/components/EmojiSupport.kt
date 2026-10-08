@@ -16,8 +16,9 @@ object EmojiSupport {
 
     /**
      * Close relatives, best first. Only used when the original has no glyph. Clothing chips
-     * that appear side by side must stay apart: on Android 7, whose emoji font lacks 🧥, 🧶 and
-     * 🩳, a jacket shows 🥋, a pullover 👚, shorts 👖 and the T-shirt stays 👕.
+     * that appear side by side must stay apart: on Android 7, whose emoji font lacks 🧥, 🧶, 🩳,
+     * 🧣 and 🧤, a jacket shows 🥋, a pullover 👚, shorts 👖, a scarf ❄️, gloves ✋ and the
+     * T-shirt stays 👕.
      */
     private val fallbacks: Map<String, List<String>> = mapOf(
         // Coat and jacket (Emoji 5, Android 8): the grey wrap jacket of 🥋 (Unicode 9, in the
@@ -32,8 +33,10 @@ object EmojiSupport {
         "🩺" to listOf("💊", "🏥", "❤️"),
         "🔭" to listOf("🌌", "🚀"),
         "🌡️" to listOf("☀️"),
-        // Scarf and gloves only come up in the cold: a snowflake beats a T-shirt (Android 7).
-        "🧤" to listOf("🧣", "❄️"),
+        // Scarf and gloves (both Emoji 5, so a font has both or neither) appear side by side in
+        // the cold: the scarf becomes a snowflake, the gloves a raised hand (Unicode 6, in the
+        // Android 7 font) – never the same glyph, and never the T-shirt.
+        "🧤" to listOf("✋", "❄️"),
         "🧣" to listOf("❄️", "👕"),
         "🩳" to listOf("👖", "👕"),
         "🥾" to listOf("👟"),

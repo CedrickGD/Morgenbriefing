@@ -9,7 +9,7 @@ class EmojiSupportTest {
 
     /**
      * Clothing emoji missing from the Android 7.0 (API 24) system image's NotoColorEmoji.ttf
-     * (read from its cmap). It has the Unicode 9 🥋 and the older 👕 👔 👚 👖 ❄️ 👟 ☀️.
+     * (read from its cmap). It has the Unicode 9 🥋 and the older 👕 👔 👚 👖 ❄️ ✋ 👟 ☀️.
      */
     private val missingOnAndroid7 = setOf("🧥", "🧣", "🧤", "🧶", "🩳", "🥾", "🧴")
     private val android7: (String) -> Boolean = { it !in missingOnAndroid7 }
@@ -38,9 +38,22 @@ class EmojiSupportTest {
     }
 
     @Test
-    fun `winter accessories end at a snowflake, not a t-shirt`() {
+    fun `scarf and gloves stay apart on android 7`() {
+        // "Wintermantel, Schal, Handschuhe" side by side: a snowflake and a raised hand.
         assertEquals("❄️", EmojiSupport.pick("🧣", android7))
-        assertEquals("❄️", EmojiSupport.pick("🧤", android7))
+        assertEquals("✋", EmojiSupport.pick("🧤", android7))
+    }
+
+    @Test
+    fun `every clothing fallback on android 7 is drawable and unique`() {
+        val clothing = listOf("🧥", "🧣", "🧤", "🧶", "🩳", "🥾", "🧴")
+        val shown = clothing.associateWith { EmojiSupport.pick(it, android7) }
+        shown.forEach { (emoji, fallback) ->
+            assertNotEquals("$emoji has no fallback", emoji, fallback)
+            assertTrue("$emoji → $fallback is not in the Android 7 font", android7(fallback))
+            assertNotEquals("$emoji → $fallback looks like the T-shirt", "👕", fallback)
+        }
+        assertEquals("fallbacks repeat: $shown", clothing.size, shown.values.toSet().size)
     }
 
     @Test
