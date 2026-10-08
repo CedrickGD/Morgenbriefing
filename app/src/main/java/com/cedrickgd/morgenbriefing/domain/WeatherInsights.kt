@@ -15,6 +15,7 @@ import kotlin.math.max
 object WeatherInsights {
 
     private const val HEADLINE_MAX = 60
+    private const val CLOTHING_MARKER = "👕"
 
     /** Friendly one-liner for the serif headline, e.g. "Nebel zum Start, dann goldener Oktober mit 21°." */
     fun headline(s: WeatherSnapshot): String {
@@ -108,11 +109,19 @@ object WeatherInsights {
         val bigText = listOf(
             homeNote(s),
             "$window: ${daySummary(s)}",
-            "👕 ${clothing.short}",
+            "${clothingMarker(clothing)} ${clothing.short}",
             news,
         ).joinToString("\n")
         return NotificationText(title = title, text = text, bigText = bigText)
     }
+
+    /**
+     * Emoji in front of the clothing line of the notification: the first advised item (🧥 on a
+     * jacket day, 👕 on a T-shirt day), 👕 without any. Notifications.kt swaps it like every
+     * emoji of the text where the device's font cannot draw it (Android 7).
+     */
+    internal fun clothingMarker(advice: ClothingAdvice): String =
+        advice.items.firstOrNull()?.emoji?.takeIf { it.isNotBlank() } ?: CLOTHING_MARKER
 
     // ---------------------------------------------------------------------------------------
     // Headline

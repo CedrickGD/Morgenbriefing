@@ -57,6 +57,15 @@ class EmojiSupportTest {
     }
 
     @Test
+    fun `notification text gets the same android 7 fallbacks as the chips`() {
+        // The clothing line of the morning notification leads with the first advised item.
+        assertEquals("🥋 Morgens Jacke, ab Mittag T-Shirt, kein Schirm.", EmojiSupport.displayIn("🧥 Morgens Jacke, ab Mittag T-Shirt, kein Schirm.", android7))
+        assertEquals("👚 Dünner Pulli, Schirm.", EmojiSupport.displayIn("🧶 Dünner Pulli, Schirm.", android7))
+        assertEquals("👕 T-Shirt reicht.", EmojiSupport.displayIn("👕 T-Shirt reicht.", android7))
+        assertEquals("🧥 Jacke.", EmojiSupport.displayIn("🧥 Jacke.", everything))
+    }
+
+    @Test
     fun `drawable emoji are kept and unknown ones pass through`() {
         assertEquals("🧥", EmojiSupport.pick("🧥", everything))
         assertEquals("🧶", EmojiSupport.pick("🧶", everything))

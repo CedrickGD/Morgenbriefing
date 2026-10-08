@@ -61,8 +61,13 @@ object EmojiSupport {
      * [text] with every emoji the device cannot draw swapped for its relative, for text the
      * system draws itself (notifications), where the [Emoji] composable is not involved.
      */
-    fun displayIn(text: String): String = fallbacks.keys.fold(text) { acc, emoji ->
-        if (acc.contains(emoji)) acc.replace(emoji, display(emoji)) else acc
+    fun displayIn(text: String): String = swapIn(text, ::display)
+
+    /** [displayIn] for a font that draws exactly what [canDraw] accepts. */
+    internal fun displayIn(text: String, canDraw: (String) -> Boolean): String = swapIn(text) { pick(it, canDraw) }
+
+    private fun swapIn(text: String, shown: (String) -> String): String = fallbacks.keys.fold(text) { acc, emoji ->
+        if (acc.contains(emoji)) acc.replace(emoji, shown(emoji)) else acc
     }
 
     private fun resolve(emoji: String): String = pick(emoji, ::canDraw)

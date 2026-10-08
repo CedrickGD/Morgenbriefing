@@ -87,7 +87,8 @@ class WeatherInsightsTest {
         assertEquals(4, lines.size)
         assertEquals(WeatherInsights.homeNote(foggyAutumn), lines[0])
         assertEquals("Leipzig 10–18 Uhr: " + WeatherInsights.daySummary(foggyAutumn), lines[1])
-        assertEquals("👕 Morgens Jacke, ab Mittag T-Shirt, kein Schirm.", lines[2])
+        // The first advised item (the jacket) leads the clothing line.
+        assertEquals("🧥 Morgens Jacke, ab Mittag T-Shirt, kein Schirm.", lines[2])
         // Top 3 by importance, ties keep the brief's order.
         assertEquals("📰 Euro fällt auf Jahrestief · KI-Taskforce startet · Bundestag beschließt Haushalt", lines[3])
     }
@@ -189,6 +190,20 @@ class WeatherInsightsTest {
         assertTrue(labels.toString(), "kurze Hose" in labels)
         assertTrue(labels.toString(), "Schirm" in labels)
         assertContains(advice.text, "Sonnencreme")
+    }
+
+    @Test
+    fun `the notification's clothing line starts with the first advised item`() {
+        listOf(foggyAutumn, frostyWinter, summerThunder, rainyWindy, tomorrowEvening).forEach { snapshot ->
+            val advice = WeatherInsights.clothing(snapshot)
+            val line = WeatherInsights.notification(snapshot, null, "2026-10-06").bigText.lines()
+                .single { it.endsWith(advice.short) }
+            assertEquals("${advice.items.first().emoji} ${advice.short}", line)
+        }
+        // A T-shirt day keeps the T-shirt.
+        assertEquals("👕", WeatherInsights.clothingMarker(WeatherInsights.clothing(summerThunder)))
+        // Without any item the T-shirt stands in.
+        assertEquals("👕", WeatherInsights.clothingMarker(ClothingAdvice(items = emptyList(), text = "", short = "")))
     }
 
     @Test
