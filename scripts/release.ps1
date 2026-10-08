@@ -59,14 +59,20 @@ function Write-Warn([string]$Text) { Write-Host "    warning: $Text" -Foreground
 # Runs a native command, echoes it and throws when it fails. Output goes to the console.
 function Invoke-Native([string]$File, [string[]]$Arguments) {
     Write-Host "    > $File $($Arguments -join ' ')" -ForegroundColor DarkGray
-    & $File @Arguments
+    # git and gradle write progress to stderr. With 'Stop' and redirected output, Windows
+    # PowerShell turns every stderr line into a terminating error, so only the exit code counts.
+    $previous = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try { & $File @Arguments } finally { $ErrorActionPreference = $previous }
     if ($LASTEXITCODE -ne 0) { throw "'$File $($Arguments -join ' ')' failed with exit code $LASTEXITCODE." }
 }
 
 # Runs a native command and returns its standard output lines (stderr passes through).
 # Call sites wrap the result in @() - PowerShell unrolls empty and one-element arrays.
 function Get-NativeOutput([string]$File, [string[]]$Arguments, [switch]$AllowFailure) {
-    $output = & $File @Arguments
+    $previous = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try { $output = & $File @Arguments } finally { $ErrorActionPreference = $previous }
     if (-not $AllowFailure -and $LASTEXITCODE -ne 0) {
         throw "'$File $($Arguments -join ' ')' failed with exit code $LASTEXITCODE."
     }
