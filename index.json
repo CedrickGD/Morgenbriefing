@@ -1,6 +1,11 @@
 {
-  "updatedAt": "2026-10-06T04:12:00+02:00",
+  "updatedAt": "2026-10-08T18:58:03+02:00",
   "days": [
+    {
+      "date": "2026-10-08",
+      "teaser": "Ölpreis über 104 Dollar und DAX unter 25.000, Streit um AfD-Landtagspräsident Rausch in Magdeburg und OpenAI startet GPT-6.",
+      "itemCount": 25
+    },
     {
       "date": "2026-10-06",
       "teaser": "Neue Kriegsdienstverweigerer-Rekorde, Verfassungsschutz vor möglicher AfD-Regierungsbeteiligung in Magdeburg und Schneider Electric kauft PTC für 22,6 Milliarden Dollar.",

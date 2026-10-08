@@ -1,0 +1,711 @@
+{
+  "schema": 2,
+  "date": "2026-10-08",
+  "generatedAt": "2026-10-08T18:58:03+02:00",
+  "teaser": "Ölpreis über 104 Dollar und DAX unter 25.000, Streit um AfD-Landtagspräsident Rausch in Magdeburg und OpenAI startet GPT-6.",
+  "sections": [
+    {
+      "id": "ki",
+      "title": "KI & Tech",
+      "emoji": "🤖",
+      "items": [
+        {
+          "id": "ki-openai-gpt-6-intelligent-ui",
+          "tier": "top",
+          "headline": "OpenAI startet GPT-6 mit interaktiver Oberfläche in ChatGPT",
+          "summary": "OpenAI bringt GPT-6 samt „Intelligent UI“ in ChatGPT: Antworten erscheinen künftig als Diagramme, Rechner oder Formulare statt nur als Text. Der Rollout läuft weltweit.",
+          "body": "OpenAI hat am Mittwoch mit GPT-6 ein neues Modell für ChatGPT vorgestellt und liefert dazu eine neue Darstellung der Antworten aus. Unter dem Namen „Intelligent UI“ erzeugt der Chatbot nun je nach Frage interaktive Oberflächen: Grafiken, anklickbare Schaltflächen, Diagramme, Formulare und anpassbare Rechner. Bislang war ChatGPT vor allem eine textbasierte Anwendung, wie Produktmanager Aarush Selvan laut TechCrunch einräumte.\n\nDie Oberfläche richtet sich nach dem Inhalt der Anfrage. Ein Produktvergleich kann laut OpenAI als Spalten nebeneinander erscheinen, eine Erklärung als Diagramm. Als Beispiele nennen die Quellen eine Grafik zum Auftrieb am Flugzeugflügel, Visualisierungen für Rezepte, die Mechanik eines Fahrrads, eine Karte für eine mehrtägige Wanderung und einen Sparrechner. Nutzer können sich im Chat auch kleine Werkzeuge oder Spiele bauen lassen. Wer weniger Visualisierungen möchte, kann deren Anzahl reduzieren, ähnlich wie andere Eigenschaften des Chatbots.\n\n## Zwei Modelle, schneller Rollout\n\nBezahlkunden erhalten nach Angaben von The Decoder das Modell GPT-6 Sol, kostenlose Nutzer GPT-6 Luna. Der Start erfolgte am 7. Oktober weltweit für Plus-, Pro-, Business- und Enterprise-Konten. Nutzer der kostenlosen Version und des günstigeren Go-Tarifs folgen einen Tag später.\n\nZur Technik nennt OpenAI laut The Decoder, dass GPT-6 bereits antworten kann, während es noch rechnet. Das soll die gefühlte Wartezeit um 44 Prozent verkürzen. Bei schwierigen Websuchen erreichte das Modell in internen Tests höhere Trefferquoten als der Vorgänger GPT-5.6. Es handelt sich dabei um Herstellerangaben, unabhängige Messungen lagen nach den geprüften Berichten noch nicht vor.\n\n## Einordnung\n\nDie Idee ist nicht neu: Google hat nach Angaben von The Decoder bereits im Mai in seinem Gemini-Chatbot eine ähnliche Funktion namens „Neural Expressive“ eingeführt. Der Wettbewerb verschiebt sich damit sichtbar vom reinen Modellvergleich hin zur Frage, wie Antworten aufbereitet werden. Für den Alltag heißt das: Aufgaben wie das Durchrechnen eines Sparplans oder der Vergleich von Tarifen lassen sich im Chat direkt erledigen, ohne eine Tabellenkalkulation zu öffnen.\n\nFür Nutzer in Deutschland ist der weltweite Start relevant, weil die Funktion nach den vorliegenden Berichten ohne regionale Einschränkung angekündigt wurde. Ob alle Elemente in deutscher Sprache gleich gut funktionieren, ließ sich anhand der Berichte nicht prüfen. Unternehmen, die ChatGPT Business oder Enterprise nutzen, bekommen die Funktion sofort und sollten prüfen, ob interaktive Inhalte mit ihren Datenschutz- und Freigaberegeln vereinbar sind.",
+          "source": "TechCrunch",
+          "url": "https://techcrunch.com/2026/10/07/chatgpt-is-getting-a-lot-more-visual-with-the-launch-of-a-new-interface/",
+          "sources": [
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/10/07/chatgpt-is-getting-a-lot-more-visual-with-the-launch-of-a-new-interface/"
+            },
+            {
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/intelligent-ui-openai-bringt-gpt-6-mit-neuer-interaktiver-oberflaeche-in-chatgpt/"
+            }
+          ],
+          "publishedAt": "2026-10-07T20:00:00+02:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Smartphone_with_ChatGPT_app_%2852917381673%29.jpg/1280px-Smartphone_with_ChatGPT_app_%2852917381673%29.jpg",
+            "credit": "Jernej Furman from Slovenia",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Smartphone_with_ChatGPT_app_(52917381673).jpg",
+            "alt": "Smartphone mit geöffneter ChatGPT-App"
+          }
+        },
+        {
+          "id": "ki-agentcorruption-amazon-agentcore",
+          "tier": "top",
+          "headline": "Ein Prompt genügte: Lücke in Amazons KI-Agentenplattform",
+          "summary": "Sicherheitsforscher von Zenity Labs konnten über Amazon Bedrock AgentCore mit einer einzigen Chatnachricht alle Agenten eines AWS-Kontos übernehmen. Die Lücke ist laut Bericht nur teilweise geschlossen.",
+          "body": "Die Sicherheitsfirma Zenity Labs hat in Amazons Plattform Bedrock AgentCore eine Kette von Schwachstellen entdeckt, die sie „AgentCorruption“ nennt. Nach Angaben der Forscher reichte eine Chatnachricht an einen öffentlich erreichbaren Agenten, um alle Agenten desselben AWS-Kontos in derselben Region zu übernehmen. Zenity veröffentlicht die Ergebnisse am 8. Oktober als mehrteilige Serie.\n\n## So funktionierte der Angriff\n\nAusgangspunkt war der interne Metadatendienst der Cloud-Instanz (IMDS). Die Agenten konnten ihn abfragen, und ein Testagent reichte dadurch seine eigenen temporären AWS-Zugangsdaten an einen externen Server weiter. Laut Zenity existierte die Grenze zwischen Agent und Umgebung faktisch nicht. Mit den erbeuteten Daten kamen die Forscher an das Container-Image samt Quellcode.\n\nEntscheidend war die Standardrolle der Agenten. Ihre Rechte galten regionsweit und umfassten Lesen, Schreiben und Löschen. Damit konnten die Forscher nach eigener Darstellung private Unterhaltungen anderer Nutzer lesen, Chatverläufe manipulieren, auf Zugangsdaten im AWS Secrets Manager zugreifen und das Langzeitgedächtnis eines Agenten präparieren. Über dieses Gedächtnis ließen sich Anweisungen hinterlegen, die auch nach dem ersten Einbruch weiterwirkten.\n\n## Reaktion von AWS\n\nZenity meldete die Funde nach eigenen Angaben am 25. Dezember 2025 an AWS. Daraufhin machte AWS die sicherere Version IMDSv2 zum Standard für neu bereitgestellte AgentCore-Agenten. Im August wurde die Standard-Ausführungsrolle angepasst; mehrere Berechtigungen wurden entfernt oder eingeschränkt. Laut The Decoder ist das Problem damit nur teilweise behoben: Die weitreichenden Standardrechte bestehen weiter. Zenity rät Unternehmen deshalb, eigene, eng gefasste Rollen für ihre Agenten anzulegen.\n\nZenity-Technikchef Michael Bargury beschreibt einen grundsätzlichen Konflikt zwischen klassischer Cloud-Trennung und der Freiheit, die KI-Agenten brauchen, um nützlich zu sein. Der Bericht verweist zudem darauf, dass OpenAI eine vergleichbare Lücke laut Medienberichten binnen vier Tagen geschlossen habe.\n\n## Warum es zählt\n\nAgentCore wird nach Angaben von Amazon unter anderem von Sony und Ericsson eingesetzt. Auch deutsche Unternehmen, die KI-Agenten in der AWS-Cloud betreiben, sollten ihre Konfiguration prüfen: Wer die Standardrolle unverändert nutzt, hat nach der Darstellung der Forscher weiterhin ein größeres Risiko als nötig. Der Fall zeigt, dass Agenten mit Zugriff auf Daten und Werkzeuge ein neues Einfallstor sind, weil bereits eine einzelne manipulierte Eingabe genügen kann, um Rechte weit über den eigentlichen Zweck hinaus zu nutzen. Unabhängig bestätigt wurden die Details bisher nicht; Amazon hat sich in den geprüften Quellen nicht ausführlich geäußert.",
+          "source": "The Decoder",
+          "url": "https://the-decoder.de/sicherheitsluecke-in-amazons-agentcore-ein-prompt-reichte-um-ganze-ki-flotten-zu-uebernehmen/",
+          "sources": [
+            {
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/sicherheitsluecke-in-amazons-agentcore-ein-prompt-reichte-um-ganze-ki-flotten-zu-uebernehmen/"
+            },
+            {
+              "name": "Zenity Labs",
+              "url": "https://labs.zenity.io/"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 6,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Amazon_AWS_us-west-2_beach_AZ.jpg/1280px-Amazon_AWS_us-west-2_beach_AZ.jpg",
+            "credit": "Tedder",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Amazon_AWS_us-west-2_beach_AZ.jpg",
+            "alt": "Drei Rechenzentren einer AWS-Verfügbarkeitszone"
+          }
+        },
+        {
+          "id": "ki-anthropic-claude-haiku-5-5",
+          "tier": "more",
+          "headline": "Claude Haiku 5.5: Anthropics kleines Modell wird deutlich billiger",
+          "summary": "Anthropic hat Claude Haiku 5.5 veröffentlicht, ein schnelles Kleinmodell mit 1 Million Token Kontext zu rund 75 Prozent niedrigeren Preisen als der Vorgänger.",
+          "body": "Anthropic hat am 7. Oktober Claude Haiku 5.5 vorgestellt, sein bislang schnellstes und günstigstes Modell. Es zielt auf Aufgaben mit hohem Volumen wie Zusammenfassungen, Datenbankabfragen, Klassifikation und Kundensupport. Das Kontextfenster wächst von 200.000 auf eine Million Tokens, erstmals gibt es bei einem Haiku eine einstellbare Effort-Stufe. Verfügbar ist es über Amazon Web Services, Google Cloud und Microsoft Azure.\n\nBei Prompts bis 100.000 Tokens kostet eine Million Eingabe-Tokens 0,10 US-Dollar und eine Million Ausgabe-Tokens 0,50 Dollar; der Vorgänger Haiku 4.5 lag bei 1 und 5 Dollar. Im Schnitt ist das Modell laut The Decoder rund 75 Prozent günstiger. Darüber steigen die Preise auf das Fünffache. Ein neuer Tokenizer verbraucht allerdings etwas mehr Tokens je Aufgabe, die reale Ersparnis fällt daher geringer aus.\n\nIn Herstellertests springt Haiku 5.5 deutlich nach vorn, etwa bei Humanity's Last Exam ohne Werkzeuge von 10,2 auf 45,9 Prozent. Für komplexes Programmieren bleiben Sonnet 5.5 und Opus 5.5 die bessere Wahl.\n\nEin Update vom 8. Oktober nennt eine unabhängige Einordnung: Artificial Analysis sieht Haiku 5.5 mit 43 Punkten an der Spitze der Kleinmodelle vor GLM-5.3 Flash (42) und Gemini 3.8 Flash (41). Auf der höchsten Stufe verbraucht es jedoch viele Tokens, GPT-6 Luna erreicht einen ähnlichen Wert deutlich günstiger. Für Unternehmen in Deutschland, die KI-Funktionen im Massengeschäft betreiben, verschiebt sich damit die Kostenrechnung. Entscheidend ist der reale Tokenverbrauch im eigenen Einsatz, nicht nur der Listenpreis.",
+          "source": "The Decoder",
+          "url": "https://the-decoder.de/ki-preiskampf-geht-weiter-claude-haiku-5-5-bietet-viel-mehr-leistung-fuer-deutlich-weniger-geld/",
+          "sources": [
+            {
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/ki-preiskampf-geht-weiter-claude-haiku-5-5-bietet-viel-mehr-leistung-fuer-deutlich-weniger-geld/"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "ki-ecosia-trennt-sich-von-mistral",
+          "tier": "more",
+          "headline": "Ecosia ersetzt Mistral durch chinesische Open-Weight-Modelle",
+          "summary": "Die Berliner Suchmaschine Ecosia beendet die Zusammenarbeit mit Mistral AI und setzt auf offene Modelle, darunter chinesische. Der Wechsel halbiere die Kosten, sagt Gründer Kroll.",
+          "body": "Die Berliner Suchmaschine Ecosia trennt sich vom französischen KI-Anbieter Mistral AI. Gründer und Chef Christian Kroll bestätigte das laut heise online gegenüber Politico. Künftig setzt Ecosia stärker auf Open-Source- und Open-Weight-Modelle, auch aus China. Erst im Mai hatte das Unternehmen OpenAI durch Mistral ersetzt.\n\nAls Gründe nennt Kroll technische Probleme und einen Rückstand von etwa einem Jahr gegenüber der Konkurrenz. Überlastete Server hätten regelmäßig zu Ausfällen geführt, Ecosia sei als Kunde zu groß für Mistrals Infrastruktur gewesen. Zudem störe ihn der hohe Atomstromanteil in Frankreich und er zweifle an der europäischen Souveränität von Mistral, da das Unternehmen Geld von Investoren wie Nvidia und Samsung eingesammelt habe.\n\nNeuer Partner ist die Plattform Melious, die Modelle wie Qwen, GLM und Kimi hostet. Laut Kroll haben sich die Betriebskosten etwa halbiert, während Qualität und Leistung stiegen. Mistral-Mitgründer Guillaume Lample lud Ecosia ein, das neue Modell Large 4 zu testen.\n\nKritik kommt wegen möglicher Zensur: NewsGuard fand, dass führende chinesische Systeme Falschinformationen im Sinne Pekings oft nicht korrigieren. Rasmus Rothe vom Bundesverband Künstliche Intelligenz sagt, direkte Zensur lasse sich durch Nachtraining entfernen, subtile Prägungen aus den Trainingsdaten blieben aber bestehen. Für Europas Debatte um digitale Souveränität ist der Fall ein Prüfstein: Auch öffentliche Stellen wie das Bundesumweltministerium nutzen Ecosia.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/Adieu-Mistral-Ecosia-wechselt-zu-chinesischen-Open-Source-KI-Modellen-11481323.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/Adieu-Mistral-Ecosia-wechselt-zu-chinesischen-Open-Source-KI-Modellen-11481323.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T17:39:00+02:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "ki-manus-sammelt-500-millionen-dollar-ein",
+          "tier": "more",
+          "headline": "Manus sammelt nach geplatztem Meta-Deal über 500 Millionen Dollar ein",
+          "summary": "Das chinesische KI-Startup Manus hat laut eigenen Angaben mehr als 500 Millionen US-Dollar eingeworben, die erste Runde seit dem gescheiterten Verkauf an Meta.",
+          "body": "Das chinesische KI-Agenten-Startup Manus hat nach Angaben der Mutterfirma Butterfly Effect mehr als 500 Millionen US-Dollar eingesammelt. Die Firma gab die Finanzierung am Donnerstag in einem WeChat-Beitrag bekannt. Es ist die erste Runde seit dem geplatzten Verkauf an Meta.\n\nAngeführt wurde die Runde laut TechCrunch von Boyu Capital und IDG Capital. Auch bestehende Geldgeber wie Tencent, HSG (früher Sequoia China) und ZhenFund beteiligten sich. Eine Bewertung nannte das Unternehmen nicht; im September hieß es, es gebe Gespräche über rund 4 Milliarden Dollar.\n\nHintergrund: Meta wollte Manus für 2 Milliarden Dollar übernehmen, doch chinesische Behörden untersagten die Übernahme im April 2026. Im August nahm Manus den unabhängigen Betrieb wieder auf. Berichten zufolge erwägt das Unternehmen einen Börsengang in Hongkong. Es will weiter im In- und Ausland Personal einstellen.\n\nDer Fall zeigt, wie stark die KI-Branche inzwischen von Geopolitik geprägt ist: Übernahmen zwischen US-Konzernen und chinesischen Startups scheitern an staatlichen Eingriffen, während Kapital aus China nachrückt. Für europäische Firmen, die chinesische Agentensysteme einsetzen oder prüfen, bleibt die Frage nach Datenschutz und Abhängigkeiten relevant.",
+          "source": "TechCrunch",
+          "url": "https://techcrunch.com/2026/10/08/chinas-manus-raises-over-500m-in-first-funding-round-since-split-with-meta/",
+          "sources": [
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/10/08/chinas-manus-raises-over-500m-in-first-funding-round-since-split-with-meta/"
+            }
+          ],
+          "publishedAt": "2026-10-08T15:20:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "wirtschaft",
+      "title": "Wirtschaft & Märkte",
+      "emoji": "📈",
+      "items": [
+        {
+          "id": "wirtschaft-oelpreis-iran-dax-unter-25000",
+          "tier": "top",
+          "headline": "Ölpreis springt über 104 Dollar, DAX fällt unter 25.000 Punkte",
+          "summary": "Berichte über mögliche neue US-Angriffe auf Iran treiben Brent auf über 104 Dollar. Der DAX gibt zum zweiten Tag in Folge nach, Autowerte und Gesundheitsaktien stehen unter Druck.",
+          "body": "Der Ölpreis ist am Donnerstag kräftig gestiegen und hat den deutschen Aktienmarkt belastet. Nach Angaben von Reuters kostete ein Barrel der Nordseesorte Brent am frühen Nachmittag rund 104,75 US-Dollar, ein Plus von gut 4,5 Prozent. Die US-Sorte WTI lag bei etwa 92 Dollar. Am frühen Abend notierte Brent laut wallstreet-online bei etwa 103,7 Dollar. Der DAX schloss den Mittwoch mit einem Minus von 1,35 Prozent bei 25.104 Punkten und rutschte am Donnerstag zeitweise auf rund 24.800 Punkte. Seit Wochenbeginn summiert sich der Verlust auf etwa 1,2 Prozent.\n\n## Auslöser: Berichte über neue Iran-Schläge\n\nHintergrund sind Medienberichte, wonach die US-Regierung neue Militäroperationen gegen Iran erwägt. Laut The Atlantic hat das Weiße Haus das Pentagon um Optionen gebeten; Axios und NBC News berichteten ebenfalls über entsprechende Planungen, die auch Energie- und Atomanlagen treffen könnten. Eine Entscheidung ist nach diesen Berichten nicht gefallen, ein Pentagon-Sprecher bestätigte die Berichte nicht. Viele Händler hatten bislang angenommen, Präsident Trump werde vor den Kongresswahlen am 3. November auf große Militärschläge verzichten. Diese Annahme gerät nun ins Wanken.\n\nHinzu kommen weitere Risiken. Die britische Seehandelsbehörde UKMTO meldete am Mittwoch, ein Tanker nördlich von Katar sei von mehreren Geschossen getroffen worden. Durch die Straße von Hormus lief vor dem Krieg etwa ein Fünftel des weltweit verbrauchten Rohöls. Zudem drohte ein Hurrikan den Förderanlagen im Golf von Mexiko: Shell und Chevron fuhren ihre Offshore-Produktion teilweise zurück, rund ein Viertel der dortigen Ölförderung fiel zeitweise aus. Die Internationale Energieagentur kündigte an, die Freigabe strategischer Reserven zu beschleunigen.\n\n## Börse und Zinsen\n\nAn der Frankfurter Börse gerieten vor allem konjunkturempfindliche Werte unter Druck. Nach Daten von finanzen.net verloren Volkswagen-Vorzüge am Nachmittag rund 3,9 Prozent, BMW gut 2,3 Prozent; auch Fresenius und Qiagen gaben deutlich nach. Gefragt waren dagegen BASF und Rheinmetall mit Gewinnen von jeweils etwa einem Prozent. Die Rendite zehnjähriger Bundesanleihen lag am Vormittag bei rund 3,5 Prozent, so hoch wie zuletzt vor 15 Jahren.\n\n## Was das für Verbraucher bedeutet\n\nAn den Zapfsäulen ist die Wirkung nicht sofort eins zu eins zu erwarten. Nach Angaben des ADAC kostete Super E10 am Mittwoch im Bundesschnitt 2,126 Euro je Liter, Diesel 2,233 Euro; beide Sorten waren binnen einer Woche um 13 beziehungsweise knapp 18 Cent günstiger geworden. Dazu trägt der seit 1. Oktober geltende Tankrabatt bei, der die Energiesteuer bis Jahresende um 14 Cent je Liter senkt, inklusive Mehrwertsteuer etwa 17 Cent. Der ADAC kritisiert, dass vor allem bei Super E10 nicht die volle Entlastung ankomme. Ein höherer Rohölpreis und ein schwächerer Euro können diesen Spielraum jedoch wieder aufzehren; hinzu kommt eine weltweit angespannte Diesellage. Für Pendler zwischen Nordsachsen und Leipzig heißt das: Die Preise bleiben hoch und könnten in den kommenden Tagen wieder anziehen. Nach Angaben des ADAC ist Tanken kurz vor 12 Uhr meist am günstigsten, weil Tankstellen Preise nur einmal täglich um diese Uhrzeit erhöhen dürfen.",
+          "source": "wallstreet-online",
+          "url": "https://wallstreet-online.de/nachricht/21494887-trump-veraendert-rechnung-oelpreis-springt-104-us-dollar-zentrale-marktannahme-broeckelt",
+          "sources": [
+            {
+              "name": "wallstreet-online",
+              "url": "https://wallstreet-online.de/nachricht/21494887-trump-veraendert-rechnung-oelpreis-springt-104-us-dollar-zentrale-marktannahme-broeckelt"
+            },
+            {
+              "name": "Münster Aktuell",
+              "url": "https://ms-aktuell.de/welt/oelpreis-iran-boerse-08-10-2026/"
+            },
+            {
+              "name": "finanzen.net",
+              "url": "https://www.finanzen.net/nachricht/aktien/dax-aktuell-dax-notiert-im-minus-15973889"
+            },
+            {
+              "name": "ADAC",
+              "url": "https://www.adac.de/news/aktueller-spritpreis/"
+            }
+          ],
+          "publishedAt": "2026-10-08T12:14:00+02:00",
+          "importance": 7,
+          "readingMinutes": 3,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "politik",
+      "title": "Politik",
+      "emoji": "🏛️",
+      "items": [
+        {
+          "id": "politik-rausch-landtagspraesident-cdu-stimmen",
+          "tier": "top",
+          "headline": "Sachsen-Anhalt: Wer wählte den AfD-Mann Rausch zum Landtagspräsidenten?",
+          "summary": "Tobias Rausch ist erster AfD-Landtagspräsident Deutschlands, bekam aber mehr Stimmen als AfD und BSW zusammen haben. In der CDU-Fraktion wächst der Streit über die Frage, wer ihn gewählt hat.",
+          "body": "Im Landtag von Sachsen-Anhalt hat die CDU-Fraktion ein Vertrauensproblem. Am Dienstag wurde der AfD-Politiker Tobias Rausch in geheimer Abstimmung zum Landtagspräsidenten gewählt, als erster AfD-Vertreter in diesem Amt in Deutschland. Nach Angaben der Nachrichtenagentur dpa gaben 82 Abgeordnete ihre Stimme ab: 48 votierten mit Ja, 29 mit Nein, fünf enthielten sich.\n\nÖffentlich angekündigt hatte seine Zustimmung nur das BSW. Zusammen mit der AfD ergibt das 44 Stimmen, Rausch erhielt also vier mehr als erwartet. Weil SPD, Grüne und Linke geschlossen gegen ihn stimmen wollten, richtet sich der Verdacht auf die CDU.\n\n## Streit in der CDU\n\nDie CDU-Fraktionsspitze hatte ihren 15 Abgeordneten empfohlen, sich zu enthalten. Fraktionschef Sven Schulze, derzeit noch Ministerpräsident, sagte dem MDR, er könne sich die zusätzlichen Stimmen nicht erklären. Einzelne Abgeordnete hätten angedeutet, mit Nein zu stimmen, ein Ja habe aber keiner angekündigt.\n\nLaut ZDFheute berichtete die Zeit von einem möglichen Tauschgeschäft: CDU-Stimmen für Rausch, im Gegenzug AfD-Stimmen für den CDU-Kandidaten Carsten Borchert, der mit 64 Stimmen zum Vizepräsidenten gewählt wurde. Belege gibt es nicht, denn die Wahl war geheim. Genannte Abgeordnete weisen die Vorwürfe zurück; ein Abgeordneter nannte sie eine „Verleumdungskampagne“. Fünf Abgeordnete sollen sich auf eine Enthaltung verständigt haben, was zwei von ihnen bestätigten.\n\nDie Folgen sind bereits spürbar. Nach Berichten der Süddeutschen Zeitung wollen mehrere CDU-Mitglieder Schulze als Fraktionschef loswerden. Der Chef des CDU-Arbeitnehmerflügels, Dennis Radtke, fordert Parteiausschlussverfahren. Der Abgeordnete Marco Tullner erwägt nach ZDF-Angaben, die Fraktion bis Jahresende zu verlassen.\n\nBei der Wahl des AfD-Kandidaten Hans-Thomas Tillschneider zum Vizepräsidenten stimmte die CDU nach Schulzes Darstellung nach einer Beratungspause geschlossen dagegen.\n\n## Warum es auch Sachsen betrifft\n\nDie Abstimmung gilt als Test für die Brandmauer, also die Abgrenzung der CDU von der AfD. Der Politikwissenschaftler Thorsten Faas nannte sie „sehr, sehr löchrig“. Die AfD war bei der Landtagswahl im September in Sachsen-Anhalt stärkste Partei, ihr Kandidat Ulrich Siegmund will sich Mitte Dezember zur Wahl zum Ministerpräsidenten stellen. Wie sich die CDU in Magdeburg verhält, wird auch im benachbarten Sachsen aufmerksam verfolgt, wo die Union ebenfalls auf Mehrheiten jenseits der AfD angewiesen ist.\n\nAuf Bundesebene beschäftigte der Fall ebenfalls den Koalitionsausschuss von Union und SPD, der am Mittwochabend tagte.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/deutschland/sachsen-anhalt-cdu-afd-landtag-abstimmung-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/sachsen-anhalt-cdu-afd-landtag-abstimmung-100.html"
+            },
+            {
+              "name": "Volksstimme (dpa)",
+              "url": "https://www.volksstimme.de/panorama/cdu-ratselt-woher-kamen-die-stimmen-fur-afd-prasident-4334212"
+            }
+          ],
+          "publishedAt": "2026-10-08T13:15:00+02:00",
+          "importance": 8,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Magdeburg_Landtag_von_Sachsen_Anhalt_Domplatz_6-9_Foto_Wolfgang_Pehlemann_012_9A_2007.jpg/1280px-Magdeburg_Landtag_von_Sachsen_Anhalt_Domplatz_6-9_Foto_Wolfgang_Pehlemann_012_9A_2007.jpg",
+            "credit": "Wolfgang Pehlemann Germany",
+            "license": "CC BY-SA 3.0 de",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Magdeburg_Landtag_von_Sachsen_Anhalt_Domplatz_6-9_Foto_Wolfgang_Pehlemann_012_9A_2007.jpg",
+            "alt": "Der Landtag von Sachsen-Anhalt am Domplatz in Magdeburg"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "politik-berlin-sondierungen-linke-spd-gruene",
+          "tier": "top",
+          "headline": "Berlin: Linke, SPD und Grüne beschließen Sondierungen",
+          "summary": "Gut zweieinhalb Wochen nach der Wahl wollen Linke, SPD und Grüne in Berlin sondieren. Vorab einigten sie sich auf eine gemeinsame Linie gegen Antisemitismus; ein Bündnis ist noch weit entfernt.",
+          "body": "In Berlin rückt ein rot-grün-rotes Bündnis einen Schritt näher, bleibt aber ungewiss. Linke, SPD und Grüne haben am Donnerstag gemeinsam verkündet, Sondierungsgespräche über eine Regierungsbildung aufzunehmen. Das berichtet ZDFheute. Die Parteien wollen laufend verhandeln, um schnell zu einem Ergebnis zu kommen.\n\nDie Linke hatte die Abgeordnetenhauswahl am 20. September mit 25,7 Prozent gewonnen. Spitzenkandidatin Elif Eralp, Fraktionschefin der Linken, könnte erste Regierende Bürgermeisterin der Stadt werden. Nach einem Parteitagsbeschluss am 24. September hatte die Linke SPD und Grüne zu Gesprächen eingeladen, wie ORF berichtete. Beide Parteien knüpften das an eine klare Haltung zu Antisemitismus.\n\n## Papier gegen Antisemitismus\n\nVor dem Start einigten sich die Parteien nach vier Vorgesprächen auf ein Papier mit acht Punkten. Es nennt das Existenzrecht Israels „unverhandelbar“ und verpflichtet zum besonderen Schutz jüdischen Lebens. Bei antisemitischen Vorfällen in einer Partei soll ein dreiköpfiges Gremium über Konsequenzen bis zum Ausschluss entscheiden. Auch Kontakte zur organisierten Kriminalität sollen sanktioniert werden.\n\nAuslöser der Debatte war eine Wahlparty der Neuköllner Linken am 20. September, bei der ein Clanchef und ein Aktivist mit mutmaßlichen Verbindungen zur PFLP anwesend waren, die die EU als Terrororganisation einstuft. Linken-Chefin Kerstin Wolter räumte Fehler ein und sagte, die Aufarbeitung sei nicht abgeschlossen. SPD-Landeschef Steffen Krach verlangte personelle Konsequenzen beim Bundestagsabgeordneten Ferat Koçak wegen freundlicher Chatnachrichten mit einem Mitglied der Familie Remmo.\n\n## Kritik und offene Punkte\n\nDer CDU-Landesvorsitzende Stefan Evers nannte das Papier ein „Feigenblatt“. Volker Beck, Präsident der Deutsch-Israelischen Gesellschaft, sprach von „viel Lyrik, wenig Klarheit“. Über 200 jüdische Berlinerinnen und Berliner warnten in einem offenen Brief vor einer Linken-geführten Regierung. Größter inhaltlicher Streitpunkt bleibt die Vergesellschaftung großer Wohnungsunternehmen, die die Linke fordert und die SPD ablehnt.\n\nRechnerisch wäre auch ein Bündnis aus CDU, SPD und Grünen möglich, allerdings mit knapper Mehrheit. Sondierungen sind keine Koalitionsverhandlungen und können noch scheitern.\n\n## Bundespolitische Wirkung\n\nDie Berliner Entscheidung strahlt auf die Bundespolitik aus: Die Union kritisiert eine mögliche SPD-Koalition mit der Linken, CSU-Landesgruppenchef Alexander Hoffmann sagte, dies widerspreche dem Koalitionsvertrag des Bundes. Für Sachsen ist der Fall ein Beispiel dafür, wie Parteien nach starken Ergebnissen von AfD und Linken neue Mehrheiten suchen.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/deutschland/berlin-sondierungen-linke-spd-gruene-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/berlin-sondierungen-linke-spd-gruene-100.html"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/berlin-rot-gruen-rot-sondierungen-paket-gegen-antisemitismus-100.html"
+            },
+            {
+              "name": "ORF",
+              "url": "https://orf.at/stories/3443274/"
+            }
+          ],
+          "publishedAt": "2026-10-08T18:36:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Rotes_Rathaus%2C_Berlin-Mitte%2C_Fassadendetails_Ostseite%2C_160213%2C_ako.jpg/1280px-Rotes_Rathaus%2C_Berlin-Mitte%2C_Fassadendetails_Ostseite%2C_160213%2C_ako.jpg",
+            "credit": "Ansgar Koreng",
+            "license": "CC BY 3.0 de",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rotes_Rathaus,_Berlin-Mitte,_Fassadendetails_Ostseite,_160213,_ako.jpg",
+            "alt": "Ostfassade des Roten Rathauses in Berlin-Mitte"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "politik-koalitionsausschuss-reformen-zuegig",
+          "tier": "top",
+          "headline": "Koalitionsausschuss: Union und SPD wollen Reformen zügig umsetzen",
+          "summary": "Nach vier Stunden im Kanzleramt bekennen sich die Spitzen von Union und SPD zu schnellen Reformen. Streit über die Rente und die Folgen der Landtagswahlen bleibt.",
+          "body": "Die schwarz-rote Koalition will ihr Reformpaket zügig umsetzen und sich klar vom Extremismus abgrenzen. Das haben die Fraktionsspitzen von Union und SPD nach einem rund vierstündigen Koalitionsausschuss am Mittwochabend im Kanzleramt erklärt, wie ZDFheute berichtet. Die Beratungen endeten gegen 22 Uhr. Es war das erste Treffen dieser Runde seit mehr als drei Monaten.\n\nUnionsfraktionschef Thorsten Frei sagte beim Verlassen des Kanzleramts nur: „Gut war's.“ In einer Nachricht an die Abgeordneten bekannten sich die Fraktionsspitzen zu einer schnellen Umsetzung der im Juli beschlossenen Reformen.\n\n## Das Reformpaket\n\nEs umfasst Rente, Pflege, Arbeitsmarkt und Steuern. Die Koalitionsfraktionen hatten Ende August in Münster vereinbart, es bis Jahresende durch den Bundestag zu bringen. Kanzler Friedrich Merz rechnet laut ZDFheute nicht mit einer vollständigen Umsetzung bis Weihnachten, hofft aber auf das Frühjahr 2027. Die SPD fordert Änderungen, etwa an der abschlagsfreien Rente nach 45 Beitragsjahren.\n\nVor dem Treffen hatte SPD-Fraktionschef Matthias Miersch nach Angaben von Münster Aktuell erklärt, er erwarte keine Entscheidungen zu den strittigen Projekten, sondern eine Grundsatzdebatte über den Kurs der Regierung. SPD-Chef und Vizekanzler Lars Klingbeil wolle zeigen, wie Veränderungen den Menschen konkret nützen. Offen sind Rente, Pflege, Krankenversicherung, Haushalt und Arbeitsmarkt, etwa bei flexibleren Arbeitszeiten.\n\n## Nachwirkungen der Landtagswahlen\n\nAuf der Tagesordnung standen auch die Haushaltsplanung für 2027 und die Folgen der Septemberwahlen. Die AfD wurde in Sachsen-Anhalt und Mecklenburg-Vorpommern stärkste Partei, die Linke in Berlin. Die Union ärgert sich über die mögliche SPD-Koalition mit der Linken in Berlin; CSU-Landesgruppenchef Alexander Hoffmann sagte, das widerspreche dem Koalitionsvertrag. Zudem wurde in Sachsen-Anhalt ein AfD-Politiker mit Stimmen auch aus anderen Fraktionen zum Landtagspräsidenten gewählt.\n\n## Einordnung\n\nRechnerisch ist die Mehrheit stabil: Union und SPD kommen auf 328 von 630 Sitzen, 316 sind für eine absolute Mehrheit nötig. Der Politikwissenschaftler Oliver Lembcke sieht die Koalition laut Münster Aktuell an der Schwelle zu einer Krise, ohne sie schon zu diagnostizieren. Für Beschäftigte und Rentner auch in Sachsen ist der Ausgang entscheidend, weil die Rentenänderungen und Steuerentlastungen viele Haushalte betreffen. Konkrete Beschlüsse nennen die Berichte vom Mittwochabend allerdings nicht.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/koalition-koalitionsausschuss-cdu-csu-spd-reformen-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/koalition-koalitionsausschuss-cdu-csu-spd-reformen-100.html"
+            },
+            {
+              "name": "Münster Aktuell",
+              "url": "https://ms-aktuell.de/welt/koalitionsausschuss-regierungskrise-06-10-2026/"
+            }
+          ],
+          "publishedAt": "2026-10-08T11:53:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Reichstag_pano.jpg/1280px-Reichstag_pano.jpg",
+            "credit": "Daniel Schwen",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reichstag_pano.jpg",
+            "alt": "Das Reichstagsgebäude in Berlin"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "politik-herbstprojektion-wachstum-1-3-prozent",
+          "tier": "more",
+          "headline": "Bundesregierung hebt Wachstumsprognose für 2026 auf 1,3 Prozent",
+          "summary": "Die Herbstprojektion von Wirtschaftsministerin Reiche sieht für 2026 deutlich mehr Wachstum als im Frühjahr. Die Wirtschaft warnt vor zu viel Optimismus.",
+          "body": "Die Bundesregierung rechnet für 2026 mit einem Wirtschaftswachstum von 1,3 Prozent. Das geht aus der Herbstprojektion hervor, die das Wirtschaftsministerium unter Katherina Reiche (CDU) am Donnerstag vorstellte, wie ZDFheute meldet. Im Frühjahr hatte die Regierung nur 0,5 Prozent erwartet. Für 2027 steigt die Prognose von 0,9 auf 1,1 Prozent.\n\nAls Treiber nennt das Ministerium starke Exporte und hohe Staatsausgaben. Die Wirtschaft sei im ersten Halbjahr trotz des Nahostkonflikts und höherer Energiepreise kräftig gewachsen. Exporteure profitierten im zweiten Quartal von einem Sondereffekt, weil angesichts weltweiter Knappheit energieintensive Waren aus Deutschland auf Vorrat gekauft wurden. Auch das Sondervermögen für Verteidigung und Infrastruktur zeige bereits Wirkung. Führende Wirtschaftsforschungsinstitute hatten ihre Prognose für 2026 ebenfalls auf 1,3 Prozent angehoben.\n\nReiche sprach dennoch von einer fragilen Lage; das Wachstum stehe weiter auf „wackligen Beinen“. Sie fordert Strukturreformen, darunter flexiblere Arbeitszeiten, stabile Sozialbeiträge, weniger Bürokratie und wettbewerbsfähige Energiepreise. Arbeitsmarktmaßnahmen und die geplante Rentenreform sind innerhalb der Koalition umstritten.\n\nDer Außenhandelschef des DIHK, Volker Treier, sagte, die Exportentwicklung bleibe „ohne eigene Dynamik“. Auch der Großhandelsverband BGA mahnte zur Vorsicht. Abhängig ist der Ausblick laut Ministerium vom Verlauf der Konflikte im Nahen Osten und in der Ukraine. Für Sachsen mit seiner exportstarken Industrie und Zulieferern ist vor allem die Energiepreisentwicklung entscheidend.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/deutschland/wirtschaft-prognose-bundesregierung-wachstum-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/wirtschaft-prognose-bundesregierung-wachstum-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T12:57:00+02:00",
+          "importance": 6,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "politik-freuding-russland-1-5-millionen-soldaten",
+          "tier": "more",
+          "headline": "Freuding: Russland hat Ziel von 1,5 Millionen Soldaten erreicht",
+          "summary": "Heeresinspekteur Christian Freuding warnt vor wachsender russischer Stärke, auch bei Drohnen. Er hält einen Angriff auf NATO-Gebiet für plausibel und verweist auf den Drohnenangriff auf den Flughafen Leipzig.",
+          "body": "Russland hat nach Angaben von Heeresinspekteur Christian Freuding sein Ziel von 1,5 Millionen Soldaten erreicht. Das sagte der Generalleutnant im Bundeswehr-Podcast „Generaldebatte“, wie ZDFheute berichtet. Präsident Putin ordne fast monatlich in kleinen Schritten eine Vergrößerung der Streitkräfte an.\n\nRussland sei der Ukraine zahlenmäßig wie qualitativ überlegen, sagte Freuding. Er nannte eine Verdopplung des russischen Drohneneinsatzes zwischen Juli und August sowie neue strahlgetriebene Drohnen vom Typ Geran. Als Beispiele hybrider Aktivitäten verwies er auf einen gescheiterten Drohnenangriff auf den Flughafen Leipzig und auf Zwischenfälle in Rüstungsbetrieben in Italien, Bulgarien, Rumänien und im Baltikum.\n\nEinen Angriff auf NATO-Gebiet hält Freuding für plausibel, und zwar nicht erst nach einem Ende des Ukrainekriegs, sondern womöglich, um ihn zu beenden. Weil der Zeitpunkt unsicher sei, müsse die Einsatzbereitschaft schneller steigen. Freuding leitete von 2022 bis 2023 den Sonderstab Ukraine im Verteidigungsministerium und gilt als Vertrauter von Minister Boris Pistorius (SPD).\n\nKritik an der europäischen Rüstungsorganisation äußerte Moritz Schularick, Präsident des Kieler Instituts für Weltwirtschaft. Sie sei „grotesk ineffizient“, obwohl die europäischen NATO-Staaten im vergangenen Jahr mehr als 500 Milliarden Dollar ausgaben. Die USA geben laut ZDFheute rund 900 Milliarden Dollar im Jahr aus. Für Sachsen ist die Warnung konkret, weil der Flughafen Leipzig/Halle als Ziel genannt wird.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/russland-armee-soldaten-zahl-christian-freuding-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/russland-armee-soldaten-zahl-christian-freuding-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T12:19:00+02:00",
+          "importance": 6,
+          "image": null,
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "welt",
+      "title": "Welt",
+      "emoji": "🌍",
+      "items": [
+        {
+          "id": "welt-huthi-angriffe-saudische-flughaefen",
+          "tier": "top",
+          "headline": "Huthi greifen saudische Flughäfen an: drei Tote, 36 Verletzte",
+          "summary": "Die Huthi-Rebellen haben mehrere Flughäfen in Saudi-Arabien angegriffen. Die Koalition schlägt zurück; der Jemen-Krieg bedroht Handelsrouten und Ölmärkte.",
+          "body": "Im Jemen-Krieg eskaliert die Lage auch für die Zivilbevölkerung weit jenseits der Front: Die vom Iran unterstützten Huthi-Rebellen haben in dieser Woche mehrere saudische Flughäfen angegriffen. Nach Angaben der saudischen Luftfahrtbehörde starben drei Zivilisten, 36 Menschen wurden verletzt. Am Donnerstag meldete die von Saudi-Arabien geführte Militärkoalition zudem, zwei weitere ballistische Raketen auf Riad seien abgefangen worden.\n\n## Was bekannt ist\n\nBeim Angriff auf den Flughafen Abha im Süden des Landes kamen laut Behörde zwei Frauen aus Marokko und Algerien ums Leben, 28 Menschen wurden verletzt. Am internationalen Flughafen King Khalid in Riad starb ein sudanesischer Staatsbürger, acht weitere wurden verletzt, darunter fünf Saudis. Die Huthis bekannten sich zu den Attacken; sie setzten nach eigenen Angaben Drohnen und Raketen ein. Schon am Montagabend waren laut Luftfahrtbehörde die Flughäfen Jazan und Najran getroffen worden, drei Menschen wurden verletzt. Zu den genauen Wochentagen der Angriffe auf Abha und Riad weichen die Berichte voneinander ab.\n\nDie Koalition kündigte an, die Angriffe würden „nicht ungestraft bleiben“. Nach ihren Angaben zerstörte sie 82 Huthi-Ziele in den Provinzen Saada, Hodeida, Dschauf und Marib. Außerdem sei in der Hauptstadt Sanaa eine Abschussplattform zerstört worden, von der aus Riad beschossen wurde. Die jemenitische Regierung berichtet zudem von Beschuss des Flughafens von Aden.\n\n## Der Hintergrund\n\nDie Kämpfe im Jemen sind seit Juni wieder aufgeflammt. Nach Angaben der Internationalen Organisation für Migration wurden seitdem mehr als 200.000 Menschen vertrieben. Regierungstruppen, unterstützt durch saudische Luftangriffe, erreichten nach eigenen Angaben am Montag die Hafenstadt Mokha und drängten die Huthis von der Meerenge Bab al-Mandab zurück; die Huthis bestreiten das. Die Türkei schickt laut Reuters Verteidigungs- und technische Hilfe, Syrien erwägt Militärhilfe. Die USA liefern nach Angaben des Time-Magazins Aufklärung, direkte Schläge gegen die Huthis lehnte Präsident Donald Trump demnach bisher ab. Die US-Botschaft in Riad rief ihre Bürger erneut zu erhöhter Wachsamkeit auf.\n\nDer Jemen-Konflikt ist eng mit dem größeren Krieg verwoben, den die USA und Israel seit dem 28. Februar gegen den Iran führen. Die Huthis gelten als Verbündete Teherans.\n\n## Was das für Deutschland bedeutet\n\nBab al-Mandab und das Rote Meer gehören zu den wichtigsten Handelsrouten zwischen Asien und Europa. Je weiter die Huthis dort vorrücken oder Saudi-Arabiens Infrastruktur bedrohen, desto größer das Risiko für Lieferketten, Frachtraten und Ölpreise. Das spüren auch Unternehmen in Sachsen, etwa in der Leipziger Logistik- und Autozulieferbranche, am Ende über Preise für Energie und Importware. Politisch wächst zudem der Druck auf Europa, sich an Schutzmissionen und Vermittlungsbemühungen zu beteiligen.",
+          "source": "TIME",
+          "url": "https://time.com/article/2026/10/08/saudi-arabia-yemen-houthi-rebels-airport-attacks-war/",
+          "sources": [
+            {
+              "name": "TIME",
+              "url": "https://time.com/article/2026/10/08/saudi-arabia-yemen-houthi-rebels-airport-attacks-war/"
+            },
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/7/saudi-arabia-says-three-foreign-nationals-killed-in-attacks-on-airports"
+            },
+            {
+              "name": "Gulf News",
+              "url": "https://gulfnews.com/world/mena/us-iran-war-saudi-led-coalition-strikes-82-houthi-targets-after-airport-attacks-tanker-hit-off-qatar-iran-oman-agree-hormuz-routes-as-brent-stays-above-100-1.500702560"
+            }
+          ],
+          "publishedAt": "2026-10-08T13:00:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/King_Khalid_International_Airport%2C_Riyadh_Saudi_Arabia_-_panoramio_%282%29.jpg/1280px-King_Khalid_International_Airport%2C_Riyadh_Saudi_Arabia_-_panoramio_%282%29.jpg",
+            "credit": "liton islam",
+            "license": "CC BY 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:King_Khalid_International_Airport,_Riyadh_Saudi_Arabia_-_panoramio_(2).jpg",
+            "alt": "Der Flughafen King Khalid in Riad, Saudi-Arabien"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "welt-eu-china-handelsgespraeche-peking",
+          "tier": "top",
+          "headline": "EU und China verhandeln in Peking über Handelsungleichgewicht",
+          "summary": "Handelskommissar Šefčovič trifft Chinas Handelsminister. Brüssel verlangt bis Oktober Ergebnisse und droht mit Schutzmaßnahmen, Berlin und Paris erhöhen den Druck.",
+          "body": "Die EU und China verhandeln seit Donnerstag in Peking über den Abbau des gewaltigen Handelsungleichgewichts. EU-Handelskommissar Maroš Šefčovič trifft dort bis Freitag Chinas Handelsminister Wang Wentao. Die Kommission hat den Oktober als Frist gesetzt, bis zu der Peking „greifbare“ Ergebnisse liefern soll; andernfalls drohen neue Schutzmaßnahmen.\n\n## Worum es geht\n\nDas EU-Handelsdefizit gegenüber China ist nach Angaben von Euronews und Al Jazeera auf einen Rekordwert von mehr als einer Milliarde Euro pro Tag gewachsen. Industriekommissar Stéphane Séjourné sagte, die EU habe im vergangenen Jahr 250.000 Industriejobs verloren. Brüssel stört sich an der Flut chinesischer Exporte, am eingeschränkten Marktzugang für europäische Firmen und an Chinas Ausfuhrbeschränkungen für Seltene Erden. Der Waffenstillstand bei diesen Exportkontrollen gilt bis zum 10. Januar 2027.\n\nKonkret fordert die Kommission nach Euronews Importquoten nach Produkten. Wie die Financial Times berichtet, lehnte China eine freiwillige Begrenzung der Hybridauto-Exporte ab; die Kommission erwägt demnach nun eine einseitige Obergrenze. Das Pekinger Handelsministerium kündigte eine „entschiedene Reaktion“ an, falls die EU Beschränkungen beschließt, und pocht auf WTO-Regeln.\n\n## Druck aus Berlin und Paris\n\nKanzler Friedrich Merz und Frankreichs Präsident Emmanuel Macron schrieben Kommissionspräsidentin Ursula von der Leyen und forderten ein neues Handelsinstrument, mit dem die EU binnen Tagen auf wirtschaftliche Aggression reagieren könnte, etwa durch schnelle Importstopps. Es würde greifen, sofern nicht eine qualifizierte Mehrheit der Staaten dagegen stimmt. Der Vorschlag soll beim EU-Gipfel in der kommenden Woche beraten werden, bei dem China ganz oben auf der Tagesordnung steht. Das Europaparlament sprach sich am Mittwoch mit Mehrheit in einer nicht bindenden Entschließung für eine härtere Handelspolitik gegenüber Peking aus.\n\nBeide Seiten haben zuletzt nachgelegt: China leitete am 3. Oktober ein Antidumpingverfahren zu EU-Einfuhren von p-Nitrotoluol ein, nachdem die EU im September PVC-Importe aus China untersucht hatte. Peking untersagte seinen Firmen zudem, bei EU-Kartellverfahren zu kooperieren.\n\n## Was das für Deutschland bedeutet\n\nDeutschland hat sich bei Strafzöllen auf chinesische Elektroautos 2024 noch gegen Brüssel gestellt. Dass Merz nun ein schärferes Instrument fordert, zeigt, wie sehr sich die Stimmung gedreht hat. Für Sachsen mit Automobil- und Zulieferindustrie, etwa im Raum Leipzig, ist beides riskant: Schutzmaßnahmen können heimische Branchen entlasten, Gegenmaßnahmen und knappe Seltene Erden aber Lieferketten und Exporte treffen.",
+          "source": "Euronews",
+          "url": "https://www.euronews.com/2026/10/06/eu-china-trade-tensions-five-things-to-know-as-brussels-and-beijing-face-crunch-talks",
+          "sources": [
+            {
+              "name": "Euronews",
+              "url": "https://www.euronews.com/2026/10/06/eu-china-trade-tensions-five-things-to-know-as-brussels-and-beijing-face-crunch-talks"
+            },
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/7/eu-china-trade-talks-begin-in-beijing-amid-escalating-pressure"
+            }
+          ],
+          "publishedAt": "2026-10-07T12:05:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Great_Hall_of_the_People_Beijing_China.jpg/1280px-Great_Hall_of_the_People_Beijing_China.jpg",
+            "credit": "Philip Nalangan",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Great_Hall_of_the_People_Beijing_China.jpg",
+            "alt": "Die Große Halle des Volkes in Peking"
+          },
+          "readingMinutes": 2
+        }
+      ]
+    },
+    {
+      "id": "region",
+      "title": "Leipzig & Region",
+      "emoji": "📍",
+      "items": [
+        {
+          "id": "region-revolutionale-leipzig",
+          "tier": "top",
+          "headline": "Revolutionale in Leipzig bringt Aktivisten aus 17 Ländern zusammen",
+          "summary": "Die Stiftung Friedliche Revolution lädt vom 8. bis 10. Oktober zum Internationalen Runden Tisch. Auftakt und Abschluss im Beyerhaus sind öffentlich und kostenlos.",
+          "body": "Rund um den Jahrestag der Friedlichen Revolution von 1989 findet in Leipzig die Revolutionale statt. Seit heute, dem 8. Oktober, treffen sich bis zum 10. Oktober mehr als 70 Menschenrechtsverteidigerinnen, Journalisten und Vertreter der Zivilgesellschaft aus 17 Ländern zum Internationalen Runden Tisch. Nach Angaben der Veranstalter kommen sie unter anderem aus Deutschland, Belarus, der Ukraine, Armenien und Georgien.\n\n## Ein Treffen mit Blick nach Osteuropa\n\nDie Revolutionale ist ein Projekt der Stiftung Friedliche Revolution. Es wechselt alle zwei Jahre zwischen einem öffentlichen Festival und dem Internationalen Runden Tisch. In diesem Jahr ist der Runde Tisch an der Reihe, geleitet von Marie Schwarz, die das Projekt erstmals verantwortet. Er trägt den Titel „Democratic Memories. Democratic Futures“. Schon im Sommer hatte die Fachgemeinschaft AFK auf eine Ausschreibung der Veranstalter hingewiesen. Der Schwerpunkt liegt demnach auf Ost- und Ostmitteleuropa, ausdrücklich eingeladen waren auch Menschen, die im Exil arbeiten.\n\nInhaltlich geht es um die Lehren aus der Friedlichen Revolution und aus zivilem Widerstand. Ein zweites Thema ist der 40. Jahrestag der Reaktorkatastrophe von Tschernobyl und die Verbindung zwischen ökologischem, politischem und gesellschaftlichem Wandel. Außerdem sollen die Folgen autoritärer Herrschaft und die grenzüberschreitende Wirkung gemeinsamen Handelns besprochen werden.\n\nDer größte Teil der Gespräche ist nicht öffentlich. Die Veranstalter wollen damit einen geschützten Raum schaffen, in dem sich Menschen austauschen können, die in ihren Herkunftsländern unter Druck stehen.\n\n## Öffentliche Termine\n\nÖffentlich sind nach Angaben der Leipziger Zeitung der Auftakt am 8. Oktober um 19 Uhr und der Abschluss am 10. Oktober um 20:30 Uhr. Beide Termine finden im Beyerhaus statt, der Eintritt ist frei. Zum Auftakt diskutieren Felix Ekardt und Mascha Schädlich über Umweltaktivismus. Außerdem zeigen belarussische Künstlerinnen und Künstler eine Performance zu Tschernobyl. Den Abschluss gestalten das Kolegium Europy Wschodniej aus Wrocław und die Künstlerin Zlata Zhuravlova.\n\nAm 10. Oktober sind Exkursionen geplant, unter anderem nach Torgau, zu einer Gedenkstätte für Zwangsarbeit und ins Stasi-Unterlagen-Archiv. Für Nordsachsen ist das ein seltener Anlass, bei dem die Stadt Torgau als Ort der jüngeren deutschen Geschichte Teil eines internationalen Programms wird.\n\n## Warum es zählt\n\nDas Treffen fällt in eine Woche, in der Leipzig ohnehin an den 9. Oktober 1989 erinnert. Die Revolutionale verbindet diese Erinnerung mit der Lage von Aktivistinnen und Journalisten, die heute in autoritär regierten Ländern arbeiten. Wer sich für die Veranstaltung interessiert, kann an den beiden öffentlichen Abenden teilnehmen.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/politik/engagement/2026/10/heute-startet-die-revolutionale-in-leipzig-das-gefuehl-nicht-allein-zu-sein-672529",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/politik/engagement/2026/10/heute-startet-die-revolutionale-in-leipzig-das-gefuehl-nicht-allein-zu-sein-672529"
+            },
+            {
+              "name": "AFK – Arbeitsgemeinschaft für Friedens- und Konfliktforschung",
+              "url": "https://afk-web.de/en/call-for-participation-revolutionale-international-round-table-conference-2026-for-democracy-and-human-rights-2/"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Leipzig_Nikolaikirche.jpg",
+            "credit": "Dirk Goldhahn",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Leipzig_Nikolaikirche.jpg",
+            "alt": "Denkmal für die Friedliche Revolution vor der Nikolaikirche in Leipzig"
+          }
+        },
+        {
+          "id": "region-mietwucher-stadtrat",
+          "tier": "more",
+          "headline": "Leipzigs Vorgehen gegen Mietwucher läuft ins Leere",
+          "summary": "Über 6.000 Haushalte meldeten Verdacht auf Mietwucher, doch die Staatsanwaltschaft lehnt fast alle Fälle ab. Der Oberbürgermeister sieht den Bund in der Pflicht.",
+          "body": "Das Vorgehen der Stadt Leipzig gegen überhöhte Mieten bringt kaum Ergebnisse. Das zeigte sich laut Leipziger Zeitung in der Stadtratssitzung vom 30. September, bei der eine Anfrage der SPD behandelt wurde. Demnach meldeten mehr als 6.000 Haushalte einen Verdacht auf Mietwucher.\n\nBearbeitet werden die Meldungen im Sozialamt, wo nach Angaben der Zeitung eine einzige Stelle dafür zuständig ist. Dutzende Fälle, die die Stadt als eindeutig einstufte, wurden an die Staatsanwaltschaft abgegeben. Diese lehnte praktisch alle ab, weil sich die Absicht der Vermieter nicht nachweisen ließ. Das Wirtschaftsstrafgesetz verlangt Vorsatz oder Leichtfertigkeit, eine Miete 20 Prozent über der ortsüblichen reicht allein nicht.\n\nOberbürgermeister Burkhard Jung bezeichnete das als Problem auf Bundesebene. Mehr Personal, etwa 30 Stellen, würde ohne Gesetzesänderung nach seiner Einschätzung wenig ändern. Sozialbürgermeisterin Martina Münch (SPD) nannte das Gesetz ein „stumpfes Instrument“. SPD-Stadträtin Anja Feichtinger stellte Nachfragen, die Antwort des Ordnungsamts, es gehe um ein rechtsstaatlich einwandfreies Verfahren, kam nicht überall gut an.\n\nAuf eine Anfrage der Linken antwortete die Verwaltung außerdem, dass Kürzungen beim Wohngeld nicht von der Stadt ausgeglichen werden können. Für Mieter in einer der am stärksten angespannten Wohnungsmärkte Ostdeutschlands bleibt damit offen, wer sie gegen überhöhte Forderungen schützt. Beschlüsse gab es in der Sitzung zu diesem Thema nicht.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/wirtschaft/verbraucher/2026/10/der-stadtrat-tagte-wie-leipzigs-vorgehen-gegen-mietwucher-praktisch-ins-leere-laeuft-video-672558",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/wirtschaft/verbraucher/2026/10/der-stadtrat-tagte-wie-leipzigs-vorgehen-gegen-mietwucher-praktisch-ins-leere-laeuft-video-672558"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "region-migrantenbeirat-doppelhaushalt",
+          "tier": "more",
+          "headline": "Migrantenbeirat wehrt sich gegen Kürzungen im Leipziger Doppelhaushalt",
+          "summary": "Der Beirat fordert mit fünf Änderungsanträgen, Beschwerdestelle, Betreuung und Einbürgerung nicht auszudünnen. Über den Haushalt 2027/2028 entscheidet der Stadtrat im Dezember.",
+          "body": "Der Migrantinnen- und Migrantenbeirat der Stadt Leipzig will Einschnitte im Doppelhaushalt 2027/2028 verhindern. Finanzbürgermeister Torsten Bonew hat den Entwurf eingebracht, abgestimmt wird im Dezember. Der Beirat hat fünf Änderungsanträge gestellt, wie Co-Vorsitzende Maria Habre im Gespräch mit der Leipziger Zeitung erläuterte.\n\nEin Antrag will die Beteiligungs- und Beschwerdestelle für Gemeinschaftsunterkünfte erhalten. Sie umfasst 0,55 Vollzeitstellen, in den vergangenen Jahren gab es rund 70 Beschwerden. Laut Beirat ist die Stelle bundesweit einmalig, die Stadt sieht sie als freiwillige Leistung. Ein zweiter Antrag richtet sich gegen niedrigere Betreuungsschlüssel: Das Sozialamt plant große Leit-Unterkünfte mit täglicher Betreuung, kleine sollen nur noch ein- bis zweimal pro Woche besucht werden.\n\nBei der Einbürgerung sollen ab 2027 2,1 Stellen wegfallen, hinzu kommen zwei bis drei Stellen in der Ausländerbehörde, obwohl sich Anträge stauen. Auch eine Stelle der Einheit AKZESS, die Verfahren für Fachkräfte aus dem Ausland beschleunigt, soll gestrichen werden. Der fünfte Antrag, gemeinsam mit Grünen, Linken und SPD-Fraktion, fordert ab 2027 zusätzlich 100.000 Euro für zivilgesellschaftliche Integrationsarbeit. Die städtische Förderung ist seit 2019 unverändert.\n\nDer Beirat räumt ein, dass die Haushaltslage schwierig ist. Den Status quo bei der Betreuung dürfe man aber nicht zur Disposition stellen.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/politik/leipzig/2026/10/doppelhaushalt-2027-2028-der-migrantinnen-und-migrantenbeirat-wehrt-sich-gegen-personelle-kuerzungen-672600",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/politik/leipzig/2026/10/doppelhaushalt-2027-2028-der-migrantinnen-und-migrantenbeirat-wehrt-sich-gegen-personelle-kuerzungen-672600"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "sport",
+      "title": "Sport",
+      "emoji": "⚽",
+      "items": [
+        {
+          "id": "sport-uefa-fordert-neue-fifa-spitze",
+          "tier": "top",
+          "headline": "UEFA fordert neue FIFA-Spitze, nennt aber keinen Kandidaten",
+          "summary": "Nach dem Treffen der 55 Mitgliedsverbände in Berlin sagt die UEFA Präsident Infantino den Kampf an. Einen Gegenkandidaten gibt es noch nicht, nur ein Anforderungsprofil.",
+          "body": "Die europäischen Fußballverbände wollen Gianni Infantino als FIFA-Präsidenten loswerden, haben dafür aber noch keine Person. Nach einem Treffen der 55 UEFA-Mitglieder in einem Berliner Hotel erklärte der Kontinentalverband am Donnerstag, die FIFA brauche eine neue Führung. Das Vertrauen in den amtierenden Präsidenten sei verloren. Wer ihn bei der Wahl am 18. März in Rabat herausfordern soll, blieb offen.\n\n## Profil statt Name\n\nStatt eines Kandidaten einigten sich die Verbände auf Kriterien. Gesucht wird nach Angaben der Nachrichtenagentur dpa eine „respektierte und einigende Persönlichkeit“, die tief im Fußball verwurzelt ist. Dem Reformplan, der nun bei der FIFA eingebracht werden soll, stimmten 54 der 55 Verbände zu. Nur Aserbaidschan votierte dagegen. Das Land hatte sich zuvor ebenso wie Lettland für Infantino ausgesprochen; Lettland schwenkte nun um.\n\nDie Frist für eine offizielle Nominierung endet am 18. November. Bis dahin ist ein weiteres Treffen aller 55 Verbände geplant, Anfang November. Laut Sportschau will die UEFA den Zeitpunkt einer Kandidatenvorstellung strategisch wählen.\n\n## Rückhalt für Infantino\n\nInfantino gilt trotz des Gegenwinds weiter als stark. Er hat Rückhalt in Afrika und Südamerika und nach Angaben der Sportschau Zusagen aus Ozeanien, Nordamerika und Asien. Mehrere arabische Verbände stellten sich hinter ihn, und der Präsident des asiatischen Verbands, Scheich Salman bin Ibrahim al-Chalifa, schlug in einem Brief an Infantino einen versöhnlicheren Ton an als die UEFA.\n\nAusgelöst wurde der Machtkampf durch einen Investorendeal zur Vermarktung der WM-Rechte. Infantino hatte ihn im Alleingang verhandelt und später abgesagt. Inzwischen bot er Reformgespräche an. Der Deutsche Fußball-Bund hält das für wenig glaubwürdig: Präsident Bernd Neuendorf sagte, die deutsche Delegation sei nicht überzeugt, dass mit der jetzigen FIFA-Spitze ein glaubhafter Reformprozess möglich sei. Er unterstützt zudem UEFA-Präsident Aleksander Ceferin.\n\n## Ceferin und ein Außenseiter\n\nCeferin selbst tritt erneut an und will weitere vier Jahre an der UEFA-Spitze bleiben, die Wahl dazu ist für den 22. April auf dem Kongress in Astana vorgesehen. Als möglicher Herausforderer Infantinos bringt sich zudem der frühere Schweizer Nationalspieler Ramon Vega erneut ins Spiel. Ihm fehlten bislang die nötigen Unterstützungsschreiben von fünf FIFA-Mitgliedsverbänden.\n\nFür Fans und Klubs in Deutschland hat der Streit praktische Folgen: Die FIFA organisiert die Weltmeisterschaften und bestimmt über deren Vermarktung und Regeln. Wer sie führt, entscheidet mit darüber, wie Einnahmen verteilt werden und wie viel Einfluss die Verbände aus Europa behalten. Bis Mitte November muss die Opposition nun beweisen, dass sie nicht nur Kritik, sondern auch eine tragfähige Alternative anbieten kann.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/uefa-praesentiert-strategie-aber-keinen-kandidaten,uefa-treffen-berlin-fifa-infantino-102.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/uefa-praesentiert-strategie-aber-keinen-kandidaten,uefa-treffen-berlin-fifa-infantino-102.html"
+            },
+            {
+              "name": "Schwäbische Zeitung (dpa)",
+              "url": "https://www.schwaebische.de/sport/uefa-sucht-den-infantino-herausforderer-ceferin-bleibt-4923319"
+            }
+          ],
+          "publishedAt": "2026-10-08T18:49:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Gianni_Infantino_%282020%29.jpg/1280px-Gianni_Infantino_%282020%29.jpg",
+            "credit": "United Nations Office on Drugs and Crime",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gianni_Infantino_(2020).jpg",
+            "alt": "FIFA-Präsident Gianni Infantino bei einem Termin"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "sport-kane-gleicht-englands-laenderspielrekord-aus",
+          "tier": "top",
+          "headline": "Kane gleicht Englands Länderspielrekord aus und trifft doppelt",
+          "summary": "Beim 3:0 gegen Tschechien in der Nations League absolviert Harry Kane sein 125. Länderspiel, so viele wie Peter Shilton. England steht kurz vor dem Finalturnier.",
+          "body": "Harry Kane hat am Dienstagabend in Wembley Englands Rekord für Länderspiele eingestellt und beim 3:0 in der Nations League gegen Tschechien zwei Tore erzielt. Es war sein 125. Einsatz im Nationaltrikot. Damit zog er mit dem früheren Torhüter Peter Shilton gleich, dessen Bestmarke 36 Jahre lang Bestand hatte.\n\n## Die Tore\n\nDie Führung fiel in der 27. Minute durch ein Eigentor: Vladimír Coufal von der TSG Hoffenheim fälschte eine Flanke Kanes ins eigene Tor ab. Kane war damit an allen drei Treffern beteiligt. In der 40. und in der 57. Minute traf er selbst. Nach Angaben von Sky Sports wurde er in der 81. Minute unter stehendem Applaus ausgewechselt.\n\nVor der Partie hatte Kane 89 Länderspieltore auf dem Konto und war damit schon Englands erfolgreichster Schütze aller Zeiten. Mit seinen beiden Treffern steht er nun bei 91. Das Hinspiel hatte England mit 7:0 gewonnen.\n\n## Tabelle und Ausblick\n\nEngland hat in vier Spielen der Gruppe drei Siege geholt und 14 Tore erzielt. Laut Sportschau liegt die Mannschaft sechs Punkte vor Kroatien auf Rang zwei hinter Spanien. Die Spanier führen die Gruppe an, nachdem sie am selben Abend Kroatien mit 2:1 besiegt hatten. Sky Sports schreibt, England brauche aus den letzten beiden Gruppenspielen nur noch einen Punkt, um das Viertelfinale zu erreichen, und sei so gut wie sicher qualifiziert.\n\nOb Kane den Rekord allein hält, ist damit eine Frage des nächsten Länderspiels: Mit dem nächsten Einsatz würde er Shilton überholen. Die Sportschau wies darauf hin, dass eine Bildunterschrift ihn bereits als alleinigen Rekordhalter bezeichnete, der Artikeltext aber nur vom Gleichstand spricht.\n\n## Einordnung für Deutschland\n\nDie Nations League beschäftigt auch die deutsche Auswahl. Laut Sportschau ist sie in ihrer Gruppe bislang nur Dritter mit zwei Unentschieden (1:1 gegen die Niederlande, 0:0 gegen Griechenland), einer Niederlage (0:1 in Griechenland) und einem 2:0 gegen Serbien. Als zweitbester Gruppendritter würde sie derzeit die Relegation vermeiden, stünde im Viertelfinale aber nicht, wenn dieses jetzt gespielt würde. Die letzten Gruppenspiele gegen Serbien am 13. November und die Niederlande am 16. November entscheiden, ob Deutschland im März um das Finalturnier oder in der Relegation spielt.\n\nFür England ist die Lage komfortabler. Kane kann im November mit seinem nächsten Einsatz Shilton überholen und den Rekord für sich allein beanspruchen.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/nationsleague/rekord-und-doppelpack-kane-fuehrt-england-gegen-tschechien-zum-sieg,bericht-england-tschechien-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/nationsleague/rekord-und-doppelpack-kane-fuehrt-england-gegen-tschechien-zum-sieg,bericht-england-tschechien-100.html"
+            },
+            {
+              "name": "Sky Sports",
+              "url": "https://www.skysports.com/football/england-vs-czech-rep/report/554078"
+            },
+            {
+              "name": "Sportschau (Nations-League-Bilanz)",
+              "url": "https://www.sportschau.de/fussball/nationsleague/nations-league-was-passiert-ist-wie-es-weiter-geht,nations-league-bilanz-ausblick-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-07T08:12:00+02:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Harry_Kane_England_v_Panama_27_June_26-145.jpg/1280px-Harry_Kane_England_v_Panama_27_June_26-145.jpg",
+            "credit": "Bryan Berlin",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Harry_Kane_England_v_Panama_27_June_26-145.jpg",
+            "alt": "Harry Kane im Trikot der englischen Nationalmannschaft bei der WM 2026"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "sport-bundesliga-restart-dortmund-blessin-debuet",
+          "tier": "more",
+          "headline": "Bundesliga-Neustart: Dortmund führt, Blessin debütiert in Köln",
+          "summary": "Nach drei Wochen Länderspielpause startet am Freitag der fünfte Spieltag. Der BVB ist als einziges Team ungeschlagen, Gladbach hat einen neuen Trainer.",
+          "body": "Nach drei Wochen Länderspielpause geht die Bundesliga am Freitag in den fünften Spieltag. Borussia Dortmund empfängt um 20.30 Uhr Werder Bremen und geht als Tabellenführer in die Partie. Laut Sportschau ist der BVB das einzige Team der Liga, das noch ungeschlagen ist.\n\nTrainer Niko Kovac hatte die Terminlage kritisiert und die Pause als zu lang bezeichnet, seine Spieler seien viel gereist. Personell gibt es Fragezeichen: Konstantinos Karetsas und Daniel Svensson haben Erkältungen, Julian Ryerson hat eine Prellung, und bei Nico Schlotterbeck ist der Knöchel angeschlagen. Bremen reist mit einem Dämpfer an: Im Test unterlag die Mannschaft Twente Enschede mit 0:7, Trainer Daniel Thioune strich danach den freien Samstag.\n\nWeitere Spiele: Am Samstag um 15.30 Uhr trifft Paderborn auf den VfB Stuttgart. Stuttgart stand drei Wochen lang auf Platz 15, Deniz Undav erzielte im Test gegen Greuther Fürth zwei Tore. Am Sonntag spielt Köln um 15.30 Uhr gegen Borussia Mönchengladbach, für die Gäste ist es das Debüt von Alexander Blessin. Er war mit dem FC St. Pauli abgestiegen. Unter Eugen Polanski und Interimstrainer Jan-Moritz Lichte kassierte Gladbach in vier Spielen 16 Gegentore. Um 17.30 Uhr folgt Freiburg gegen Schalke.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/bundesliga/bundesliga-restart-was-ist-neu-nach-drei-wochen-pause,neustart-fussball-bundesliga-spieltag-fuenf-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/bundesliga/bundesliga-restart-was-ist-neu-nach-drei-wochen-pause,neustart-fussball-bundesliga-spieltag-fuenf-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T14:24:00+02:00",
+          "importance": 6,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "sport-messi-verabschiedet-sich-mit-3-0-gegen-benin",
+          "tier": "more",
+          "headline": "Messi bestreitet Abschiedsspiel für Argentinien beim 3:0 gegen Benin",
+          "summary": "Nach 21 Jahren im Nationalteam spielt Lionel Messi zum 208. und letzten Mal für Argentinien. Er trifft per Elfmeter und bereitet zwei Tore vor.",
+          "body": "Lionel Messi hat sich in der Nacht zu Mittwoch im Estadio Monumental von Buenos Aires aus der argentinischen Nationalmannschaft verabschiedet. Im Freundschaftsspiel gegen Benin gewann Argentinien vor 85.000 Zuschauern mit 3:0 (0:0). Es war Messis 208. und letztes Länderspiel nach 21 Jahren im Trikot der Albiceleste.\n\nNicolás Otamendi brachte Argentinien in der 48. Minute in Führung, Messi legte das Tor vor. Auch das 2:0 durch Nico Paz in der 61. Minute bereitete er vor. In der 71. Minute verwandelte Messi selbst einen Elfmeter, es war sein 126. Länderspieltor. Er lief gemeinsam mit seinen drei Söhnen Thiago, Mateo und Ciro ein. In der 10. Minute unterbrach der Schiedsrichter die Partie, damit das Stadion Messi mit stehenden Ovationen feiern konnte.\n\nNach dem Spiel nannte Messi den Tag „den traurigsten meiner Karriere“. Er hält die argentinischen Rekorde bei Einsätzen (208) und Toren (126). Mit der Nationalmannschaft wurde er 2022 Weltmeister und gewann 2021 und 2024 die Copa América; bei der WM 2026 reichte es nur zum zweiten Platz. Seinen Rücktritt aus dem Nationalteam hatte er nach dem verlorenen Finale angekündigt.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/adios-argentinien-letztes-laenderspiel-von-messi,messi-abschied-argentinien-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/adios-argentinien-letztes-laenderspiel-von-messi,messi-abschied-argentinien-100.html"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/sport/fussball-messi-abschied-nationalmannschaft-argentinien-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-07T08:18:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Lionel_Messi_Argentina_v_Spain_19_July_2026-076.jpg/1280px-Lionel_Messi_Argentina_v_Spain_19_July_2026-076.jpg",
+            "credit": "Bryan Berlin",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lionel_Messi_Argentina_v_Spain_19_July_2026-076.jpg",
+            "alt": "Lionel Messi im Trikot Argentiniens beim WM-Finale 2026"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "wissenschaft",
+      "title": "Wissenschaft & Raumfahrt",
+      "emoji": "🔭",
+      "items": [
+        {
+          "id": "wissenschaft-chemie-nobelpreis-kagan-soai",
+          "tier": "top",
+          "headline": "Chemie-Nobelpreis geht an Henri Kagan und Kenso Soai",
+          "summary": "Der Franzose Henri Kagan und der Japaner Kenso Soai erhalten den Chemie-Nobelpreis 2026 für Arbeiten zu spiegelbildlichen Molekülen, die für die Wirkstoffentwicklung zentral sind.",
+          "body": "Der Nobelpreis für Chemie 2026 geht an den Franzosen Henri Kagan und den Japaner Kenso Soai. Die Königlich Schwedische Akademie der Wissenschaften gab die Entscheidung am Mittwoch, dem 7. Oktober, in Stockholm bekannt. Ausgezeichnet werden die beiden Forscher laut ZDF für die Entdeckung nichtlinearer Effekte und autokatalytischer Prozesse in der asymmetrischen organischen Synthese.\n\nDahinter steht ein Grundproblem der Chemie: Viele Moleküle, etwa Aminosäuren, existieren in zwei Formen, die sich wie linke und rechte Hand zueinander verhalten. In lebenden Organismen kommt aber fast immer nur eine dieser Formen vor. Kagan, der an der Université Paris-Sud forschte, und Soai von der Tokyo University of Science zeigten nach Darstellung des ZDF, wie sich diese Ungleichheit in chemischen Reaktionen herausbilden und verstärken kann. Diese Frage beschäftigte Chemiker lange.\n\n## Warum das praktisch zählt\n\nFür die Medizin ist die Händigkeit von Molekülen keine Spielerei. Viele moderne Medikamente werden gezielt als nur eine der beiden Formen hergestellt, weil die andere wirkungslos oder sogar giftig sein kann. Das berüchtigte Beispiel ist der Contergan-Skandal der 1960er-Jahre: Eine Form des Wirkstoffs hemmte Entzündungen, ihr Spiegelbild verursachte Fehlbildungen bei Neugeborenen. Wer Arzneien sicher herstellen will, muss die Entstehung und Steuerung solcher Spiegelbildformen verstehen. Davon profitiert auch die Pharma- und Feinchemie-Industrie in Deutschland.\n\nSoai zeigte sich nach der Bekanntgabe begeistert und sprach laut ZDF von „einem der aufregendsten Tage meines Lebens“.\n\n## Preisgeld und Einordnung\n\nDer Preis ist mit zwölf Millionen schwedischen Kronen dotiert, das sind etwa eine Million Euro. Überreicht wird er traditionell am 10. Dezember, dem Todestag des Stifters Alfred Nobel. Die Bekanntgabe nahm nach Angaben von Spektrum der Wissenschaft die Generalsekretärin der Akademie, Ellen Moons, vor.\n\nDer Chemiepreis ist Teil einer Nobelwoche, in der die Preise nach und nach verkündet werden. Den Physikpreis erhielt am Vortag Francis Halzen für das IceCube-Observatorium und den Nachweis extrem energiereicher Neutrinos aus dem All. Der Medizinpreis ging am Montag an Peter Hegemann, Georg Nagel und Karl Deisseroth für die Optogenetik. Literatur und Frieden folgen am 8. und 9. Oktober, die Wirtschaftswissenschaften am 12. Oktober.",
+          "source": "Spektrum der Wissenschaft",
+          "url": "https://www.spektrum.de/news/nobelpreis-fuer-chemie-2026-wer-bekommt-den-chemie-nobelpreis/2343908",
+          "sources": [
+            {
+              "name": "Spektrum der Wissenschaft",
+              "url": "https://www.spektrum.de/news/nobelpreis-fuer-chemie-2026-wer-bekommt-den-chemie-nobelpreis/2343908"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/wissen/chemie-nobelpreis-2026-kagan-soai-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-07T11:45:00+02:00",
+          "importance": 6,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Main_building_of_the_Royal_Swedish_Academy_of_Sciences_%28Kungliga_Vetenskapsakademien%29%2C_Frescati%2C_Norra_Djurg%C3%A5rden%2C_Stockholm.jpg/1280px-Main_building_of_the_Royal_Swedish_Academy_of_Sciences_%28Kungliga_Vetenskapsakademien%29%2C_Frescati%2C_Norra_Djurg%C3%A5rden%2C_Stockholm.jpg",
+            "credit": "Hackspett",
+            "license": "CC BY-SA 2.5",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Main_building_of_the_Royal_Swedish_Academy_of_Sciences_(Kungliga_Vetenskapsakademien),_Frescati,_Norra_Djurg%C3%A5rden,_Stockholm.jpg",
+            "alt": "Hauptgebäude der Königlich Schwedischen Akademie der Wissenschaften in Stockholm"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gesundheit",
+      "title": "Gesundheit",
+      "emoji": "🩺",
+      "items": [
+        {
+          "id": "gesundheit-pflegeversicherung-darlehen-700-millionen",
+          "tier": "top",
+          "headline": "Pflegeversicherung erhält weiteres Bundesdarlehen von bis zu 700 Millionen Euro",
+          "summary": "Der Haushaltsausschuss des Bundestags hat ein zusätzliches Darlehen für die Pflegeversicherung gebilligt. Ohne das Geld drohten laut Finanzministerium Zahlungsstockungen bis hin zu Leistungsausfällen.",
+          "body": "Die soziale Pflegeversicherung bekommt noch in diesem Jahr zusätzliches Geld vom Bund. Der Haushaltsausschuss des Bundestages hat nach Angaben des Deutschen Ärzteblatts, das sich auf die Nachrichtenagentur dpa beruft, ein Darlehen von bis zu 700 Millionen Euro als überplanmäßige Ausgabe gebilligt. Es soll die Lücken schließen, die in den verbleibenden Monaten des Jahres 2026 entstehen. Das Bundesgesundheitsministerium erklärte, damit sei sichergestellt, dass bis Jahresende genügend flüssige Mittel im System sind.\n\nDas Darlehen ist kein Zuschuss, sondern muss später an den Bund zurückgezahlt werden. Die Auszahlung soll nach Angaben des Finanzministeriums bedarfsgerecht und monatlich erfolgen.\n\n## Warum das Geld knapp wurde\n\nSchon der Haushalt 2026 sieht ein zinsloses Bundesdarlehen von 3,2 Milliarden Euro für die Pflegekassen vor. Es wird quartalsweise in Teilbeträgen von je 800 Millionen Euro ausgezahlt. Im August und im September mussten bereits Teilbeträge aus dem vierten Quartal vorgezogen werden. Das Bundesamt für Soziale Sicherung rechnete damit, dass die Mittel ab Oktober knapp werden und spätestens im November zusätzliches Geld nötig ist.\n\nAls Ursache nennt das Finanzministerium höhere Leistungsausgaben als geplant: Die Zahl der Pflegebedürftigen wächst stärker als erwartet. Der GKV-Spitzenverband hatte bereits Ende August gewarnt, die Einnahmen würden ab Oktober voraussichtlich nicht mehr für die vollen Leistungen reichen. Für das erste Halbjahr meldete der Verband ein Defizit von 770 Millionen Euro.\n\nDas Gesundheitsministerium hatte zunächst sogar 870 Millionen Euro beantragt. Das Finanzministerium hielt 700 Millionen Euro für ausreichend. Ohne zusätzliche Mittel warnte das Ministerium nach den vorliegenden Berichten vor Zahlungsstockungen bis hin zu Leistungsausfällen.\n\n## Reform steht noch aus\n\nDas Darlehen verschafft nur Luft. Das Bundeskabinett hat inzwischen den ersten Teil eines Pflegereformpakets beschlossen, mit dem die Finanzen für 2027 stabilisiert werden sollen. Eine Kommission soll bis zum kommenden Sommer Vorschläge für eine größere Strukturreform erarbeiten. Die SPD will im weiteren Verfahren nach Medienberichten noch Änderungen durchsetzen, etwa eine Obergrenze für die Eigenanteile in Pflegeheimen.\n\nFür Versicherte und Pflegebedürftige in Sachsen heißt das zunächst: Die Leistungen der Pflegekassen sind bis zum Jahresende finanziell abgesichert. Wie die Beiträge und Eigenanteile danach aussehen, hängt von den Reformgesetzen ab, die jetzt im Bundestag beraten werden. Gesundheitsminister Carsten Linnemann (CDU) hat nach Angaben des Ärzteblatts bereits eine weitere kurzfristige Finanzspritze in Aussicht gestellt, sollte das Geld nicht reichen. Dass der Bund die Pflegeversicherung innerhalb eines Jahres mehrfach mit Krediten stützen muss, zeigt, wie angespannt die Lage ist.",
+          "source": "Deutsches Ärzteblatt",
+          "url": "https://www.aerzteblatt.de/news/pflegeversicherung-bekommt-neue-finanzspritze-b20ec5a1-6146-4ad5-a123-c095c712bf68",
+          "sources": [
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/pflegeversicherung-bekommt-neue-finanzspritze-b20ec5a1-6146-4ad5-a123-c095c712bf68"
+            },
+            {
+              "name": "Deutsches Ärzteblatt (Vorbericht)",
+              "url": "https://www.aerzteblatt.de/news/zusatzliche-finanzspritze-fur-pflegekassen-in-aussicht-79b54e3a-b256-4516-b573-1c7bebafe1c6"
+            },
+            {
+              "name": "inFranken (dpa)",
+              "url": "https://www.infranken.de/deutschland/regierung-plant-700-millionen-finanzspritze-fuer-pflegekassen-art-6400158"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": null
+        },
+        {
+          "id": "gesundheit-rki-atemwegsinfekte-saisonstart",
+          "tier": "top",
+          "headline": "RKI: Corona- und Grippeaktivität steigt zum Saisonstart langsam an",
+          "summary": "Mit dem Bericht zur 40. Kalenderwoche beginnt die Atemwegssaison 2026/27. Noch ist die Aktivität von Corona, Grippe und RSV niedrig, doch Abwasserdaten und Meldezahlen zeigen nach oben.",
+          "body": "Das Robert Koch-Institut (RKI) hat mit seinem Wochenbericht zur 40. Kalenderwoche (28. September bis 4. Oktober) die neue Atemwegssaison 2026/27 eröffnet. Die Aktivität akuter Atemwegserkrankungen liegt in der Bevölkerung und im ambulanten Bereich auf moderatem Niveau, im Krankenhaus auf niedrigem. Corona, Influenza und RSV spielen bislang eine kleine Rolle, steigen aber nach Angaben des RKI allmählich an.\n\n## Was die Daten zeigen\n\nLaut RKI lag die Zahl der Atemwegserkrankungen in der Bevölkerung bei rund 6.600 je 100.000 Einwohner, hochgerechnet etwa 5,6 Millionen neue Erkrankungen in einer Woche. In der Vorwoche waren es etwa 8.000. Das ist für die Jahreszeit üblich. Arztbesuche wegen Atemwegsinfekten nahmen leicht zu, auf rund 1.300 je 100.000 Einwohner.\n\nIn den untersuchten Sentinelproben dominierten Rhino- und Enteroviren mit 40 Prozent, gefolgt von Parainfluenzaviren mit 15 Prozent. Influenza A und B sowie SARS-CoV-2 wurden jeweils in 3 Prozent der Proben nachgewiesen. Die gemeldeten Fälle von Influenza und Covid-19 stiegen gegenüber der Vorwoche weiter, die RSV-Meldungen blieben niedrig. Die SARS-CoV-2-Last im Abwasser ist niedrig, zeigt aber seit einigen Wochen einen Aufwärtstrend. Unter den Corona-Varianten wurde zuletzt am häufigsten die Variante XFG nachgewiesen.\n\nDas Deutsche Ärzteblatt zitiert die Münchner Virologin Ulrike Protzer, nach deren Angaben sich die Atemwegsinfektionen in Süddeutschland binnen zwei Wochen fast verdoppelt haben. Das ist eine regionale Einschätzung und kein Wert aus der bundesweiten Überwachung.\n\n## Grippe: Blick ins Ausland und auf Risikogruppen\n\nDas Ärzteblatt berichtet zudem, dass Großbritannien und die US-Westküste erste Anzeichen einer frühen Grippesaison zeigen. Die WHO halte einen frühen Beginn für sich genommen nicht für ungewöhnlich. Eine Vorabveröffentlichung der Gruppe um Jesse Bloom deutet laut Bericht darauf hin, dass bei einer Mutation im H1N1-Subklade D.3.1.1 Antikörper schwächer binden, vor allem in Seren von 15- bis 25-Jährigen. Das ist ein noch nicht begutachteter Befund und sollte entsprechend vorsichtig gelesen werden.\n\nDie Ständige Impfkommission (STIKO) weist darauf hin, dass in den Saisons 2014/15 bis 2024/25 nur etwa 10 Prozent der Kinder und Jugendlichen mit relevanten Vorerkrankungen gegen Grippe geimpft waren. Sie schätzt diese Risikogruppe auf rund 1,2 Millionen Menschen. STIKO-Vorsitzender Reinhard Berner sagt, niemand könne vorhersagen, ob die Welle vor oder nach Weihnachten kommt.\n\n## Einordnung\n\nDer volle Impfschutz baut sich erst nach etwa zwei Wochen auf. Wer sich impfen lassen will, etwa als Angehöriger einer Risikogruppe, sollte daher nicht auf den Beginn der Welle warten. Für Sachsen gibt es in den Quellen keine gesonderten Zahlen; die Bundeslage gilt als Orientierung.",
+          "source": "Robert Koch-Institut",
+          "url": "https://influenza.rki.de/Wochenberichte/2026_2027/2026-40.pdf",
+          "sources": [
+            {
+              "name": "Robert Koch-Institut (ARE-Wochenbericht KW 40)",
+              "url": "https://influenza.rki.de/Wochenberichte/2026_2027/2026-40.pdf"
+            },
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/aktivitat-von-sars-cov-2-und-influenza-steigt-laut-rki-allmahlich-7a1fdd2c-c186-4be5-9104-2ce088d77771"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Influenza_Virus.jpg/1280px-Influenza_Virus.jpg",
+            "credit": "NIAID",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Influenza_Virus.jpg",
+            "alt": "Farbig gestaltetes 3D-Modell eines Grippevirus"
+          }
+        },
+        {
+          "id": "gesundheit-stimmung-niedergelassene-aerzte-rekordtief",
+          "tier": "top",
+          "headline": "Stimmung unter niedergelassenen Ärzten fällt auf Rekordtief",
+          "summary": "Das Stimmungsbarometer der Stiftung Gesundheit meldet für das dritte Quartal 2026 den niedrigsten Wert seit Erhebungsbeginn. 92 Prozent der Befragten sehen die Politik als Belastung.",
+          "body": "Die wirtschaftliche Stimmung der niedergelassenen Ärztinnen und Ärzte ist auf den tiefsten Stand seit mehr als 20 Jahren gefallen. Das zeigt das Stimmungsbarometer der Stiftung Gesundheit für das dritte Quartal 2026, über das das Deutsche Ärzteblatt und das Branchenportal ZWP online berichten. Der Gesamtwert liegt bei minus 48,5 Punkten, mehr als 20 Punkte unter der vorigen Erhebung. Der bisherige Negativrekord betrug minus 38,7 Punkte.\n\n## Politik als größte Belastung\n\nHaupttreiber des Absturzes sind die Erwartungen: Die Einschätzung der wirtschaftlichen Entwicklung für die kommenden sechs Monate sank um fast 35 Punkte. An der Befragung beteiligten sich 941 Ärztinnen und Ärzte. Von ihnen gaben 92,0 Prozent an, politische Entscheidungen, Gesetze und Vorgaben der Selbstverwaltung hätten ihre Arbeitssituation in den vergangenen drei Monaten negativ beeinflusst. Politik und Regulierung liegen damit nach Angaben der Stiftung inzwischen mehr als 40 Prozentpunkte vor allen anderen Belastungsfaktoren.\n\nNach Fachgruppen zeigt sich ein einheitliches Bild. Die Hausärzte liegen mit minus 55,6 Punkten am niedrigsten und verloren 25,2 Punkte. Fachärzte kommen auf minus 51,5 (minus 25,7), Psychologische Psychotherapeuten auf minus 48,3 und verzeichnen mit minus 33,6 Punkten den stärksten Rückgang. Auch bei nichtärztlichen Gesundheitsberufen sank die wirtschaftliche Stimmung auf einen Tiefstwert von minus 22,6 Punkten. Am wenigsten pessimistisch sind laut ZWP online die Zahnärzte mit minus 36,4.\n\nKonrad Obermann, Forschungsleiter der Stiftung Gesundheit, nannte die Entwicklung ein Alarmsignal und sprach von Frust, der über einzelne Honorarfragen hinausgehe.\n\n## Einordnung\n\nDas Barometer ist eine Umfrage unter Praxisinhabern und misst Stimmung, keine Versorgungsqualität. Es ist also kein Beleg dafür, dass Praxen schließen oder Termine knapper werden. Als Frühwarnsignal ist es dennoch relevant, denn die ambulante Versorgung hängt von der Bereitschaft vieler Ärzte ab, Praxen weiterzuführen oder zu übernehmen. Gerade in ländlichen Regionen Sachsens, wo viele Hausärzte älter sind, wird diese Frage seit Jahren diskutiert; die Quellen liefern dazu keine eigenen Zahlen.\n\nDie Ergebnisse fallen in eine Woche, in der die Gesundheitspolitik mehrere Vorhaben berät, darunter Digitalisierungsgesetz und Pflegefinanzierung. Ob die Befragten damit konkrete Maßnahmen meinen, geht aus den Berichten nicht hervor. Entscheidend wird sein, ob die Stimmung im nächsten Quartal wieder steigt oder ob sich der Einbruch verfestigt.",
+          "source": "Deutsches Ärzteblatt",
+          "url": "https://www.aerzteblatt.de/news/stimmung-in-der-arzteschaft-sturzt-deutlich-ab-8f9e75be-fc31-4f78-ab16-32b67993a770",
+          "sources": [
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/stimmung-in-der-arzteschaft-sturzt-deutlich-ab-8f9e75be-fc31-4f78-ab16-32b67993a770"
+            },
+            {
+              "name": "ZWP online",
+              "url": "https://www.zwp-online.info/zwpnews/dental-news/branchenmeldungen/arzte-stimmung-sturzt-auf-historischen-tiefstand"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 5,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Konz%2C_Roscheider_Hof%2C_Arztpraxis.jpg/1280px-Konz%2C_Roscheider_Hof%2C_Arztpraxis.jpg",
+            "credit": "Dguendel",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Konz,_Roscheider_Hof,_Arztpraxis.jpg",
+            "alt": "Gebäude mit Arztpraxis am Roscheider Hof in Konz"
+          }
+        },
+        {
+          "id": "gesundheit-gedig-erste-lesung-kritik-kbv",
+          "tier": "more",
+          "headline": "Digitalgesetz GeDIG: Ärzte kritisieren Datenauswertung durch Krankenkassen",
+          "summary": "Zur ersten Lesung im Bundestag haben KBV und Psychotherapeutenkammer Einwände gegen das Gesetz zu Gesundheitsdaten erhoben. Im Zentrum steht die Auswertung der elektronischen Patientenakte durch Kassen.",
+          "body": "Der Bundestag berät heute Abend in erster Lesung das Gesetz für Daten und digitale Innovation im Gesundheitswesen, kurz GeDIG. Vorab haben Ärzte- und Psychotherapeutenvertreter ihre Kritik erneuert, wie das Deutsche Ärzteblatt berichtet.\n\nDie Kassenärztliche Bundesvereinigung (KBV) wendet sich vor allem gegen erweiterte Möglichkeiten der Krankenkassen, Daten aus der elektronischen Patientenakte (ePA) einzusehen und auszuwerten. Die Grenze des Vertretbaren sei damit nach Einschätzung der Vorstände Andreas Gassen, Stephan Hofmeister und Sibylle Steiner deutlich überschritten. Die KBV warnt vor einem unzumutbaren Eingriff in die Privatsphäre der Versicherten. Das könne das Vertrauen zwischen Ärzten und Patienten sowie in die ePA beschädigen.\n\nAuch den geplanten digitalen Versorgungseinstieg lehnt die KBV in der vorgesehenen Form ab. Dieser soll nur über die ePA-Apps der Kassen angestoßen werden. Die KBV fordert einen gleichwertigen Zugang über den Patientenservice 116117 und dessen einheitliche Darstellung in den Kassen-Apps. Positiv bewertet sie das Ziel, die Telematikinfrastruktur stabiler zu machen und die Hersteller von Praxissoftware stärker in die Verantwortung zu nehmen. Technische Störungen kosteten Praxen noch immer Zeit und behinderten die Versorgung.\n\nDie Bundespsychotherapeutenkammer unter Präsidentin Andrea Benecke unterstützt digitale Lösungen, die die Versorgung klar verbessern. Sie lehnt aber eine automatisierte Auswertung von ePA-Daten durch gesetzliche Kassen und Pflegekassen ab, aus der Behandlungsempfehlungen abgeleitet werden. Digitale Angebote dürften nie Voraussetzung für den Zugang zur Psychotherapie werden.\n\nFür Versicherte in Sachsen ist das Thema relevant, weil die ePA für alle gesetzlich Versicherten angelegt wird. Wer was in der Akte sehen und auswerten darf, entscheidet sich im parlamentarischen Verfahren, das erst beginnt.",
+          "source": "Deutsches Ärzteblatt",
+          "url": "https://www.aerzteblatt.de/news/gedig-im-bundestag-kbv-bekraftigt-kritik-an-datenauswertung-durch-kassen-23e508b7-fc89-4685-b2e6-d502b744ebd1",
+          "sources": [
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/gedig-im-bundestag-kbv-bekraftigt-kritik-an-datenauswertung-durch-kassen-23e508b7-fc89-4685-b2e6-d502b744ebd1"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    }
+  ]
+}
