@@ -37,6 +37,8 @@ import java.time.format.DateTimeFormatter
  *
  * @param briefOf today's (or any day's) stored morning brief, for "since when" and for the
  *   headlines the reader already knows.
+ * @param keyRejected told the key a run used when Anthropic refused it ([AiError.InvalidKey]);
+ *   must not throw.
  */
 internal class LiveNewsServiceImpl(
     private val scope: CoroutineScope,
@@ -48,6 +50,7 @@ internal class LiveNewsServiceImpl(
     private val store: LiveStore,
     private val briefOf: suspend (LocalDate) -> Brief?,
     private val clock: Clock = Clock.system(BERLIN),
+    private val keyRejected: suspend (apiKey: String) -> Unit = {},
 ) : LiveNewsService {
 
     private val _state = MutableStateFlow(LiveState(blocked = if (engine == null) AiBlock.UNSUPPORTED_DEVICE else null))
@@ -216,6 +219,8 @@ internal class LiveNewsServiceImpl(
         } catch (e: AiBlockedException) {
             _state.update { it.copy(running = false, blocked = e.block, newCount = newCount) }
         } catch (e: AiException) {
+            // Settings → KI says so before the panel shows the error.
+            if (e.error == AiError.InvalidKey) keyRejected(key)
             _state.update { it.copy(running = false, error = e.error, newCount = newCount) }
         }
     }

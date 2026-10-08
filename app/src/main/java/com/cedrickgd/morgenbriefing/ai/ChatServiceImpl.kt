@@ -44,6 +44,9 @@ interface RetryableChatSession : ChatSession {
  * restored from [store] after a restart. Streams answers through [engine]; a null engine means
  * the device cannot run the SDK (API < 26) and every session reports
  * [AiBlock.UNSUPPORTED_DEVICE].
+ *
+ * @param keyRejected told the key a turn used when Anthropic refused it ([AiError.InvalidKey]);
+ *   must not throw.
  */
 internal class ChatServiceImpl(
     private val scope: CoroutineScope,
@@ -55,6 +58,7 @@ internal class ChatServiceImpl(
     private val store: ChatStore,
     private val contexts: ChatContextSource,
     private val clock: Clock = Clock.system(BERLIN),
+    private val keyRejected: suspend (apiKey: String) -> Unit = {},
 ) : ChatService {
     private val sessions = HashMap<ChatContext, ChatSessionImpl>()
 
@@ -292,6 +296,8 @@ internal class ChatServiceImpl(
                     }
                 }
             } catch (e: AiException) {
+                // Settings → KI says so before the chat shows the error.
+                if (e.error == AiError.InvalidKey) keyRejected(key)
                 finish(answerId) { it.copy(text = buffer.toString().trim(), status = ChatMessage.Status.FAILED, error = e.error) }
             }
         }

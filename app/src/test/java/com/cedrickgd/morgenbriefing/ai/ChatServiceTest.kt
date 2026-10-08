@@ -69,6 +69,7 @@ class ChatServiceTest {
         engine: ChatEngine? = this.engine,
         apiKey: String? = "test-key",
         contexts: ChatContextSource = articleContexts,
+        keyRejected: suspend (String) -> Unit = {},
     ) = ChatServiceImpl(
         scope = scope,
         settings = settings,
@@ -79,6 +80,7 @@ class ChatServiceTest {
         store = ChatStore(folder.root.resolve("chat"), AppJson),
         contexts = contexts,
         clock = clock,
+        keyRejected = keyRejected,
     )
 
     private suspend fun ChatSession.await(predicate: (ChatUiState) -> Boolean): ChatUiState =
@@ -181,6 +183,21 @@ class ChatServiceTest {
         val retried = session.await { it.settled(2) && it.messages.last().status == ChatMessage.Status.DONE }
         assertEquals(listOf("Frage", "Die Antwort."), retried.messages.map { it.text })
         assertEquals(2, engine.requests.size)
+    }
+
+    @Test
+    fun `a refused key is reported with the key the turn used, other errors are not`() = runBlocking<Unit> {
+        val rejected = mutableListOf<String>()
+        engine.scripts += { throw AiException(AiError.Network) }
+        engine.scripts += { throw AiException(AiError.InvalidKey) }
+        val session = service(apiKey = "sk-ant-old", keyRejected = { synchronized(rejected) { rejected += it } }).session(article)
+        session.send("Frage")
+        assertEquals(AiError.Network, session.await { it.settled(2) }.messages.last().error)
+        assertTrue(rejected.isEmpty())
+
+        session.send("Noch eine")
+        assertEquals(AiError.InvalidKey, session.await { it.settled(4) }.messages.last().error)
+        assertEquals(listOf("sk-ant-old"), rejected)
     }
 
     @Test

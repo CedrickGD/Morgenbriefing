@@ -56,9 +56,13 @@ internal fun aiKeyMessage(state: AiKeyState): String? = when (state) {
     }
 }
 
-/** Second line of the key row in Settings → KI. */
-internal fun aiKeyRowLabel(hasKey: Boolean, untested: Boolean): String = when {
+/**
+ * Second line of the key row in Settings → KI. [rejected]: Anthropic refused the last chat or
+ * Live request with the stored key (wins over [untested]).
+ */
+internal fun aiKeyRowLabel(hasKey: Boolean, untested: Boolean, rejected: Boolean = false): String = when {
     !hasKey -> "Noch keiner eingetragen"
+    rejected -> "Gespeichert · von Anthropic abgelehnt"
     untested -> "Gespeichert · noch nicht getestet"
     else -> "Gespeichert ✓ · verschlüsselt"
 }

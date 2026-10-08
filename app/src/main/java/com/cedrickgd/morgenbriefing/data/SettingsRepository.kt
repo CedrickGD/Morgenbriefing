@@ -86,7 +86,8 @@ class SettingsRepository(context: Context) {
     /**
      * Claude API key (docs/AI.md), stored encrypted like the GitHub token.
      * Trims whitespace; null/blank clears it. [tested] false marks it as saved without a passed
-     * test ([AppSettings.aiKeyUntested]) until [markAiKeyWorks].
+     * test ([AppSettings.aiKeyUntested]) until [markAiKeyWorks]. Saving a key (or none) always
+     * drops the rejected mark ([AppSettings.aiKeyRejected]) of the previous one.
      * @throws IOException if DataStore cannot persist the change.
      * @throws java.security.GeneralSecurityException if the keystore cannot encrypt.
      */
@@ -96,6 +97,7 @@ class SettingsRepository(context: Context) {
             store.edit {
                 it.remove(Keys.AI_KEY)
                 it.remove(Keys.AI_KEY_UNTESTED)
+                it.remove(Keys.AI_KEY_REJECTED)
             }
             return
         }
@@ -103,16 +105,40 @@ class SettingsRepository(context: Context) {
         store.edit {
             it[Keys.AI_KEY] = encrypted
             if (tested) it.remove(Keys.AI_KEY_UNTESTED) else it[Keys.AI_KEY_UNTESTED] = true
+            it.remove(Keys.AI_KEY_REJECTED)
         }
     }
 
     /**
-     * Anthropic accepted a request with the stored key: it is no longer untested. No write when
-     * it was not marked.
+     * Anthropic accepted a request with the stored key: it is neither untested nor rejected any
+     * more. No write when it was not marked.
      * @throws IOException if DataStore cannot persist the change.
      */
     suspend fun markAiKeyWorks() {
-        store.edit { if (Keys.AI_KEY_UNTESTED in it) it.remove(Keys.AI_KEY_UNTESTED) }
+        store.edit {
+            if (Keys.AI_KEY_UNTESTED in it) it.remove(Keys.AI_KEY_UNTESTED)
+            if (Keys.AI_KEY_REJECTED in it) it.remove(Keys.AI_KEY_REJECTED)
+        }
+    }
+
+    /**
+     * Anthropic refused a chat or Live request made with [key] as not authenticated (HTTP 401):
+     * marks the stored key as rejected ([AppSettings.aiKeyRejected]) — but only while [key] is
+     * still the stored one, so a request that was under way while a new key was saved cannot
+     * brand the new key.
+     * @throws IOException if DataStore cannot persist the change.
+     */
+    suspend fun markAiKeyRejected(key: String) {
+        val encrypted = try {
+            store.data.first()[Keys.AI_KEY]
+        } catch (_: IOException) {
+            null
+        }
+        if (encrypted.isNullOrBlank()) return
+        val stored = withContext(Dispatchers.IO) { TokenCipher.decrypt(encrypted) }?.trim()
+        if (stored == null || stored != key.trim()) return
+        // Same ciphertext as checked above: no other key was saved in between.
+        store.edit { if (it[Keys.AI_KEY] == encrypted) it[Keys.AI_KEY_REJECTED] = true }
     }
 
     /** Decrypted Claude API key or null. */
@@ -170,6 +196,7 @@ class SettingsRepository(context: Context) {
             readerTextScale = this[Keys.READER_TEXT_SCALE]?.takeIf { it in 0.85f..1.4f } ?: defaults.readerTextScale,
             hasAiKey = !this[Keys.AI_KEY].isNullOrBlank(),
             aiKeyUntested = !this[Keys.AI_KEY].isNullOrBlank() && this[Keys.AI_KEY_UNTESTED] == true,
+            aiKeyRejected = !this[Keys.AI_KEY].isNullOrBlank() && this[Keys.AI_KEY_REJECTED] == true,
             aiModel = enumOrDefault(this[Keys.AI_MODEL], defaults.aiModel),
             aiMonthlyLimitUsd = this[Keys.AI_MONTHLY_LIMIT]?.takeIf { it in 0.0..1000.0 } ?: defaults.aiMonthlyLimitUsd,
             liveAutoRefresh = this[Keys.LIVE_AUTO_REFRESH] ?: defaults.liveAutoRefresh,
@@ -235,6 +262,7 @@ class SettingsRepository(context: Context) {
         val READER_TEXT_SCALE = floatPreferencesKey("reader_text_scale")
         val AI_KEY = stringPreferencesKey("ai_key_enc")
         val AI_KEY_UNTESTED = booleanPreferencesKey("ai_key_untested")
+        val AI_KEY_REJECTED = booleanPreferencesKey("ai_key_rejected")
         val AI_MODEL = stringPreferencesKey("ai_model")
         val AI_MONTHLY_LIMIT = doublePreferencesKey("ai_monthly_limit_usd")
         val LIVE_AUTO_REFRESH = booleanPreferencesKey("live_auto_refresh")

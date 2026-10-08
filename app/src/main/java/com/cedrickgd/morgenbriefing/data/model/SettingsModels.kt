@@ -61,6 +61,12 @@ data class AppSettings(
      * gone through with it yet, so nobody knows whether it works. Only meaningful with [hasAiKey].
      */
     val aiKeyUntested: Boolean = false,
+    /**
+     * Anthropic refused a chat or Live request with the stored key as not authenticated, and no
+     * request has gone through with it since. Cleared by saving a key. Only meaningful with
+     * [hasAiKey].
+     */
+    val aiKeyRejected: Boolean = false,
     val aiModel: AiModel = AiModel.SONNET,
     /** Monthly AI spending cap in US dollars; 0 = no cap. */
     val aiMonthlyLimitUsd: Double = 5.0,

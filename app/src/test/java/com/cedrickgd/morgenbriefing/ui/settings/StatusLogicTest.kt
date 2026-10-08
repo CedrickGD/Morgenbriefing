@@ -56,6 +56,18 @@ class StatusLogicTest {
     }
 
     @Test
+    fun `a refused ki key needs attention but does not hold up the briefing`() {
+        val rejected = statusItems(allGood, connected, aiSupported = true, hasAiKey = true, aiKeyRejected = true)
+        assertEquals(StatusItem(StatusKind.AI, StatusLevel.ATTENTION, "KI", "Key abgelehnt"), rejected.single { it.kind == StatusKind.AI })
+        assertTrue(heroText(true, rejected, "morgen", "05:30").ready)
+        // Refused wins over "never tested"; without a key there is nothing to refuse.
+        val both = statusItems(allGood, connected, aiSupported = true, hasAiKey = true, aiKeyUntested = true, aiKeyRejected = true)
+        assertEquals("Key abgelehnt", both.single { it.kind == StatusKind.AI }.state)
+        val noKey = statusItems(allGood, connected, aiSupported = true, hasAiKey = false, aiKeyRejected = true)
+        assertEquals(StatusLevel.NEUTRAL, levels(noKey)[StatusKind.AI])
+    }
+
+    @Test
     fun `exact alarms only matter from android 12`() {
         val oldAndroid = allGood.copy(exactAlarmRelevant = false, exactAlarmsAllowed = false)
         assertEquals(StatusLevel.OK, levels(statusItems(oldAndroid, connected, false, false))[StatusKind.EXACT_ALARM])

@@ -55,8 +55,9 @@ class AiServices(private val context: Context, private val container: AppContain
 
     /**
      * Usage of chat and Live requests. Usage only exists for a request Anthropic accepted, so it
-     * also confirms a key that was saved without a test
-     * ([com.cedrickgd.morgenbriefing.data.model.AppSettings.aiKeyUntested]).
+     * also confirms a key that was saved without a test or was rejected before
+     * ([com.cedrickgd.morgenbriefing.data.model.AppSettings.aiKeyUntested],
+     * [com.cedrickgd.morgenbriefing.data.model.AppSettings.aiKeyRejected]).
      */
     private val requestUsage: UsageSink by lazy {
         object : UsageSink by usageStore {
@@ -77,6 +78,7 @@ class AiServices(private val context: Context, private val container: AppContain
             engine = backend?.live,
             store = LiveStore(File(storeDir, "live"), container.json),
             briefOf = { date -> container.store.loadBrief(date) },
+            keyRejected = ::markKeyRejected,
         )
     }
 
@@ -90,6 +92,7 @@ class AiServices(private val context: Context, private val container: AppContain
             engine = backend?.chat,
             store = ChatStore(File(storeDir, "chat"), container.json),
             contexts = ChatContextSource(::loadChatContext),
+            keyRejected = ::markKeyRejected,
         )
     }
 
@@ -112,6 +115,17 @@ class AiServices(private val context: Context, private val container: AppContain
             throw e
         } catch (e: Exception) {
             Log.w(TAG, "Claude key could not be marked as working", e)
+        }
+    }
+
+    /** A chat or Live request with [key] ended in [AiError.InvalidKey]: Settings → KI says so. */
+    private suspend fun markKeyRejected(key: String) {
+        try {
+            container.settings.markAiKeyRejected(key)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(TAG, "Claude key could not be marked as rejected", e)
         }
     }
 

@@ -54,7 +54,9 @@ data class HeroText(val title: String, val subtitle: String, val ready: Boolean)
 /**
  * The pills of the status hero, in display order. [aiSupported] false hides the KI pill
  * (Android 7); a missing key is neutral, because KI is optional for the morning briefing, and so
- * is a key saved without a passed test ([aiKeyUntested]): the pill must not claim it works.
+ * is a key saved without a passed test ([aiKeyUntested]): the pill must not claim it works. A key
+ * Anthropic refused ([aiKeyRejected]) needs a tap – the pill opens the key dialog – but still
+ * does not hold up the morning briefing ([heroText]).
  */
 internal fun statusItems(
     system: SystemStatus,
@@ -62,6 +64,7 @@ internal fun statusItems(
     aiSupported: Boolean,
     hasAiKey: Boolean,
     aiKeyUntested: Boolean = false,
+    aiKeyRejected: Boolean = false,
 ): List<StatusItem> = buildList {
     add(
         StatusItem(
@@ -114,10 +117,16 @@ internal fun statusItems(
         add(
             StatusItem(
                 kind = StatusKind.AI,
-                level = if (hasAiKey && !aiKeyUntested) StatusLevel.OK else StatusLevel.NEUTRAL,
+                level = when {
+                    !hasAiKey -> StatusLevel.NEUTRAL
+                    aiKeyRejected -> StatusLevel.ATTENTION
+                    aiKeyUntested -> StatusLevel.NEUTRAL
+                    else -> StatusLevel.OK
+                },
                 label = "KI",
                 state = when {
                     !hasAiKey -> "aus, kein API-Key"
+                    aiKeyRejected -> "Key abgelehnt"
                     aiKeyUntested -> "Key noch nicht getestet"
                     else -> "eingerichtet"
                 },

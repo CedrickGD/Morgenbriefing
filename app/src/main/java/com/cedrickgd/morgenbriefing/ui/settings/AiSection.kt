@@ -137,7 +137,12 @@ internal fun AiCard(
         }
 
         Spacer(Modifier.height(16.dp))
-        KeyRow(hasKey = settings.hasAiKey, untested = settings.aiKeyUntested, onEdit = actions.onEditKey)
+        KeyRow(
+            hasKey = settings.hasAiKey,
+            untested = settings.aiKeyUntested,
+            rejected = settings.aiKeyRejected,
+            onEdit = actions.onEditKey,
+        )
 
         Spacer(Modifier.height(22.dp))
         Overline("Modell")
@@ -190,9 +195,15 @@ private fun SparkleBadge() {
 }
 
 @Composable
-private fun KeyRow(hasKey: Boolean, untested: Boolean, onEdit: () -> Unit) {
-    // Green only for a key that passed the test or answered a request.
-    val works = hasKey && !untested
+private fun KeyRow(hasKey: Boolean, untested: Boolean, rejected: Boolean, onEdit: () -> Unit) {
+    // Green only for a key that passed the test or answered a request, amber for one Anthropic
+    // refused.
+    val works = hasKey && !untested && !rejected
+    val tint = when {
+        hasKey && rejected -> StatusPalette.attention()
+        works -> StatusPalette.ok()
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -203,7 +214,7 @@ private fun KeyRow(hasKey: Boolean, untested: Boolean, onEdit: () -> Unit) {
         Icon(
             Icons.Rounded.Key,
             contentDescription = null,
-            tint = if (works) StatusPalette.ok() else MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = tint,
         )
         Spacer(Modifier.width(12.dp))
         Column(
@@ -213,17 +224,18 @@ private fun KeyRow(hasKey: Boolean, untested: Boolean, onEdit: () -> Unit) {
         ) {
             Text("API-Key", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface)
             Text(
-                text = aiKeyRowLabel(hasKey, untested),
+                text = aiKeyRowLabel(hasKey, untested, rejected),
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                color = if (works) StatusPalette.ok() else MaterialTheme.colorScheme.onSurfaceVariant,
+                color = tint,
             )
         }
         GlassPillButton(
             text = if (hasKey) "Ändern" else "Eintragen",
             onClick = onEdit,
-            style = if (hasKey) PillStyle.Tonal else PillStyle.Filled,
+            // A refused key needs a new one: the strong button invites the change.
+            style = if (hasKey && !rejected) PillStyle.Tonal else PillStyle.Filled,
             contentDescription = if (hasKey) "Claude-API-Key ändern" else "Claude-API-Key eintragen",
         )
     }

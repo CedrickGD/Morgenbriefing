@@ -66,7 +66,11 @@ class LiveNewsServiceTest {
 
     private val liveStore by lazy { LiveStore(folder.root.resolve("live"), AppJson) }
 
-    private fun service(engine: LiveEngine?, clock: Clock = this.clock) = LiveNewsServiceImpl(
+    private fun service(
+        engine: LiveEngine?,
+        clock: Clock = this.clock,
+        keyRejected: suspend (String) -> Unit = {},
+    ) = LiveNewsServiceImpl(
         scope = scope,
         settings = settings,
         apiKey = { "test-key" },
@@ -76,6 +80,7 @@ class LiveNewsServiceTest {
         store = liveStore,
         briefOf = { date -> brief.takeIf { date.toString() == it.date } },
         clock = clock,
+        keyRejected = keyRejected,
     )
 
     private suspend fun LiveNewsService.await(predicate: (LiveState) -> Boolean): LiveState =
@@ -141,6 +146,22 @@ class LiveNewsServiceTest {
         slow.cancel()
         val cancelled = slow.await { !it.running }
         assertEquals("Abgebrochen", cancelled.progress.last())
+    }
+
+    @Test
+    fun `a refused key is reported with the key the run used, other errors are not`() = runBlocking<Unit> {
+        val rejected = mutableListOf<String>()
+        val report: suspend (String) -> Unit = { synchronized(rejected) { rejected += it } }
+
+        val offline = service(FakeLiveEngine { _, _ -> throw AiException(AiError.Network) }, keyRejected = report)
+        offline.refresh(listOf("region"))
+        assertEquals(AiError.Network, offline.await { !it.running && it.error != null }.error)
+        assertTrue(rejected.isEmpty())
+
+        val refused = service(FakeLiveEngine { _, _ -> throw AiException(AiError.InvalidKey) }, keyRejected = report)
+        refused.refresh(listOf("region"))
+        assertEquals(AiError.InvalidKey, refused.await { !it.running && it.error != null }.error)
+        assertEquals(listOf("test-key"), rejected)
     }
 
     @Test

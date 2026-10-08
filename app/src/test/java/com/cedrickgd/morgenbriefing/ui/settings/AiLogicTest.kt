@@ -96,6 +96,14 @@ class AiLogicTest {
     }
 
     @Test
+    fun `a key anthropic refused says so, also when it was never tested`() {
+        assertEquals("Gespeichert · von Anthropic abgelehnt", aiKeyRowLabel(hasKey = true, untested = false, rejected = true))
+        assertEquals("Gespeichert · von Anthropic abgelehnt", aiKeyRowLabel(hasKey = true, untested = true, rejected = true))
+        assertEquals("Gespeichert · noch nicht getestet", aiKeyRowLabel(hasKey = true, untested = true, rejected = false))
+        assertEquals("Noch keiner eingetragen", aiKeyRowLabel(hasKey = false, untested = false, rejected = true))
+    }
+
+    @Test
     fun `key format hint`() {
         assertTrue(looksLikeAnthropicKey("  sk-ant-api03-abcdefghijklmnopqrstuvwxyz  "))
         assertFalse(looksLikeAnthropicKey("sk-ant-short"))
