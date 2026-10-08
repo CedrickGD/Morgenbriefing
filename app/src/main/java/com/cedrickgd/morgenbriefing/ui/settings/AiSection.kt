@@ -526,13 +526,8 @@ internal fun AiKeyDialog(
                 }
             },
             supportingText = {
-                Text(
-                    if (key.isNotBlank() && !looksLikeAnthropicKey(key)) {
-                        "Claude-Keys beginnen mit „sk-ant-“ – stimmt die Kopie?"
-                    } else {
-                        "Wird verschlüsselt nur auf diesem Gerät gespeichert."
-                    },
-                )
+                val issue = if (key.isNotBlank()) aiKeyFormatIssue(key) else null
+                Text(issue?.let(::aiKeyFormatHint) ?: "Wird verschlüsselt nur auf diesem Gerät gespeichert.")
             },
         )
         if (message != null) {

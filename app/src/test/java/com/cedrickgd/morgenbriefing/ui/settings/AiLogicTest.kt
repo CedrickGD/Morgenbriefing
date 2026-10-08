@@ -110,4 +110,21 @@ class AiLogicTest {
         assertFalse(looksLikeAnthropicKey("github_pat_abcdefghijklmnopqrstuvwxyz"))
         assertFalse(looksLikeAnthropicKey("sk-ant-api03 abcdefghijklmnopqrstuvwxyz"))
     }
+
+    @Test
+    fun `key format hint names the cause`() {
+        // Spaces and line breaks around a pasted key are dropped silently.
+        assertNull(aiKeyFormatIssue("\n  sk-ant-api03-abcdefghijklmnopqrstuvwxyz \n"))
+        assertEquals(AiKeyFormatIssue.WRONG_PREFIX, aiKeyFormatIssue("github_pat_abcdefghijklmnopqrstuvwxyz"))
+        assertEquals(AiKeyFormatIssue.WRONG_PREFIX, aiKeyFormatIssue("Bearer sk-ant-api03-abcdefghijklmnopqrstuvwxyz"))
+        assertEquals(AiKeyFormatIssue.TOO_SHORT, aiKeyFormatIssue("sk-ant-short"))
+        assertEquals(AiKeyFormatIssue.WHITESPACE, aiKeyFormatIssue("sk-ant-api03 abcdefghijklmnopqrstuvwxyz"))
+        assertEquals(AiKeyFormatIssue.WHITESPACE, aiKeyFormatIssue("sk-ant-api03-abcdefghij\nklmnopqrstuvwxyz"))
+        // A line break inside the prefix is still a whitespace problem, not a foreign key.
+        assertEquals(AiKeyFormatIssue.WHITESPACE, aiKeyFormatIssue("sk-an\nt-api03-abcdefghijklmnopqrstuvwxyz"))
+
+        assertEquals("Claude-Keys beginnen mit „sk-ant-“ – stimmt die Kopie?", aiKeyFormatHint(AiKeyFormatIssue.WRONG_PREFIX))
+        assertEquals("Der Key wirkt zu kurz – hast du ihn vollständig kopiert?", aiKeyFormatHint(AiKeyFormatIssue.TOO_SHORT))
+        assertEquals("Der Key enthält Leerzeichen – kopier ihn ohne Zeilenumbruch.", aiKeyFormatHint(AiKeyFormatIssue.WHITESPACE))
+    }
 }

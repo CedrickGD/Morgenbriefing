@@ -67,12 +67,36 @@ internal fun aiKeyRowLabel(hasKey: Boolean, untested: Boolean, rejected: Boolean
     else -> "Gespeichert ✓ · verschlüsselt"
 }
 
-/** Claude API keys start with "sk-ant-"; anything else is most likely a copy mistake. */
-internal fun looksLikeAnthropicKey(raw: String): Boolean {
+/** Why a pasted key does not look like a Claude API key – most likely a copy mistake. */
+enum class AiKeyFormatIssue { WRONG_PREFIX, TOO_SHORT, WHITESPACE }
+
+/**
+ * What is wrong with [raw] as a Claude API key, or null when it looks right. Spaces and line
+ * breaks around it do not count (they are dropped when saving); inside it they do. A key that
+ * only starts with "sk-ant-" once its inner spaces are gone is a [AiKeyFormatIssue.WHITESPACE]
+ * problem, not a wrong prefix.
+ */
+internal fun aiKeyFormatIssue(raw: String): AiKeyFormatIssue? {
     val key = raw.trim()
-    return key.startsWith("sk-ant-") && key.length >= MIN_KEY_LENGTH && key.none { it.isWhitespace() }
+    return when {
+        !key.filterNot { it.isWhitespace() }.startsWith(KEY_PREFIX) -> AiKeyFormatIssue.WRONG_PREFIX
+        key.any { it.isWhitespace() } -> AiKeyFormatIssue.WHITESPACE
+        key.length < MIN_KEY_LENGTH -> AiKeyFormatIssue.TOO_SHORT
+        else -> null
+    }
 }
 
+/** Claude API keys start with "sk-ant-"; anything else is most likely a copy mistake. */
+internal fun looksLikeAnthropicKey(raw: String): Boolean = aiKeyFormatIssue(raw) == null
+
+/** The hint under the key field for [issue]. */
+internal fun aiKeyFormatHint(issue: AiKeyFormatIssue): String = when (issue) {
+    AiKeyFormatIssue.WRONG_PREFIX -> "Claude-Keys beginnen mit „sk-ant-“ – stimmt die Kopie?"
+    AiKeyFormatIssue.TOO_SHORT -> "Der Key wirkt zu kurz – hast du ihn vollständig kopiert?"
+    AiKeyFormatIssue.WHITESPACE -> "Der Key enthält Leerzeichen – kopier ihn ohne Zeilenumbruch."
+}
+
+private const val KEY_PREFIX = "sk-ant-"
 private const val MIN_KEY_LENGTH = 20
 
 /** The monthly cap slider: 0–50 $ in whole dollars, 0 = no cap. */
