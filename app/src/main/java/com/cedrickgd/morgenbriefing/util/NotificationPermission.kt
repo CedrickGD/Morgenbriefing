@@ -5,23 +5,30 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.os.Build
+import android.os.SystemClock
+import android.view.ViewTreeObserver
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.edit
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.cedrickgd.morgenbriefing.notify.Notifications
 
 /**
  * Returns an action that makes notifications work, whatever is blocking them:
  *
  * * API 33+ without permission: shows the system permission dialog — or, once it is denied
- *   for good ([notificationsDeniedForGood]: the system would silently refuse), opens the app's
+ *   for good ([notificationsDeniedForGood]: the system refuses without asking), opens the app's
  *   notification settings instead. A dialog dismissed with Back asks again next time.
  * * Morning channel switched off: opens that channel's settings.
  * * Notifications disabled for the app (any API level): opens the app's notification settings.
@@ -34,13 +41,39 @@ fun rememberNotificationPermissionRequester(onResult: (granted: Boolean) -> Unit
     val context = LocalContext.current
     val activity = LocalActivity.current
     val latestOnResult by rememberUpdatedState(onResult)
+    // Whether the system showed its dialog ([refusedWithoutDialog]): the activity is paused and
+    // its window loses focus while the dialog is up – only for a moment when the system refuses
+    // without asking.
+    val watch = remember { PermissionDialogWatch(SystemClock::elapsedRealtime) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val view = LocalView.current
+    DisposableEffect(lifecycleOwner, view, watch) {
+        val lifecycleObserver = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> watch.onPause()
+                Lifecycle.Event.ON_RESUME -> watch.onResume()
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+        val focusListener = ViewTreeObserver.OnWindowFocusChangeListener(watch::onWindowFocus)
+        val treeObserver = view.viewTreeObserver.takeIf { it.isAlive }
+        treeObserver?.addOnWindowFocusChangeListener(focusListener)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+            val alive = treeObserver?.takeIf { it.isAlive } ?: view.viewTreeObserver.takeIf { it.isAlive }
+            alive?.removeOnWindowFocusChangeListener(focusListener)
+        }
+    }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        val sighting = watch.finish()
+        val rationale = notificationRationale(activity)
         // Remembered from the result, not before the request: a process that dies with the
         // dialog open has not been refused anything.
-        PermissionMemory(context).recordNotificationResult(granted, notificationRationale(activity))
+        PermissionMemory(context).recordNotificationResult(granted, rationale, silent = refusedWithoutDialog(sighting))
         latestOnResult(granted)
     }
-    return remember(context, activity, launcher) {
+    return remember(context, activity, launcher, watch) {
         {
             val status = SystemStatus.read(context)
             when {
@@ -52,8 +85,10 @@ fun rememberNotificationPermissionRequester(onResult: (granted: Boolean) -> Unit
                         SystemIntents.openAppNotificationSettings(context)
                     } else {
                         try {
+                            watch.start()
                             launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         } catch (e: ActivityNotFoundException) {
+                            watch.finish()
                             SystemIntents.openAppNotificationSettings(context)
                         }
                     }
@@ -102,26 +137,32 @@ private fun notificationRationale(activity: Activity?): Boolean =
 private class PermissionMemory(context: Context) {
     private val prefs = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
-    /** Up to 1.2 only "the dialog was shown once" was stored: that counts as one denial. */
+    /**
+     * Older versions stored "asked once" (up to 1.1) or every denial (1.2 test builds), which
+     * cannot tell a Back dismissal from a refusal: both start from zero here. If the system
+     * really refuses for good, the next request shows that.
+     */
     val notificationAsks: NotificationAsks
         get() = NotificationAsks(
-            denials = prefs.getInt(KEY_DENIALS, if (prefs.getBoolean(KEY_LEGACY_ASKED, false)) 1 else 0),
+            silentDenials = prefs.getInt(KEY_SILENT_DENIALS, 0),
             sawRationale = prefs.getBoolean(KEY_RATIONALE, false),
         )
 
-    fun recordNotificationResult(granted: Boolean, showRationale: Boolean) {
-        val next = notificationAsks.after(granted, showRationale)
+    fun recordNotificationResult(granted: Boolean, showRationale: Boolean, silent: Boolean) {
+        val next = notificationAsks.after(granted, showRationale, silent)
         prefs.edit {
-            putInt(KEY_DENIALS, next.denials)
+            putInt(KEY_SILENT_DENIALS, next.silentDenials)
             putBoolean(KEY_RATIONALE, next.sawRationale)
             remove(KEY_LEGACY_ASKED)
+            remove(KEY_LEGACY_DENIALS)
         }
     }
 
     private companion object {
         const val PREFS = "ui_state"
         const val KEY_LEGACY_ASKED = "asked_post_notifications"
-        const val KEY_DENIALS = "post_notifications_denials"
+        const val KEY_LEGACY_DENIALS = "post_notifications_denials"
+        const val KEY_SILENT_DENIALS = "post_notifications_silent_denials"
         const val KEY_RATIONALE = "post_notifications_rationale_seen"
     }
 }
