@@ -1,0 +1,211 @@
+package com.cedrickgd.morgenbriefing.ai
+
+import com.cedrickgd.morgenbriefing.ai.claude.ClaudeBackend
+import com.cedrickgd.morgenbriefing.ai.claude.ClaudeClients
+import com.cedrickgd.morgenbriefing.ai.compat.CompatBackend
+import com.cedrickgd.morgenbriefing.ai.compat.CompatDialect
+import com.cedrickgd.morgenbriefing.ai.gemini.GeminiBackend
+import com.cedrickgd.morgenbriefing.ai.http.AiHttp
+import com.cedrickgd.morgenbriefing.ai.http.RetryPolicy
+import com.cedrickgd.morgenbriefing.ai.openai.ResponsesBackend
+import com.cedrickgd.morgenbriefing.ai.openai.ResponsesDialect
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.SourceRef
+import com.cedrickgd.morgenbriefing.data.model.Topics
+import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
+import org.junit.Assume.assumeTrue
+import org.junit.Before
+import org.junit.Test
+import java.time.Instant
+
+/**
+ * Opt-in contract test (docs/AI-PROVIDERS.md §14): the real engines of every family against
+ * `tools/mock-ai-server.mjs`, so the mock and the parsers keep speaking the same wire formats —
+ * chat with search, Live with the correction loop, key checks and the error switches. Skipped
+ * unless `MOCK_AI_SERVER` names a running mock:
+ *
+ * ```
+ * node tools/mock-ai-server.mjs --delay 0
+ * MOCK_AI_SERVER=http://127.0.0.1:8787 ./gradlew :app:testDebugUnitTest --tests "*MockServerContractTest"
+ * ```
+ *
+ * Fake keys only.
+ */
+class MockServerContractTest {
+    private val base = System.getenv("MOCK_AI_SERVER")?.trimEnd('/').orEmpty()
+
+    /** The own server must use a name on the cleartext allowlist: localhost, not 127.0.0.1. */
+    private val serverBase get() = base.replace("127.0.0.1", "localhost")
+    private val http = AiHttp(OkHttpClient(), userAgent = "Morgenbriefing-Android/test")
+    private val retry = RetryPolicy(sleep = {})
+
+    @Before
+    fun needsMockServer() {
+        assumeTrue("MOCK_AI_SERVER not set: start tools/mock-ai-server.mjs to run this", base.isNotEmpty())
+    }
+
+    private class Recorder : ChatTurnListener {
+        val text = StringBuilder()
+        var sources: List<SourceRef> = emptyList()
+        var suggestions: String? = null
+
+        override fun onText(delta: String) {
+            text.append(delta)
+        }
+
+        override fun onSources(sources: List<SourceRef>) {
+            this.sources = sources
+        }
+
+        override fun onSearchSuggestions(html: String) {
+            suggestions = html
+        }
+    }
+
+    /** Answers every `publish_articles` call with the app's real validation. */
+    private class Publisher : LiveResearchListener {
+        val calls = mutableListOf<String>()
+
+        override suspend fun onPublish(rawInput: String): PublishReply {
+            calls += rawInput
+            val outcome = LivePublish.validate(rawInput, Topics.ALL.map { it.id }.toSet(), emptySet(), Instant.now())
+            return PublishReply(outcome.problems.isEmpty() && outcome.accepted.isNotEmpty(), LivePublish.replyText(outcome))
+        }
+    }
+
+    private fun chat(backend: AiBackend, auth: ProviderAuth, model: String, search: Boolean = true): Pair<ChatTurnResult, Recorder> =
+        runBlocking {
+            val recorder = Recorder()
+            val request = ChatTurnRequest(
+                auth = auth,
+                model = model,
+                systemPrompt = AiPrompts.chatSystem(search),
+                context = "KONTEXT",
+                history = listOf(ApiMessage(fromUser = true, text = "Was bedeutet das?")),
+                webSearch = search,
+            )
+            backend.chat.answer(request, recorder, RecordingUsage()) to recorder
+        }
+
+    private fun live(backend: AiBackend, auth: ProviderAuth, model: String): Pair<LiveResearchResult, Publisher> = runBlocking {
+        val publisher = Publisher()
+        backend.live!!.research(LiveResearchRequest(auth, model, "SYSTEM", "Recherchiere"), publisher, RecordingUsage()) to publisher
+    }
+
+    private fun check(backend: AiBackend, auth: ProviderAuth, model: String): AiKeyCheck =
+        runBlocking { backend.keys.check(auth, model, RecordingUsage()).check }
+
+    private fun expectError(expected: AiError, block: () -> Unit) {
+        try {
+            block()
+            fail("expected $expected")
+        } catch (e: AiException) {
+            assertEquals(expected, e.error)
+        }
+    }
+
+    @Test
+    fun `gemini - grounded chat, free key, free-tier fallback, quota and key check`() {
+        val model = "gemini-3.8-flash"
+        val (grounded, recorder) = chat(GeminiBackend(http, retry), ProviderAuth(AiProviderId.GEMINI, "AIza-test-invalid", "$base/v1beta"), model)
+        assertEquals(TurnEnd.COMPLETE, grounded.end)
+        assertTrue(grounded.searchSuggestionsHtml!!.contains("class=\"chip\""))
+        assertEquals(grounded.searchSuggestionsHtml, recorder.suggestions)
+        assertEquals(3, grounded.sources.size)
+        assertTrue(recorder.text.contains("Kurz gesagt"))
+
+        val free = ProviderAuth(AiProviderId.GEMINI, "AQ.test-invalid", "$base/v1beta", freeTier = true)
+        val (answer, _) = chat(GeminiBackend(http, retry), free, model, search = false)
+        assertNull(answer.searchSuggestionsHtml)
+        assertFalse(answer.withoutWebSearch)
+
+        // A key set to "Mit Abrechnung" that is a free one after all: answered again without search.
+        for (mode in listOf("free-tier-search", "free-tier-search-400")) {
+            val auth = ProviderAuth(AiProviderId.GEMINI, "AIza-test-$mode", "$base/mock/$mode/v1beta")
+            assertTrue(mode, chat(GeminiBackend(http, retry), auth, model).first.withoutWebSearch)
+        }
+
+        val quota = ProviderAuth(AiProviderId.GEMINI, "AQ.test-invalid", "$base/mock/429/v1beta", freeTier = true)
+        expectError(AiError.QuotaExhausted) { chat(GeminiBackend(http, retry), quota, model, search = false) }
+        expectError(AiError.InvalidKey) {
+            chat(GeminiBackend(http, retry), ProviderAuth(AiProviderId.GEMINI, "AIza-test-invalid", "$base/mock/400/v1beta"), model)
+        }
+        assertEquals(AiKeyCheck.OK, check(GeminiBackend(http, retry), free, model))
+    }
+
+    @Test
+    fun `responses family - chat, live with correction, key checks`() {
+        listOf(
+            Triple(ResponsesDialect.OPENAI, "sk-test-invalid", "gpt-6.1-sol"),
+            Triple(ResponsesDialect.XAI, "xai-test-invalid", "grok-4.3"),
+            Triple(ResponsesDialect.PERPLEXITY, "pplx-test-invalid", "google/gemini-3.8-flash"),
+        ).forEach { (dialect, key, model) ->
+            val backend = ResponsesBackend(http, dialect, retry)
+            val auth = ProviderAuth(dialect.provider, key, "$base/v1")
+            val (answer, _) = chat(backend, auth, model)
+            assertEquals(dialect.name, TurnEnd.COMPLETE, answer.end)
+            assertTrue(dialect.name, answer.sources.isNotEmpty())
+            // Perplexity's "[1]" markers (split across chunks) never reach the text.
+            assertFalse(dialect.name, answer.text.contains("[1"))
+
+            val (published, publisher) = live(backend, auth, model)
+            assertTrue(dialect.name, published.published)
+            assertEquals(1, publisher.calls.size)
+            val corrected = live(backend, ProviderAuth(dialect.provider, key, "$base/mock/live-reject/v1"), model)
+            assertTrue(dialect.name, corrected.first.published)
+            assertEquals(dialect.name, 2, corrected.second.calls.size)
+
+            assertEquals(dialect.name, AiKeyCheck.OK, check(backend, auth, model))
+            assertEquals(dialect.name, AiKeyCheck.INVALID, check(backend, ProviderAuth(dialect.provider, "sk-reject", "$base/v1"), model))
+        }
+    }
+
+    @Test
+    fun `chat completions family - chat, openrouter live, key checks`() {
+        listOf(
+            Triple(CompatDialect.OPENROUTER, "sk-or-v1-test-invalid", "google/gemini-3.8-flash"),
+            Triple(CompatDialect.MISTRAL, "mistral-test-invalid", "mistral-medium-3-5"),
+            Triple(CompatDialect.DEEPSEEK, "sk-test-invalid", "deepseek-flash"),
+            Triple(CompatDialect.CUSTOM, null, "llama3.3"),
+        ).forEach { (dialect, key, model) ->
+            val backend = CompatBackend(http, dialect, retry)
+            val auth = ProviderAuth(dialect.provider, key, if (dialect == CompatDialect.CUSTOM) "$serverBase/v1" else "$base/v1")
+            val search = dialect == CompatDialect.OPENROUTER
+            val (answer, recorder) = chat(backend, auth, model, search)
+            assertEquals(dialect.name, TurnEnd.COMPLETE, answer.end)
+            assertTrue(dialect.name, recorder.text.contains("Kurz gesagt"))
+            if (search) {
+                assertTrue(answer.sources.isNotEmpty())
+                val (published, publisher) = live(backend, auth, model)
+                assertTrue(published.published)
+                assertEquals(1, publisher.calls.size)
+            }
+            assertEquals(dialect.name, AiKeyCheck.OK, check(backend, auth, model))
+        }
+        val noCredit = ProviderAuth(AiProviderId.DEEPSEEK, "sk-test-invalid", "$base/mock/402/v1")
+        assertEquals(AiKeyCheck.OK_NO_CREDIT, check(CompatBackend(http, CompatDialect.DEEPSEEK, retry), noCredit, "deepseek-flash"))
+    }
+
+    @Test
+    fun `claude - chat, live, key check and the workspace error`() {
+        val backend = ClaudeBackend(ClaudeClients())
+        val model = "claude-sonnet-5-5"
+        val auth = ProviderAuth(AiProviderId.ANTHROPIC, "sk-ant-test-invalid", base)
+        val (answer, recorder) = chat(backend, auth, model)
+        assertEquals(TurnEnd.COMPLETE, answer.end)
+        assertTrue(recorder.text.contains("Kurz gesagt"))
+        assertTrue(answer.sources.isNotEmpty())
+        val (published, publisher) = live(backend, auth, model)
+        assertTrue(published.published)
+        assertEquals(1, publisher.calls.size)
+        assertEquals(AiKeyCheck.OK, check(backend, auth, model))
+        val workspace = ProviderAuth(AiProviderId.ANTHROPIC, "sk-ant-test-invalid", "$base/mock/400-workspace")
+        assertEquals(AiKeyCheck.WORKSPACE_REQUIRED, check(backend, workspace, model))
+    }
+}

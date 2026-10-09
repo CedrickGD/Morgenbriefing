@@ -1,6 +1,7 @@
 # KI-Anbieter (v1.3.0): Design
 
-Status: design, ready for implementation. Target release: **v1.3.0**. Written 2026-10-09.
+Status: implemented on branch `ai-providers` (T1–T11); manual QA with real keys is still open (§11, §14). Target
+release: **v1.3.0**. Written 2026-10-09.
 Inputs: the current AI layer (`ai/**`, settings, `docs/AI.md`, `docs/DESIGN.md`) and the research specs
 [`providers/openai.md`](providers/openai.md), [`providers/gemini.md`](providers/gemini.md),
 [`providers/openai-compatible.md`](providers/openai-compatible.md) (all AS_OF 2026-10-09). Section
@@ -1218,3 +1219,102 @@ Three sequential implementer agents. Each task leaves `./gradlew testDebugUnitTe
 * **Scope.** Mistral web search (Conversations API), DeepSeek/self-hosted Live via a client-side search
   function, the Gemini Interactions API, per-provider usage breakdown and Sign in with ChatGPT are out
   of scope for v1.3.0.
+
+---
+
+## 14. QA with the mock server (`tools/mock-ai-server.mjs`)
+
+Real keys are not needed (and never used) to see every provider work end to end. A dependency-free
+Node script (Node 18+) serves realistic **streaming** answers in the wire format of every engine
+family; a debug build points any provider at it.
+
+```bash
+node tools/mock-ai-server.mjs                 # http://127.0.0.1:8787 (emulator: http://10.0.2.2:8787)
+node tools/mock-ai-server.mjs --port 9000 --delay 0 --host 0.0.0.0
+```
+
+| Endpoint | Family | What it streams |
+|---|---|---|
+| `POST …/responses` | OpenAI Responses (OpenAI; `grok-*` models get the xAI flavor) | `response.created` → reasoning item (encrypted) → `web_search_call` (in_progress/searching/completed, `action.sources`) → message (`phase:"final_answer"`) with `output_text.delta`s and `url_citation` annotations → `response.completed` with usage. xAI: `cost_in_usd_ticks`, numeric citation titles, function calls only in `output_item.done`. |
+| `POST …/agent` | Perplexity Agent API | `search_results` item, text with a `[1]` marker split across two deltas, `cost.total_cost`, `tool_calls_details`. Non-streamed `{"input":"ping"}` → the key check's JSON response. |
+| `POST …/models/{m}:streamGenerateContent?alt=sse` | Gemini | One `GenerateContentResponse` per `data:` line, no event names, no `[DONE]`: a thought part (hidden by the app), text in several chunks, `groundingMetadata` (`webSearchQueries`, redirect `groundingChunks` with domain titles, `searchEntryPoint.renderedContent` with light/dark CSS and chip links to Google), `finishReason: STOP`, `usageMetadata`. Grounding only when the request has `googleSearch`. |
+| `POST …/chat/completions` | Chat Completions | OpenRouter (a model with `/` or the `openrouter:web_search` tool): `: OPENROUTER PROCESSING` comment, text, `url_citation` annotations, the extra accounting chunk with `usage.cost` and `server_tool_use_details`. Mistral: a `thinking` content part first. DeepSeek: usage in a last chunk with `choices: []` when `stream_options.include_usage`. Anything else = own server (no key needed). Live: `tool_calls` fragments by index, `finish_reason: tool_calls`. |
+| `POST /v1/messages` | Anthropic (Claude SDK) | `message_start` → `server_tool_use` (`web_search`) + `web_search_tool_result` → text with a `citations_delta` → `message_delta` (`server_tool_use.web_search_requests`) → `message_stop`. Live: a `tool_use` block streamed as `input_json_delta`, `stop_reason: tool_use`. Non-streamed → the key check's `Message`. |
+| `GET …/models`, `…/v1beta/models/{m}`, `…/api-key`, `…/key`, `…/user/balance` | key and connection checks | OpenAI/Mistral/own-server model list, Gemini model info, xAI key status, OpenRouter key info, DeepSeek balance. |
+
+**Live:** when a request offers `publish_articles`, the mock first "searches", then calls it once
+with one valid article per topic (at most two, topic ids from the schema's `topicId` enum,
+`publishedAt` 40 minutes ago in Berlin time, two https sources, 80+ words). After the tool result
+`ok` it ends with a short closing line; after a rejection it sends corrected articles.
+
+**Base URLs in the app** (debug builds only: Einstellungen → KI → „Entwickler: Basis-URL“; the
+dialog fills in the right one with „Mock-Server einsetzen“):
+
+| Provider | Base URL |
+|---|---|
+| Claude | `http://10.0.2.2:8787` (the SDK adds `/v1/messages`) |
+| Gemini | `http://10.0.2.2:8787/v1beta` |
+| OpenAI, xAI, Perplexity, OpenRouter, Mistral, DeepSeek | `http://10.0.2.2:8787/v1` |
+| Eigener Server | `http://10.0.2.2:8787/v1` as the server address (no key needed) |
+
+`10.0.2.2` is on the cleartext allowlist (D10). Release builds never read the override
+(`readAiSettings(…, debugOverrides = BuildConfig.DEBUG)`), `setDebugBaseUrl` stores nothing there,
+and the row and its dialog only exist when `BuildConfig.DEBUG`.
+
+**Switches** (comma-separated) make the mock misbehave on purpose:
+
+| Switch | Effect |
+|---|---|
+| `400` `401` `402` `403` `404` `429` `500` `503` `529` | The family's error body for that status (OpenAI shape; google.rpc for Gemini, labelled `text/event-stream` on the SSE endpoint as observed; Anthropic's `{"type":"error",…}`). Gemini `429` = free-tier quota with `RetryInfo` 37 s (G3: the app explains, it does not hammer). `402` on `/user/balance` and `/api-key` = a key that works without credit. |
+| `400-workspace` | Anthropic: „anthropic-workspace-id is required …“ (key check → WORKSPACE_REQUIRED). |
+| `400-model`, `429-quota`, `429-short` | Unknown model; OpenAI `insufficient_quota`; a 429 with a 3 s wait (a free Gemini key retries once). |
+| `free-tier-search`, `free-tier-search-400` | Gemini rejects `googleSearch` (429 grounding quota with limit 0, or 400 `FAILED_PRECONDITION`); requests without search work. Tests the safety net of a key set to „Mit Abrechnung“ that is a free one. |
+| `no-search` | Never search, even when asked. |
+| `refusal`, `truncated`, `midstream-error` | A refusal, a cut-off answer, an error after the first words. |
+| `live-reject`, `live-empty` | Live: the first `publish_articles` call is invalid (body too short); an empty list. |
+| `slow` | 400 ms between events (for cancel and „Abbrechen“). |
+
+Set them per request with a path prefix that also works in the app's base URL
+(`http://10.0.2.2:8787/mock/429/v1beta`), with `?mock=429,slow` (curl), globally with the
+environment variables `MOCK_ERROR` / `MOCK_MODE`, or at runtime with
+`curl -X POST "http://127.0.0.1:8787/__mock?set=free-tier-search"` (`/__mock/reset` clears,
+`GET /__mock` shows the state). Any non-empty key works; a key containing `reject` gets the
+provider's 401. Use fake values like `AIza-test-invalid`, `AQ.test-invalid`, `sk-test-invalid` —
+never real keys.
+
+The log line of every request names the family, model, search/Live and a masked key, and warns
+when the app breaks a documented rule (Gemini key as `?key=`, `temperature`/`thinkingBudget` on
+Gemini 3, a trailing model turn, Responses without `store: false`, `stream_options` to Mistral).
+
+**Contract test:** `MockServerContractTest` (JVM) runs the real engines of all four families
+against the running mock: chat with search, Live with the correction loop, key checks, the Gemini
+free-tier fallback, the free quota and the workspace error. It is skipped unless `MOCK_AI_SERVER`
+is set (the variable is a test input, so setting or clearing it re-runs the tests):
+
+```bash
+node tools/mock-ai-server.mjs --delay 0
+MOCK_AI_SERVER=http://127.0.0.1:8787 ./gradlew :app:testDebugUnitTest --tests "*MockServerContractTest"
+```
+
+**Suggested emulator pass** (debug build with `-PMB_ID_SUFFIX=.v13`, fake keys): Gemini kostenlos
+(chat note „Ohne Websuche …“, no suggestions), Gemini mit Abrechnung (Search Suggestions under the
+answer in light and dark, a chip opens a Custom Tab), `free-tier-search` (answer plus „Ohne
+Websuche beantwortet …“), `429` on a free key (the calm quota text), Live with Gemini (one sentence
+plus „Live-Anbieter wählen“), Live via OpenAI, OpenRouter and Claude (articles appear,
+`live-reject` corrects itself), the own server at `http://10.0.2.2:8787/v1`, and an API 24
+emulator (Claude shows „Claude braucht Android 8“ with „Anbieter wählen“, every other provider
+works).
+
+## 15. Link check of the console URLs (T11, 2026-10-09)
+
+`curl -L` with a browser user agent:
+
+| URL | Result |
+|---|---|
+| `https://platform.claude.com/settings/keys`, `…/settings/workspaces` | 200 |
+| `https://aistudio.google.com/apikey` | 200 after the Google sign-in redirect (`continue=…/apikey`) |
+| `https://console.x.ai` | 200 (`/home`) |
+| `https://openrouter.ai/settings/keys` | 200 after the sign-in redirect back to the keys page |
+| `https://console.mistral.ai/api-keys` | 307 to the Mistral login (the page exists) |
+| `https://platform.openai.com/api-keys`, `https://www.perplexity.ai/account/api/keys` | 403: bot challenge for scripted clients. **Open once in a browser before the release.** |
+| `https://platform.deepseek.com/api_keys` | 202: WAF interstitial. **Check in a browser.** |

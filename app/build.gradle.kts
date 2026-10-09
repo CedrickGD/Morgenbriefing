@@ -85,6 +85,11 @@ android {
 
     testOptions {
         unitTests.isReturnDefaultValues = true
+        unitTests.all { test ->
+            // MockServerContractTest runs only against a live tools/mock-ai-server.mjs: setting or
+            // clearing the variable must re-run the tests instead of reusing an up-to-date result.
+            test.inputs.property("mockAiServer", providers.environmentVariable("MOCK_AI_SERVER").orElse(""))
+        }
     }
 }
 
