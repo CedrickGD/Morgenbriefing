@@ -49,10 +49,14 @@ Läuft ab **Android 7.0** (API 24). Randlos (Edge-to-Edge) und sauber mit **Gest
   höchstens ein kurzes Zitat). Artikel und Pressefotos werden nie übernommen.
 - **Bilder** kommen ausschließlich von [Wikimedia Commons](https://commons.wikimedia.org) unter
   freier Lizenz (CC0, gemeinfrei, CC BY, CC BY-SA) und werden mit Urheber und Lizenz genannt.
-  Passt kein freies Bild, zeichnet die App ein eigenes Titelbild in der Farbe der Rubrik.
+  Jeder Artikel bekommt eins: Findet die Suche nichts Passendes, nimmt die Routine ein
+  allgemeines Symbolbild aus dem geprüften Bildkatalog
+  [`routine/fallback-images.json`](routine/fallback-images.json) (Reichstag, EZB, Leipziger
+  Hauptbahnhof, Windpark …). Nur falls trotzdem eins fehlt, zeichnet die App ein eigenes
+  Titelbild in der Farbe der Rubrik.
 - Vor jedem Push prüft der Validator [`routine/validate-brief.mjs`](routine/validate-brief.mjs)
-  jede Rubrik und das ganze Briefing: Format, Quellen, Lizenzen, Textlänge – und dass nichts
-  älter als 36 Stunden ist.
+  jede Rubrik und das ganze Briefing: Format, Quellen, Lizenzen, Textlänge, ein Bild pro Artikel
+  (keins doppelt) – und dass nichts älter als 36 Stunden ist.
 
 Mehr dazu: [Architektur](docs/ARCHITECTURE.md) · [Datenformat](docs/brief-format.md) ·
 [Prompt der Cloud-Routine](routine/PROMPT.md)
@@ -217,8 +221,8 @@ Alle ohne Abhängigkeiten, Node ≥ 18, `--help` zeigt alle Optionen.
 
 | Skript | Zweck |
 |---|---|
-| [`validate-brief.mjs`](routine/validate-brief.mjs) | prüft Briefings (Schema 1 und 2), `index.json` und mit `--section` einzelne Rubrik-Dateien |
-| [`find-image.mjs`](routine/find-image.mjs) | sucht frei lizenzierte Bilder auf Wikimedia Commons und gibt sie als JSON aus |
+| [`validate-brief.mjs`](routine/validate-brief.mjs) | prüft Briefings (Schema 1 und 2), `index.json` und mit `--section` einzelne Rubrik-Dateien; `--require-images` verlangt ein Bild pro Artikel |
+| [`find-image.mjs`](routine/find-image.mjs) | sucht frei lizenzierte Bilder auf Wikimedia Commons und gibt sie als JSON aus; `--fallback <motiv\|rubrik>` liefert Ersatzbilder aus dem geprüften Bildkatalog [`fallback-images.json`](routine/fallback-images.json), `--verify-fallbacks` prüft den Katalog erneut gegen Commons |
 | [`assemble-brief.mjs`](routine/assemble-brief.mjs) | setzt die Rubrik-Dateien zu einem Briefing zusammen; `--overview` zeigt Überschriften, `--previous-date` findet das letzte Briefing vor einem Tag |
 | [`publish-brief.mjs`](routine/publish-brief.mjs) | schreibt ein Briefing in einen Checkout von `briefs` (idempotent; `--merge` fügt Rubriken in ein vorhandenes Tagesbriefing ein; `--branch briefs-test` bzw. `MB_BRIEFS_BRANCH` für Testläufe) |
 | [`email-config.mjs`](routine/email-config.mjs) | prüft die E-Mail-Einstellungen `config/email.json` und gibt Schalter und Empfänger als JSON aus |
@@ -228,6 +232,8 @@ Alle ohne Abhängigkeiten, Node ≥ 18, `--help` zeigt alle Optionen.
 node --test routine/test/*.test.mjs                                              # Tests (ohne Netz)
 node routine/validate-brief.mjs app/src/main/assets/sample-brief.json            # Datei prüfen
 node routine/find-image.mjs "Semperoper Dresden" --limit 3                        # Bilder suchen
+node routine/find-image.mjs --fallback bundestag --seed politik-test             # Ersatzbild aus dem Katalog
+node routine/find-image.mjs --verify-fallbacks                                   # Bildkatalog gegen Commons prüfen
 mkdir -p routine/out/data                                                        # Probe-Veröffentlichung
 node routine/publish-brief.mjs --brief app/src/main/assets/sample-brief.json --data-dir routine/out/data
 ```
@@ -302,7 +308,7 @@ KEY_PASSWORD=…
 ```
 app/                 Android-App (Kotlin, Jetpack Compose, Material 3)
 docs/                Architektur, Datenformat, KI-Anbieter (Design und Wire-Formate)
-routine/             Prompt der Cloud-Routine, Validator, Bildsuche, Zusammensetzen, Veröffentlichen, Tests
+routine/             Prompt der Cloud-Routine, Validator, Bildsuche und Bildkatalog, Zusammensetzen, Veröffentlichen, Tests
 scripts/             Release-Skript (Version erhöhen, signiert bauen, veröffentlichen)
 tools/               mock-ai-server.mjs: Test-Server für alle KI-Anbieter (QA ohne echte Keys, docs/AI-PROVIDERS.md §14)
 .github/workflows/   Build und Tests, Releases, Routine-Skripte, Prüfung des Branches briefs

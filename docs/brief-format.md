@@ -30,8 +30,10 @@ inkompatiblen Änderungen erhöht.
   Routine, in eigenen Worten aus mehreren Quellen geschrieben (nur Fakten), mit höchstens einem
   kurzen, zugeordneten Zitat (unter 15 Wörtern).
 * Bilder stammen ausschließlich von **Wikimedia Commons** unter freier Lizenz (CC0, gemeinfrei,
-  CC BY, CC BY-SA) und werden mit Urheber, Lizenz und Link zur Dateiseite angezeigt. Gibt es kein
-  passendes freies Bild, bleibt `image` leer und die App zeichnet ein eigenes Titelbild.
+  CC BY, CC BY-SA) und werden mit Urheber, Lizenz und Link zur Dateiseite angezeigt. Die Routine
+  gibt **jedem Artikel ein Bild** – findet die Suche nichts Passendes, ein allgemeines
+  Symbolbild aus dem geprüften Bildkatalog (siehe unten). Fehlt `image` trotzdem (oder in
+  älteren Briefings), zeichnet die App ein eigenes Titelbild.
 
 ## Briefing (`briefs/YYYY-MM-DD.json`, `latest.json`) – Schema 2
 
@@ -127,7 +129,7 @@ Ein vollständiges, echtes Beispiel ist das Demo-Briefing der App:
 | `publishedAt` | ja* | ISO-8601 mit Offset; höchstens 2 h nach `generatedAt`. *Pflicht bei `--max-age-hours`: dann höchstens so viele Stunden vor `generatedAt` (Routine: 36) |
 | `importance` | ja | ganze Zahl 1–10: Relevanz für jemanden in Sachsen/Deutschland an diesem Morgen |
 | `readingMinutes` | ja | ganze Zahl ≥ 1 = Wörter des `body` / 200, gerundet (weicht sie um mehr als 1 ab: Hinweis) |
-| `image` | nein | `null`/fehlend oder ein Bild-Objekt, siehe unten |
+| `image` | nein* | `null`/fehlend oder ein Bild-Objekt, siehe unten. *Mit `--require-images` (so prüft die Routine neue Briefings) hat jeder Artikel ein Bild |
 
 #### `body` – Textformat
 
@@ -152,7 +154,47 @@ Ein vollständiges, echtes Beispiel ist das Demo-Briefing der App:
 
 Kandidaten liefert `node routine/find-image.mjs "<Suchbegriffe>"`; ob ein Bild wirklich passt,
 entscheidet die Redaktion (Ort, Gebäude, Person im offiziellen Porträt, Gegenstand, eindeutige
-Symbolszene – nie Logos von Medien). Dasselbe Bild zweimal im Briefing ist ein Hinweis.
+Symbolszene – nie Logos von Medien, nie ein Bild, das ein anderes, bestimmtes Ereignis zeigt).
+Passt kein Suchtreffer, kommt ein Ersatzbild aus dem Bildkatalog. Dasselbe Bild (dieselbe
+Commons-Datei, egal in welcher Größe) zweimal im Briefing ist ein Hinweis – mit `--section` und
+mehreren Dateien auch über Rubriken hinweg.
+
+#### Bildkatalog (`routine/fallback-images.json`)
+
+Geprüfte, allgemeine Symbolbilder für Artikel, zu denen die Suche nichts Passendes findet:
+pro Rubrik des Katalogs 4–8 Bilder (`topics`) und 1–3 Bilder für wiederkehrende Motive
+(`subjects`, z. B. `bundestag`, `ezb`, `leipzig-hbf`, `bad-dueben`, `windpark`). Jedes Bild hat
+die Felder eines `image`-Objekts plus `title` (`File:…`), `width`/`height` des 1280-px-Vorschaubilds
+und `verifiedAt` (Datum der Prüfung gegen Commons):
+
+```json
+{
+  "schema": 1,
+  "verifiedAt": "2026-10-09",
+  "topics": { "politik": [ { "title": "File:….jpg", "url": "https://upload.wikimedia.org/…/1280px-….jpg",
+                             "credit": "…", "license": "CC BY-SA 4.0",
+                             "sourceUrl": "https://commons.wikimedia.org/wiki/File:….jpg",
+                             "alt": "Das Reichstagsgebäude in Berlin …", "width": 1280, "height": 853,
+                             "verifiedAt": "2026-10-09" } ] },
+  "subjects": { "bundestag": { "topic": "politik", "label": "Bundestag, Reichstagsgebäude",
+                               "aliases": ["reichstag", "parlament"], "images": [ … ] } }
+}
+```
+
+Regeln (Test `routine/test/fallback-images.test.mjs`): alle zehn Rubriken vorhanden, Motive mit
+bekannter Rubrik, eindeutige Schlüssel und Aliase, keine Datei doppelt, freie Lizenz mit
+Urheber (außer CC0/gemeinfrei), Querformat ab 1200 px, deutscher `alt`-Text, der beschreibt, was
+zu sehen ist. Keine Medienlogos, keine erkennbaren Privatpersonen in heiklen Situationen, kein
+bestimmtes Ereignis.
+
+* `node routine/find-image.mjs --fallback <motiv|rubrik> [--seed <artikel-id>] [--exclude <url,…>] [--exclude-from <pfad>]`
+  gibt Katalogbilder als JSON aus (dieselben Felder wie die Suche plus `alt` und `fallback`) –
+  erst das Motiv, dann seine Rubrik, dann die anderen Motive der Rubrik; schon vergebene Bilder
+  werden übersprungen, `--seed` verteilt parallele Rubriken auf verschiedene Bilder.
+* `node routine/find-image.mjs --list-fallbacks` zeigt alle Motive mit Aliasen.
+* `node routine/find-image.mjs --verify-fallbacks` prüft jeden Eintrag erneut gegen Commons
+  (Datei vorhanden, Lizenz, Urheber, Vorschaubild-URL, Größe, kein Persönlichkeitsrechte-Hinweis).
+  Neue oder ersetzte Einträge vorher genauso prüfen und `verifiedAt` setzen.
 
 ## Rubrik-Datei der Routine (`/tmp/sections/<id>.json`)
 
@@ -160,7 +202,7 @@ Jeder Rubrik-Agent schreibt genau eine Rubrik `{ "id", "title", "emoji", "items"
 Artikel-Regeln von Schema 2. Prüfen mit
 
 ```bash
-node routine/validate-brief.mjs --section /tmp/sections/ki.json --max-age-hours 36
+node routine/validate-brief.mjs --section /tmp/sections/ki.json --max-age-hours 36 --require-images
 ```
 
 Ohne `generatedAt` gilt die Frische-Regel relativ zur aktuellen Uhrzeit (oder `--now <ISO>`).
@@ -286,9 +328,11 @@ zeigt das Skript pro Rubrik weniger ausführliche Artikel (der Rest steht als Ü
 
 | Befehl | Zweck |
 |---|---|
-| `node routine/validate-brief.mjs <datei…> [--max-age-hours 36]` | Briefings (Schema 1/2) und `index.json` prüfen |
-| `node routine/validate-brief.mjs --section <datei…> [--max-age-hours 36] [--now <ISO>]` | einzelne Rubrik-Dateien prüfen |
+| `node routine/validate-brief.mjs <datei…> [--max-age-hours 36] [--require-images]` | Briefings (Schema 1/2) und `index.json` prüfen; `--require-images`: jeder Artikel braucht ein Bild |
+| `node routine/validate-brief.mjs --section <datei…> [--max-age-hours 36] [--require-images] [--now <ISO>]` | einzelne Rubrik-Dateien prüfen (mehrere: dasselbe Bild in zwei Rubriken ist ein Hinweis) |
 | `node routine/find-image.mjs "<suchbegriffe>" [--limit 5]` | freie Commons-Bilder suchen (JSON) |
+| `node routine/find-image.mjs --fallback <motiv\|rubrik> [--seed <id>] [--exclude <url,…>] [--exclude-from <pfad>]` | Ersatzbilder aus dem geprüften Bildkatalog (JSON, ohne Netz) |
+| `node routine/find-image.mjs --list-fallbacks` / `--verify-fallbacks` | Motive des Bildkatalogs anzeigen / den Katalog erneut gegen Commons prüfen |
 | `node routine/assemble-brief.mjs --sections <ordner> --teaser "…" --out <datei>` | Rubriken zu einem Briefing zusammensetzen |
 | `node routine/assemble-brief.mjs --overview <briefing oder ordner> [--topic <id>]` | Überschriften und Erstellungszeit anzeigen (z. B. vom Vortag) |
 | `node routine/assemble-brief.mjs --previous-date <index.json> --before <datum>` | Datum des neuesten Briefings vor `<datum>` ausgeben (Maßstab für „neu“) |
