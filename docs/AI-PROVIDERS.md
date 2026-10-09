@@ -191,7 +191,7 @@ Curated models (first = default, badge „Standard“):
 |---|---|
 | ANTHROPIC | `claude-sonnet-5-5` – Claude Sonnet 5.5 – „Schnell und gründlich“ · `claude-opus-5-5` – Claude Opus 5.5 – „Maximale Qualität, etwa doppelter Preis“ · `claude-haiku-5-5` – Claude Haiku 5.5 – „Sehr günstig und flott“ |
 | OPENAI | `gpt-6.1-sol` – GPT-6.1 Sol – „Ausgewogen“ · `gpt-6-luna` – GPT-6 Luna – „Sehr günstig“ · `gpt-6-astra` – GPT-6 Astra – „Spitzenmodell, deutlich teurer“ (OA §3.1) |
-| GEMINI | `gemini-3.8-flash` – Gemini 3.8 Flash – „Schnell und günstig (ab 2027 doppelter Preis)“ · `gemini-3.5-flash-lite` – Gemini 3.5 Flash-Lite – „Am günstigsten“ · `gemini-3.1-pro-preview` – Gemini 3.1 Pro (Preview) – „Stärkstes Gemini, nur mit Abrechnung“ (GE §3.1) |
+| GEMINI | `gemini-3.8-flash` – Gemini 3.8 Flash – „Schnell und günstig“ (with billing: „(ab 2027 doppelter Preis)“ after it) · `gemini-3.5-flash-lite` – Gemini 3.5 Flash-Lite – „Am günstigsten“ · `gemini-3.1-pro-preview` – Gemini 3.1 Pro (Preview) – „Stärkstes Gemini, nur mit Abrechnung“ (GE §3.1) |
 | XAI | `grok-4.3` – Grok 4.3 – „Günstig“ · `grok-4.7` – Grok 4.7 – „Spitzenmodell“ (OC §4.2) |
 | PERPLEXITY | `google/gemini-3.8-flash` – Gemini 3.8 Flash – „Mit Perplexity-Suche“ · `perplexity/sonar` – Sonar – „Perplexitys eigenes Modell, günstig“ · `anthropic/claude-sonnet-5-5` – Claude Sonnet 5.5 – „Claude mit Perplexity-Suche“ (OC §6.2; dashes!) |
 | OPENROUTER | `google/gemini-3.8-flash` – Gemini 3.8 Flash – „Schnell und günstig“ · `openai/gpt-6-luna` – GPT-6 Luna – „Sehr günstig“ · `anthropic/claude-sonnet-5.5` – Claude Sonnet 5.5 – „Gründlich“ (OC §7.2; dots!) |

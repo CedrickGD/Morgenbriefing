@@ -369,8 +369,8 @@ internal data class ModelChoice(
 /**
  * The curated models of [id] for the picker, with their price per million tokens (as of [on]).
  * The selected one is the model requests use ([ProviderCatalog.effectiveModel]). With a free
- * Gemini key every selectable model is "kostenlos", and a model without free tier is marked
- * "nur mit Abrechnung" and cannot be picked.
+ * Gemini key every selectable model is "kostenlos" (without a note on future prices), and a
+ * model without free tier is marked "nur mit Abrechnung" and cannot be picked.
  */
 internal fun modelChoices(ai: AiSettings, id: AiProviderId, on: LocalDate): List<ModelChoice> {
     val spec = ProviderCatalog.spec(id)
@@ -378,10 +378,11 @@ internal fun modelChoices(ai: AiSettings, id: AiProviderId, on: LocalDate): List
     return spec.models.map { model ->
         val selectable = ProviderCatalog.isModelSelectable(ai, id, model.id)
         val price = if (selectable) priceLine(ai, id, model.id, on) else GeminiTiers.BILLING_ONLY
+        val note = model.priceNote?.takeUnless { ai.costsNothing(id) }?.let { " ($it)" }.orEmpty()
         ModelChoice(
             id = model.id,
             title = model.label,
-            subtitle = "${model.subtitle} · $price",
+            subtitle = "${model.subtitle}$note · $price",
             badge = model.badge,
             selected = model.id == effective,
             enabled = selectable,

@@ -400,6 +400,9 @@ class AiLogicTest {
         assertFalse(pro.enabled)
         assertTrue(pro.subtitle.endsWith(GeminiTiers.BILLING_ONLY))
         assertTrue(free.filter { it.enabled }.all { it.subtitle.endsWith("kostenlos") })
+        // Free stays free: no note that the paid price doubles in 2027.
+        assertEquals("Schnell und günstig · kostenlos", free.single { it.id == "gemini-3.8-flash" }.subtitle)
+        assertTrue(free.none { "2027" in it.subtitle })
         // A Pro model stored before switching back to free: the default is what runs (and shows).
         val switchedBack = modelChoices(gemini(GeminiTier.FREE, model = "gemini-3.1-pro-preview"), AiProviderId.GEMINI, today)
         assertTrue(switchedBack.single { it.id == "gemini-3.8-flash" }.selected)
@@ -407,7 +410,7 @@ class AiLogicTest {
         val paid = modelChoices(gemini(GeminiTier.PAID), AiProviderId.GEMINI, today)
         assertTrue(paid.all { it.enabled })
         assertEquals("Stärkstes Gemini · 2 $ / 12 $ je 1 Mio. Tokens", plain(paid.single { it.id == "gemini-3.1-pro-preview" }.subtitle))
-        assertTrue(plain(paid.first().subtitle).endsWith("0,75 $ / 3,75 $ je 1 Mio. Tokens"))
+        assertEquals("Schnell und günstig (ab 2027 doppelter Preis) · 0,75 $ / 3,75 $ je 1 Mio. Tokens", plain(paid.first().subtitle))
     }
 
     @Test

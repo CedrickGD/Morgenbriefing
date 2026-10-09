@@ -39,7 +39,8 @@ enum class LiveToolNote {
 
 /**
  * One curated model of a provider. [requiresBilling]: the model has no free tier (Gemini Pro),
- * so it cannot be picked with a free Gemini key.
+ * so it cannot be picked with a free Gemini key. [priceNote]: a remark on the price, shown in
+ * brackets after [subtitle] only where requests cost money (not with a free Gemini key).
  */
 data class ModelOption(
     val id: String,
@@ -47,6 +48,7 @@ data class ModelOption(
     val subtitle: String,
     val badge: String? = null,
     val requiresBilling: Boolean = false,
+    val priceNote: String? = null,
 )
 
 /** Everything the app knows about one provider; all strings German, user-facing. */

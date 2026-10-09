@@ -103,7 +103,13 @@ object ProviderCatalog {
         keyPrefixes = emptyList(),
         invalidKeyText = null,
         models = listOf(
-            ModelOption("gemini-3.8-flash", "Gemini 3.8 Flash", "Schnell und günstig (ab 2027 doppelter Preis)", badge = STANDARD),
+            ModelOption(
+                "gemini-3.8-flash",
+                "Gemini 3.8 Flash",
+                "Schnell und günstig",
+                badge = STANDARD,
+                priceNote = "ab 2027 doppelter Preis",
+            ),
             ModelOption("gemini-3.5-flash-lite", "Gemini 3.5 Flash-Lite", "Am günstigsten"),
             ModelOption("gemini-3.1-pro-preview", "Gemini 3.1 Pro (Preview)", "Stärkstes Gemini", requiresBilling = true),
         ),
