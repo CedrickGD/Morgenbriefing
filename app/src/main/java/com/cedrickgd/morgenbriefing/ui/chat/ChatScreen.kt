@@ -539,7 +539,16 @@ private fun AssistantMessage(
         val error = message.error
         if (message.status == ChatMessage.Status.FAILED && error != null) {
             if (message.text.isNotBlank()) Spacer(Modifier.height(12.dp))
-            ErrorCard(error = error, spec = spec, canRetry = isLast, onRetry = onRetry, onOpenSettings = onChangeKey)
+            ErrorCard(
+                error = error,
+                spec = spec,
+                canRetry = isLast,
+                onRetry = onRetry,
+                onOpenSettings = onChangeKey,
+                detail = message.errorDetail,
+                // The fix of a Gemini project problem (AI Studio, Cloud Console) opens like a source.
+                onOpenLink = onOpenSource,
+            )
         }
         if (message.sources.isNotEmpty()) {
             Spacer(Modifier.height(14.dp))
