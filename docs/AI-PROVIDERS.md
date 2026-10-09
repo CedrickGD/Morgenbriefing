@@ -1247,8 +1247,8 @@ with one valid article per topic (at most two, topic ids from the schema's `topi
 `publishedAt` 40 minutes ago in Berlin time, two https sources, 80+ words). After the tool result
 `ok` it ends with a short closing line; after a rejection it sends corrected articles.
 
-**Base URLs in the app** (debug builds only: Einstellungen → KI → „Entwickler: Basis-URL“; the
-dialog fills in the right one with „Mock-Server einsetzen“):
+**Base URLs in the app** (debug builds only: Einstellungen → KI → „Entwickler: Basis-URL“, one field per
+provider; „Alle auf Mock-Server“ fills in all of them):
 
 | Provider | Base URL |
 |---|---|
@@ -1304,6 +1304,17 @@ plus „Live-Anbieter wählen“), Live via OpenAI, OpenRouter and Claude (artic
 `live-reject` corrects itself), the own server at `http://10.0.2.2:8787/v1`, and an API 24
 emulator (Claude shows „Claude braucht Android 8“ with „Anbieter wählen“, every other provider
 works).
+
+**Emulator pass done on 2026-10-09** (API 36 emulator, debug build, mock server, fake keys only):
+provider picker and capability pills; Gemini key dialog (guide, both key shapes, tariff, privacy
+line) and key check; free tier (chat note, no search requests, Pro locked, everything „kostenlos“);
+paid tier (grounded answer with Search Suggestions in dark and light, also from history after a
+restart; a chip opens Chrome, not the WebView; source pills show the domains);
+`free-tier-search` fallback with its note; Gemini in Live (one sentence + „Live-Anbieter wählen“
+→ Live picker → OpenAI key dialog) and a Live run via OpenAI (2 articles published); „Alle auf
+Mock-Server“. The pass found and fixed a crash of every streaming answer (empty alternate text of
+the cursor, present since v1.2). Still open: the API 24 emulator (it did not finish booting here)
+and every check with real keys (§11).
 
 ## 15. Link check of the console URLs (T11, 2026-10-09)
 
