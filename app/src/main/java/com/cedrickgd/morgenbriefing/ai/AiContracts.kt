@@ -87,6 +87,12 @@ data class ChatMessage(
     val searchSuggestionsHtml: String? = null,
     /** A quiet line under the answer, e.g. "Ohne Websuche beantwortet …". */
     val note: String? = null,
+    /**
+     * Answers: the provider that wrote it (the chat history survives a provider switch, D12, so
+     * every answer names its own author and its errors their own key). Null for questions and for
+     * answers saved before v1.3.0 — those are shown under the chat's current provider.
+     */
+    val provider: AiProviderId? = null,
 ) {
     enum class Role { USER, ASSISTANT }
     enum class Status { STREAMING, DONE, FAILED }

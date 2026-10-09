@@ -429,7 +429,8 @@ sealed interface AiError {
 enum class AiKeyCheck { OK, OK_NO_CREDIT, INVALID, NETWORK, UNSUPPORTED, WORKSPACE_REQUIRED, WORKSPACE_INVALID,
                         SERVER_UNREACHABLE, SERVER_CERTIFICATE, CLEARTEXT_BLOCKED, NOT_AN_AI_SERVER }
 
-data class ChatMessage(/* existing */ ..., val searchSuggestionsHtml: String? = null, val note: String? = null)
+data class ChatMessage(/* existing */ ..., val searchSuggestionsHtml: String? = null, val note: String? = null,
+                       val provider: AiProviderId? = null)   // the answer's author (null before v1.3.0)
 data class ChatUiState(/* existing */ ..., val providerName: String = "", val provider: AiProviderId? = null)
 data class LiveState(/* existing */ ..., val provider: AiProviderId? = null, val providerName: String = "")
 data class UsageSnapshot(/* existing */ ..., val estimatedRequests: Int = 0)
@@ -1135,6 +1136,10 @@ The pill is shown on every API level now.
   API 24). Full answer width, shown whenever the answer is shown (also from stored history), never
   restyled (GE §6.4). Small caption above it is **not** added (no interstitial content).
 * `ChatMessage.note` (e.g. „Ohne Websuche beantwortet …“) as a quiet `bodySmall` line under the answer.
+* Every answer stores its author (`ChatMessage.provider`, `StoredChatMessage.provider` = `AiProviderId.key`,
+  set from the resolved provider of its turn). The history survives a provider switch (D12), so the mark
+  („✦ Gemini“), the error texts, the copy label and „Key ändern“ (→ that provider's key dialog) follow
+  the answer, not the current chat provider; answers saved before v1.3.0 fall back to the current one.
 
 ---
 

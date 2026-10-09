@@ -1,6 +1,8 @@
 package com.cedrickgd.morgenbriefing.ui.chat
 
+import com.cedrickgd.morgenbriefing.ai.ChatMessage
 import com.cedrickgd.morgenbriefing.ai.hostOf
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
@@ -13,6 +15,14 @@ import com.cedrickgd.morgenbriefing.data.model.SourceRef
 
 /** The small mark above an answer: the provider's brand, capitalised ("Claude", "Gemini", "Dein Server"). */
 internal fun answerMark(spec: ProviderSpec): String = spec.brand.replaceFirstChar { it.uppercaseChar() }
+
+/**
+ * Whose answer [message] is: the provider that wrote it — its mark, its error texts and the key
+ * dialog behind "Key ändern" — not the one the chat uses now (the history outlives a provider
+ * switch, D12). Answers saved before v1.3.0 know no provider and fall back to [chat].
+ */
+internal fun answerSpec(message: ChatMessage, chat: ProviderSpec): ProviderSpec =
+    message.provider?.let(ProviderCatalog::spec) ?: chat
 
 /** Who writes the answers, inside the disclaimer of the empty chat. */
 internal fun answerAuthor(spec: ProviderSpec): String = when (spec.id) {

@@ -41,6 +41,8 @@ internal data class StoredChatMessage(
     val searchSuggestionsHtml: String? = null,
     /** A quiet line under the answer, e.g. "Ohne Websuche beantwortet …". */
     val note: String? = null,
+    /** Answers: [com.cedrickgd.morgenbriefing.data.model.AiProviderId.key] of the provider that wrote it; null before v1.3.0. */
+    val provider: String? = null,
 ) {
     companion object {
         const val ROLE_USER = "user"

@@ -1,6 +1,10 @@
 package com.cedrickgd.morgenbriefing.ui.chat
 
+import com.cedrickgd.morgenbriefing.ai.AiError
+import com.cedrickgd.morgenbriefing.ai.AiTexts
+import com.cedrickgd.morgenbriefing.ai.ChatMessage
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -16,6 +20,21 @@ class ChatTextsTest {
         assertEquals("Grok", answerMark(ProviderCatalog.XAI))
         assertEquals("Dein Server", answerMark(ProviderCatalog.CUSTOM))
         assertEquals("Gemini antwortet …", answeringPlaceholder(ProviderCatalog.GEMINI))
+    }
+
+    @Test
+    fun `an answer stays its author's after the chat provider changed`() {
+        val quota = ChatMessage("a", ChatMessage.Role.ASSISTANT, "", status = ChatMessage.Status.FAILED, error = AiError.QuotaExhausted, provider = AiProviderId.GEMINI)
+        // The chat now runs on OpenAI; the stored Gemini quota card still speaks of Gemini.
+        val spec = answerSpec(quota, chat = ProviderCatalog.OPENAI)
+        assertEquals(AiProviderId.GEMINI, spec.id)
+        assertEquals("Gemini", answerMark(spec))
+        assertTrue(AiTexts.error(quota.error!!, spec).startsWith("Gemini-Gratiskontingent"))
+        // A rejected Claude key opens Claude's key dialog, not the current provider's.
+        val rejected = quota.copy(error = AiError.InvalidKey, provider = AiProviderId.ANTHROPIC)
+        assertEquals(AiProviderId.ANTHROPIC, answerSpec(rejected, chat = ProviderCatalog.CUSTOM).id)
+        // Answers saved before v1.3.0 name no provider: the chat's.
+        assertEquals(AiProviderId.OPENAI, answerSpec(quota.copy(provider = null), chat = ProviderCatalog.OPENAI).id)
     }
 
     @Test

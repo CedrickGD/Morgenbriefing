@@ -353,6 +353,52 @@ class ChatServiceTest {
     }
 
     @Test
+    fun `every answer keeps the provider that wrote it, across a switch and a restart`() = runBlocking<Unit> {
+        settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true) }
+        engine.scripts += { throw AiException(AiError.QuotaExhausted) }
+        val session = service().session(article)
+        session.await { it.provider == AiProviderId.GEMINI }
+        session.send("Erste")
+        val gemini = session.await { it.settled(2) }.messages
+        assertEquals(null, gemini[0].provider)
+        assertEquals(AiProviderId.GEMINI, gemini[1].provider)
+        assertEquals(AiError.QuotaExhausted, gemini[1].error)
+
+        // D12: the history stays when the chat provider changes; the old answer stays Gemini's.
+        settings.value = AppSettings().withProvider(AiProviderId.OPENAI) { it.copy(hasKey = true) }
+        session.await { it.provider == AiProviderId.OPENAI }
+        session.send("Zweite")
+        val both = session.await { it.settled(4) }.messages
+        assertEquals(listOf(null, AiProviderId.GEMINI, null, AiProviderId.OPENAI), both.map { it.provider })
+
+        val restored = service().session(article).await { it.messages.size == 4 }.messages
+        assertEquals(listOf(null, AiProviderId.GEMINI, null, AiProviderId.OPENAI), restored.map { it.provider })
+    }
+
+    @Test
+    fun `answers saved before providers were recorded load without one`() = runBlocking<Unit> {
+        val store = ChatStore(folder.root.resolve("chat"), AppJson)
+        store.save(
+            StoredChat(
+                date = article.date,
+                articleKey = article.articleKey,
+                title = "Neue Buslinie nach Leipzig",
+                context = "Kontext: Artikel region-buslinie",
+                messages = listOf(
+                    StoredChatMessage(id = "q1", role = StoredChatMessage.ROLE_USER, text = "Alt"),
+                    StoredChatMessage(id = "a1", role = StoredChatMessage.ROLE_ASSISTANT, text = "Alte Antwort."),
+                    StoredChatMessage(id = "q2", role = StoredChatMessage.ROLE_USER, text = "Neuer"),
+                    // A provider a newer app version knows: shown under the chat's provider too.
+                    StoredChatMessage(id = "a2", role = StoredChatMessage.ROLE_ASSISTANT, text = "Antwort.", provider = "futureai"),
+                ),
+            ),
+        )
+        val restored = service().session(article).await { it.messages.size == 4 }.messages
+        assertEquals(listOf("Alte Antwort.", "Antwort."), restored.filter { it.role == ChatMessage.Role.ASSISTANT }.map { it.text })
+        assertTrue(restored.all { it.provider == null })
+    }
+
+    @Test
     fun `a free Gemini key chats without web search, at no cost and past the monthly limit`() = runBlocking<Unit> {
         settings.value = AppSettings().withAiKey(AiProviderId.GEMINI)
         // Spent more than the cap: paid providers are blocked, the free tier is not.

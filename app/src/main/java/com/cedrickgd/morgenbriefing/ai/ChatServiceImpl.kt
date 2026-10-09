@@ -2,6 +2,7 @@ package com.cedrickgd.morgenbriefing.ai
 
 import android.util.Log
 import com.cedrickgd.morgenbriefing.data.BERLIN
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -197,7 +198,14 @@ internal class ChatServiceImpl(
 
             val user = ChatMessage(id = newId(), role = ChatMessage.Role.USER, text = question)
             val answerId = newId()
-            val placeholder = ChatMessage(id = answerId, role = ChatMessage.Role.ASSISTANT, text = "", status = ChatMessage.Status.STREAMING)
+            // The answer names the provider that writes it: the history outlives a provider switch (D12).
+            val placeholder = ChatMessage(
+                id = answerId,
+                role = ChatMessage.Role.ASSISTANT,
+                text = "",
+                status = ChatMessage.Status.STREAMING,
+                provider = resolved.spec.id,
+            )
             apiTexts[user.id] = apiText
             _state.update {
                 it.copy(messages = it.messages + user + placeholder, busy = true, activity = null, suggestions = emptyList())
@@ -486,6 +494,7 @@ private fun ChatMessage.toStored(apiText: String?): StoredChatMessage? {
         error = error?.let(StoredAiError::of),
         searchSuggestionsHtml = searchSuggestionsHtml,
         note = note,
+        provider = provider?.key,
     )
 }
 
@@ -504,6 +513,7 @@ private fun StoredChatMessage.toChatMessage(): ChatMessage? {
         error = error?.toAiError(),
         searchSuggestionsHtml = searchSuggestionsHtml,
         note = note,
+        provider = AiProviderId.fromKey(provider),
     )
 }
 

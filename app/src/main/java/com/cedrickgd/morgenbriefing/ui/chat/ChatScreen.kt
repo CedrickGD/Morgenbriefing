@@ -125,7 +125,8 @@ fun ChatScreen(
     viewModel { ChatLeaveStopper(session) }
     val state by session.state.collectAsStateWithLifecycle()
     val settingsLink = LocalSettingsLink.current
-    var keyDialog by rememberSaveable { mutableStateOf(false) }
+    // The provider whose key dialog is open ([AiProviderId.key]), or null.
+    var keyDialog by rememberSaveable { mutableStateOf<String?>(null) }
     ChatContent(
         state = state,
         aboutArticle = articleKey != null,
@@ -146,16 +147,18 @@ fun ChatScreen(
                     settingsLink.request(SettingsTarget.AI_LIVE_PROVIDER)
                     onOpenSettings()
                 }
-                AiBlock.NO_KEY, null -> keyDialog = true
+                AiBlock.NO_KEY, null -> keyDialog = (state.provider ?: AiProviderId.ANTHROPIC).key
             }
         },
+        // "Key ändern" under an answer: the key of the provider that wrote it.
+        onChangeKey = { provider -> keyDialog = provider.key },
         onSend = session::send,
         onStop = session::stop,
         onRetry = { (session as? RetryableChatSession)?.retry() },
         onClear = session::clear,
         modifier = modifier,
     )
-    if (keyDialog) InlineAiKeyDialog(provider = state.provider ?: AiProviderId.ANTHROPIC, onDismiss = { keyDialog = false })
+    AiProviderId.fromKey(keyDialog)?.let { provider -> InlineAiKeyDialog(provider = provider, onDismiss = { keyDialog = null }) }
 }
 
 /**
@@ -173,7 +176,8 @@ internal class ChatLeaveStopper(private val session: ChatSession) : ViewModel() 
 /**
  * The chat layout, stateless: messages over the sky, a glass top bar, a floating glass input
  * (or a friendly card when AI is blocked). The message list is a second blur source above the
- * sky, so both bars frost the text that scrolls beneath them.
+ * sky, so both bars frost the text that scrolls beneath them. [onOpenSettings] is the blocked
+ * card's way forward, [onChangeKey] the "Key ändern" of an answer (for the provider that wrote it).
  */
 @Composable
 internal fun ChatContent(
@@ -186,6 +190,7 @@ internal fun ChatContent(
     onRetry: () -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
+    onChangeKey: (AiProviderId) -> Unit = {},
 ) {
     val density = LocalDensity.current
     val haptics = LocalHapticFeedback.current
@@ -222,7 +227,7 @@ internal fun ChatContent(
             MessageList(
                 state = state,
                 onRetry = onRetry,
-                onOpenSettings = onOpenSettings,
+                onChangeKey = onChangeKey,
                 contentPadding = PaddingValues(top = topPadding, bottom = bottomPadding),
             )
         }
@@ -363,7 +368,7 @@ private fun footerShown(state: ChatUiState): Boolean {
 private fun MessageList(
     state: ChatUiState,
     onRetry: () -> Unit,
-    onOpenSettings: () -> Unit,
+    onChangeKey: (AiProviderId) -> Unit,
     contentPadding: PaddingValues,
 ) {
     val context = LocalContext.current
@@ -436,26 +441,30 @@ private fun MessageList(
                 } else {
                     UserBubble(message.text, itemModifier)
                 }
-                ChatMessage.Role.ASSISTANT -> AssistantMessage(
-                    message = message,
-                    spec = state.providerSpec,
-                    isLast = index == state.messages.lastIndex,
-                    onRetry = onRetry,
-                    onOpenSettings = onOpenSettings,
-                    onOpenSource = links::open,
-                    onCopy = {
-                        scope.launch {
-                            val label = "Antwort von ${answerMark(state.providerSpec)}"
-                            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(label, chatPlainText(message.text))))
-                            // Android 13+ confirms copies itself.
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                                Toast.makeText(context, "Antwort kopiert", Toast.LENGTH_SHORT).show()
+                ChatMessage.Role.ASSISTANT -> {
+                    // Each answer under its own author, also after a provider switch.
+                    val spec = answerSpec(message, state.providerSpec)
+                    AssistantMessage(
+                        message = message,
+                        spec = spec,
+                        isLast = index == state.messages.lastIndex,
+                        onRetry = onRetry,
+                        onChangeKey = { onChangeKey(spec.id) },
+                        onOpenSource = links::open,
+                        onCopy = {
+                            scope.launch {
+                                val label = "Antwort von ${answerMark(spec)}"
+                                clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(label, chatPlainText(message.text))))
+                                // Android 13+ confirms copies itself.
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                                    Toast.makeText(context, "Antwort kopiert", Toast.LENGTH_SHORT).show()
+                                }
                             }
-                        }
-                    },
-                    onShare = { shareAnswer(context, state.title, message) },
-                    modifier = itemModifier,
-                )
+                        },
+                        onShare = { shareAnswer(context, state.title, message) },
+                        modifier = itemModifier,
+                    )
+                }
             }
         }
         if (footer) {
@@ -475,7 +484,7 @@ private fun AssistantMessage(
     spec: ProviderSpec,
     isLast: Boolean,
     onRetry: () -> Unit,
-    onOpenSettings: () -> Unit,
+    onChangeKey: () -> Unit,
     onOpenSource: (String) -> Unit,
     onCopy: () -> Unit,
     onShare: () -> Unit,
@@ -506,7 +515,7 @@ private fun AssistantMessage(
         val error = message.error
         if (message.status == ChatMessage.Status.FAILED && error != null) {
             if (message.text.isNotBlank()) Spacer(Modifier.height(12.dp))
-            ErrorCard(error = error, spec = spec, canRetry = isLast, onRetry = onRetry, onOpenSettings = onOpenSettings)
+            ErrorCard(error = error, spec = spec, canRetry = isLast, onRetry = onRetry, onOpenSettings = onChangeKey)
         }
         if (message.sources.isNotEmpty()) {
             Spacer(Modifier.height(14.dp))
