@@ -28,6 +28,14 @@ object AiTexts {
         AiBlock.LIVE_UNAVAILABLE -> "Live mit ${spec.brand} nicht verfügbar"
     }
 
+    /** The one button of a [block] card in the chat and in "⚡ Live": what fixes it. */
+    fun blockAction(block: AiBlock, spec: ProviderSpec): String = when (block) {
+        AiBlock.NO_KEY -> if (spec.id == AiProviderId.CUSTOM) "Server einrichten" else "Key eintragen"
+        AiBlock.LIMIT_REACHED -> "Limit anpassen"
+        AiBlock.UNSUPPORTED_DEVICE -> PROVIDER_ACTION
+        AiBlock.LIVE_UNAVAILABLE -> LIVE_PROVIDER_ACTION
+    }
+
     /** One or two friendly sentences under [blockTitle]. */
     fun blockBody(block: AiBlock, spec: ProviderSpec): String = when (block) {
         AiBlock.UNSUPPORTED_DEVICE ->

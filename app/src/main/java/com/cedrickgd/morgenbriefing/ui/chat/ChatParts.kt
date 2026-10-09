@@ -49,6 +49,7 @@ import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Savings
+import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material.icons.rounded.Stop
@@ -120,7 +121,7 @@ import com.cedrickgd.morgenbriefing.ui.glass.glassEdgeBrush
 import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
 import com.cedrickgd.morgenbriefing.ui.theme.Reading
 
-/** Reading style of Claude's answers: the reader's serif body, a touch smaller (docs/DESIGN.md §5). */
+/** Reading style of the AI's answers: the reader's serif body, a touch smaller (docs/DESIGN.md §5). */
 @Composable
 internal fun answerTextStyle(): TextStyle = Reading.articleBody(0.9f)
 
@@ -179,9 +180,9 @@ internal fun RoundGlassButton(
     }
 }
 
-/** The small "✦ Claude" mark above an answer. */
+/** The small "✦ Claude" mark above an answer, with the [name] of who answers ([answerMark]). */
 @Composable
-internal fun ClaudeMark(modifier: Modifier = Modifier) {
+internal fun ProviderMark(name: String, modifier: Modifier = Modifier) {
     Row(modifier.clearAndSetSemantics { }, verticalAlignment = Alignment.CenterVertically) {
         Box(
             Modifier
@@ -195,7 +196,20 @@ internal fun ClaudeMark(modifier: Modifier = Modifier) {
             Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(13.dp))
         }
         Spacer(Modifier.width(8.dp))
-        Text("Claude", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(name, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/**
+ * A calm line with a small icon: that this chat answers without web search (free Gemini key,
+ * providers without search), or under one answer that it came without it.
+ */
+@Composable
+internal fun QuietNote(text: String, modifier: Modifier = Modifier, icon: ImageVector = Icons.Rounded.SearchOff) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(15.dp))
+        Spacer(Modifier.width(6.dp))
+        Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -224,7 +238,7 @@ internal fun UserBubble(text: String, modifier: Modifier = Modifier) {
 }
 
 /**
- * Claude's answer rendered from light markdown in the reading serif; while [streaming], a soft
+ * The answer rendered from light markdown in the reading serif; while [streaming], a soft
  * pulsing cursor sits at the end of the text.
  */
 @Composable
@@ -325,7 +339,7 @@ internal fun pulse(min: Float, max: Float, periodMillis: Int): State<Float> =
     }
 
 /**
- * What Claude is doing right now ("Suche im Netz: …", "Denkt nach …"): a quiet line with a
+ * What the AI is doing right now ("Suche im Netz: …", "Denkt nach …"): a quiet line with a
  * light sweeping over it. The sweep is drawn in the draw phase only.
  */
 @Composable
@@ -539,14 +553,15 @@ internal fun ErrorCard(
 // -------------------------------------------------------------------------------------------
 
 /**
- * The glass input: a multiline field and a round button that sends — or, while Claude is
- * answering, stops the answer.
+ * The glass input: a multiline field and a round button that sends — or, while the answer
+ * streams ([busyPlaceholder], e.g. "Gemini antwortet …"), stops it.
  */
 @Composable
 internal fun ChatInputBar(
     value: String,
     onValueChange: (String) -> Unit,
     busy: Boolean,
+    busyPlaceholder: String,
     onSend: () -> Unit,
     onStop: () -> Unit,
     modifier: Modifier = Modifier,
@@ -563,7 +578,7 @@ internal fun ChatInputBar(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.weight(1f),
-            placeholder = { Text(if (busy) "Claude antwortet …" else "Frag nach …", maxLines = 1, overflow = TextOverflow.Ellipsis) },
+            placeholder = { Text(if (busy) busyPlaceholder else "Frag nach …", maxLines = 1, overflow = TextOverflow.Ellipsis) },
             textStyle = MaterialTheme.typography.bodyLarge,
             maxLines = 6,
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
@@ -628,8 +643,9 @@ private fun SendStopButton(busy: Boolean, canSend: Boolean, onSend: () -> Unit, 
 }
 
 /**
- * Why Claude cannot answer here (no key, limit reached, Android < 8): a friendly glass card in
- * place of the input, with the way to the settings where that helps.
+ * Why the chat cannot answer here (no key, limit reached, Claude below Android 8): a friendly
+ * glass card in place of the input, with the one way forward ([AiTexts.blockAction]: the key
+ * dialog, the monthly limit, another provider).
  */
 @Composable
 internal fun BlockedCard(block: AiBlock, spec: ProviderSpec, onOpenSettings: () -> Unit, modifier: Modifier = Modifier) {
@@ -668,15 +684,11 @@ internal fun BlockedCard(block: AiBlock, spec: ProviderSpec, onOpenSettings: () 
                 Text(AiTexts.blockBody(block, spec), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        if (block != AiBlock.UNSUPPORTED_DEVICE) {
-            Row(Modifier.fillMaxWidth().padding(top = 10.dp), horizontalArrangement = Arrangement.End) {
-                // The one way forward: a filled accent button, like every other key/token action.
-                Button(onClick = onOpenSettings, modifier = Modifier.heightIn(min = 48.dp)) {
-                    Text(if (block == AiBlock.NO_KEY) "Key eintragen" else "Limit anpassen")
-                }
+        Row(Modifier.fillMaxWidth().padding(top = 10.dp), horizontalArrangement = Arrangement.End) {
+            // The one way forward: a filled accent button, like every other key/token action.
+            Button(onClick = onOpenSettings, modifier = Modifier.heightIn(min = 48.dp)) {
+                Text(AiTexts.blockAction(block, spec))
             }
-        } else {
-            Spacer(Modifier.height(6.dp))
         }
     }
 }

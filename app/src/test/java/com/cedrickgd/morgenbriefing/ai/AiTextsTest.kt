@@ -90,4 +90,14 @@ class AiTextsTest {
         allErrors.forEach { assertEquals(it, StoredAiError.of(it).toAiError()) }
         assertEquals(AiError.Unknown("x"), StoredAiError("from_the_future", "x").toAiError())
     }
+
+    @Test
+    fun `every block has its one way forward`() {
+        assertEquals("Key eintragen", AiTexts.blockAction(AiBlock.NO_KEY, claude))
+        assertEquals("Server einrichten", AiTexts.blockAction(AiBlock.NO_KEY, server))
+        assertEquals("Limit anpassen", AiTexts.blockAction(AiBlock.LIMIT_REACHED, gemini))
+        // Claude below Android 8: another provider; Gemini and Live: another Live provider (G4).
+        assertEquals(AiTexts.PROVIDER_ACTION, AiTexts.blockAction(AiBlock.UNSUPPORTED_DEVICE, claude))
+        assertEquals("Live-Anbieter wählen", AiTexts.blockAction(AiBlock.LIVE_UNAVAILABLE, gemini))
+    }
 }

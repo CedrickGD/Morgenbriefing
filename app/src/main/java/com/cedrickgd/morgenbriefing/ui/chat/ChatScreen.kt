@@ -130,14 +130,23 @@ fun ChatScreen(
         state = state,
         aboutArticle = articleKey != null,
         onBack = onBack,
-        // A missing or rejected key is entered right here (Back keeps the user in the chat); only
-        // the monthly limit leads to the settings' KI section.
+        // A missing or rejected key is entered right here (Back keeps the user in the chat); the
+        // monthly limit and another provider (Claude below Android 8) are the settings' KI section.
         onOpenSettings = {
-            if (state.blocked == AiBlock.LIMIT_REACHED) {
-                settingsLink.request(SettingsTarget.AI)
-                onOpenSettings()
-            } else {
-                keyDialog = true
+            when (state.blocked) {
+                AiBlock.LIMIT_REACHED -> {
+                    settingsLink.request(SettingsTarget.AI)
+                    onOpenSettings()
+                }
+                AiBlock.UNSUPPORTED_DEVICE -> {
+                    settingsLink.request(SettingsTarget.AI_PROVIDER)
+                    onOpenSettings()
+                }
+                AiBlock.LIVE_UNAVAILABLE -> {
+                    settingsLink.request(SettingsTarget.AI_LIVE_PROVIDER)
+                    onOpenSettings()
+                }
+                AiBlock.NO_KEY, null -> keyDialog = true
             }
         },
         onSend = session::send,
@@ -247,6 +256,7 @@ internal fun ChatContent(
                     value = draft,
                     onValueChange = { draft = it },
                     busy = state.busy,
+                    busyPlaceholder = answeringPlaceholder(state.providerSpec),
                     onSend = { send(draft) },
                     onStop = onStop,
                 )
@@ -363,7 +373,8 @@ private fun MessageList(
     val listState = rememberLazyListState()
 
     val footer = footerShown(state)
-    val itemCount = state.messages.size + if (footer) 1 else 0
+    val note = state.note
+    val itemCount = state.messages.size + (if (footer) 1 else 0) + (if (note != null) 1 else 0)
     val lastLength = state.messages.lastOrNull()?.text?.length ?: 0
 
     // Follow the newest text while the reader is at the end; a drag upwards lets them read in peace.
@@ -404,6 +415,12 @@ private fun MessageList(
         ),
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
+        // What this chat cannot do (no web search) — once, calmly, above the conversation.
+        if (note != null) {
+            item(key = "chat-note", contentType = "note") {
+                QuietNote(note, Modifier.animateItem().padding(horizontal = 2.dp))
+            }
+        }
         itemsIndexed(state.messages, key = { _, m -> m.id }, contentType = { _, m -> m.role }) { index, message ->
             val appear = rememberEntrance(durationMillis = 420)
             val itemModifier = Modifier
@@ -428,7 +445,8 @@ private fun MessageList(
                     onOpenSource = links::open,
                     onCopy = {
                         scope.launch {
-                            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("Antwort von Claude", chatPlainText(message.text))))
+                            val label = "Antwort von ${answerMark(state.providerSpec)}"
+                            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(label, chatPlainText(message.text))))
                             // Android 13+ confirms copies itself.
                             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                                 Toast.makeText(context, "Antwort kopiert", Toast.LENGTH_SHORT).show()
@@ -465,10 +483,21 @@ private fun AssistantMessage(
 ) {
     val streaming = message.status == ChatMessage.Status.STREAMING
     Column(modifier.fillMaxWidth().padding(end = 4.dp)) {
-        ClaudeMark()
+        ProviderMark(answerMark(spec))
         Spacer(Modifier.height(10.dp))
         if (message.text.isNotBlank()) {
             MarkdownAnswer(text = message.text, streaming = streaming)
+        }
+        // Google's Search Suggestions belong to a grounded answer whenever it is shown, as wide
+        // as the answer and right under it (GE §6.4).
+        val suggestions = message.searchSuggestionsHtml
+        if (suggestions != null && message.text.isNotBlank()) {
+            Spacer(Modifier.height(12.dp))
+            SearchSuggestions(html = suggestions, onOpenLink = onOpenSource)
+        }
+        message.note?.let { note ->
+            Spacer(Modifier.height(10.dp))
+            QuietNote(note)
         }
         if (message.error == AiError.Truncated && message.text.isNotBlank()) {
             Spacer(Modifier.height(10.dp))
@@ -504,6 +533,8 @@ private fun EmptyChat(
     val card = rememberEntrance(delayMillis = 160)
     val chips = rememberEntrance(delayMillis = 220)
     val glow = pulse(min = 0.4f, max = 1f, periodMillis = 1_800)
+    // The chat's note says what it cannot do: without one, it searches the web.
+    val webSearch = state.note == null
     Column(
         Modifier
             .fillMaxSize()
@@ -553,14 +584,19 @@ private fun EmptyChat(
             )
             Spacer(Modifier.height(10.dp))
             Text(
-                if (aboutArticle) {
-                    "Ich kenne den ganzen Artikel, erkläre Hintergründe und schaue im Netz nach, was seitdem passiert ist – mit Quellen."
-                } else {
-                    "Ich kenne alle Meldungen des Tages, ordne sie ein und schaue im Netz nach, was seitdem passiert ist – mit Quellen."
-                },
+                emptyChatIntro(aboutArticle, webSearch),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            state.note?.let { note ->
+                Spacer(Modifier.height(12.dp))
+                QuietNote(
+                    note,
+                    Modifier
+                        .frost(shape = GlassShapes.pill, level = GlassLevel.Thin)
+                        .padding(horizontal = 14.dp, vertical = 9.dp),
+                )
+            }
         }
         if (aboutArticle && state.title.isNotBlank()) {
             Spacer(Modifier.height(20.dp))
@@ -624,7 +660,7 @@ private fun EmptyChat(
         }
         Spacer(Modifier.height(28.dp))
         Text(
-            "Antworten schreibt Claude von Anthropic – sie können Fehler enthalten. Prüf Wichtiges in den verlinkten Quellen.",
+            chatDisclaimer(state.providerSpec, webSearch),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

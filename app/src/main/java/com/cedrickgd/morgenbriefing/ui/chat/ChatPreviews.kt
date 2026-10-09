@@ -14,7 +14,10 @@ import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.AiPrompts
 import com.cedrickgd.morgenbriefing.ai.ChatMessage
 import com.cedrickgd.morgenbriefing.ai.ChatUiState
+import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AccentId
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 import com.cedrickgd.morgenbriefing.ui.theme.MorgenbriefingTheme
@@ -89,6 +92,33 @@ private fun ChatEmptyPreview() = PreviewStage(dark = false) {
 private fun ChatNoKeyPreview() = PreviewStage(dark = false) {
     ChatContent(
         ChatUiState(title = AiPrompts.BRIEF_TITLE, suggestions = AiPrompts.BRIEF_SUGGESTIONS, blocked = AiBlock.NO_KEY),
+        aboutArticle = false,
+        onBack = {}, onOpenSettings = {}, onSend = {}, onStop = {}, onRetry = {}, onClear = {},
+    )
+}
+
+@Preview(name = "Chat – Gemini kostenlos", widthDp = 412, heightDp = 892, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ChatGeminiFreePreview() = PreviewStage(dark = true) {
+    ChatContent(
+        previewConversation.copy(
+            busy = false,
+            activity = null,
+            provider = AiProviderId.GEMINI,
+            providerName = ProviderCatalog.GEMINI.name,
+            note = GeminiTiers.NO_WEB_SEARCH_NOTE,
+            messages = previewConversation.messages.take(2).map { it.copy(sources = emptyList()) },
+        ),
+        aboutArticle = true,
+        onBack = {}, onOpenSettings = {}, onSend = {}, onStop = {}, onRetry = {}, onClear = {},
+    )
+}
+
+@Preview(name = "Chat – Claude unter Android 8", widthDp = 412, heightDp = 892)
+@Composable
+private fun ChatUnsupportedPreview() = PreviewStage(dark = false) {
+    ChatContent(
+        ChatUiState(title = AiPrompts.BRIEF_TITLE, suggestions = AiPrompts.BRIEF_SUGGESTIONS, blocked = AiBlock.UNSUPPORTED_DEVICE),
         aboutArticle = false,
         onBack = {}, onOpenSettings = {}, onSend = {}, onStop = {}, onRetry = {}, onClear = {},
     )
