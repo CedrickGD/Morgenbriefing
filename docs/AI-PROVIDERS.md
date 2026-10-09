@@ -866,7 +866,9 @@ UI texts (`AiTexts.error(error, spec)`; `brand` = `spec.brand`):
 | Refusal / Truncated / Unknown | as today, provider-neutral | as today |
 
 `liveErrorText` in `ui/today/LiveModels.kt` follows the same table (Live wording, brand instead of „Claude“).
-`AiError.InvalidKey` from any request → `keyRejected(provider, key)` (as today, now per provider).
+`AiError.InvalidKey` from any request → `keyRejected(provider, key)` (as today, now per provider). A key
+test („Speichern & testen“) that ends in `INVALID` for the stored setup marks the stored key the same way
+(`keyTestRejectsStoredKey`; `markAiKeyRejected` only acts when the tested key is the stored one).
 
 ### 8.1 HTTP status → AiError
 

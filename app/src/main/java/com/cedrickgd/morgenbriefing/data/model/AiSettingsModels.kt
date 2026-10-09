@@ -53,9 +53,9 @@ data class ProviderSettings(
      */
     val keyUntested: Boolean = false,
     /**
-     * The provider refused a chat or Live request with the stored key as not authenticated, and
-     * no request has gone through with it since. Cleared by saving a key. Only meaningful with
-     * [hasKey].
+     * The provider refused a chat or Live request or a key test with the stored key as not
+     * authenticated, and no request has gone through with it since. Cleared by saving a key. Only
+     * meaningful with [hasKey].
      */
     val keyRejected: Boolean = false,
     /** Model id (curated or free text); null = the catalog default. */

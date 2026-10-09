@@ -126,4 +126,43 @@ class AiBlockTest {
         paid.record(AiProviderId.OPENAI, "gpt-6.1-sol", TokenUsage(inputTokens = 100))
         assertNull(store.records.last().second.reportedCostUsd)
     }
+
+    @Test
+    fun `a key test sets up the candidate workspace id and server address`() {
+        val claude = AppSettings().withProvider(AiProviderId.ANTHROPIC) { it.copy(hasKey = true, workspaceId = "wrkspc_alt") }.ai
+        val anthropic = AiProviderId.ANTHROPIC
+        // Null keeps what is stored, "" clears it, anything else is trimmed.
+        assertEquals(claude, keyTestSettings(claude, anthropic, KeyExtras()))
+        assertEquals("wrkspc_alt", keyTestSettings(claude, anthropic, KeyExtras(workspaceId = " wrkspc_alt ")).of(anthropic).workspaceId)
+        assertNull(keyTestSettings(claude, anthropic, KeyExtras(workspaceId = "")).of(anthropic).workspaceId)
+        val server = AppSettings().withProvider(AiProviderId.CUSTOM) { it.copy(baseUrl = "http://nas.local:11434/v1") }.ai
+        assertEquals("http://nas.local:8080/v1", keyTestSettings(server, AiProviderId.CUSTOM, KeyExtras(baseUrl = "http://nas.local:8080/v1 ")).of(AiProviderId.CUSTOM).baseUrl)
+    }
+
+    @Test
+    fun `a key test refusal marks the stored key only for the stored setup`() {
+        val gemini = AiProviderId.GEMINI
+        val stored = AppSettings().withProvider(gemini) { it.copy(hasKey = true, keyUntested = true) }.ai
+        val same = keyTestSettings(stored, gemini, KeyExtras())
+        // An outright refusal of the stored setup: marked (the key store then checks it is the stored key).
+        assertTrue(keyTestRejectsStoredKey(AiKeyCheck.INVALID, stored, same, gemini))
+        // Anything but a refusal leaves the key as it is.
+        AiKeyCheck.entries.filter { it != AiKeyCheck.INVALID }.forEach {
+            assertFalse(it.name, keyTestRejectsStoredKey(it, stored, same, gemini))
+        }
+        // No key stored: nothing to mark.
+        val none = AppSettings().ai
+        assertFalse(keyTestRejectsStoredKey(AiKeyCheck.INVALID, none, keyTestSettings(none, gemini, KeyExtras()), gemini))
+
+        // Another workspace id or server address may be what failed: the stored key stays unmarked.
+        val anthropic = AiProviderId.ANTHROPIC
+        val claude = AppSettings().withProvider(anthropic) { it.copy(hasKey = true, workspaceId = "wrkspc_alt") }.ai
+        assertTrue(keyTestRejectsStoredKey(AiKeyCheck.INVALID, claude, keyTestSettings(claude, anthropic, KeyExtras(workspaceId = "wrkspc_alt")), anthropic))
+        assertFalse(keyTestRejectsStoredKey(AiKeyCheck.INVALID, claude, keyTestSettings(claude, anthropic, KeyExtras(workspaceId = "wrkspc_neu")), anthropic))
+        assertFalse(keyTestRejectsStoredKey(AiKeyCheck.INVALID, claude, keyTestSettings(claude, anthropic, KeyExtras(workspaceId = "")), anthropic))
+        val custom = AiProviderId.CUSTOM
+        val server = AppSettings().withProvider(custom) { it.copy(hasKey = true, baseUrl = "http://nas.local:11434/v1") }.ai
+        assertTrue(keyTestRejectsStoredKey(AiKeyCheck.INVALID, server, keyTestSettings(server, custom, KeyExtras(baseUrl = "http://nas.local:11434/v1")), custom))
+        assertFalse(keyTestRejectsStoredKey(AiKeyCheck.INVALID, server, keyTestSettings(server, custom, KeyExtras(baseUrl = "http://pi.local:11434/v1")), custom))
+    }
 }

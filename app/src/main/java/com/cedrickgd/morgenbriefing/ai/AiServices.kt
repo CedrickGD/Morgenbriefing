@@ -165,7 +165,8 @@ class AiServices(private val context: Context, private val container: AppContain
     /**
      * Key or connection test for the settings (as few tokens as possible) with the candidate
      * configuration: [key] null = the stored key; a null field of [extras] = the stored
-     * workspace id or server address, "" = none.
+     * workspace id or server address, "" = none. When the provider refuses exactly the stored key
+     * with the stored setup, Settings → KI marks it as rejected, as after a refused chat request.
      */
     suspend fun testKey(provider: AiProviderId, key: String?, extras: KeyExtras = KeyExtras()): KeyCheckOutcome {
         if (!AiSupport.supports(provider)) return KeyCheckOutcome(AiKeyCheck.UNSUPPORTED)
@@ -176,17 +177,13 @@ class AiServices(private val context: Context, private val container: AppContain
         // BOM, an umlaut): such a key cannot travel in a header, so it is refused before any request.
         if (candidate != null && !AiHttp.isPlainKey(candidate)) return KeyCheckOutcome(AiKeyCheck.INVALID)
         val ai = settingsOrDefault().ai
-        val stored = ai.of(provider)
-        val tested = ai.with(
-            provider,
-            stored.copy(
-                workspaceId = extras.workspaceId?.let { it.trim().ifEmpty { null } } ?: stored.workspaceId.takeIf { extras.workspaceId == null },
-                baseUrl = extras.baseUrl?.let { it.trim().ifEmpty { null } } ?: stored.baseUrl.takeIf { extras.baseUrl == null },
-            ),
-        )
+        val tested = keyTestSettings(ai, provider, extras)
         // Priced like a request, but it does not confirm the stored key: the candidate may be another one.
         val usage = ProviderUsageSink(usageStore, free = tested.costsNothing(provider))
-        return backend.keys.check(authFor(tested, provider, candidate), ProviderCatalog.effectiveModel(tested, provider), usage)
+        val outcome = backend.keys.check(authFor(tested, provider, candidate), ProviderCatalog.effectiveModel(tested, provider), usage)
+        // Marked only while the candidate is the stored key: the key store compares them.
+        if (keyTestRejectsStoredKey(outcome.check, ai, tested, provider)) markKeyRejected(provider, candidate)
+        return outcome
     }
 
     /**

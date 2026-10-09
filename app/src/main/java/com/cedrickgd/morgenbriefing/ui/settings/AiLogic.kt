@@ -176,7 +176,7 @@ internal fun canSaveUntested(state: AiKeyState): Boolean =
 
 /**
  * Second line of the key row in Settings → KI. [rejected]: the provider refused the last chat or
- * Live request with the stored key (wins over [untested]).
+ * Live request or key test with the stored key (wins over [untested]).
  */
 internal fun aiKeyRowLabel(spec: ProviderSpec, hasKey: Boolean, untested: Boolean, rejected: Boolean = false): String = when {
     !hasKey -> "Noch keiner eingetragen"

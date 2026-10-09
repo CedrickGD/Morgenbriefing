@@ -139,10 +139,11 @@ class SettingsRepository(context: Context) {
     }
 
     /**
-     * [provider] refused a chat or Live request made with [key] as not authenticated: marks the
-     * stored key as rejected ([ProviderSettings.keyRejected]) — but only while [key] is still the
-     * stored one, so a request that was under way while a new key was saved cannot brand the new
-     * key. No-op without a key (custom server without one).
+     * [provider] refused a chat or Live request or a key test made with [key] as not
+     * authenticated: marks the stored key as rejected ([ProviderSettings.keyRejected]) — but only
+     * while [key] is still the stored one, so a request that was under way while a new key was
+     * saved, or a test of another, unsaved key, cannot brand the stored key. No-op without a key
+     * (custom server without one).
      * @throws IOException if DataStore cannot persist the change.
      */
     suspend fun markAiKeyRejected(provider: AiProviderId, key: String?) {

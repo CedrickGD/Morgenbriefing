@@ -72,6 +72,31 @@ internal fun aiStatus(
     )
 }
 
+/**
+ * The setup a key test of [provider] runs with: [ai] with the candidate [extras] — a null field
+ * keeps the stored workspace id or server address, "" clears it.
+ */
+internal fun keyTestSettings(ai: AiSettings, provider: AiProviderId, extras: KeyExtras): AiSettings {
+    val stored = ai.of(provider)
+    return ai.with(
+        provider,
+        stored.copy(
+            workspaceId = extras.workspaceId?.let { it.trim().ifEmpty { null } } ?: stored.workspaceId.takeIf { extras.workspaceId == null },
+            baseUrl = extras.baseUrl?.let { it.trim().ifEmpty { null } } ?: stored.baseUrl.takeIf { extras.baseUrl == null },
+        ),
+    )
+}
+
+/**
+ * A key test of [provider] that ended in [check] marks the stored key as rejected, like a refused
+ * chat request: only for an outright refusal ([AiKeyCheck.INVALID]), only with a key stored, and
+ * only when the test ran with the stored setup ([tested] is [stored] for [provider]) — a new
+ * workspace id or server address may be what failed. Whether the tested key is the stored one
+ * is left to the key store, which compares them (a different, unsaved key is never marked).
+ */
+internal fun keyTestRejectsStoredKey(check: AiKeyCheck, stored: AiSettings, tested: AiSettings, provider: AiProviderId): Boolean =
+    check == AiKeyCheck.INVALID && stored.of(provider).hasKey && tested.of(provider) == stored.of(provider)
+
 /** The outcome of resolving a provider for one chat turn or Live run. */
 internal sealed interface Resolution {
     val spec: ProviderSpec
