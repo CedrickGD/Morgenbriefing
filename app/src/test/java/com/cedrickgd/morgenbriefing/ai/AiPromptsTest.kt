@@ -51,6 +51,19 @@ class AiPromptsTest {
     }
 
     @Test
+    fun `example chips without web search ask only what the context answers`() {
+        assertEquals(AiPrompts.ARTICLE_SUGGESTIONS, AiPrompts.chatSuggestions(article = true, webSearch = true))
+        val offline = AiPrompts.chatSuggestions(article = true, webSearch = false)
+        assertEquals(AiPrompts.ARTICLE_SUGGESTIONS_OFFLINE, offline)
+        assertTrue("Was sagen andere Quellen?" in AiPrompts.ARTICLE_SUGGESTIONS)
+        assertTrue(offline.none { "Quellen" in it || "Netz" in it || "aktuell" in it.lowercase() })
+        assertEquals(AiPrompts.ARTICLE_SUGGESTIONS.size, offline.size)
+        // The brief's examples come from the brief itself, with or without search.
+        assertEquals(AiPrompts.BRIEF_SUGGESTIONS, AiPrompts.chatSuggestions(article = false, webSearch = true))
+        assertEquals(AiPrompts.BRIEF_SUGGESTIONS, AiPrompts.chatSuggestions(article = false, webSearch = false))
+    }
+
+    @Test
     fun `the search-only Live prompt names no Claude tool`() {
         val claude = AiPrompts.liveSystem(LiveToolNote.SEARCH_AND_FETCH)
         val other = AiPrompts.liveSystem(LiveToolNote.SEARCH_ONLY)

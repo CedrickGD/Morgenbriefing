@@ -59,6 +59,10 @@ internal class ChatServiceImpl(
         sessions.getOrPut(context) { ChatSessionImpl(context) }
 
     internal inner class ChatSessionImpl(private val context: ChatContext) : RetryableChatSession {
+        /** The chat provider searches the web as configured (picks the example chips); declared first, read below. */
+        @Volatile
+        private var webSearch = true
+
         private val _state = MutableStateFlow(
             ChatUiState(
                 title = if (context.articleKey == null) AiPrompts.BRIEF_TITLE else "",
@@ -88,12 +92,15 @@ internal class ChatServiceImpl(
         init {
             scope.launch {
                 access.status(AiPurpose.CHAT).collect { status ->
+                    webSearch = status.webSearch
                     _state.update {
                         it.copy(
                             blocked = status.block,
                             provider = status.spec.id,
                             providerName = status.spec.name,
                             note = AiTexts.chatNote(status.spec, status.webSearch, status.freeTier),
+                            // Shown examples follow the provider: no "andere Quellen" without web search.
+                            suggestions = if (it.suggestions.isEmpty()) it.suggestions else suggestions(),
                         )
                     }
                 }
@@ -430,7 +437,7 @@ internal class ChatServiceImpl(
         }
 
         private fun suggestions(): List<String> =
-            if (context.articleKey == null) AiPrompts.BRIEF_SUGGESTIONS else AiPrompts.ARTICLE_SUGGESTIONS
+            AiPrompts.chatSuggestions(article = context.articleKey != null, webSearch = webSearch)
     }
 
     private suspend fun ChatContextSource.loadQuietly(context: ChatContext): LoadedChatContext? = try {

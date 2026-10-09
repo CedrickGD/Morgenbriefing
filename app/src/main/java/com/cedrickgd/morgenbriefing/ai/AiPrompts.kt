@@ -74,11 +74,30 @@ internal object AiPrompts {
         "Wie geht es weiter?",
     )
 
+    /** The article's examples for a chat without web search: nothing that needs other sources. */
+    val ARTICLE_SUGGESTIONS_OFFLINE = listOf(
+        "Erklär mir den Hintergrund",
+        "Was bedeutet das für mich?",
+        "Erklär mir die Fachbegriffe",
+        "Wie geht es weiter?",
+    )
+
+    /** Answerable from the brief alone, with or without web search. */
     val BRIEF_SUGGESTIONS = listOf(
         "Was ist heute das Wichtigste?",
         "Fass mir Politik kurz zusammen",
         "Was ist in Leipzig los?",
     )
+
+    /**
+     * The example chips of an empty chat about one article ([article]) or the whole brief. Without
+     * [webSearch] (a provider or tariff without it) only questions the context can answer.
+     */
+    fun chatSuggestions(article: Boolean, webSearch: Boolean): List<String> = when {
+        !article -> BRIEF_SUGGESTIONS
+        webSearch -> ARTICLE_SUGGESTIONS
+        else -> ARTICLE_SUGGESTIONS_OFFLINE
+    }
 
     const val BRIEF_TITLE = "Dein Briefing"
 

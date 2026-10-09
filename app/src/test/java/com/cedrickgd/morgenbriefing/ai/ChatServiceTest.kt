@@ -307,6 +307,30 @@ class ChatServiceTest {
     }
 
     @Test
+    fun `without web search the examples ask nothing that needs other sources`() = runBlocking<Unit> {
+        settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true) }
+        val session = service().session(article)
+        session.await { it.provider == AiProviderId.GEMINI && it.suggestions == AiPrompts.ARTICLE_SUGGESTIONS_OFFLINE }
+
+        // The tariff switched to billing: the shown examples follow …
+        settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true, geminiTier = GeminiTier.PAID) }
+        session.await { it.suggestions == AiPrompts.ARTICLE_SUGGESTIONS }
+        // … and a provider without any web search gets the context-only ones again.
+        settings.value = AppSettings().withProvider(AiProviderId.MISTRAL) { it.copy(hasKey = true) }
+        session.await { it.provider == AiProviderId.MISTRAL && it.suggestions == AiPrompts.ARTICLE_SUGGESTIONS_OFFLINE }
+
+        // Once a question was asked no examples come back with a provider switch; a cleared chat gets the fitting ones.
+        session.send("Frage")
+        session.await { it.settled(2) }
+        settings.value = AppSettings().withAiKey()
+        assertTrue(session.await { it.provider == AiProviderId.ANTHROPIC }.suggestions.isEmpty())
+        settings.value = AppSettings().withProvider(AiProviderId.DEEPSEEK) { it.copy(hasKey = true) }
+        session.await { it.provider == AiProviderId.DEEPSEEK }
+        session.clear()
+        assertEquals(AiPrompts.ARTICLE_SUGGESTIONS_OFFLINE, session.await { it.messages.isEmpty() && it.suggestions.isNotEmpty() }.suggestions)
+    }
+
+    @Test
     fun `blocked states`() = runBlocking<Unit> {
         service(engine = null).session(article).await { it.blocked == AiBlock.UNSUPPORTED_DEVICE }
 
