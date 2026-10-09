@@ -62,8 +62,8 @@ class AiServices(private val context: Context, private val container: AppContain
      */
     private val requestUsage: UsageSink by lazy {
         object : UsageSink by usageStore {
-            override suspend fun record(modelId: String, usage: TokenUsage) {
-                usageStore.record(modelId, usage)
+            override suspend fun record(provider: AiProviderId, modelId: String, usage: TokenUsage) {
+                usageStore.record(provider, modelId, usage)
                 markKeyWorks()
             }
         }

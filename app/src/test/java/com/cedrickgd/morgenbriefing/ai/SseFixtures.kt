@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ai
 
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 import okhttp3.mockwebserver.MockResponse
@@ -169,6 +170,7 @@ internal object Sse {
 /** Records every request's usage and can simulate the monthly limit. */
 internal class RecordingUsage(var limitReached: Boolean = false) : UsageSink {
     val records = mutableListOf<Pair<String, TokenUsage>>()
+    val providers = mutableListOf<AiProviderId>()
     var checks = 0
 
     override suspend fun beforeRequest() {
@@ -176,7 +178,10 @@ internal class RecordingUsage(var limitReached: Boolean = false) : UsageSink {
         if (limitReached) throw AiBlockedException(AiBlock.LIMIT_REACHED)
     }
 
-    override suspend fun record(modelId: String, usage: TokenUsage) {
-        synchronized(records) { records += modelId to usage }
+    override suspend fun record(provider: AiProviderId, modelId: String, usage: TokenUsage) {
+        synchronized(records) {
+            records += modelId to usage
+            providers += provider
+        }
     }
 }

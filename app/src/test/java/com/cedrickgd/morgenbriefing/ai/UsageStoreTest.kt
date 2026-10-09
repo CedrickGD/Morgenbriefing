@@ -3,6 +3,7 @@ package com.cedrickgd.morgenbriefing.ai
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -73,8 +74,8 @@ class UsageStoreTest {
     @Test
     fun `records cost per month and blocks at the limit`() = runBlocking<Unit> {
         val usage = store(clockAt("2026-10-05T10:00:00Z"))
-        usage.record("claude-sonnet-5-5", TokenUsage(inputTokens = 1_000_000, webSearches = 2)) // 2.02 $
-        usage.record("claude-opus-5-5", TokenUsage(outputTokens = 100_000)) // 2.00 $
+        usage.record(AiProviderId.ANTHROPIC, "claude-sonnet-5-5", TokenUsage(inputTokens = 1_000_000, webSearches = 2)) // 2.02 $
+        usage.record(AiProviderId.ANTHROPIC, "claude-opus-5-5", TokenUsage(outputTokens = 100_000)) // 2.00 $
 
         val snapshot = withTimeout(5_000) { usage.usage.first { it.requests == 2 } }
         assertEquals("2026-10", snapshot.month)
@@ -84,7 +85,7 @@ class UsageStoreTest {
         assertFalse(usage.limitReached())
         usage.beforeRequest()
 
-        usage.record("claude-sonnet-5-5", TokenUsage(outputTokens = 100_000)) // 1.00 $ → 5.02
+        usage.record(AiProviderId.ANTHROPIC, "claude-sonnet-5-5", TokenUsage(outputTokens = 100_000)) // 1.00 $ → 5.02
         assertEquals(5.02, usage.spentThisMonth(), 1e-9)
         assertTrue(usage.limitReached())
         try {
@@ -104,21 +105,47 @@ class UsageStoreTest {
     @Test
     fun `empty usage is not recorded`() = runBlocking<Unit> {
         val usage = store(clockAt("2026-10-05T10:00:00Z"))
-        usage.record("claude-sonnet-5-5", TokenUsage())
+        usage.record(AiProviderId.ANTHROPIC, "claude-sonnet-5-5", TokenUsage())
         assertEquals(0.0, usage.spentThisMonth(), 0.0)
         assertEquals(0, usage.usage.value.requests)
     }
 
     @Test
+    fun `every provider counts toward one total, unknown models are estimated`() = runBlocking<Unit> {
+        val usage = store(clockAt("2026-10-05T10:00:00Z"))
+        usage.record(AiProviderId.OPENROUTER, "openai/gpt-6-luna", TokenUsage(inputTokens = 5_000, reportedCostUsd = 0.25))
+        usage.record(AiProviderId.CUSTOM, "llama4:8b", TokenUsage(inputTokens = 1_000_000, outputTokens = 1_000_000))
+        usage.record(AiProviderId.GEMINI, "gemini-3.8-flash", TokenUsage(inputTokens = 1_000_000, webSearches = 1, reportedCostUsd = 0.0))
+        usage.record(AiProviderId.GEMINI, "gemini-3.8-flash", TokenUsage(inputTokens = 1_000_000, webSearches = 2)) // 0.75 + 0.028
+        usage.record(AiProviderId.OPENAI, "gpt-7-preview", TokenUsage(outputTokens = 10_000)) // fallback 50 $/M → 0.50
+
+        val snapshot = withTimeout(5_000) { usage.usage.first { it.requests == 5 } }
+        assertEquals(0.25 + 0.778 + 0.50, snapshot.spentUsd, 1e-9)
+        assertEquals(3, snapshot.webSearches)
+        assertEquals(1, snapshot.estimatedRequests)
+    }
+
+    @Test
+    fun `estimated requests start at zero in a new month`() = runBlocking<Unit> {
+        store(clockAt("2026-09-30T20:00:00Z")).record(AiProviderId.MISTRAL, "mistral-next", TokenUsage(outputTokens = 1_000))
+        assertEquals(1, withTimeout(5_000) { store(clockAt("2026-09-30T20:00:00Z")).usage.first { it.requests == 1 } }.estimatedRequests)
+        val october = store(clockAt("2026-09-30T22:30:00Z"))
+        assertEquals(0, withTimeout(5_000) { october.usage.first { it.month == "2026-10" } }.estimatedRequests)
+        october.record(AiProviderId.MISTRAL, "mistral-medium-3-5", TokenUsage(outputTokens = 1_000))
+        val after = withTimeout(5_000) { october.usage.first { it.requests == 1 } }
+        assertEquals(0, after.estimatedRequests)
+    }
+
+    @Test
     fun `a new month starts at zero`() = runBlocking<Unit> {
-        store(clockAt("2026-09-30T20:00:00Z")).record("claude-sonnet-5-5", TokenUsage(outputTokens = 100_000))
+        store(clockAt("2026-09-30T20:00:00Z")).record(AiProviderId.ANTHROPIC, "claude-sonnet-5-5", TokenUsage(outputTokens = 100_000))
         assertEquals(1.0, store(clockAt("2026-09-30T20:00:00Z")).spentThisMonth(), 1e-9)
         // 22:30 UTC on Sep 30 is already October 1st in Berlin.
         val october = store(clockAt("2026-09-30T22:30:00Z"))
         assertEquals(0.0, october.spentThisMonth(), 0.0)
         val snapshot = withTimeout(5_000) { october.usage.first { it.month == "2026-10" } }
         assertEquals(0, snapshot.requests)
-        october.record("claude-sonnet-5-5", TokenUsage(outputTokens = 50_000))
+        october.record(AiProviderId.ANTHROPIC, "claude-sonnet-5-5", TokenUsage(outputTokens = 50_000))
         assertEquals(0.5, october.spentThisMonth(), 1e-9)
         assertEquals(1, withTimeout(5_000) { october.usage.first { it.requests == 1 } }.requests)
     }
@@ -127,7 +154,7 @@ class UsageStoreTest {
     fun `last month's limit lifts at the Berlin month start without any write`() = runTest {
         val clock = MutableClock(Instant.parse("2026-10-31T20:00:00Z"))
         val usage = UsageStore(dataStore, limit, backgroundScope, clock)
-        usage.record("claude-opus-5-5", TokenUsage(outputTokens = 300_000)) // 6 $
+        usage.record(AiProviderId.ANTHROPIC, "claude-opus-5-5", TokenUsage(outputTokens = 300_000)) // 6 $
         runCurrent()
         val october = usage.usage.value
         assertEquals("2026-10", october.month)

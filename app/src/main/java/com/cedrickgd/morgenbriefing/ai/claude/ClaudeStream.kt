@@ -20,6 +20,7 @@ import com.cedrickgd.morgenbriefing.ai.SourceCollector
 import com.cedrickgd.morgenbriefing.ai.TokenUsage
 import com.cedrickgd.morgenbriefing.ai.ToolActivityListener
 import com.cedrickgd.morgenbriefing.ai.UsageSink
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -167,7 +168,7 @@ internal object ClaudeStreamer {
     }
 
     private suspend fun record(tracker: EventTracker, requestModel: String, usage: UsageSink) {
-        tracker.billed(requestModel).forEach { (model, tokens) -> usage.record(model, tokens) }
+        tracker.billed(requestModel).forEach { (model, tokens) -> usage.record(AiProviderId.ANTHROPIC, model, tokens) }
     }
 
     private fun closeQuietly(response: StreamResponse<*>) {

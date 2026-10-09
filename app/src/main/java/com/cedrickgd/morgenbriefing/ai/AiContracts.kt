@@ -108,6 +108,8 @@ data class UsageSnapshot(
     val limitUsd: Double = 0.0,
     val requests: Int = 0,
     val webSearches: Int = 0,
+    /** Requests of this month priced with fallback rates ("Preis teils geschätzt"). */
+    val estimatedRequests: Int = 0,
 )
 
 interface UsageTracker {

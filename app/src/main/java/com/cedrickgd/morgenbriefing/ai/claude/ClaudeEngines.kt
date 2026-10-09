@@ -28,6 +28,7 @@ import com.cedrickgd.morgenbriefing.ai.TokenUsage
 import com.cedrickgd.morgenbriefing.ai.TurnEnd
 import com.cedrickgd.morgenbriefing.ai.UsageSink
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import com.cedrickgd.morgenbriefing.data.model.Topics
 import kotlinx.coroutines.CancellationException
@@ -168,6 +169,7 @@ internal class ClaudeKeyChecker(private val clients: ClaudeClients) : KeyChecker
             runCatching {
                 val u = message.usage()
                 usage.record(
+                    AiProviderId.ANTHROPIC,
                     message.model().asString(),
                     TokenUsage(
                         inputTokens = u.inputTokens(),

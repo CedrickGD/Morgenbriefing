@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.cedrickgd.morgenbriefing.data.BERLIN
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,13 +26,16 @@ import java.io.IOException
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.time.YearMonth
 
 /**
- * This month's AI spending (docs/AI.md "Modelle & Kosten"): every response's usage is priced
- * with [AiPricing] and added up per calendar month in Europe/Berlin. A new month starts at
- * zero — also in a running process: [usage] re-checks the month at least every
- * [MONTH_RECHECK], so a "Monatslimit erreicht" from last month does not outlive the 1st.
+ * This month's AI spending of all providers together (docs/AI-PROVIDERS.md §9): every response's
+ * usage is priced with [AiPricing] (or the provider's reported cost) on the day of the request and
+ * added up per calendar month in Europe/Berlin; requests priced with fallback rates are counted
+ * as [UsageSnapshot.estimatedRequests]. A new month starts at zero — also in a running process:
+ * [usage] re-checks the month at least every [MONTH_RECHECK], so a "Monatslimit erreicht" from
+ * last month does not outlive the 1st.
  * Backed by its own small Preferences DataStore ("ai_usage").
  *
  * @param limitUsd the user's monthly cap (settings.aiMonthlyLimitUsd), 0 = no cap.
@@ -79,9 +83,9 @@ internal class UsageStore(
         if (limitReached()) throw AiBlockedException(AiBlock.LIMIT_REACHED)
     }
 
-    override suspend fun record(modelId: String, usage: TokenUsage) {
+    override suspend fun record(provider: AiProviderId, modelId: String, usage: TokenUsage) {
         if (usage.isEmpty) return
-        val cost = AiPricing.costUsd(modelId, usage)
+        val priced = AiPricing.costUsd(provider, modelId, usage, LocalDate.now(clock.withZone(BERLIN)))
         val month = currentMonth()
         try {
             dataStore.edit { p ->
@@ -92,8 +96,10 @@ internal class UsageStore(
                     p[Keys.SEARCHES] = 0
                     p[Keys.INPUT] = 0L
                     p[Keys.OUTPUT] = 0L
+                    p[Keys.ESTIMATED] = 0
                 }
-                p[Keys.SPENT] = (p[Keys.SPENT] ?: 0.0) + cost
+                p[Keys.SPENT] = (p[Keys.SPENT] ?: 0.0) + priced.usd
+                if (priced.estimated) p[Keys.ESTIMATED] = (p[Keys.ESTIMATED] ?: 0) + 1
                 p[Keys.REQUESTS] = (p[Keys.REQUESTS] ?: 0) + 1
                 p[Keys.SEARCHES] = (p[Keys.SEARCHES] ?: 0) + usage.webSearches.toInt()
                 p[Keys.INPUT] = (p[Keys.INPUT] ?: 0L) + usage.inputTokens + usage.cacheReadTokens + usage.cacheWriteTokens
@@ -114,6 +120,7 @@ internal class UsageStore(
             limitUsd = limit,
             requests = p[Keys.REQUESTS] ?: 0,
             webSearches = p[Keys.SEARCHES] ?: 0,
+            estimatedRequests = p[Keys.ESTIMATED] ?: 0,
         )
     }
 
@@ -126,6 +133,9 @@ internal class UsageStore(
         val SEARCHES = intPreferencesKey("web_searches")
         val INPUT = longPreferencesKey("input_tokens")
         val OUTPUT = longPreferencesKey("output_tokens")
+
+        /** Requests priced with fallback rates (a model the price table does not know). */
+        val ESTIMATED = intPreferencesKey("estimated_requests")
     }
 
     internal companion object {

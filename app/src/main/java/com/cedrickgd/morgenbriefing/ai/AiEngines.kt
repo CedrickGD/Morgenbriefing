@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ai
 
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 
 /*
@@ -21,8 +22,8 @@ internal interface UsageSink {
     /** @throws AiBlockedException with [AiBlock.LIMIT_REACHED] when the monthly limit is used up. */
     suspend fun beforeRequest()
 
-    /** Adds one request's [usage] (priced for [modelId]) to this month's total. */
-    suspend fun record(modelId: String, usage: TokenUsage)
+    /** Adds one request's [usage] (priced for [modelId] at [provider]) to this month's total. */
+    suspend fun record(provider: AiProviderId, modelId: String, usage: TokenUsage)
 }
 
 /** What the server-side tools are doing right now (for "Suche im Netz: …" lines). */
