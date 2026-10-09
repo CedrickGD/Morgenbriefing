@@ -4,6 +4,7 @@ import com.cedrickgd.morgenbriefing.ai.AiBackend
 import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.AiException
 import com.cedrickgd.morgenbriefing.ai.AiKeyCheck
+import com.cedrickgd.morgenbriefing.ai.AiPrompts
 import com.cedrickgd.morgenbriefing.ai.AnswerText
 import com.cedrickgd.morgenbriefing.ai.ChatEngine
 import com.cedrickgd.morgenbriefing.ai.ChatTurnListener
@@ -50,7 +51,9 @@ internal class GeminiBackend(
  * Safety net for a key that is set to "Mit Abrechnung" but turns out to be a free one: when
  * Gemini refuses the search itself before streaming, the same question is sent once more
  * without it ([ChatTurnResult.withoutWebSearch], the chat explains it), and this key — kept
- * only as a hash, for the life of the process — is not offered the search again.
+ * only as a hash, for the life of the process — is not offered the search again. Without the
+ * search the model also gets the system prompt without it ([AiPrompts.chatSystem] `false`: no
+ * web search to use, no sources to name), not the one that tells it to search and cite.
  */
 internal class GeminiChatEngine(private val streamer: GeminiStreamer) : ChatEngine {
     /** SHA-256 of keys whose project cannot use Google Search. */
@@ -67,7 +70,10 @@ internal class GeminiChatEngine(private val streamer: GeminiStreamer) : ChatEngi
                 keyHash?.let(searchUnavailable::add)
             }
         }
-        return turn(request, search = false, listener, usage).let { if (wanted) it.copy(withoutWebSearch = true) else it }
+        // Sent without Google Search: then also without the prompt that asks to search and cite.
+        val plain = if (request.webSearch) request.copy(systemPrompt = AiPrompts.chatSystem(webSearch = false)) else request
+        val result = turn(plain, search = false, listener, usage)
+        return if (wanted) result.copy(withoutWebSearch = true) else result
     }
 
     private suspend fun turn(request: ChatTurnRequest, search: Boolean, listener: ChatTurnListener, usage: UsageSink): ChatTurnResult {

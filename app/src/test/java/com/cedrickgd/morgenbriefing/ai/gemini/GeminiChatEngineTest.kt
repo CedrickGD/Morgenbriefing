@@ -99,6 +99,9 @@ class GeminiChatEngineTest {
 
     private fun ok(text: String = "Ok.") = GeminiSse.response(GeminiSse.text(text, finish = "STOP", usage = GeminiSse.usage()))
 
+    /** The system prompt a request body carries. */
+    private fun JsonObject.systemText(): String? = this["systemInstruction"]!!.jsonObject["parts"]!!.jsonArray[0].jsonObject.string("text")
+
     @Test
     fun `streams text without thoughts, appends grounding and counts distinct queries`() = runBlocking<Unit> {
         val tagesschau = "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AAA-tagesschau"
@@ -199,7 +202,9 @@ class GeminiChatEngineTest {
         server.enqueue(ok())
         // Even when the chat would offer search, the free tier ("Kostenlos") never sends it (G1).
         val result = backend.chat.answer(request(auth = auth(freeTier = true)), ChatRecorder(), usage)
-        assertNull(server.takeJson().second!!["tools"])
+        val free = server.takeJson().second!!
+        assertNull(free["tools"])
+        assertEquals(AiPrompts.chatSystem(webSearch = false), free.systemText())
         // Not a fallback: the chat explains the free tier on its own.
         assertFalse(result.withoutWebSearch)
         assertNull(result.searchSuggestionsHtml)
@@ -221,8 +226,13 @@ class GeminiChatEngineTest {
         assertEquals("Ohne Suche.", first.text)
         assertTrue(first.withoutWebSearch)
         assertNull(first.searchSuggestionsHtml)
-        assertEquals("""[{"googleSearch":{}}]""", server.takeJson().second!!["tools"].toString())
-        assertNull(server.takeJson().second!!["tools"])
+        val searched = server.takeJson().second!!
+        assertEquals("""[{"googleSearch":{}}]""", searched["tools"].toString())
+        assertEquals(AiPrompts.chatSystem(webSearch = true), searched.systemText())
+        // The retry has no search tool – and no prompt that tells the model to search and cite.
+        val plain = server.takeJson().second!!
+        assertNull(plain["tools"])
+        assertEquals(AiPrompts.chatSystem(webSearch = false), plain.systemText())
         assertTrue(slept.isEmpty())
         // The monthly limit is checked before both requests; only the answered one is billed.
         assertEquals(2, usage.checks)
@@ -231,7 +241,9 @@ class GeminiChatEngineTest {
         // The same key is not offered the search again (for the life of the process) …
         server.enqueue(ok())
         assertTrue(backend.chat.answer(request(), ChatRecorder(), usage).withoutWebSearch)
-        assertNull(server.takeJson().second!!["tools"])
+        val remembered = server.takeJson().second!!
+        assertNull(remembered["tools"])
+        assertEquals(AiPrompts.chatSystem(webSearch = false), remembered.systemText())
         // … another key is.
         server.enqueue(ok())
         assertFalse(backend.chat.answer(request(auth = auth(key = "AIza-other-test-invalid")), ChatRecorder(), usage).withoutWebSearch)
