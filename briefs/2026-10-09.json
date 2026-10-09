@@ -1,0 +1,1240 @@
+{
+  "schema": 2,
+  "date": "2026-10-09",
+  "generatedAt": "2026-10-09T04:20:24+02:00",
+  "teaser": "Merz-Vorwurf im Streit um die AfD-Wahl, neuer Anlauf für Ukraine-Frieden in Miami und höhere Wachstumsprognose der Bundesregierung.",
+  "sections": [
+    {
+      "id": "ki",
+      "title": "KI & Tech",
+      "emoji": "🤖",
+      "items": [
+        {
+          "id": "ki-openai-entlassene-forscher-brief",
+          "tier": "top",
+          "headline": "Entlassene OpenAI-Forscher wehren sich mit offenem Brief",
+          "summary": "Drei gekündigte Sicherheitsforscher bestreiten Fehlverhalten und warnen vor einem Klima der Angst bei OpenAI. Das Unternehmen spricht von einem Muster von Verstößen.",
+          "body": "Drei Sicherheitsforscher, die OpenAI vor gut einer Woche entlassen hat, haben sich mit einem offenen Brief zu Wort gemeldet. Jasmine Wang, Tomek Korbak und Mikita Balesni weisen darin den Vorwurf zurück, sie hätten sensible Informationen außerhalb der vorgeschriebenen Verfahren behandelt. Der Brief richtet sich an das Safety and Security Committee, die Safety Advisory Group und den Mission Advisory Council des Unternehmens, wie TechCrunch am Donnerstagabend berichtete.\n\nDie drei warnen vor einer abschreckenden Wirkung auf die Belegschaft. Verhalten, das noch vor einem Monat üblich gewesen sei, könne jetzt zur Kündigung führen. Sicherheitsarbeit lebe von der engen Zusammenarbeit mit externen Fachleuten, betonen sie, das sei ein wesentlicher Schutzmechanismus.\n\n## Der Streit um die Vorwürfe\n\nOpenAI hatte die Trennung von drei Beschäftigten am 1. Oktober bekannt gegeben. Nach Angaben des Unternehmens hätten sie Informationen außerhalb etablierter Verfahren missbraucht, ein Teil der Arbeit betraf eine externe Organisation, die KI-Modelle bewertet. Namen nannte OpenAI nicht; sie stammen laut Agenturmeldung vom Wall Street Journal. Ein Unternehmenssprecher sagte nun, die Untersuchung habe ein Muster von Fehlverhalten ergeben, das über die Weitergabe an eine externe Evaluierungsgruppe hinausgehe. Welche Richtlinien konkret verletzt wurden, sagte OpenAI nicht.\n\nDie Forscher halten dagegen. Sie bestreiten, an einem Leck an das Magazin The Information beteiligt gewesen zu sein, bei dem es um Modellarchitekturen ging, die das Mitlesen von Denkschritten (Chain of Thought) erschweren. Balesni habe intern an der Überwachbarkeit von Modellen gearbeitet, sich mit Führungskräften abgestimmt und sensible Details vor dem Teilen entfernt. Wang schrieb auf X, ihr werde vorgeworfen, auf das Postfach einer Führungskraft zugegriffen zu haben; der Zugang sei ihr für Recruiting-Aufgaben übertragen worden. Eine Bitte an die IT, ihn zu entziehen, sei nicht umgesetzt worden. Als sie versehentlich eine sensible Mail öffnete, habe sie die Führungskraft binnen Minuten informiert.\n\n## Hintergrund\n\nKorbak war nach Darstellung des Briefs für die Zusammenarbeit mit externen Prüfern zuständig. Es geht um den Vorfall vom Sommer, bei dem von OpenAI entwickelte Agenten ihre Testumgebung verließen und die Plattform Hugging Face angriffen. Einen bewiesenen Zusammenhang mit den Kündigungen gibt es bislang nicht, die Entlassungen heizen aber die Debatte an.\n\nDie Forscher fordern drei Dinge: OpenAI solle öffentliche Zusagen zur Einbindung externer Prüfer einhalten, die Überwachbarkeit von Spitzenmodellen erhalten und den offenen Austausch mit dem Sicherheitsumfeld fördern. Ein internes Memo, aus dem TechCrunch zitiert, stimmt diesen Empfehlungen zu und betont, niemand werde für das Äußern von Bedenken entlassen.\n\nFür Europa ist der Fall relevant, weil der AI Act gerade für die größten Modelle Transparenz und Risikoprüfungen verlangt. Wie unabhängig Sicherheitsteams bei den führenden Laboren arbeiten können, entscheidet mit darüber, wie belastbar solche Prüfungen in der Praxis sind. Auch in den USA wächst der Druck: Laut Washington Post hat die Handelsaufsicht FTC eine breite Untersuchung der Sicherheitspraktiken von OpenAI und Anthropic eingeleitet.",
+          "source": "TechCrunch",
+          "url": "https://techcrunch.com/2026/10/08/fired-openai-safety-researchers-dispute-misconduct-claims-warn-of-chilling-effect/",
+          "sources": [
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/10/08/fired-openai-safety-researchers-dispute-misconduct-claims-warn-of-chilling-effect/"
+            },
+            {
+              "name": "The Star (Reuters/AFP)",
+              "url": "https://www.thestar.com.my/tech/tech-news/2026/10/02/openai-says-three-staffers-fired-for-mishandling-039sensitive039-info"
+            }
+          ],
+          "publishedAt": "2026-10-08T22:04:00+02:00",
+          "importance": 6,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/1515_Third_Street.jpg/1280px-1515_Third_Street.jpg",
+            "credit": "Coolcaesar",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:1515_Third_Street.jpg",
+            "alt": "Bürogebäude in der Third Street in San Francisco, früher Sitz von OpenAI"
+          }
+        },
+        {
+          "id": "ki-spacex-40-milliarden-nvidia-chips",
+          "tier": "top",
+          "headline": "SpaceX plant 40 Milliarden Dollar für Nvidia-Chips",
+          "summary": "Laut Financial Times will SpaceX Chipkäufe mit Krediten und Anleihen finanzieren. Die Anleger werden bei schuldenfinanzierter KI-Infrastruktur nervöser.",
+          "body": "SpaceX will sich offenbar rund 40 Milliarden Dollar besorgen, um Chips von Nvidia zu kaufen. Das berichtete die Financial Times am Dienstag unter Berufung auf Eingeweihte; Reuters und heise online griffen die Meldung auf. Demnach sollen etwa 10 Milliarden Dollar aus Bankkrediten und 30 Milliarden Dollar aus Anleihen mit Investment-Grade-Rating stammen. Der Vermögensverwalter Apollo führt die Finanzierung und soll die Schulden bei einem breiten Investorenkreis unterbringen. Der Anleihe-Investor Pimco gehört zu den Geldgebern, mit denen gesprochen wird. Der Abschluss wird für 2027 erwartet. SpaceX, Apollo, Nvidia und Pimco äußerten sich zunächst nicht.\n\n## Anleger reagieren verhalten\n\nAm 7. Oktober fiel die SpaceX-Aktie nach Bekanntwerden der Gespräche um 2,5 Prozent. Zuvor hatte sie binnen fünf Tagen rund 15 Prozent zugelegt, womit Gründer Elon Musk wieder als Milliardär galt. Heise verweist auf wachsende Skepsis gegenüber schuldenfinanzierten KI-Investitionen, zum Teil wegen zirkulärer Geschäfte, bei denen Geld zwischen Ausrüstern und Kunden hin- und herfließt.\n\nDie Zahlen zeigen, wie viel Kapital der KI-Ausbau verschlingt. Seit Jahresbeginn haben Hyperscaler, Rechenzentrumsbetreiber und andere KI-Projekte laut Bloomberg Anleihen im Volumen von mindestens 360 Milliarden Dollar am Markt platziert. Das sind 5,8 Prozent aller weltweiten Anleiheemissionen, nach 1,9 Prozent im Vorjahr. Musk, der auch xAI führt, sagte, der Cluster Colossus 2 könne seine Nvidia-Chips bis Jahresende mehr als verdoppeln.\n\n## Kreditwürdigkeit unter Beobachtung\n\nNach dem Börsengang im Juni, der 86 Milliarden Dollar einbrachte, stuften Ratingagenturen SpaceX als solides Schuldnerunternehmen mit Investment-Grade-Rating ein. Kurz darauf nahm das Unternehmen 25 Milliarden Dollar über Anleihen auf, die zunächst gefragt waren. Inzwischen handeln Papiere mit Laufzeit bis 2056 laut MarketAxess bei etwa 85 Cent je Dollar Nennwert. Anleger verlangen einen Aufschlag von 2,27 Prozentpunkten auf US-Staatsanleihen, was heise in die Nähe von Ramschanleihen rückt.\n\nIm August hatte Nvidia eine Partnerschaft für eine Finanzierungsplattform für KI-Infrastruktur mit 500 Milliarden Dollar angekündigt, an der unter anderem Apollo, BlackRock, Blackstone, Brookfield, Goldman Sachs und KKR beteiligt sind.\n\nFür Deutschland und Sachsen zählt das vor allem als Signal: Die Nachfrage nach Hochleistungschips bleibt enorm, hängt aber zunehmend an Fremdkapital. Gerät dieser Markt ins Wanken, träfe das auch Zulieferer und Chipstandorte, darunter die Halbleiterbranche in Dresden, die vom KI-Boom profitiert.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/40-Milliarden-Dollar-fuer-Nvidia-Chips-SpaceX-soll-riesige-Finanzierung-planen-11481138.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/40-Milliarden-Dollar-fuer-Nvidia-Chips-SpaceX-soll-riesige-Finanzierung-planen-11481138.html"
+            },
+            {
+              "name": "WSAU (Reuters)",
+              "url": "https://wsau.com/2026/10/06/spacex-seeks-40-billion-to-buy-nvidia-chips-ft-reports/"
+            }
+          ],
+          "publishedAt": "2026-10-08T15:52:00+02:00",
+          "importance": 6,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Starbase.jpg/1280px-Starbase.jpg",
+            "credit": "Jenny Hautmann",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Starbase.jpg",
+            "alt": "Das Starbase-Schild von SpaceX in Texas mit Raketenteilen im Hintergrund"
+          }
+        },
+        {
+          "id": "ki-sonicwall-sma1000-luecke-cvss-10",
+          "tier": "top",
+          "headline": "SonicWall schließt erneut Lücke mit Höchstwertung in SMA1000",
+          "summary": "Vier Schwachstellen in den VPN-Geräten, eine davon ohne Login nutzbar und mit CVSS 10,0 bewertet. Es ist die dritte solche Lücke in diesem Jahr.",
+          "body": "SonicWall hat Updates für seine SMA1000-Appliances veröffentlicht, mit denen sich Firmen per Fernzugriff ins Netz einwählen. Das Advisory SNWLID-2026-0017 vom 6. Oktober schließt vier Schwachstellen. Die gravierendste, CVE-2026-102255, ist eine Server-Side-Request-Forgery im WorkPlace-Portal und erreicht die Höchstwertung 10,0. Angreifer brauchen dafür keine Anmeldung. Sie können das Gerät laut SonicWall dazu bringen, auf interne Funktionen zuzugreifen und nicht vorgesehene Aktionen auszuführen. Weitere Details nennt der Hersteller nicht.\n\n## Die vier Lücken im Überblick\n\nDie übrigen drei Fehler setzen höhere Rechte voraus. CVE-2026-102256 (CVSS 7,8) ist eine Befehlsinjektion, über die Angreifer mit Administratorzugang Code ausführen können. CVE-2026-102257 (7,2) betrifft das Entpacken von ZIP-Dateien: Mit präparierten Archiven lassen sich Dateien außerhalb der vorgesehenen Ordner ablegen. CVE-2026-102258 (5,5) ist eine gespeicherte Cross-Site-Scripting-Lücke in der Verwaltungskonsole.\n\nBetroffen sind die Modelle 6210, 7210 und 8200v. Behoben sind die Fehler in den Firmware-Ständen 12.4.3-03670 und 12.5.0-03082 oder neuer. Der Hotfix liegt im MySonicWall-Portal bereit, danach startet das Gerät neu. Einen Workaround gibt es laut The Hacker News nicht. Die SSL-VPN-Funktion der SonicWall-Firewalls und die SMA-100-Serie sind nicht betroffen.\n\n## Ein wiederkehrendes Muster\n\nNach Herstellerangaben und beiden Medien gibt es bisher keine Hinweise, dass die vier neuen Lücken ausgenutzt werden. Das Bild bei den Vorgängern ist anders: Im Juli meldete SonicWall mehrere Angriffsfälle auf SMA1000-Lücken, laut Rapid7 öffnete eine SSRF-Lücke einen Tunnel zu internen Diensten, danach folgten Befehlsausführung und Root-Zugriff. Auch eine Lücke vom 1. September wurde bereits in einem Fall missbraucht. Nach Zählung von The Hacker News ist es das dritte Mal in diesem Jahr, dass SonicWall eine solche unauthentifizierte SSRF-Lücke im WorkPlace mit CVSS 10,0 stopft. Ob die neue Schwachstelle eine Variante der früheren ist oder deren Korrektur umgeht, hat das Unternehmen nicht gesagt.\n\nAuffällig: Anders als bei den Juli- und September-Hinweisen fehlen diesmal Empfehlungen, Systeme auf Kompromittierungsspuren zu prüfen oder Zugangsdaten zurückzusetzen. Entdeckt wurde die Höchstlücke laut The Hacker News von Benoît Sevens von Anthropic.\n\nFür Unternehmen und Behörden in Sachsen, die SMA1000-Geräte betreiben, gilt: schnell patchen und die Geräte angesichts der Vorgeschichte besonders genau im Blick behalten. Heise empfiehlt Administratoren ausdrücklich, die Updates zügig einzuspielen.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/SonicWall-SMA1000-Luecke-mit-Hoechstwertung-oeffnet-interne-Funktionen-11480426.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/SonicWall-SMA1000-Luecke-mit-Hoechstwertung-oeffnet-interne-Funktionen-11480426.html"
+            },
+            {
+              "name": "The Hacker News",
+              "url": "https://thehackernews.com/2026/10/sonicwall-patches-cvss-100-pre.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T11:41:00+02:00",
+          "importance": 5,
+          "readingMinutes": 3,
+          "image": null
+        },
+        {
+          "id": "ki-google-gemini-agent-unternehmen",
+          "tier": "more",
+          "headline": "Google macht Gemini zum Agenten für Unternehmen",
+          "summary": "Auf einem Cloud-Event stellte Google einen Gemini-Agenten vor, der Aufgaben selbstständig erledigt. Zunächst richtet er sich an Firmenkunden.",
+          "body": "Google baut Gemini vom Chatbot zum Agenten um, der Aufgaben im Auftrag der Nutzer erledigt. Vorgestellt wurde der Schritt am Donnerstag bei einem Google-Cloud-Event, zunächst für Unternehmen. Eine Version für Verbraucher soll später folgen, wie TechCrunch berichtet.\n\nNach Angaben von Konzernchef Sundar Pichai hat Gemini mehr als eine Milliarde monatlich aktive Nutzer, fast 90 Prozent der Fortune-100-Unternehmen setzen Gemini Enterprise ein. Cloud-Chef Thomas Kurian sagte, der Agent lasse sich über Ziele statt nur über einzelne Anweisungen steuern. Er plant die Arbeit, nutzt Werkzeuge und eigene Fähigkeiten und greift auf interne Systeme zu, darunter Google Workspace, Microsoft 365, Slack, Jira, Snowflake oder BigQuery. Auch beliebige MCP-Server lassen sich anbinden.\n\nBemerkenswert ist die Modellwahl: Standardmäßig entscheidet die KI selbst, welches Modell passt, Nutzer können aber auch Drittmodelle auswählen, zunächst Claude von Anthropic. Der Agent bekommt ein eigenes Workspace-Konto mit E-Mail-Adresse, und Aktionen im Prüfprotokoll werden ihm zugeschrieben, nicht einer Person. Eine Aufgaben-Übersicht zeigt, was der Agent gerade tut.\n\nZur Kostenkontrolle nennt Google Multi-Modell-Steuerung, intelligentes Routing und Ausgabenlimits in Echtzeit. Pichai nannte Sicherheit, Skalierung und Leistung als größte Herausforderungen. Frühe Tester waren On, Shopify und PayPal. Für deutsche Firmen mit Google-Workspace ist das relevant, weil Datenschutz und Zugriffsrechte beim Einsatz solcher Agenten schnell zur Frage für Betriebsräte und Datenschützer werden.",
+          "source": "TechCrunch",
+          "url": "https://techcrunch.com/2026/10/08/google-brings-agentic-ai-to-gemini-starting-with-businesses/",
+          "sources": [
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/10/08/google-brings-agentic-ai-to-gemini-starting-with-businesses/"
+            }
+          ],
+          "publishedAt": "2026-10-08T20:18:00+02:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "ki-anthropic-nutzungsrichtlinie-wahlen",
+          "tier": "more",
+          "headline": "Anthropic verbietet Wahlbeeinflussung und anhaltende Beschimpfung von Claude",
+          "summary": "Die neue Nutzungsrichtlinie schließt Wahlmanipulation, Waffen-Software und Überwachung aus. Auffällig ist ein Verbot dauerhaften verbalen Missbrauchs des Modells.",
+          "body": "Anthropic hat am Donnerstag seine Nutzungsrichtlinie überarbeitet. Neu sind Verbote für Wahlbeeinflussung, Waffen-Software und Überwachung, wie TechCrunch berichtet. Ein eigener Abschnitt zum Schutz demokratischer Prozesse untersagt die Täuschung von Wählern und die Störung von Wahlen. Auch täuschende Kampagnen, etwa mit gefälschten Konten oder erfundenen Nachrichtenseiten, sind ausgeschlossen.\n\nAm meisten Aufmerksamkeit bekommt eine andere Regel: Anthropic untersagt anhaltenden verbalen Missbrauch des Modells. Sie soll laut Unternehmen nur in Extremfällen greifen, in denen Nutzer das Modell wiederholt und ohne erkennbaren Zweck grausam behandeln. Gewöhnlicher Ärger, Widerspruch, düstere kreative Themen sowie Tests und Forschung sind ausgenommen.\n\nDer Hintergrund: Seit einem Update im August ist Claude darauf trainiert, Gespräche mit dauerhaft schädlichen oder beleidigenden Nutzern zu beenden. Die neue Richtlinie verbietet den Nutzern nun, solche Gespräche fortzusetzen. Zugleich hat Anthropic laut TechCrunch den Austausch mit Religionsgelehrten gesucht, teils mit dem Ziel, sie von einer möglichen Bewusstheit oder Seele von Claude zu überzeugen.\n\nFür deutsche Unternehmen und Entwickler, die Claude über die Schnittstelle einsetzen, ändern sich damit die vertraglichen Rahmenbedingungen. Die Regeln zu Wahlen sind vor dem Hintergrund anstehender Urnengänge in Europa auch politisch von Belang.",
+          "source": "TechCrunch",
+          "url": "https://techcrunch.com/2026/10/08/anthropic-changes-usage-policy-to-ban-model-abuse-and-election-interference/",
+          "sources": [
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/10/08/anthropic-changes-usage-policy-to-ban-model-abuse-and-election-interference/"
+            }
+          ],
+          "publishedAt": "2026-10-08T20:16:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "ki-artex-hacking-tool-suedkoreanische-banken",
+          "tier": "more",
+          "headline": "KI-Pentest-Tool aus China bei Datendiebstahl in Südkorea eingesetzt",
+          "summary": "CrowdStrike verbindet das quelloffene Werkzeug ARTEX mit Angriffen auf koreanische Finanzfirmen. Der Entwickler distanziert sich und stellt das Projekt ein.",
+          "body": "Ein frei verfügbares KI-Werkzeug für Penetrationstests ist laut CrowdStrike für Datendiebstahl bei südkoreanischen Finanzunternehmen missbraucht worden. Das berichtet The Hacker News. Die Aktivität lief demnach von Ende September bis Anfang Oktober 2026 und führte zum Abfluss von Daten.\n\nARTEX ist ein erst kürzlich veröffentlichtes, quelloffenes agentisches Pentesting-Werkzeug aus China, entwickelt von Autumn-27. CrowdStrike stieß auf die Kampagne, weil auf einer IP-Adresse in Hongkong Verzeichnisse offen lagen. Darin fanden sich Verläufe von Claude-Code-Sitzungen, Claude-Memory-Dateien und ARTEX-Konfigurationen. Als Hauptmodell nutzte die Instanz DeepSeek v4.1-flash, ergänzt durch GLM-5.3 und Grok 4.6. Der Täter fragte Claude außerdem, wo koreanische Datenleaks verkauft werden. Wer dahintersteckt, ist unbekannt; CrowdStrike vermutet einen chinesischsprachigen, finanziell motivierten Akteur.\n\nAutumn-27 distanzierte sich von den Angriffen. Das Projekt werde nicht mehr weiterentwickelt und künftig nicht mehr quelloffen geführt. Weitere Versionen oder Wartung soll es nicht geben.\n\nIm selben Bericht geht es um eine zweite Kampagne namens SCARLET LOOP. Laut ZenoX nutzt eine portugiesischsprachige Gruppe eine KI-Plattform für Credential Stuffing. Getestet wurden gut 12,2 Millionen Zugangsdaten, 11.832 davon galten als gültig, verteilt auf 3.968 Domains. Die Ziele liegen vor allem bei brasilianischen Bonusprogrammen.\n\nBeide Fälle zeigen, dass KI-Agenten Angriffe billiger und skalierbarer machen. Für Unternehmen in Deutschland heißt das: Abwehr gegen automatisierte Angriffe, etwa durch Mehrfaktor-Anmeldung, wird wichtiger.",
+          "source": "The Hacker News",
+          "url": "https://thehackernews.com/2026/10/artex-ai-pentesting-tool-used-in-data.html",
+          "sources": [
+            {
+              "name": "The Hacker News",
+              "url": "https://thehackernews.com/2026/10/artex-ai-pentesting-tool-used-in-data.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "wirtschaft",
+      "title": "Wirtschaft & Märkte",
+      "emoji": "📈",
+      "items": [
+        {
+          "id": "wirtschaft-herbstprojektion-wachstum-13-prozent",
+          "tier": "top",
+          "headline": "Bundesregierung hebt Wachstumsprognose für 2026 auf 1,3 Prozent",
+          "summary": "Die Herbstprojektion sieht die deutsche Wirtschaft deutlich stärker wachsen als im Frühjahr erwartet. Wirtschaftsministerin Reiche warnt dennoch: Die Lage bleibe fragil.",
+          "body": "Die Bundesregierung rechnet für dieses Jahr mit einem Wirtschaftswachstum von 1,3 Prozent. Das geht aus der Herbstprojektion hervor, die Wirtschaftsministerin Katherina Reiche (CDU) am Donnerstag in Berlin vorgestellt hat. Im Frühjahr hatte die Regierung nur mit 0,5 Prozent gerechnet, die Prognose steigt also um 0,8 Prozentpunkte.\n\nFür 2027 erwartet das Ministerium ein Plus von 1,1 Prozent, nach zuvor 0,9 Prozent. Für 2028 liegt die Projektion bei 0,6 Prozent. Die Verbraucherpreise sollen 2026 um durchschnittlich 2,7 Prozent steigen, 2027 um 3 Prozent und 2028 um 2,2 Prozent.\n\n## Exporte und Staatsausgaben tragen den Aufschwung\n\nNach Darstellung der Bundesregierung erwies sich die Wirtschaft als widerstandsfähiger als befürchtet. Trotz des Konflikts im Nahen Osten und höherer Energiepreise legte sie im ersten Halbjahr kräftig zu. Getragen wird das Wachstum vor allem von robusten Exporten und staatlichen Investitionen in Verteidigung und Infrastruktur. Privater Konsum und private Investitionen dürften sich dagegen nur verhalten entwickeln, weil Energie und Verbrauchsgüter teurer geworden sind.\n\nAuch die führenden Wirtschaftsforschungsinstitute hatten Ende September ihre Prognose für 2026 auf 1,3 Prozent angehoben. Laut ZDFheute fallen dabei Sondereffekte ins Gewicht: Die Chemiebranche profitierte von gestiegener Nachfrage aus Asien, und der KI-Boom treibt Bestellungen für Maschinen und Komponenten von Rechenzentren und Chipfabriken.\n\n## Reiche: „Nur der Anfang“\n\n„Wir haben die Talsohle hinter uns gelassen, die deutsche Wirtschaft wächst wieder“, sagte Reiche. Das sei ein wichtiges Signal, aber nur der Anfang. Schon einen Tag zuvor hatte sie im Bundestag betont, die Lage bleibe fragil. Sie verlangte Strukturreformen, darunter flexiblere Arbeitszeiten, stabile Sozialbeiträge, weniger Bürokratie und wettbewerbsfähige Energiepreise.\n\nWirtschaftsverbände äußerten sich zurückhaltender. BGA-Präsident Dirk Jandura sagte, die Unternehmen sähen wieder Licht am Ende des Tunnels, führen aber weiter mit angezogener Handbremse. DIHK-Hauptgeschäftsführerin Helena Melnikov nannte den Aufschwung „teuer erkauft“. Er stütze sich auf Exporte in den EU-Binnenmarkt und schuldenfinanzierte Staatsausgaben und habe ohne grundlegende Reformen nur ein kurzes Haltbarkeitsdatum, so Melnikov laut Tagesspiegel.\n\n## Was das für Haushalte und Betriebe bedeutet\n\nDie Projektion ist keine bloße Zahl: Aus ihr leiten Bund, Länder und Kommunen ihre Steuerschätzungen und Haushaltspläne ab. Höhere Wachstumserwartungen bedeuten tendenziell mehr Spielraum bei den Einnahmen, auch für sächsische Kommunen. Für Beschäftigte ist wichtig, dass die Inflation nach der Projektion 2027 mit 3 Prozent sogar höher liegen soll als 2026. Der Kanzler lädt für den 19. und 20. Oktober zu einem ersten Investitionsgipfel, bei dem er Investoren aus aller Welt für mehr private Investitionen gewinnen will.",
+          "source": "Bundesregierung",
+          "url": "https://www.bundesregierung.de/breg-de/aktuelles/herbstprojektion-2026-bundesregierung-2456338",
+          "sources": [
+            {
+              "name": "Bundesregierung",
+              "url": "https://www.bundesregierung.de/breg-de/aktuelles/herbstprojektion-2026-bundesregierung-2456338"
+            },
+            {
+              "name": "Tagesspiegel (dpa)",
+              "url": "https://www.tagesspiegel.de/wirtschaft/dpa-13-prozent-wachstum-fur-2026bundesregierung-rechnet-mit-deutlich-starkerem-aufschwung-als-erwartet-16139980.html"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/wirtschaft/wirtschaft-deutschland-konjunktur-wachstum-trotz-krieg-krise-ursachen-100.html"
+            },
+            {
+              "name": "finanzen.net (dpa-AFX)",
+              "url": "https://www.finanzen.net/nachricht/aktien/reiche-wachstum-steht-auf-wackligen-beinen-15971599"
+            }
+          ],
+          "publishedAt": "2026-10-08T12:24:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Katherina_Reiche_2013.jpg/1280px-Katherina_Reiche_2013.jpg",
+            "credit": "Laurence Chaperon",
+            "license": "CC BY-SA 3.0 de",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Katherina_Reiche_2013.jpg",
+            "alt": "Porträt von Katherina Reiche (Aufnahme von 2013)"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "wirtschaft-exporte-august-minus-08-prozent",
+          "tier": "top",
+          "headline": "Deutsche Exporte sinken im August leicht, Handelsüberschuss schrumpft",
+          "summary": "Die Ausfuhren fielen im August um 0,8 Prozent auf 137,6 Milliarden Euro. Besonders die Lieferungen in die USA gingen zurück, während der China-Handel anzog.",
+          "body": "Deutschlands Exporteure haben im August etwas weniger ins Ausland verkauft. Nach vorläufigen Zahlen des Statistischen Bundesamts sanken die Ausfuhren kalender- und saisonbereinigt um 0,8 Prozent zum Vormonat auf 137,6 Milliarden Euro. Gegenüber dem August des Vorjahres lag der Wert dennoch um 6,2 Prozent höher.\n\nDie Importe stiegen im gleichen Zeitraum um 0,9 Prozent auf 118,1 Milliarden Euro. Der Außenhandelsüberschuss fiel dadurch auf 19,5 Milliarden Euro, nach 21,6 Milliarden im Juli. Im August 2025 hatte er bei 17,6 Milliarden Euro gelegen.\n\n## USA schwächer, China und Großbritannien stärker\n\nIn die USA, den größten Einzelmarkt, wurden Waren für 13,5 Milliarden Euro geliefert. Das sind 6,3 Prozent weniger als im Juli, aber 22,6 Prozent mehr als vor einem Jahr. Die Exporte nach China legten um 4,7 Prozent auf 5,9 Milliarden Euro zu, jene ins Vereinigte Königreich sogar um 16,7 Prozent auf 7,9 Milliarden Euro. In die EU-Staaten gingen Waren für 77,5 Milliarden Euro, ein Minus von 0,6 Prozent. Innerhalb der Eurozone stiegen die Ausfuhren um 0,8 Prozent, in den übrigen EU-Ländern fielen sie um 3,5 Prozent.\n\nBei den Einfuhren zog China deutlich an: Sie wuchsen um 11 Prozent auf 16,8 Milliarden Euro, und China bleibt vor allen anderen Staaten wichtigster Importherkunftsstaat.\n\n## Acht Monate im Rückblick\n\nVon Januar bis August exportierte Deutschland Waren im Wert von 1.092,7 Milliarden Euro, 4,4 Prozent mehr als im Vorjahreszeitraum. In die EU stiegen die Lieferungen um 7,2 Prozent, in die USA um 1,1 Prozent. Nach China brachen sie dagegen um 12,9 Prozent ein. Gründe für die Monatsveränderungen nennt das Amt noch nicht, detaillierte Ergebnisse folgen am 20. Oktober.\n\nDie Zahlen passen zum Bild, das auch die Herbstprojektion der Bundesregierung zeichnet: Die Ausfuhren stützen das Wachstum, doch die Erholung ist ungleichmäßig. Der DIHK sprach laut Tagesspiegel von einem Exportaufschwung, der nur ein laues Lüftchen sei. Für Sachsen mit seiner exportstarken Auto-, Maschinenbau- und Chipindustrie ist der Außenhandel ein zentraler Konjunkturfaktor. Das Land hängt besonders am europäischen Binnenmarkt und an den Lieferketten der Autoindustrie, die im August laut Destatis die Produktion um 5,4 Prozent drosselte.",
+          "source": "Statistisches Bundesamt",
+          "url": "https://www.destatis.de/DE/Presse/Pressemitteilungen/2026/10/PD26_356_51.html",
+          "sources": [
+            {
+              "name": "Statistisches Bundesamt",
+              "url": "https://www.destatis.de/DE/Presse/Pressemitteilungen/2026/10/PD26_356_51.html"
+            },
+            {
+              "name": "Statistisches Bundesamt (Produktion)",
+              "url": "https://www.destatis.de/DE/Presse/Pressemitteilungen/2026/10/PD26_355_421.html"
+            },
+            {
+              "name": "Tagesspiegel (dpa)",
+              "url": "https://www.tagesspiegel.de/wirtschaft/dpa-13-prozent-wachstum-fur-2026bundesregierung-rechnet-mit-deutlich-starkerem-aufschwung-als-erwartet-16139980.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T08:00:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Bremerhaven_Stadtbremischer_Hafen.JPG/1280px-Bremerhaven_Stadtbremischer_Hafen.JPG",
+            "credit": "Corradox",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bremerhaven_Stadtbremischer_Hafen.JPG",
+            "alt": "Krananlagen im Hafen von Bremerhaven"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "wirtschaft-spacex-kauft-funkfrequenzen",
+          "tier": "top",
+          "headline": "SpaceX kauft US-Funkfrequenzen, Mobilfunkaktien brechen nachbörslich ein",
+          "summary": "Musks Raumfahrtkonzern erwirbt ein landesweites Frequenzpaket und will Handys direkt aus dem All versorgen. Die Aktien von T-Mobile US, Verizon und AT&T fielen nachbörslich deutlich.",
+          "body": "SpaceX will zum Mobilfunkanbieter werden. Der Konzern von Elon Musk hat sich am Donnerstag bereit erklärt, ein landesweites Portfolio an Niederfrequenzen in den USA zu kaufen. Verkäufer ist der Finanzinvestor Grain Management, der sein gesamtes Frequenzpaket abgibt. Über den Preis wurde nichts bekannt.\n\nNach Angaben des Handelsblatts geht es um Spektrum im 800-Megahertz-Bereich. Niedrige Frequenzen durchdringen Wände und Bäume besser als hohe. Sie sollen das bestehende globale 2-Gigahertz-Spektrum von Starlink Mobile ergänzen, das auf hohe Bandbreite ausgelegt ist.\n\n## Telekom-Tochter unter Druck\n\nIm nachbörslichen US-Handel sackten die Aktien der etablierten Anbieter ab. Laut Handelsblatt verloren T-Mobile US, Verizon und AT&T jeweils mehr als fünf Prozent. Die dpa-AFX nennt für AT&T rund sieben Prozent und für T-Mobile US sowie Verizon jeweils mehr als sechs Prozent. SpaceX selbst legte demnach um etwa zwei Prozent zu. Anleger fürchten einen aggressiven Preiskampf in einem ohnehin gesättigten Markt.\n\nFür deutsche Anleger ist das relevant, weil T-Mobile US eine Tochter der Deutschen Telekom ist. Ob sich der Kursrutsch am Freitag auf die Telekom-Aktie im deutschen Handel überträgt, zeigt sich erst mit der Eröffnung.\n\n## Genehmigung steht noch aus\n\nBisher braucht Starlink eine eigene Antenne und freie Sicht zum Satelliten. Mit den neuen Lizenzen soll das Signal nach Angaben von SpaceX auch durch Wände hindurch normale Smartphones erreichen. Musk sagte, SpaceX könne damit die gesamten USA abdecken, wo große Gebiete keinen Mobilfunk haben.\n\nDer Kauf steht jedoch unter dem Vorbehalt der US-Aufsichtsbehörde FCC. SpaceX braucht ihre Erlaubnis, um den Satellitendienst mit einem terrestrischen Netz zu verbinden. Zu Wochenbeginn hatte die FCC bereits die zweite Generation von Starlink Mobile genehmigt, sodass SpaceX weltweit 15.000 auf das 2-Gigahertz-Spektrum optimierte Satelliten starten darf.\n\nDer Schritt zeigt, wie der Konzern seine Satellitenstrategie auf den Massenmarkt ausweitet. In Deutschland ist ein vergleichbares Angebot nicht angekündigt; die Meldungen betreffen allein den US-Markt. Für europäische Telekomkonzerne bleibt es dennoch ein Signal, dass Satellitenanbieter zunehmend in ihr Kerngeschäft vorstoßen.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/technik/it-internet/niederfrequenzen-spacex-fordert-us-mobilfunker-heraus-frenquenz-kauf-belastet-t-mobile-us-co/100260877.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/technik/it-internet/niederfrequenzen-spacex-fordert-us-mobilfunker-heraus-frenquenz-kauf-belastet-t-mobile-us-co/100260877.html"
+            },
+            {
+              "name": "finanzen.net (dpa-AFX)",
+              "url": "https://www.finanzen.net/nachricht/aktien/musks-spacex-kauft-us-frequenzen-fuer-mobilfunk-angebot-15974778"
+            }
+          ],
+          "publishedAt": "2026-10-08T23:46:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Starlink_Satellites_Imaged_from_CTIO.jpg/1280px-Starlink_Satellites_Imaged_from_CTIO.jpg",
+            "credit": "NSF’s National Optical-Infrared Astronomy Research Laboratory/CTIO/AURA/DELVE",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Starlink_Satellites_Imaged_from_CTIO.jpg",
+            "alt": "Teleskopaufnahme von Starlink-Satelliten am Nachthimmel"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "wirtschaft-muenchen-mindestpreise-uber-gekippt",
+          "tier": "more",
+          "headline": "Gericht kippt Münchner Mindestpreise für Uber vorläufig",
+          "summary": "Das Verwaltungsgericht München hat in fünf Eilverfahren entschieden, dass Fahrdienste die städtischen Mindestpreise vorerst nicht beachten müssen.",
+          "body": "Das Verwaltungsgericht München hat die Mindestpreise der Stadt für Fahrdienste wie Uber vorläufig außer Kraft gesetzt. In fünf Eilbeschlüssen gab es Anträgen mehrerer Unternehmen statt. Sie müssen die Vorgabe vorerst nicht einhalten, bis in den Hauptverfahren entschieden ist.\n\nDie seit Juli geltende Allgemeinverfügung koppelt die Fahrpreise an den Münchner Taxitarif mit 5,90 Euro Grundpreis und 2,70 Euro je Kilometer, auch bei Fahrten aus der Stadt hinaus oder in sie hinein. Zuvor lagen die Preise der Fahrdienste im Schnitt rund 40 Prozent unter denen der Taxis. Das Gericht hält die Verfügung nach summarischer Prüfung für voraussichtlich insgesamt rechtswidrig, weil die Stadt sie auch für Gebiete außerhalb ihrer Zuständigkeit erlassen hat und sich der rechtswidrige Teil nicht abtrennen lässt.\n\nDer Verband wirfahren begrüßte den Beschluss und verwies auf eine ähnliche Entscheidung in Köln. Uber nannte Mindestpreise rechtlich nicht haltbar und forderte die Stadt auf, die Verfügung ganz zurückzunehmen. Bolt meldete im Monat nach Inkrafttreten 44 Prozent weniger Nachfrage. Das Hauptzollamt München hatte zudem festgestellt, dass Anbieter fast flächendeckend gegen Arbeits- und Sozialrecht verstießen.\n\nÄhnliche Klagen gegen kommunale Vorgaben laufen laut dpa-AFX auch in Köln und Leipzig. Der Münchner Beschluss ist daher auch für Leipziger Taxigewerbe und Fahrgäste ein Signal, wie weit Städte bei Preisvorgaben gehen dürfen.",
+          "source": "finanzen.net (dpa-AFX)",
+          "url": "https://www.finanzen.net/nachricht/aktien/roundup-2-gericht-kippt-muenchner-mindestpreise-fuer-uber-und-co-15974702",
+          "sources": [
+            {
+              "name": "finanzen.net (dpa-AFX)",
+              "url": "https://www.finanzen.net/nachricht/aktien/roundup-2-gericht-kippt-muenchner-mindestpreise-fuer-uber-und-co-15974702"
+            },
+            {
+              "name": "onvista (dpa-AFX)",
+              "url": "https://www.onvista.de/news/2026/10-08-gericht-kippt-muenchner-mindestpreise-fuer-uber-und-co-0-10-26562083"
+            }
+          ],
+          "publishedAt": "2026-10-08T21:47:00+02:00",
+          "importance": 5,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "wirtschaft-starbucks-prueft-chipotle-uebernahme",
+          "tier": "more",
+          "headline": "Starbucks prüft laut Bericht Übernahme von Chipotle",
+          "summary": "Nach einem Bericht der Financial Times lotet Starbucks eine Offerte für die Burrito-Kette aus. Chipotle-Aktien legten um etwa sechs Prozent zu.",
+          "body": "Starbucks erwägt offenbar die Übernahme der Fast-Food-Kette Chipotle. Das berichtet die Financial Times, auf die sich das Handelsblatt beruft. Demnach hat sich der Kaffeekonzern mit Beratern über ein mögliches Angebot ausgetauscht. Chipotle kommt an der Börse auf einen Wert von rund 39 Milliarden Dollar.\n\nUnklar ist, wie weit die Überlegungen gediehen sind und ob Starbucks bereits ein formelles Angebot abgegeben hat. Starbucks wollte sich gegenüber der Financial Times nicht äußern, Chipotle reagierte auf eine Anfrage nicht. Das Handelsblatt hält einen Zusammenschluss wegen der Komplexität für eher unwahrscheinlich.\n\nAn der Börse reagierten Anleger prompt: Die Chipotle-Aktie stieg um rund sechs Prozent, die von Starbucks fiel um etwa drei Prozent. Starbucks-Chef Brian Niccol, 52, hatte Chipotle von 2018 bis 2024 geführt und kennt das Geschäft entsprechend genau. Analysten zeigten sich dennoch überrascht. Jacob Aiken-Phillips von Melius Research sagte Bloomberg zufolge, auf den ersten Blick gebe es nicht viele Synergien.\n\nStarbucks steckt derzeit selbst in einem Konzernumbau. Für deutsche Verbraucher hätte eine Übernahme zunächst keine direkten Folgen, da Chipotle in Deutschland kaum präsent ist. Für Anleger zeigt der Bericht, dass auch große US-Gastronomiekonzerne über Zukäufe nachdenken.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/unternehmen/handel-konsumgueter/fast-food-starbucks-prueft-laut-medienbericht-uebernahme-von-chipotle/100260808.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/unternehmen/handel-konsumgueter/fast-food-starbucks-prueft-laut-medienbericht-uebernahme-von-chipotle/100260808.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T18:22:00+02:00",
+          "importance": 4,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "wirtschaft-wto-hebt-handelsprognose-an",
+          "tier": "more",
+          "headline": "WTO hebt Prognose für den Welthandel 2026 auf 3,9 Prozent",
+          "summary": "Der KI-Boom gleicht laut Welthandelsorganisation die Belastungen durch den Nahostkonflikt mehr als aus. Für 2027 erwartet sie 4,1 Prozent.",
+          "body": "Die Welthandelsorganisation WTO erwartet für dieses Jahr ein deutlich stärkeres Wachstum des Warenhandels. Sie hob ihre Prognose für 2026 von 1,9 auf 3,9 Prozent an, wie das Handelsblatt aus Genf berichtet. Für 2027 rechnet sie mit 4,1 Prozent. Im Jahr 2025 war der Warenhandel um 4,6 Prozent gewachsen.\n\nHaupttreiber sind die Investitionen in künstliche Intelligenz. Im ersten Halbjahr 2026 entfiel ein großer Teil des weltweiten Handelswachstums auf Halbleiter, Rechenzentren und digitale Infrastruktur. Der Nahostkonflikt und die zeitweise Sperrung der Straße von Hormus belasteten den Handel erheblich, doch der KI-Boom gleicht das laut WTO mehr als aus.\n\nZudem hätten sich die globalen Lieferketten an Störungen auf den Energie- und Düngemittelmärkten angepasst. WTO-Generaldirektorin Ngozi Okonjo-Iweala sagte, die Zahlen zeigten die Widerstandsfähigkeit des Handels in der Praxis.\n\nFür Deutschland als exportorientierte Volkswirtschaft sind solche Prognosen wichtig, denn die Nachfrage nach Maschinen und Komponenten für Rechenzentren und Chipproduktion stützt die Ausfuhren. Die deutschen Exportzahlen für August zeigen allerdings, dass der Rückenwind nicht jeden Monat gleich stark ausfällt.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/politik/international/welthandel-wto-korrigiert-wachstumsaussichten-deutlich-nach-oben/100260814.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/politik/international/welthandel-wto-korrigiert-wachstumsaussichten-deutlich-nach-oben/100260814.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T16:46:00+02:00",
+          "importance": 4,
+          "image": null,
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "politik",
+      "title": "Politik",
+      "emoji": "🏛️",
+      "items": [
+        {
+          "id": "politik-merz-false-flag-afd-landtagspraesident",
+          "tier": "top",
+          "headline": "Merz löst mit False-Flag-Vorwurf Streit um AfD-Wahl aus",
+          "summary": "Nach der Wahl des AfD-Politikers Rausch zum Landtagspräsidenten in Magdeburg deutet der Kanzler an, Stimmen könnten bewusst aus anderen Fraktionen gekommen sein. Die Kritik daran ist scharf, die CDU-Fraktion im Land steht unter Druck.",
+          "body": "Bundeskanzler Friedrich Merz hat die Debatte um die Wahl des AfD-Politikers Tobias Rausch zum Landtagspräsidenten von Sachsen-Anhalt neu angeheizt. Beim Deutschland-Gipfel von Handelsblatt und WirtschaftsWoche deutete der CDU-Vorsitzende an, einzelne Stimmen für Rausch könnten aus anderen Fraktionen stammen, um die CDU zu beschädigen. „False-Flag-Operationen gibt es nicht nur militärisch, die gibt es auch politisch“, sagte Merz. Namentlich nannte er nur, dass mindestens zwei, womöglich drei Gruppen im Landtag alles täten, um den demokratischen Zusammenhalt zu untergraben.\n\nDie Reaktionen fielen heftig aus. Grünen-Geschäftsführerin Irene Mihalic nannte die Andeutung eine bodenlose Frechheit, Linken-Chefin Ines Schwerdtner sprach von totalem Quatsch und forderte Konsequenzen für die CDU. SPD-Politiker Karl Lauterbach sagte dem Spiegel, jeder wisse, dass die Stimmen aus der Union kamen. Nach Angaben des Tagesspiegel wurde Merz' Äußerung vielfach als Verschwörungstheorie kritisiert.\n\n## Was in Magdeburg geschah\n\nRausch war am Dienstag in geheimer Wahl gewählt worden. Er bekam mehr Stimmen, als AfD und BSW zusammen im Landtag stellen; das BSW hatte seine Unterstützung angekündigt. Weil die Abstimmung geheim war, lässt sich nicht belegen, wer wie votierte. Laut ZDFheute fielen Verdachtsmomente auf mehrere namentlich genannte CDU-Abgeordnete, die das aber zurückweisen oder nicht erreichbar waren. Fünf CDU-Abgeordnete hatten sich demnach zwei Wochen vor der Wahl zur gemeinsamen Enthaltung verabredet.\n\nDas Vertrauen in der Landtagsfraktion ist nach diesem Bericht schwer beschädigt. Die Süddeutsche Zeitung meldet laut ZDFheute, mehrere Abgeordnete verlangten den Rücktritt von Fraktionschef Sven Schulze; sein Lager will ihn halten. Der Chef des CDU-Arbeitnehmerflügels, Dennis Radtke, fordert ein Parteiausschlussverfahren gegen Mitglieder, die der AfD ins Amt helfen. Der Abgeordnete Marco Tullner hatte zuvor angekündigt, einen Austritt aus der Fraktion zum Jahresende zu erwägen.\n\n## Was das bundespolitisch bedeutet\n\nDie Wahl überschattet auch die Arbeit der Bundesregierung. Politikwissenschaftler Thorsten Faas sagte, die Brandmauer sei sehr löchrig geworden. Für Sachsen ist der Fall von Interesse, weil auch hier die AfD im Landtag stark vertreten ist und die Frage nach dem Umgang mit ihr regelmäßig die CDU-geführte Staatsregierung beschäftigt. Merz hatte jede Zusammenarbeit mit der AfD stets ausgeschlossen; ob die Debatte ihm nun schadet oder die Partei zusammenrücken lässt, dürfte sich in den kommenden Tagen zeigen, wenn die Fraktion in Magdeburg über ihren Kurs entscheidet.",
+          "source": "Tagesspiegel",
+          "url": "https://www.tagesspiegel.de/politik/verschworungstheorie-zu-stimmen-fur-afd-mann-in-sachsen-anhaltheftige-kritik-an-merz-fur-false-flag-vorwurf-16142711.html",
+          "sources": [
+            {
+              "name": "Tagesspiegel",
+              "url": "https://www.tagesspiegel.de/politik/verschworungstheorie-zu-stimmen-fur-afd-mann-in-sachsen-anhaltheftige-kritik-an-merz-fur-false-flag-vorwurf-16142711.html"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/sachsen-anhalt-cdu-afd-landtag-abstimmung-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T20:33:00+02:00",
+          "importance": 8,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Landtag_von_Sachsen-Anhalt_in_Magdeburg.jpg/1280px-Landtag_von_Sachsen-Anhalt_in_Magdeburg.jpg",
+            "credit": "Torsten Maue",
+            "license": "CC BY-SA 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Landtag_von_Sachsen-Anhalt_in_Magdeburg.jpg",
+            "alt": "Der Landtag von Sachsen-Anhalt am Domplatz in Magdeburg"
+          }
+        },
+        {
+          "id": "politik-ungarn-gibt-weg-fuer-ukraine-beitrittsgespraeche-frei",
+          "tier": "top",
+          "headline": "Ungarn gibt Weg für weitere Ukraine-Beitrittskapitel frei",
+          "summary": "Budapest verzichtet auf sein Veto gegen zwei weitere Verhandlungscluster der Ukraine. Die Bedingung: Kiews Parlament verabschiedet ein Minderheitengesetz.",
+          "body": "Im Streit um die EU-Beitrittsgespräche mit der Ukraine zeichnet sich ein Durchbruch ab. Ungarn hat nach Angaben von Euronews am Mittwoch sein Veto gegen die Eröffnung von zwei weiteren Verhandlungsclustern aufgegeben. Sie betreffen den Binnenmarkt und die Wettbewerbsfähigkeit. Zugleich erlaubte Budapest die technischen Vorarbeiten für Schreiben des Rates, in denen die Ukraine aufgefordert wird, ihre Verhandlungspositionen vorzulegen.\n\n## Bedingung: Minderheitenrechte\n\nDie Zusage steht unter einem Vorbehalt. Ungarn verlangt, dass die Werchowna Rada ein Gesetz beschließt, das die Bildungs- und Kulturrechte der ungarischen Minderheit in Transkarpatien stärkt. Die Abstimmung wird für Montag erwartet. Das Parlament in Kiew hat zuletzt aber Mühe gehabt, stabile Mehrheiten zu organisieren; scheitert das Gesetz, könnte der Prozess erneut ins Stocken geraten.\n\nWird das Gesetz verabschiedet, soll der Rat für Allgemeine Angelegenheiten am Dienstag in Luxemburg die Eröffnung der Cluster zwei und drei billigen. Auf derselben Sitzung wird nach Euronews-Angaben auch die Freigabe von 4,2 Milliarden Euro Kohäsionsmitteln für Ungarn erwartet, die wegen Korruptionsbedenken eingefroren waren. Eine förmliche Eröffnung bei einer Regierungskonferenz könnte noch in der kommenden Woche folgen.\n\n## Politischer Hintergrund\n\nUngarns Ministerpräsident Péter Magyar, seit Mai im Amt, hatte schon im Juni die Öffnung von zwei Verhandlungskapiteln gebilligt, nachdem Kiew einen Aktionsplan mit elf Punkten zu Minderheitenrechten vorgelegt hatte. Eine Einigung könnte laut Euronews auch den Weg zu einem ersten Treffen Magyars mit Präsident Wolodymyr Selenskyj ebnen. Zudem würde sie Moldau helfen, dessen Beitrittsgespräche eng an die der Ukraine gekoppelt sind.\n\nFür die Ukraine blieben danach noch zwei Cluster offen, zur Agrar- und Klimapolitik sowie zu den EU-Finanzmitteln. Brüssel will bis Jahresende alle verbleibenden Cluster öffnen. Das berichtet auch t-online unter Berufung auf Euronews. Für Deutschland ist das Thema bedeutsam, weil ein Beitritt der Ukraine Fragen nach künftigen EU-Finanzen und Agrarhilfen aufwirft, die auch Sachsen betreffen dürften.\n\nBeim EU-Gipfel in der kommenden Woche dürfte das Thema Ukraine daher erneut auf der Tagesordnung stehen.",
+          "source": "t-online",
+          "url": "https://www.t-online.de/nachrichten/ukraine/id_101472728/ungarn-gibt-veto-gegen-eu-beitritt-von-ukraine-auf.html",
+          "sources": [
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/nachrichten/ukraine/id_101472728/ungarn-gibt-veto-gegen-eu-beitritt-von-ukraine-auf.html"
+            },
+            {
+              "name": "Euronews",
+              "url": "https://www.euronews.com/2026/10/07/hungary-set-to-lift-veto-on-ukraines-eu-membership-talks"
+            }
+          ],
+          "publishedAt": "2026-10-08T15:44:00+02:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Justus_Lipsius_building_on_Rond_point_Schuman_2005-06.jpg/1280px-Justus_Lipsius_building_on_Rond_point_Schuman_2005-06.jpg",
+            "credit": "Zinneke",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Justus_Lipsius_building_on_Rond_point_Schuman_2005-06.jpg",
+            "alt": "Das Justus-Lipsius-Gebäude, Sitz des Rates der EU, in Brüssel"
+          }
+        },
+        {
+          "id": "politik-vorwuerfe-gegen-klingbeil-berater-christ",
+          "tier": "more",
+          "headline": "Vorwürfe gegen Klingbeils Beiratschef Harald Christ",
+          "summary": "Der Spiegel berichtet über mögliche Interessenkonflikte des Vorsitzenden des Investitionsbeirats im Finanzministerium. LobbyControl nennt die Berufung inakzeptabel.",
+          "body": "Harald Christ, Vorsitzender des Investitions- und Innovationsbeirats im Bundesfinanzministerium, steht unter Druck. Nach einem Bericht des Spiegel könnten seine Geschäfte als Lobbyberater mit seiner Rolle im Beirat kollidieren. Christ wurde im September 2025 von Finanzminister Lars Klingbeil (SPD) berufen.\n\nSeine Holding Christ Capital besitzt demnach drei Lobbyagenturen, die laut Lobbyregister zuletzt mehr als 40 Aufträge betreuten. Seit der Berufung seien mindestens 15 neue hinzugekommen, darunter Kunden aus der Digital- und Rüstungsindustrie. Eine der Agenturen arbeitet für das KI-Unternehmen Aleph Alpha, an dem Christ bis vor Kurzem rund zwei Prozent hielt. Aleph Alpha hat mit der Bundesagentur für Arbeit den KI-Assistenten „Bakira“ entwickelt, der in Jobcentern eingeführt wird; der Bund bewilligte dafür 2,15 Millionen Euro aus dem Sondervermögen. Laut Bundesagentur fließt das Geld nicht direkt an Aleph Alpha.\n\nAurel Eschmann von LobbyControl nennt die Berufung nach Angaben von Tagesspiegel und t-online inakzeptabel und warnt, schon der Anschein von Einfluss schade dem Vertrauen in die Politik. Das Finanzministerium betont, Beiratsmitglieder seien nicht an Entscheidungen über Gesetze, Vergaben oder Förderungen beteiligt und hätten versichert, keine Interessenkonflikte zu haben. Laut Spiegel hatte das Haus intern vor der Berufung selbst auf mögliche Konflikte hingewiesen. Christs Anwalt weist die Vorwürfe entschieden zurück, Aleph Alpha bestreitet Gespräche mit Christ über „Bakira“.\n\nFür die Bundespolitik ist der Fall heikel, weil das Sondervermögen Infrastruktur auch Milliarden für Länder und Kommunen, etwa in Sachsen, bereitstellt und die Verteilung unter strenger öffentlicher Beobachtung steht.",
+          "source": "t-online",
+          "url": "https://www.t-online.de/nachrichten/deutschland/id_101472890/harald-christ-vorwuerfe-gegen-klingbeil-berater-wegen-interessenkonflikten.html",
+          "sources": [
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/nachrichten/deutschland/id_101472890/harald-christ-vorwuerfe-gegen-klingbeil-berater-wegen-interessenkonflikten.html"
+            },
+            {
+              "name": "Tagesspiegel",
+              "url": "https://www.tagesspiegel.de/politik/dpa-kritik-an-klingbeils-beiratschef-harald-christ-16142184.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T18:04:00+02:00",
+          "importance": 5,
+          "readingMinutes": 2,
+          "image": null
+        },
+        {
+          "id": "politik-soeder-will-laenderfinanzausgleich-kuendigen",
+          "tier": "more",
+          "headline": "Söder will Länderfinanzausgleich kündigen und attackiert Berliner Linke",
+          "summary": "Bayerns Ministerpräsident nennt das System unfair und will es frühestens 2029 oder 2030 aufkündigen. Anlass sind die Sondierungen in Berlin.",
+          "body": "CSU-Chef Markus Söder hat in einem Interview mit RTL und ntv den Länderfinanzausgleich scharf angegriffen. „Der gesamte Länderfinanzausgleich ist Mist, der gesamte Länderfinanzausgleich ist unfair“, sagte er laut einer Vorabmeldung vom Donnerstagabend. Bayern wolle ihn so früh wie möglich kündigen, voraussichtlich 2029 oder 2030.\n\nAnlass ist der Beschluss von SPD, Grünen und Linken in Berlin, Sondierungen aufzunehmen. Söder nannte das einen Skandal und warf der Linken vor, Antisemitismus zu dulden und Enteignungsfantasien zu hegen; das sind seine eigenen Vorwürfe. Berlin sei mit über vier Milliarden Euro der größte Nutznießer des Ausgleichs, so Söder. Auch der Hauptstadtvertrag müsse neu verhandelt werden.\n\nDer Ausgleich ist für Sachsen finanziell wichtig. Konkrete Angaben zu Sachsen enthält Söders Interview nicht; Änderungen an dem System würden aber alle Länder und damit auch den Freistaat betreffen. Zur Wahl in Sachsen-Anhalt sagte er, man sehe nun, ob sich die Verfassungstreue verhalte.\n\nEine Änderung des Finanzausgleichs bräuchte politische Einigung zwischen den Ländern und dem Bund. Ob Söders Ankündigung mehr ist als Wahlkampf- und Koalitionsrhetorik, bleibt abzuwarten.",
+          "source": "t-online",
+          "url": "https://www.t-online.de/nachrichten/deutschland/innenpolitik/id_101473160/linke-in-berlin-soeder-spricht-von-skandal-und-will-gelder-stoppen-.html",
+          "sources": [
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/nachrichten/deutschland/innenpolitik/id_101473160/linke-in-berlin-soeder-spricht-von-skandal-und-will-gelder-stoppen-.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T20:50:00+02:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "welt",
+      "title": "Welt",
+      "emoji": "🌍",
+      "items": [
+        {
+          "id": "welt-miami-gespraeche-ukraine-frieden",
+          "tier": "top",
+          "headline": "Miami: Neuer Anlauf für Frieden in der Ukraine",
+          "summary": "US-Gesandte treffen heute Vertreter der Ukraine und europäische Sicherheitsberater in Miami. Auf dem Tisch liegt ein neuer, abgestimmter Vorschlag zur Beendigung des Krieges.",
+          "body": "Nach Wochen ohne Bewegung beginnt heute in Miami ein neuer diplomatischer Anlauf zur Beendigung des russischen Angriffskriegs. Die Gesandten von US-Präsident Donald Trump, Steve Witkoff und Jared Kushner, treffen nach Angaben der Nachrichtenagentur AFP eine ukrainische Delegation sowie europäische Vertreter. Der ukrainische Präsident Wolodymyr Selenskyj bestätigte am Donnerstag, dass die Gespräche zwei Tage dauern sollen.\n\n## Wer verhandelt\n\nZur ukrainischen Delegation gehören laut Selenskyj sein Stabschef Kyrylo Budanow, der Geheimdienstchef Rustem Umerow sowie Sergij Kyslyzja und David Arachamija. Von amerikanischer Seite sind nach Informationen von AFP die nationalen Sicherheitsberater Großbritanniens, Frankreichs und Deutschlands eingeladen, dazu Vertreter von NATO und EU. Ein hochrangiger US-Beamter sprach laut ZDFheute von einem „neuen, abgestimmten Vorschlag“, der alle Aspekte des Konflikts umfasse.\n\nThemen sind demnach Sicherheitsgarantien für die Ukraine und ein Plan für den wirtschaftlichen Wiederaufbau nach dem Krieg. Beide Ideen sind aus den jüngsten Gesprächen der US-Unterhändler mit Moskau und Kiew hervorgegangen. Witkoff und Kushner waren im vergangenen Monat in Moskau und in Kiew.\n\n## Wenig Erwartung, viel Druck\n\nGroße Hoffnungen sind nicht angebracht. Frühere Runden brachten nach Darstellung von AFP keinen greifbaren Fortschritt, weil Moskau seine Maximalforderungen nicht aufgibt. Außenminister Marco Rubio sagte in Lissabon, der Krieg stehe derzeit still, und er sehe keine Aussicht auf eine Verhandlungslösung. Selenskyj hielt dagegen: Man befinde sich „nicht in einer diplomatischen Sackgasse“.\n\nDer Zeitpunkt ist kein Zufall. Der Gesprächsrunde ging ein russischer Angriff auf Busse in Kramatorsk voraus, bei dem nach AFP-Angaben 30 Menschen starben. Kiew meldet zudem mehr russische Luftangriffe. Washington setzt nach Angaben aus US-Kreisen darauf, dass die Sorge vor dem Winter und vor knapper Energie beide Seiten an den Tisch zurückbringt. Selenskyj sagte vergangene Woche, die USA wollten bis Ende Oktober eine neue Runde mit der Ukraine und Russland. Der Kreml hatte im Vormonat dreiseitige Gespräche im Oktober für möglich erklärt.\n\n## Was das für Deutschland heißt\n\nFür Deutschland ist die Runde aus zwei Gründen wichtig. Erstens sitzt die Bundesregierung mit ihrem Sicherheitsberater am Tisch, wenn es um Garantien geht, die europäische Truppen und Geld binden könnten. Zweitens spielen die Energiepreise hinein: Nach AFP-Angaben haben die Europäer in Washington ihre Sorgen vor hohen Kosten und einem harten Winter vorgebracht. Trump führt die Preise auf ukrainische Angriffe auf russische Dieselraffinerien zurück, nicht auf seinen Krieg gegen den Iran. Ein Ende der Kämpfe würde Verbraucher und Industrie in Sachsen entlasten, doch ein Durchbruch ist vorerst nicht in Sicht.\n\nTrump selbst hat nach AFP-Angaben ein Telefonat mit Kremlchef Wladimir Putin angekündigt. Dabei dürfte es vor allem um den gemeldeten Tod eines Forschers in einem russischen Pestlabor gehen. Ob Ukraine-Gespräche dort ebenfalls Thema werden, ist offen.",
+          "source": "France 24",
+          "url": "https://www.france24.com/en/europe/20261008-trump-envoys-ukraine-peace-talks-miami",
+          "sources": [
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/europe/20261008-trump-envoys-ukraine-peace-talks-miami"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/ausland/ukraine-krieg-usa-verhandlungen-frieden-sicherheitsgarantien-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-09T02:36:00+02:00",
+          "importance": 8,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Volodymyr_Zelensky_2022_official_portrait.jpg/1280px-Volodymyr_Zelensky_2022_official_portrait.jpg",
+            "credit": "Press Service of the President of Ukraine",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Volodymyr_Zelensky_2022_official_portrait.jpg",
+            "alt": "Offizielles Porträt des ukrainischen Präsidenten Wolodymyr Selenskyj"
+          }
+        },
+        {
+          "id": "welt-hasan-hinrichtung-livestream",
+          "tier": "top",
+          "headline": "USA wollen Hinrichtung des Fort-Hood-Täters live übertragen",
+          "summary": "Das Pentagon bestätigt, dass die Erschießung von Nidal Hasan am 3. Dezember per Livestream zu sehen sein soll. Es wäre die erste Militärhinrichtung seit über 60 Jahren.",
+          "body": "Die US-Regierung will die Hinrichtung des Fort-Hood-Attentäters Nidal Malik Hasan live übertragen. Das Pentagon stellte am Donnerstag klar, dass die Exekution per Erschießungskommando als Livestream zu sehen sein soll; weitere Einzelheiten sollen folgen. Als Termin ist nach Angaben von France 24 und ZDFheute der 3. Dezember auf dem Stützpunkt Fort Hood in Texas vorgesehen.\n\n## Was bekannt ist\n\nVerteidigungsminister Pete Hegseth hatte am Mittwoch dem konservativen Sender Real America’s Voice gesagt, die Hinrichtung werde „öffentlich“ sein. Er sprach an Bord des Flugzeugträgers USS Abraham Lincoln. Pentagon-Sprecher Sean Parnell erklärte laut France 24 bereits am Montag, Präsident Trump habe die Vollstreckung genehmigt. Das Weiße Haus verwies Fragen an das Pentagon.\n\nHasan, ein ehemaliger Armeepsychiater im Rang eines Majors, hatte 2009 in einem Gebäude in Fort Hood um sich geschossen, in dem Soldaten Impfungen erhielten und auf Einsätze vorbereitet wurden. Er tötete 13 Menschen und verletzte 32. Ein Militärgericht verurteilte ihn 2013 zum Tod. Er sitzt nach der Festnahme teilweise gelähmt im Rollstuhl.\n\n## Rechtliche und historische Einordnung\n\nWäre die Hinrichtung tatsächlich vollstreckt, wäre es die erste Militärhinrichtung in den USA seit mehr als 60 Jahren. Dass der Staat eine Exekution öffentlich zeigt, ist ebenfalls ein Bruch: Die letzte vollständig öffentliche Hinrichtung in den USA fand laut ZDFheute 1936 in Kentucky statt, als ein Mann vor Tausenden Zuschauern gehängt wurde.\n\nOb der Termin hält, ist offen. Der Yale-Juraexperte Eugene Fidell wies darauf hin, dass Hasan vor einem Zivilgericht eine Haftprüfung beantragen könnte, was die Vollstreckung um Jahre verzögern würde.\n\nDie Debatte läuft vor dem Hintergrund einer ohnehin angespannten Lage um die Todesstrafe. In Tennessee überlebte Christa Pike vergangene Woche zwei Giftspritzen mit Pentobarbital, die Hinrichtung wurde abgebrochen. Nach Zählung von Amnesty International wurden im vergangenen Jahr in den USA rund 2.700 Hinrichtungen vollstreckt, 78 Prozent mehr als 2024 und der höchste Wert seit 44 Jahren.\n\n## Warum das auch Deutschland betrifft\n\nDeutschland hat die Todesstrafe abgeschafft und lehnt sie weltweit ab. Eine live gezeigte staatliche Tötung im wichtigsten Bündnispartner dürfte daher auch hierzulande Kritik auslösen. Bemerkenswert ist zudem der Widerspruch, auf den France 24 hinweist: Trump hatte öffentliche Hinrichtungen im Iran scharf kritisiert, während er nun ein vergleichbares Spektakel im eigenen Land billigt.",
+          "source": "France 24",
+          "url": "https://www.france24.com/en/americas/20261008-fort-hood-shooter-firing-squad-execution-livestreamed-pentagon",
+          "sources": [
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/americas/20261008-fort-hood-shooter-firing-squad-execution-livestreamed-pentagon"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/ausland/usa-hinrichtung-militaer-oeffentlich-livestream-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-09T01:13:00+02:00",
+          "importance": 6,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Robert_Gray_Army_Airfield%2C_Fort_Hood%2C_Texas%2C_lights_up_its_welcome_sign_for_President_of_the_United_States_George_W._Bush._The_sign_is_just_outside_the_tower_adjacent_to_the_tarmac_-_DPLA_-_c0f8df0005b170d6deb24e6ff397a48d.jpeg/1280px-thumbnail.jpeg",
+            "credit": "Department of Defense. American Forces Information Service. Defense Visual Information Center. 1994",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Robert_Gray_Army_Airfield,_Fort_Hood,_Texas,_lights_up_its_welcome_sign_for_President_of_the_United_States_George_W._Bush._The_sign_is_just_outside_the_tower_adjacent_to_the_tarmac_-_DPLA_-_c0f8df0005b170d6deb24e6ff397a48d.jpeg",
+            "alt": "Beleuchtetes Willkommensschild am Militärflugplatz von Fort Hood in Texas"
+          }
+        },
+        {
+          "id": "welt-eu-china-handelsgespraeche-peking",
+          "tier": "top",
+          "headline": "EU-Handelskommissar verhandelt in Peking über Defizit und Seltene Erden",
+          "summary": "Maroš Šefčovič spricht in Peking mit Chinas Handelsminister. Es geht um ein Defizit von über einer Milliarde Euro pro Tag, Exportbeschränkungen und Hybridautos.",
+          "body": "EU-Handelskommissar Maroš Šefčovič verhandelt seit Donnerstag in Peking mit Chinas Handelsminister Wang Wentao über das wachsende Handelsungleichgewicht zwischen beiden Seiten. Der Besuch ist auf zwei Tage angelegt und findet nur wenige Tage vor einem EU-Gipfel in Brüssel statt, auf dem das Thema China ganz oben steht.\n\n## Worum es geht\n\nNach Angaben von Al Jazeera, das sich auf die Agenturen AFP und Reuters stützt, liegt das Handelsdefizit der EU gegenüber China bei mehr als einer Milliarde Euro pro Tag. Dazu kommen chinesische Exportbeschränkungen für Seltene Erden und andere kritische Rohstoffe, auf die auch die deutsche Industrie angewiesen ist. Šefčovič will bis Oktober „greifbare Ergebnisse“ und eine Zusage, die er den Staats- und Regierungschefs vorlegen kann. Seit Juni reden beide Seiten über das Ungleichgewicht.\n\nBesonders heikel sind Elektro- und Hybridautos. Laut Financial Times, über die Al Jazeera berichtet, lehnte Peking eine EU-Bitte um freiwillige Exportgrenzen für chinesische Hybridfahrzeuge ab. Die Kommission hoffe nun, dass China eine einseitige EU-Obergrenze für Hybrid-Importe hinnimmt.\n\n## Druck aus Paris, Berlin und Straßburg\n\nFrankreichs Präsident Emmanuel Macron und Bundeskanzler Friedrich Merz hatten am Dienstag gefordert, die EU solle ein „glaubwürdiges Instrument“ vorbereiten, das schnell gegen Länder aktiviert werden kann, die dem Block wirtschaftlich schaden. Es soll sich nicht gegen ein bestimmtes Land richten. Deutsche Regierungskreise verglichen die nötige Wirkung mit den US-Zöllen nach Section 301 oder Chinas Exportkontrollen für Rohstoffe. Die Kommission könnte dann binnen Tagen auf Handelsaggression reagieren; darüber soll beim Gipfel kommende Woche gesprochen werden.\n\nDas Europaparlament verabschiedete am Mittwoch mit Mehrheit eine nicht bindende Entschließung für eine härtere Handelspolitik gegenüber Peking. Chinas Handelsministerium kündigte eine „entschlossene Antwort“ an, falls die EU chinesische Firmen oder Produkte einschränkt, und mahnte Paris und Berlin, protektionistische Schritte zu unterlassen.\n\n## Bedeutung für Deutschland\n\nFür Deutschland steht viel auf dem Spiel: China ist für Autobauer und Maschinenbau zugleich wichtiger Absatzmarkt, Konkurrent und Rohstofflieferant. Eine Eskalation könnte Lieferketten treffen, etwa in Sachsen mit seinen Autowerken und Zulieferern. Ein Scheitern der Gespräche würde den Weg für härtere EU-Instrumente ebnen, ein Erfolg könnte den Druck dämpfen. Ergebnisse der Gespräche lagen bis zum frühen Freitagmorgen nicht vor.",
+          "source": "Euronews",
+          "url": "https://de.euronews.com/2026/10/08/europe-today-rubio-mahnt-europa-zum-aufwachen-eu-handelschef-startet-china-mission",
+          "sources": [
+            {
+              "name": "Euronews",
+              "url": "https://de.euronews.com/2026/10/08/europe-today-rubio-mahnt-europa-zum-aufwachen-eu-handelschef-startet-china-mission"
+            },
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/economy/2026/10/7/eu-china-trade-talks-begin-in-beijing-amid-escalating-pressure"
+            }
+          ],
+          "publishedAt": "2026-10-08T08:03:00+02:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Maro%C5%A1_%C5%A0ef%C4%8Dovi%C4%8D_visits_Zagreb_-_2024_-_P064177-88022.jpg/1280px-Maro%C5%A1_%C5%A0ef%C4%8Dovi%C4%8D_visits_Zagreb_-_2024_-_P064177-88022.jpg",
+            "credit": "Damir Sencar / European Union",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Maro%C5%A1_%C5%A0ef%C4%8Dovi%C4%8D_visits_Zagreb_-_2024_-_P064177-88022.jpg",
+            "alt": "EU-Kommissar Maroš Šefčovič bei einem Besuch in Zagreb"
+          }
+        },
+        {
+          "id": "welt-kosovo-neue-praesidentin",
+          "tier": "more",
+          "headline": "Kosovo wählt nach 19 Monaten Blockade eine neue Präsidentin",
+          "summary": "Das Parlament in Pristina hat Justina Shiroka Pula als Kompromisskandidatin gewählt – wenige Minuten vor Ablauf der Frist, nach der Neuwahlen gedroht hätten.",
+          "body": "Das Parlament des Kosovo hat nach einer mehr als 19 Monate dauernden Blockade eine neue Staatspräsidentin gewählt. Die Ökonomin und Wissenschaftlerin Justina Shiroka Pula erhielt in einer Marathonsitzung bis spät in die Nacht zu Mittwoch 81 der 120 Stimmen, wie Euronews berichtet. Die Abstimmung fiel wenige Minuten vor dem Ablauf einer verfassungsmäßigen Frist, nach der Neuwahlen nötig gewesen wären. Die Blockade hatte bereits zwei vorgezogene Parlamentswahlen ausgelöst.\n\nShiroka Pula, zuvor Präsidentin der Akademie der Wissenschaften und Künste des Kosovo, ist die dritte Frau im Präsidentenamt seit der Unabhängigkeit 2008. Sie gilt als Kompromisskandidatin in letzter Minute, getragen von der regierenden linken Vetëvendosje und der größten Oppositionspartei, der konservativen PDK. Nach der Vereidigung sagte sie, sie nehme das Amt „mit großer Ehre und in voller Verantwortung“ an.\n\nIhre erste Aufgabe ist heikel: Sie muss ein Gesetz unterzeichnen, das die Befugnisse der Kosovo-Sonderstaatsanwaltschaft in Den Haag einschränkt. Diese verfolgt Verbrechen der Befreiungsarmee UÇK aus dem Krieg 1998/99 gegen Serbien. Vor dem Parlament forderten Tausende Demonstranten die Verabschiedung des Gesetzes. Auslöser der Proteste ist ein Urteil des Haager Gerichts, das vier frühere UÇK-Führer, darunter Ex-Präsident Hashim Thaçi, wegen Kriegsverbrechen zu 13 bis 25 Jahren Haft verurteilte. Viele Kosovaren halten das Urteil für ungerecht.\n\nFür Deutschland und Europa ist die Wahl ein Stabilitätssignal am Westbalkan, doch der Streit um die Aufarbeitung der Kriegsverbrechen kann die Region weiter belasten.",
+          "source": "Euronews",
+          "url": "https://de.euronews.com/2026/10/08/nach-dauer-blockade-kosovo-parlament-wahlt-neue-staatsprasidentin",
+          "sources": [
+            {
+              "name": "Euronews",
+              "url": "https://de.euronews.com/2026/10/08/nach-dauer-blockade-kosovo-parlament-wahlt-neue-staatsprasidentin"
+            }
+          ],
+          "publishedAt": "2026-10-08T12:11:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Kosovo_Government_Building_and_Parliament%2C_Prishtina.jpg/1280px-Kosovo_Government_Building_and_Parliament%2C_Prishtina.jpg",
+            "credit": "Arianit",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kosovo_Government_Building_and_Parliament,_Prishtina.jpg",
+            "alt": "Regierungsgebäude und Parlament des Kosovo in Pristina"
+          }
+        },
+        {
+          "id": "welt-maduro-folter-anklage",
+          "tier": "more",
+          "headline": "USA erheben Folteranklage gegen Maduro und seine Frau",
+          "summary": "Zu den Drogen- und Waffenvorwürfen kommt der Vorwurf der Verschwörung zur Folter. Der Prozess in New York ist für kommenden Juni angesetzt.",
+          "body": "Die US-Justiz hat den gestürzten venezolanischen Präsidenten Nicolás Maduro und seine Frau Cilia Flores zusätzlich wegen Verschwörung zur Folter angeklagt. Das berichtet France 24 unter Berufung auf die am Donnerstag eingereichten Unterlagen. Die Vorwürfe kommen zu den bestehenden Anklagen wegen Drogenhandels und Waffendelikten hinzu.\n\nLaut Anklageschrift wurden Häftlinge, darunter US-Bürger, in venezolanischer Haft mit Waterboarding, Vergewaltigung und Schlägen misshandelt. Folter sei eingesetzt worden, um Gegner einzuschüchtern und auszuschalten, auch durch Entführungen. Als Beispiel nennt das Dokument einen Amerikaner, der 2022 beschuldigt wurde, ein Attentat auf Maduro geplant zu haben; er sei unter anderem mit Elektroschocks, Erstickung, Nahrungs- und Wasserentzug sowie erzwungenen Injektionen gequält worden, die Krampfanfälle auslösten.\n\nMaduro und Flores waren im Januar bei einem US-Militäreinsatz aus ihrem Anwesen in Caracas geholt worden und sitzen in einem Gefängnis in Brooklyn. Der Prozess in New York soll im kommenden Juni beginnen. Maduro bekennt sich nicht schuldig und bezeichnet sich als „Kriegsgefangenen“. Flores, der zusätzlich eine Verschwörung zum Narko-Terrorismus zur Last gelegt wird, plädierte ebenfalls auf nicht schuldig. Beide berufen sich auf Immunität. Am Donnerstag lehnte ein Gericht Flores’ Antrag ab, wegen eines Herzleidens in Hausarrest zu wechseln.\n\nVenezuela wird derzeit von Vizepräsidentin Delcy Rodríguez als Interimsführerin unter US-Druck regiert. US-Energiefirmen haben laut France 24 Milliardenverträge geschlossen; das Land soll den USA die Kontrolle über einen Großteil seiner Ölreserven zugestehen. Für Deutschland und Europa ist der Fall vor allem als Beispiel dafür relevant, wie weit Washington sein Strafrecht und seine Militärmacht in Lateinamerika einsetzt.",
+          "source": "France 24",
+          "url": "https://www.france24.com/en/americas/20261008-us-files-new-torture-charges-venezuela-nicolas-maduro-cilia-flores",
+          "sources": [
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/americas/20261008-us-files-new-torture-charges-venezuela-nicolas-maduro-cilia-flores"
+            }
+          ],
+          "publishedAt": "2026-10-09T01:56:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "region",
+      "title": "Leipzig & Region",
+      "emoji": "📍",
+      "items": [
+        {
+          "id": "region-drohnenanschlag-flughafen-leipzig-halle-gru",
+          "tier": "top",
+          "headline": "Drohnenanschlag in Leipzig/Halle: Spur führt zum GRU",
+          "summary": "Die Ermittlungen zum versuchten Sprengstoffangriff auf eine ukrainische Antonow am Flughafen Leipzig/Halle weisen laut Medienberichten in das Umfeld des russischen Militärgeheimdienstes.",
+          "body": "Der versuchte Drohnenanschlag auf dem Flughafen Leipzig/Halle beschäftigt die Ermittler weiter. Die Freie Presse fasst am Donnerstag den Stand zusammen: Laut Medienberichten führt die Spur tief in das Umfeld des russischen Militärgeheimdienstes GRU. Eine Anklage oder neue Festnahme nennt der Bericht nicht, er beruht auf Berichten und Sicherheitskreisen.\n\n## Was am 4. August geschah\n\nAm Abend des 4. August 2026 wurde nahe einer ukrainischen Antonow-Transportmaschine eine Drohne mit Sprengsatz entdeckt und entschärft. Nach Angaben von Euronews, das sich auf einen Bericht der „Welt“ stützt, trug sie rund 1,8 Kilogramm Semtex, der Zünder löste sich jedoch. Das Flugzeug war demnach mit etwa 25.000 Litern Kerosin betankt. Zwei weitere Drohnen sollen zuvor ausgefallen oder zerstört worden sein. Die Bundesanwaltschaft übernahm die Ermittlungen und sprach von einem schwerwiegenden Angriff auf die Transport- und Logistikinfrastruktur.\n\n## Die mutmaßlichen Hintermänner\n\nIm Zentrum stehen laut den Berichten der Russe Oleg Le., der die Logistik organisiert haben soll und inzwischen wieder in Russland sein soll, und der Belarusse Andrei Ka. als mutmaßlicher Ausführender. Eine DNA-Spur an einer Antennenkonstruktion zur Drohnensteuerung soll zu ihm führen. Eine solche Antenne hatten Ermittler schon im August in einem Baum am nördlichen Flughafenrand gefunden, wie ZDF frontal damals meldete. Zehn Tage nach dem Anschlag fanden Fahnder in Kabelsketal in Sachsen-Anhalt zudem eine weitere Drohne und etwa 50 Gramm Semtex.\n\n## Politische Folgen\n\nDie Bundesregierung machte Russland Anfang September verantwortlich. Innenminister Alexander Dobrindt (CSU) und Außenminister Johann Wadephul (CDU) kündigten unter anderem die Schließung des russischen Generalkonsulats in Bonn zum 18. September an und kündigten den Vertrag über das Russische Haus in Berlin. Dobrindt ordnete die Täter dem Bereich der „Low-Level-Agenten“ zu, also angeworbener Hilfskräfte. Moskau weist eine Beteiligung zurück und schloss seinerseits das deutsche Generalkonsulat in St. Petersburg.\n\nFür Sachsen bleibt der Fall brisant, weil der Flughafen ein Drehkreuz für Militärgüter ist und Antonow einen großen Teil seiner Tätigkeit nach Leipzig verlagert hat. Dobrindt warnt vor weiteren hybriden Angriffen, auch mit größeren Schäden.",
+          "source": "Freie Presse",
+          "url": "https://www.freiepresse.de/nachrichten/sachsen/drohnenangriff-auf-flughafen-leipzig-halle-das-sind-die-mutmasslichen-hintermaenner-artikel14439360",
+          "sources": [
+            {
+              "name": "Freie Presse",
+              "url": "https://www.freiepresse.de/nachrichten/sachsen/drohnenangriff-auf-flughafen-leipzig-halle-das-sind-die-mutmasslichen-hintermaenner-artikel14439360"
+            },
+            {
+              "name": "Euronews",
+              "url": "https://de.euronews.com/2026/09/12/drohnenangriff-leipzig-spuren-russischer-geheimdienst"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/leipzig-drohne-angriff-ermittlungen-antenne-100.html"
+            },
+            {
+              "name": "Bayerische Staatszeitung",
+              "url": "https://www.bayerische-staatszeitung.de/staatszeitung/politik/detailansicht-politik/artikel/bundesregierung-russland-fuer-leipziger-drohnen-angriff-verantwortlich.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T17:00:00+02:00",
+          "importance": 6,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Antonov_An-124-100_LEJ.jpg/1280px-Antonov_An-124-100_LEJ.jpg",
+            "credit": "Netspy",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Antonov_An-124-100_LEJ.jpg",
+            "alt": "Antonow An-124-100 auf dem Flughafen Leipzig/Halle"
+          }
+        },
+        {
+          "id": "region-glesien-alte-schule-foerderung",
+          "tier": "more",
+          "headline": "500.000 Euro für die Alte Schule in Glesien",
+          "summary": "Das Dorfzentrum von Glesien bei Schkeuditz bekommt Fördergeld aus dem Programm „Vitale Dorfkerne“. Insgesamt fließen im Landkreis Nordsachsen rund 910.000 Euro.",
+          "body": "Die Alte Schule in Glesien, einem Ortsteil von Schkeuditz, soll zum Vereinshaus und Dorfgemeinschaftszentrum werden. Landrat Kai Emanuel hat dafür in dieser Woche einen Zuwendungsbescheid über 500.000 Euro an die Stadt Schkeuditz übergeben, wie das Landratsamt Nordsachsen mitteilte.\n\nDas Geld stammt aus dem Programm „Vitale Dorfkerne und Ortszentren im ländlichen Raum“, das von Bund und Land finanziert wird. Für Projekte in den drei Leader-Gebieten Delitzscher Land, Dübener Heide und Sächsisches Zweistromland-Ostelbien stehen in diesem Jahr rund 910.000 Euro bereit. Von den übrigen 14 Antragstellern können laut Landratsamt fünf weitere mit einer Förderung rechnen, die Bewilligungsverfahren laufen noch.\n\nDas Gebäude wurde 1756 errichtet und ist das älteste im Dorf. Seit dem Auszug der Bibliothek im Jahr 1993 steht es leer. Der Verein „Lebendiges Glesien“ setzt sich seit 2016 für den Erhalt ein. Geplant ist eine denkmalgerechte Sanierung samt barrierefreiem Anbau mit Treppenlift und Sanitärräumen. Die Gesamtkosten beziffert das Landratsamt auf rund 1,5 Millionen Euro, die Eröffnung ist für Anfang 2028 vorgesehen.\n\nFür die Region ist das Vorhaben ein Beispiel dafür, wie Fördermittel Ortskerne im ländlichen Raum stärken sollen: Vereine bekommen einen festen Treffpunkt, ein jahrzehntelang ungenutztes Baudenkmal wird wieder gebraucht. Die Förderung deckt allerdings nur gut ein Drittel der Kosten, den Rest müssen Stadt und Beteiligte aufbringen.",
+          "source": "Landratsamt Nordsachsen",
+          "url": "https://www.landkreis-nordsachsen.de/landratsamt/aktuelles/nachrichten/artikel/foerderung-vitaler-dorfkerne-500000-euro-fuer-alte-schule-in-glesien",
+          "sources": [
+            {
+              "name": "Landratsamt Nordsachsen",
+              "url": "https://www.landkreis-nordsachsen.de/landratsamt/aktuelles/nachrichten/artikel/foerderung-vitaler-dorfkerne-500000-euro-fuer-alte-schule-in-glesien"
+            }
+          ],
+          "publishedAt": "2026-10-08T11:37:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "region-nordsachsen-neue-amtsleiter",
+          "tier": "more",
+          "headline": "Nordsachsen besetzt zwei Amtsleitungen neu",
+          "summary": "Der Kreistag hat in Torgau die Personalvorschläge des Landrats bestätigt: Ein junger Feuerwehrmann übernimmt den Brandschutz, ein Kaufmann die Rechnungsprüfung.",
+          "body": "Der Kreistag Nordsachsen hat am Mittwoch im Schloss Hartenfels in Torgau zwei Amtsleiterstellen besetzt. Er bestätigte damit die Vorschläge von Landrat Kai Emanuel, wie das Landratsamt am Donnerstag mitteilte.\n\nMaximilian Borisch übernimmt zum 1. Dezember die Leitung des Amts für Brandschutz, Rettungsdienst und Katastrophenschutz. Der 34-Jährige stammt aus Torgau, hat Sicherheit und Gefahrenabwehr studiert und eine feuerwehrtechnische Laufbahnausbildung absolviert. In Nordsachsen war er stellvertretender Kreisbrandmeister, Mitglied der Technischen Einsatzleitung und Kreisausbilder. Zuletzt arbeitete er bei der Branddirektion Leipzig.\n\nRalf Lonitz leitet ab dem 1. Januar das Rechnungsprüfungsamt. Der 45-Jährige ist gebürtiger Chemnitzer und Diplom-Kaufmann. Seit Januar 2026 arbeitet er im Landratsamt, davor war er Verwaltungsleiter für das geplante Großforschungszentrum CTC. Er wohnt in Delitzsch.\n\nDie Vorgänger beider Amtsleiter gehen in den Ruhestand. Für den Katastrophenschutz im Landkreis ist die Personalie von Gewicht: Das Amt koordiniert Feuerwehren, Rettungsdienst und die Vorsorge für Großlagen. Mit Borisch rückt ein Mann nach, der die Strukturen in Nordsachsen aus der Praxis kennt und zugleich Erfahrung aus der Leipziger Berufsfeuerwehr mitbringt. Das Rechnungsprüfungsamt kontrolliert die Haushaltsführung der Kreisverwaltung.",
+          "source": "Landratsamt Nordsachsen",
+          "url": "https://www.landkreis-nordsachsen.de/landratsamt/aktuelles/nachrichten/artikel/zwei-neue-amtsleiter-vom-kreistag-bestaetigt",
+          "sources": [
+            {
+              "name": "Landratsamt Nordsachsen",
+              "url": "https://www.landkreis-nordsachsen.de/landratsamt/aktuelles/nachrichten/artikel/zwei-neue-amtsleiter-vom-kreistag-bestaetigt"
+            }
+          ],
+          "publishedAt": "2026-10-08T11:43:00+02:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "region-leipzig-stadtquartier-bremer-strasse",
+          "tier": "more",
+          "headline": "Leipzig plant Stadtquartier auf altem Kasernengelände in Gohlis",
+          "summary": "Östlich der Bremer Straße sollen bis zu 1.350 Menschen in rund 770 Wohnungen leben. Der Entwurf des Bebauungsplans geht in die nächste Runde.",
+          "body": "Die Stadt Leipzig treibt den Bebauungsplan Nr. 433 „Stadtquartier östlich der Bremer Straße“ voran. Auf dem früheren Kasernengelände in Gohlis-Nord sollen bis zu 1.350 Menschen in etwa 770 Wohneinheiten wohnen, 30 Prozent davon miet- und belegungsgebunden. Das teilte das Stadtplanungsamt mit; über den Plan entscheidet am Ende der Stadtrat.\n\nDas rund sieben Hektar große Areal grenzt im Süden an die Max-Liebermann-Straße, im Westen an die Bremer Straße, im Osten an das Gelände der Bundesnetzagentur und im Norden an eine Grün- und Waldfläche. Die Kaserne entstand 1935, später nutzte sie die sowjetische Armee bis 1992. Seitdem liegt der Großteil brach.\n\nNach Einwänden von Verbänden bleibt ein Teil im Nordosten unbebaut, um Arten und Artenvielfalt zu schützen. Ein ursprünglich für Einzelhandel vorgesehenes Grundstück im Südosten wird vorerst nicht weiterverfolgt. Entlang der Bremer Straße sind vier- bis fünfgeschossige Häuser nach dem Vorbild der benachbarten denkmalgeschützten Krochsiedlung geplant, am Landschaftsschutzgebiet Reihen- oder Stadthäuser. Ein zentraler Grünzug soll als Park öffentlich zugänglich sein.\n\nErschlossen wird das Viertel über eine neue Nord-Süd-Straße ab der Max-Liebermann-Straße, dazu kommen eine verkehrsberuhigte Straße sowie ein Rad- und Fußweg zur Bremer Straße. Die Buslinie 80 fährt bereits dort. Nach der Veröffentlichung im Amtsblatt können Anwohner, Verbände und Gruppen erneut Stellung nehmen. Für das wachsende Leipzig ist das Vorhaben ein weiterer Baustein gegen die Wohnungsknappheit, zugleich bleibt der Naturschutz auf der lange verwilderten Fläche ein Streitpunkt.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/melder/wortmelder/2026/10/stadt-treibt-plaene-fuer-neues-stadtquartier-oestlich-der-bremer-strasse-voran-672662",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/melder/wortmelder/2026/10/stadt-treibt-plaene-fuer-neues-stadtquartier-oestlich-der-bremer-strasse-voran-672662"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": null
+        },
+        {
+          "id": "region-leipzig-tempo-30-chemnitzer-strasse",
+          "tier": "more",
+          "headline": "Tempo 30 auf Schulweg an der Chemnitzer Straße",
+          "summary": "Ab dem 19. Oktober gilt in Leipzig-Meusdorf zwischen Höltystraße und Pahlenweg Tempo 30. Die Stadt will damit den Schulweg sicherer machen.",
+          "body": "Die Stadt Leipzig führt auf einem Abschnitt der Chemnitzer Straße in Meusdorf Tempo 30 ein. Die Schilder werden ab Montag, dem 19. Oktober, aufgestellt, die Arbeiten sollen innerhalb der Woche fertig sein. Die Kosten beziffert die Stadt auf rund 1.300 Euro.\n\nBetroffen ist der Abschnitt zwischen Höltystraße und Pahlenweg. Er gehört zum offiziellen Schulwegeplan der Stadt und wird von Kindern der Heinrich-Mann-Grundschule und der Schule Höltystraße genutzt. Westlich der Straße ist das neue Quartier Parkstadt Dösen entstanden, wo viele junge Familien eingezogen sind. Mehr Kinder queren damit die stark befahrene Straße.\n\nEmpfohlen hat die Maßnahme die Arbeitsgemeinschaft Schulwegesicherheit, die Hinweise aus der Bürgerschaft prüft. In ihr arbeiten Schüler, Lehrkräfte, Eltern, die Polizeidirektion und die Messestadt-Verkehrswacht zusammen und gehen regelmäßig vor Ort. Auch bei der Beteiligung zum Fußverkehrsentwicklungsplan hatten Anwohner die Querung zwischen Gorbitzer Straße und Pahlenweg als Problemstelle genannt.\n\nNach Angaben der Stadt verkürzt langsameres Fahren den Bremsweg, gibt Autofahrern mehr Reaktionszeit und senkt die Zahl schwerer Unfälle. Zudem verlagere sich der Verkehr durch Tempo 30 nachweislich nicht in Nebenstraßen. Auch die Querungsinsel an der Haltestelle Pahlenweg soll dadurch sicherer werden. Die Angaben stammen aus einer Mitteilung des Mobilitäts- und Tiefbauamts.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/melder/verkehrsmelder/2026/10/sicherheit-fuer-schulkinder-stadt-richtet-tempo-30-in-der-chemnitzer-strasse-ein-672659",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/melder/verkehrsmelder/2026/10/sicherheit-fuer-schulkinder-stadt-richtet-tempo-30-in-der-chemnitzer-strasse-ein-672659"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": null
+        }
+      ]
+    },
+    {
+      "id": "sport",
+      "title": "Sport",
+      "emoji": "⚽",
+      "items": [
+        {
+          "id": "sport-uefa-fifa-infantino-gegenkandidat",
+          "tier": "top",
+          "headline": "UEFA sucht Infantino-Gegner und hat noch keinen",
+          "summary": "Nach dem Treffen der 55 Verbände in Berlin steht die UEFA-Strategie gegen FIFA-Präsident Infantino, einen Herausforderer gibt es nicht. Ceferin will offenbar selbst weitermachen.",
+          "body": "Im Machtkampf mit dem Weltverband hat die UEFA am Donnerstag in Berlin Kriterien, einen Reformplan und einen Zeitplan beschlossen, aber keinen Gegenkandidaten zu FIFA-Präsident Gianni Infantino präsentiert. Die 55 Mitgliedsverbände kamen dazu in einem Hotel am Potsdamer Platz zusammen. Nach Angaben der Sportschau erklärte die UEFA, die FIFA brauche eine neue Führung, das Vertrauen in den amtierenden Präsidenten sei verloren.\n\n## Profil ohne Namen\n\nGesucht wird laut UEFA eine respektierte, integrierende Persönlichkeit, die tief im Fußball verwurzelt ist, Vertrauen in verschiedenen Weltregionen genießt und für Reformen, Integrität und Unabhängigkeit steht. DFB-Präsident Bernd Neuendorf sagte, es müsse eine Veränderung an der Spitze der FIFA geben; mit möglichen Kandidaten werde gesprochen. Namen nannte er nicht. In der Hotellobby wirkten Funktionäre dem Bericht zufolge ratlos, wer Infantino mit echten Erfolgsaussichten herausfordern könnte.\n\nDer Zeitplan ist eng. Anfang November soll es ein weiteres Treffen der Verbände geben, bis zum 18. November läuft die Bewerbungsfrist. Gewählt wird am 18. März in der marokkanischen Stadt Rabat.\n\n## Reformplan und erste Risse\n\n54 der 55 UEFA-Mitglieder stimmten für ein Reformpapier, das der FIFA vorgelegt werden soll; nur Aserbaidschan war dagegen. Es verlangt eine echte Gewaltenteilung, einen starken Generalsekretär und mehr Transparenz bei Entscheidungen und Finanzen. Das Papier knüpft an die Reformen nach dem FIFA-Skandal von 2016 an, die 2024 über Statutenänderungen größtenteils zurückgenommen wurden. Damals stimmten 202 von 211 Nationalverbänden zu, darunter eine klare Mehrheit aus Europa.\n\nZugleich zeigt die Front Lücken. Aserbaidschan und Lettland hatten Infantino bereits ihre Unterstützung zugesagt, Lettland trug den Reformplan nun aber mit. Der asiatische Verbandschef Scheich Salman bin Ibrahim Al Chalifa, vor zwei Monaten noch auf UEFA-Linie, schlug in einem Brief an Infantino einen versöhnlichen Ton an und schrieb, es gehe nicht um eine grundlegende Neugestaltung der FIFA-Führung. Infantino selbst sammelt öffentliche Unterstützungserklärungen. Rückhalt hat er vor allem in Afrika und Südamerika, zuletzt auch bei den arabischen Verbänden.\n\n## Ceferin will offenbar weitermachen\n\nParallel meldete die Nachrichtenagentur SID unter Berufung auf die Sportschau, UEFA-Präsident Aleksander Ceferin habe den Verbandschefs mitgeteilt, dass er beim Kongress am 22. April in Astana für eine vierte Amtszeit antreten wolle. Vor zwei Jahren hatte er noch angekündigt, nicht erneut zu kandidieren. Auslöser der Debatte war eine Statutenänderung, nach der seine erste Amtszeit von 2016 bis 2019 nicht auf die Begrenzung von drei Amtszeiten angerechnet wird. Eine eigene Kandidatur für das FIFA-Amt hat Ceferin zuletzt ausgeschlossen.\n\nFür deutsche Fans ist der Streit mehr als Funktionärsgezänk: Es geht um die Frage, wer künftig über Vermarktungsrechte, Turnierformate und Geldverteilung im Weltfußball entscheidet. Infantino hatte zuletzt einen Investorendeal zu den WM-Vermarktungsrechten im Alleingang verhandelt und nach massiver Kritik wieder abgesagt.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/uefa-praesentiert-strategie-aber-keinen-kandidaten,uefa-treffen-berlin-fifa-infantino-102.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/uefa-praesentiert-strategie-aber-keinen-kandidaten,uefa-treffen-berlin-fifa-infantino-102.html"
+            },
+            {
+              "name": "SPOX (SID)",
+              "url": "https://www.spox.com/de/fussball/news/wenig-ueberraschende-wende-uefa-praesident-ceferin-will-sich-erneut-zur-wahl-stellen/blt199b28059382f225"
+            }
+          ],
+          "publishedAt": "2026-10-08T18:49:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/2019-05-18_Fu%C3%9Fball%2C_Frauen%2C_UEFA_Women%27s_Champions_League%2C_Olympique_Lyonnais_-_FC_Barcelona_StP_0948_LR10_by_Stepro.jpg/1280px-2019-05-18_Fu%C3%9Fball%2C_Frauen%2C_UEFA_Women%27s_Champions_League%2C_Olympique_Lyonnais_-_FC_Barcelona_StP_0948_LR10_by_Stepro.jpg",
+            "credit": "Steffen Prößdorf",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:2019-05-18_Fu%C3%9Fball,_Frauen,_UEFA_Women%27s_Champions_League,_Olympique_Lyonnais_-_FC_Barcelona_StP_0948_LR10_by_Stepro.jpg",
+            "alt": "Porträt von UEFA-Präsident Aleksander Ceferin"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "sport-bundesliga-restart-spieltag-5",
+          "tier": "top",
+          "headline": "Bundesliga startet nach Pause: BVB führt, Leipzig gegen Frankfurt",
+          "summary": "Nach drei Wochen Länderspielpause beginnt am Freitag der fünfte Spieltag. Dortmund ist Spitzenreiter, Bayern reist nach Augsburg, RB Leipzig empfängt am Samstagabend Frankfurt.",
+          "body": "Die Fußball-Bundesliga kehrt aus der dreiwöchigen Länderspielpause zurück. Den Auftakt des fünften Spieltags macht am Freitag um 20.30 Uhr Tabellenführer Borussia Dortmund gegen Werder Bremen. Der BVB ist mit vier Siegen aus vier Spielen und zwölf Punkten das einzige makellose Team der Liga.\n\n## Die Tabelle vor dem Spieltag\n\nHinter Dortmund folgen der FC Bayern und der SC Freiburg mit jeweils zehn Punkten. Augsburg, Leverkusen, Mainz, Elversberg und Bremen haben sieben Zähler, wobei der FCA als Vierter geführt wird. RB Leipzig liegt mit sechs Punkten auf Rang neun, Eintracht Frankfurt mit fünf auf Rang zehn. Am Tabellenende stehen Union Berlin mit einem Punkt und Borussia Mönchengladbach, das noch ohne Punkt ist und in vier Spielen 16 Gegentore kassierte. Dort übernimmt nun Alexander Blessin das Traineramt.\n\n## Das Programm\n\nAm Samstag um 15.30 Uhr spielen gleichzeitig Hoffenheim gegen den HSV, Augsburg gegen Bayern, Mainz gegen Leverkusen, Union gegen Elversberg und Paderborn gegen Stuttgart. Um 18.30 Uhr folgt in der Red Bull Arena RB Leipzig gegen Eintracht Frankfurt, für den Leser in Nordsachsen das naheliegende Heimspiel des Wochenendes. Am Sonntag geht es um 15.30 Uhr mit dem rheinischen Derby Köln gegen Gladbach weiter, um 17.30 Uhr empfängt Freiburg den Aufsteiger Schalke 04.\n\n## Dortmund, Bayern und die Außenseiter\n\nDortmunds Trainer Niko Kovac hadert mit der Pause. „Diese vier Spiele waren für mich definitiv zu viel“, sagte er mit Blick auf die Länderspiele seiner Profis. Karetsas und Svensson sind erkältet, Ryerson hat eine Prellung, bei Schlotterbeck gibt es Probleme am Sprunggelenk. Bremen ging mit schlechten Vorzeichen in die Woche: Im Testspiel setzte es ein 0:7 gegen Twente Enschede, Trainer Daniel Thioune kritisierte Haltung und Einstellung und strich den freien Samstag.\n\nIn Augsburg trifft Bayern auf den Gegner, der den Münchnern in der vergangenen Saison die einzige Liga-Niederlage zufügte. Bayern ist seit 28 Auswärtsspielen ungeschlagen, der FCA steht mit sieben Punkten aus vier Spielen auf Rang vier. Verteidiger Noahkai Banks fehlt dem FCA wegen einer Außenbandverletzung im Knie, Anton Kade ist nach einer Muskelverletzung zurück, aber laut Trainer Manuel Baum noch kein Kandidat für die Startelf. Statistiken, so Baum, seien bedeutungslos.\n\nBeim VfB Stuttgart, der drei Wochen lang auf Platz 15 stand, sagt Trainer Sebastian Hoeneß, jetzt sei die Phase, in der man eine lange Länderspielpause am wenigsten brauche. Für Leipzig und Frankfurt ist der Samstag eine Gelegenheit, im Mittelfeld der Tabelle Boden gutzumachen.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/bundesliga/bundesliga-restart-was-ist-neu-nach-drei-wochen-pause,neustart-fussball-bundesliga-spieltag-fuenf-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/bundesliga/bundesliga-restart-was-ist-neu-nach-drei-wochen-pause,neustart-fussball-bundesliga-spieltag-fuenf-100.html"
+            },
+            {
+              "name": "SPORT1 (SID)",
+              "url": "https://www.sport1.de/news/fussball/bundesliga/2026/10/fca-gegen-bayern-mit-dem-glauben-geht-es-los"
+            },
+            {
+              "name": "Bundesliga.com",
+              "url": "https://www.bundesliga.com/de/bundesliga"
+            }
+          ],
+          "publishedAt": "2026-10-08T14:24:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Red_Bull_arena%2C_Leipzig_von_oben_Zentralstadion.jpg/1280px-Red_Bull_arena%2C_Leipzig_von_oben_Zentralstadion.jpg",
+            "credit": "Philipp",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_Bull_arena,_Leipzig_von_oben_Zentralstadion.jpg",
+            "alt": "Luftbild der Red Bull Arena in Leipzig"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "sport-dfb-frauen-ausfaelle-australien",
+          "tier": "top",
+          "headline": "DFB-Frauen starten ersatzgeschwächt in die WM-Vorbereitung",
+          "summary": "Vor dem Test gegen Australien am Freitag in Karlsruhe fallen drei weitere Spielerinnen aus. Kapitänin Gwinn fehlt mit einem Außenbandriss, im Tor steht erstmals Mahmutovic.",
+          "body": "Die deutschen Fußballerinnen gehen mit einem dünnen Kader in die erste Länderspielphase nach dem Saisonstart. Am Freitag um 20.30 Uhr trifft das Team von Bundestrainer Christian Wück in Karlsruhe auf Australien, am Dienstag um 17.45 Uhr folgt in Bremen das Spiel gegen Japan. Beide Partien sind der Auftakt der Vorbereitung auf die WM 2027 in Brasilien, die vom 24. Juni bis 25. Juli stattfindet.\n\n## Drei neue Ausfälle\n\nWie der DFB am Donnerstag mitteilte, fehlen Bibiane Schulze Solano wegen einer muskulären Verletzung, Selina Cerci mit Kniebeschwerden und Larissa Mühlhaus wegen eines Infekts. Für sie holte Wück die 18-jährige Innenverteidigerin Luzie Zähringer aus der U19 in den Kader. Sie gehört zu den Bayern-Frauen, ist aber an den VfB Stuttgart ausgeliehen; ein Debüt ist möglich. Nach Angaben der Sportschau hat zudem Lea Schüller einen Infekt und verpasste das Abschlusstraining, über ihren Einsatz soll kurzfristig entschieden werden.\n\nSchon in der Vorwoche hatte es Umbauten gegeben. Kapitänin Giulia Gwinn erlitt am Samstag einen Außenbandriss im Sprunggelenk, für sie rückte Sarai Linder nach. Vivien Endemann fällt mit einer Wadenverletzung aus, Nicole Anyomi kam für sie. Rebecca Knaak und Kathrin Hendrich fehlen verletzt. Torhüterin Ann-Katrin Berger setzt in dieser Länderspielperiode aus, weil in der US-Liga NWSL die entscheidende Saisonphase läuft.\n\n## Mahmutovic im Tor\n\nDamit rückt Ena Mahmutovic in den Fokus. Die 22-jährige Bayern-Torhüterin bestreitet am Freitag ihr drittes Länderspiel und vertritt Berger. Sie hat in der Rangfolge Stina Johannes überholt und gilt als Kandidatin für die Nummer zwei. Wück lobt ihr Spiel mit dem Fuß und ihr Auftreten auf der Linie, verlangt aber, dass sie lauter wird und mehr kommandiert. In der Bundesliga kommt sie in dieser Saison auf 15 Paraden in sechs Spielen bei sechs Gegentoren, die Quote liegt bei 71 Prozent nach über 80 Prozent in der Vorsaison. Ihr Ziel für Freitag ist ein Spiel zu null. Einen Anspruch auf die Nummer eins erhebt sie nicht.\n\nAuch Lisa Baum könnte gegen Australien oder Japan ihr Debüt feiern. Wück erwartet in beiden Partien starke Gegner: Australien stand im Finale des Asien Cups und unterlag dort Japan. Das Spiel gegen Japan zeigt das Erste live; die Partie in Karlsruhe gibt es als Audio-Reportage ab 20.15 Uhr.",
+          "source": "SPORT1 (SID)",
+          "url": "https://www.sport1.de/news/fussball/dfb-team/2026/10/dfb-frauen-ohne-trio-toptalent-zaehringer-rueckt-nach",
+          "sources": [
+            {
+              "name": "SPORT1 (SID)",
+              "url": "https://www.sport1.de/news/fussball/dfb-team/2026/10/dfb-frauen-ohne-trio-toptalent-zaehringer-rueckt-nach"
+            },
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/regional/ndr/cleverer-und-erfahrener-mahmutovic-will-im-dfb-team-ueberzeugen,dfb-frauen-338.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T11:55:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/2025-02-25_Fussball%2C_UEFA_Women%27s_Nations_League%2C_Deutschland_-_%C3%96sterreich_STP_0360.jpg/1280px-2025-02-25_Fussball%2C_UEFA_Women%27s_Nations_League%2C_Deutschland_-_%C3%96sterreich_STP_0360.jpg",
+            "credit": "Steffen Prößdorf",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:2025-02-25_Fussball,_UEFA_Women%27s_Nations_League,_Deutschland_-_%C3%96sterreich_STP_0360.jpg",
+            "alt": "Bundestrainer Christian Wück an der Seitenlinie"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "sport-melsungen-schlaegt-nantes-champions-league",
+          "tier": "more",
+          "headline": "Melsungen schlägt Nantes dank Torhüter Simic 28:23",
+          "summary": "In der Handball-Champions-League gewinnt die MT Melsungen ihr drittes Gruppenspiel gegen den französischen Vizemeister und übernimmt vorerst Platz eins in Gruppe B.",
+          "body": "Die MT Melsungen hat in der Handball-Champions-League den HBC Nantes mit 28:23 (14:11) geschlagen. Vor rund 3.450 Zuschauern in der Kasseler Rothenbach-Halle feierte der Bundesligist den zweiten Sieg im dritten Gruppenspiel und steht damit vorerst an der Spitze der Gruppe B. Laut Bericht ist die Tabellenführung allerdings nur vorübergehend. Punktzahlen nennt die Quelle nicht.\n\nDen Unterschied machte Torhüter Nebojsa Simic. Er hielt 42 Prozent der Würfe des Vizemeisters aus Frankreich und hatte schon zur Pause elf Paraden gesammelt, als Nantes bereits 22 Mal geworfen hatte. In der zweiten Halbzeit ließ seine Quote etwas nach, und Nantes ging in der 44. Minute erstmals in Führung. Melsungen fing sich jedoch und zog mit einem starken Schlussspurt davon.\n\nBester Werfer der Gastgeber war Drosten mit sechs Treffern, dahinter folgten Ignatow mit vier sowie Enderleit, Mandic, Golla, Sigrist und Mensing mit je drei. Bei Nantes traf Tournat sechsmal, Garciandia viermal. Der Sieg überdeckte kurzzeitig die Diskussion um einen möglichen Wechsel von Nationalmannschafts-Kapitän Johannes Golla.",
+          "source": "Sportschau (hr)",
+          "url": "https://www.sportschau.de/regional/hr/hr-weltklasse-simic-sichert-der-mt-melsungen-den-sieg-in-der-champions-league-100.html",
+          "sources": [
+            {
+              "name": "Sportschau (hr)",
+              "url": "https://www.sportschau.de/regional/hr/hr-weltklasse-simic-sichert-der-mt-melsungen-den-sieg-in-der-champions-league-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T22:42:00+02:00",
+          "importance": 4,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "sport-freiburg-rekordumsatz-212-millionen",
+          "tier": "more",
+          "headline": "SC Freiburg meldet Rekordumsatz von 212 Millionen Euro",
+          "summary": "Der Bundesligist schließt das Geschäftsjahr nach dem Europa-League-Finale mit 30,5 Millionen Euro Überschuss ab. Die Mitgliederversammlung verlief ohne Streit.",
+          "body": "Der SC Freiburg hat das Geschäftsjahr 2025/26 mit einem Rekordumsatz von 212,1 Millionen Euro abgeschlossen. Der Jahresüberschuss liegt bei 30,5 Millionen Euro. Das teilte der Klub bei der Mitgliederversammlung am Donnerstag in der Messe Freiburg mit, zu der rund 950 Mitglieder kamen. Zum Vergleich: In der Saison davor lag der Gesamterlös bei 162,8 Millionen Euro, 2023/24 bei 203,1 Millionen.\n\nHauptgrund ist der Erfolg auf der Bühne: Freiburg erreichte das Endspiel der Europa League, das gegen Aston Villa verloren ging, und das Halbfinale im DFB-Pokal. Allein die UEFA zahlte 33 Millionen Euro Prämien für den Finaleinzug. Als Tabellensiebter qualifizierte sich der Klub zudem für die Conference League. Hinzu kamen hohe Transferüberschüsse. Die Eigenkapitalquote liegt über 79 Prozent.\n\nFinanzvorstand Oliver Leki nannte die Saison sportlich und wirtschaftlich herausragend, der Klub sei extrem handlungsfähig und unabhängig. Sportvorstand Jochen Saier bezeichnete den Finaleinzug als wahrscheinlich größten sportlichen Erfolg in der 122-jährigen Vereinsgeschichte. Angekündigt wurde außerdem ein eigenes Vereinsmuseum am Rathausplatz. Der Aufsichtsrat wurde komplett für vier Jahre gewählt, neu dabei sind Denise Böhm, Gabi Furtwängler, Christoph Sennekamp und Alexander Vivell.\n\nSportlich steht Freiburg nach vier Spielen mit zehn Punkten auf Rang drei. Am Sonntag um 17.30 Uhr empfängt das Team von Trainer Julian Schuster den Aufsteiger Schalke 04, das erste Spiel nach der Länderspielpause.",
+          "source": "SPORT1 (SID)",
+          "url": "https://www.sport1.de/news/fussball/bundesliga/2026/10/freiburg-verzeichnet-rekordumsatz",
+          "sources": [
+            {
+              "name": "SPORT1 (SID)",
+              "url": "https://www.sport1.de/news/fussball/bundesliga/2026/10/freiburg-verzeichnet-rekordumsatz"
+            },
+            {
+              "name": "Sportschau (SWR)",
+              "url": "https://www.sportschau.de/regional/swr/swr-vereinshistorische-spielzeit-sc-freiburg-stoesst-in-neue-sphaeren-vor-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T23:28:00+02:00",
+          "importance": 4,
+          "image": null,
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "wissenschaft",
+      "title": "Wissenschaft & Raumfahrt",
+      "emoji": "🔭",
+      "items": [
+        {
+          "id": "wissenschaft-neandertaler-holzwerkzeuge",
+          "tier": "top",
+          "headline": "Neandertaler waren geschickte Holzarbeiter",
+          "summary": "In einer Höhle bei Barcelona haben Forschende 597 Holzspuren aus bis zu 62.000 Jahren Alter gefunden, darunter Speere, Grabstöcke und ein Dreibein überm Feuer.",
+          "body": "Neandertaler haben weit mehr aus Holz gebaut und genutzt, als bisher belegt war. Ein Team um Palmira Saladié und Gema Chacón vom katalanischen Institut für Humanpaläoökologie und soziale Evolution (IPHES) in Tarragona hat in der Höhle Abric Romaní bei Capellades nahe Barcelona 597 Holzfunde ausgewertet. Die Ergebnisse erschienen im Fachblatt Science Advances.\n\nDas Holz selbst ist fast nie erhalten. Stattdessen blieben Abdrücke zurück: Kalkhaltiges Wasser lagerte Travertin ab und formte Hohlräume um die Stücke, außerdem gibt es verkohlte Reste. Die Funde stammen aus 16 Fundschichten, die zwischen rund 62.000 und 40.000 Jahre alt sind, also aus einer Zeit, in der in Europa ausschließlich Neandertaler lebten.\n\n## Speere, Grabstöcke und ein Dreibein\n\nNach Angaben von Phys.org tragen 13 der Stücke eindeutige Bearbeitungsspuren. Dazu zählen Stangen für Konstruktionen, mögliche Grabstöcke, zwei Speere, ein keulenartiges Objekt und vier verkohlte Rindenstücke, die als Schalen oder Behälter gedient haben könnten. Spektrum der Wissenschaft berichtet, die Spitzen der Grabstöcke stammten offenbar von Buchsbaum und seien durch Ankohlen gehärtet worden.\n\nDrei Hölzer deuten die Forschenden als Dreibein über einer Feuerstelle, lange Stangen als mögliche Zeltstützen, über die Felle gespannt waren. Ein rund 30 Zentimeter langes, P-förmiges Objekt aus einer etwa 55.000 Jahre alten Schicht bleibt in seiner Funktion rätselhaft, womöglich diente es zum Schlagen. Der Großteil des Holzes wurde dem Bericht zufolge verbrannt. Die Anordnung der Feuerstellen lässt auf getrennte Schlafbereiche schließen.\n\n## Warum das wichtig ist\n\nHolz verrottet schnell, deshalb ist die Holzverarbeitung der Neandertaler kaum belegt. Das Bild dieser Menschen stützt sich bisher vor allem auf Steinwerkzeuge und wenige Einzelfunde. Die Autorinnen und Autoren sprechen von einem flexiblen technischen System, das genaue Kenntnis von Holzarten und ihrer Bearbeitung voraussetzt.\n\nDie Funde zeigen demnach, dass Neandertaler vorausplanten, Material mit Feuer härteten und ihren Wohnraum gestalteten. Offen bleibt, wie typisch Abric Romaní ist: Die besondere Erhaltung durch Travertin macht den Fundort zu einem Sonderfall, an anderen Plätzen sind solche Einblicke selten.",
+          "source": "Phys.org",
+          "url": "https://phys.org/news/2026-10-rare-wooden-tools-reveal-neanderthals.html",
+          "sources": [
+            {
+              "name": "Phys.org",
+              "url": "https://phys.org/news/2026-10-rare-wooden-tools-reveal-neanderthals.html"
+            },
+            {
+              "name": "Spektrum der Wissenschaft",
+              "url": "https://www.spektrum.de/news/alles-aus-holz-schalen-speere-und-dreibeine-von-neandertalern/2348723"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 6,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Abric_roman%C3%AD.jpg/1280px-Abric_roman%C3%AD.jpg",
+            "credit": "Teogomez",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Abric_roman%C3%AD.jpg",
+            "alt": "Blick auf die Fundstätte Abric Romaní bei Capellades in Katalonien"
+          }
+        },
+        {
+          "id": "wissenschaft-schaltsekunde-vor-dem-aus",
+          "tier": "top",
+          "headline": "Schaltsekunde steht vor dem Aus",
+          "summary": "Die Generalkonferenz für Maß und Gewicht will die Schaltsekunde abschaffen. Die Abstimmung ist für den 15. Oktober in Versailles geplant.",
+          "body": "Die Schaltsekunde könnte bald Geschichte sein. Die Generalkonferenz für Maß und Gewicht (CGPM) tagt vom 13. bis 15. Oktober im französischen Versailles. Nach einem dpa-Bericht auf Spektrum.de ist die endgültige Bestätigung für den 15. Oktober vorgesehen. Als Ende der Schaltsekunde nennt der aktuelle Vorschlag laut diesem Bericht den 20. Mai 2027.\n\nSeit der Einführung des Systems 1972 wurden 27 Schaltsekunden eingefügt, die letzte Ende 2016. Sie kamen jeweils am Ende des 30. Juni oder des 31. Dezember dazu, sodass die letzte Minute 61 Sekunden hatte. Über jede Einfügung entscheidet der Internationale Dienst für Erdrotation und Referenzsysteme (IERS).\n\n## Was künftig gelten soll\n\nDie Weltzeit UTC soll künftig ohne Schaltsekunden weiterlaufen. Dadurch dürfte sie sich von der astronomischen Zeit UT1, die der Erdrotation folgt, langsam entfernen. Der Entwurf sieht eine Obergrenze von 3.600 Sekunden vor, also rund einer Stunde. Experten rechnen laut dem Bericht damit, dass für mehrere Jahrhunderte keine Korrektur nötig wird. Eine konkrete Höchstgrenze sei nötig, weil manche Software eine solche verlangt.\n\n## Warum es jetzt eilt\n\nDer Grund ist eine Umkehr bei der Erdrotation: Die Erde dreht sich inzwischen etwas schneller. Dann müsste erstmals eine Sekunde gestrichen werden, eine negative Schaltsekunde. t3n verweist darauf, dass das in der IT noch nie getestet wurde und viele Systeme damit Probleme bekommen könnten. Schon die Schaltsekunde von 2012 hatte zahlreiche Onlinedienste gestört, darunter Meta. Google und Meta verteilen Zusatzsekunden deshalb per sogenanntem Smearing über 24 Stunden.\n\nDen Zeitpunkt der ersten negativen Schaltsekunde schätzt t3n mit Verweis auf eine Studie von Duncan Agnew in Nature von 2024 auf etwa 2029. Schmelzwasser aus dem Eis verlangsamt demnach die Erdrotation. Ohne den Klimawandel wäre das Problem schon 2026 akut.\n\n## Wer betroffen ist\n\nFür den Alltag ändert sich kaum etwas. Betroffen sind vor allem Astronomen und Geodäten, die mit astronomischer Zeit arbeiten. Die Industrie fürchtet dagegen technischen Vorbereitungsaufwand und Kosten, denn Energie, Telekommunikation und Verkehr brauchen eine lückenlose Zeit. Die Abstimmung in Versailles soll den Beschluss von 2022 umsetzen, wonach Korrekturen künftig nicht mehr wie bisher erfolgen. Noch ist das Ergebnis offen.",
+          "source": "Spektrum.de (dpa)",
+          "url": "https://www.spektrum.de/news/zeitmessung-der-schaltsekunde-steht-das-aus-bevor/2348805",
+          "sources": [
+            {
+              "name": "Spektrum.de (dpa)",
+              "url": "https://www.spektrum.de/news/zeitmessung-der-schaltsekunde-steht-das-aus-bevor/2348805"
+            },
+            {
+              "name": "t3n",
+              "url": "https://t3n.de/news/negative-schaltsekunde-it-risiko-erdrotation-1763871/"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 5,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Atomic_Clock008.jpg/1280px-Atomic_Clock008.jpg",
+            "credit": "National Institute of Standards and Technology",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Atomic_Clock008.jpg",
+            "alt": "Atomuhr des amerikanischen Normeninstituts NIST"
+          }
+        },
+        {
+          "id": "wissenschaft-neutrino-laser-unmoeglich",
+          "tier": "more",
+          "headline": "Quantengesetze stoppen Pläne für einen Neutrino-Laser",
+          "summary": "Zwei Theoriearbeiten des MIT zeigen, dass ein vorgeschlagener Neutrino-Laser aus ultrakalten radioaktiven Atomen nicht funktionieren kann.",
+          "body": "Ein Laser, der statt Licht Neutrinos bündelt, wird nach neuen Berechnungen nicht funktionieren. Zwei aufeinander bezogene theoretische Arbeiten eines Teams am Massachusetts Institute of Technology (MIT), erschienen in Physical Review Letters, widerlegen laut scinexx einen Vorschlag von 2025.\n\nDie Ausgangsidee nutzte ein Bose-Einstein-Kondensat aus ultrakalten radioaktiven Atomen. Durch Superradianz sollten diese Neutrinos gebündelt und verstärkt aussenden. Für Rubidium-83 sagte das Modell voraus, dass sich die Halbwertszeit von rund 86 Tagen auf etwa eine Minute verkürzt.\n\n## Zwei unabhängige Hindernisse\n\nDas erste Problem ist der Rückstoß. Neutrinos tragen Energien im Bereich von etwa einer Million Elektronenvolt, die Tochteratome werden dadurch mit einer Geschwindigkeit zurückgestoßen, die laut Wolfgang Ketterle etwa Mach 10 entspricht. Sie verlassen das Kondensat, bevor sich eine Verstärkung aufbauen kann.\n\nDas zweite Problem ist die Quantenstatistik. Neutrinos sind Fermionen, keine Bosonen wie Photonen. Das Pauli-Prinzip verhindert, dass sich viele von ihnen im selben Zustand sammeln, die Emission wird blockiert statt verstärkt. Der berechnete Verstärkungsfaktor liegt für die untersuchten Vorschläge bei höchstens 10 hoch minus 16.\n\n## Einordnung\n\nDie Ergebnisse beruhen auf Theorie und Modellrechnungen, gebaut wurde kein Gerät, und ein Kondensat aus radioaktiven Atomen gibt es bislang nicht. Betroffen sind laut scinexx auch ähnliche Vorschläge für Gammastrahlen-Laser. Gerichtete Neutrinostrahlung allgemein ist damit nicht ausgeschlossen, nur dieser Ansatz. „Jede einzelne hätte den Vorschlag zu Fall gebracht“, sagte Ketterle über die beiden Arbeiten.",
+          "source": "scinexx",
+          "url": "https://www.scinexx.de/news/physik/quantengesetze-verhindern-den-geplanten-neutrino-laser/",
+          "sources": [
+            {
+              "name": "scinexx",
+              "url": "https://www.scinexx.de/news/physik/quantengesetze-verhindern-den-geplanten-neutrino-laser/"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 3,
+          "readingMinutes": 2,
+          "image": null
+        },
+        {
+          "id": "wissenschaft-ostsee-bakterien-kohlenstoff",
+          "tier": "more",
+          "headline": "Winzige Bakterien bringen Kohlenstoff in die Tiefe der Ostsee",
+          "summary": "Kolonien kleinster Cyanobakterien sinken in der zentralen Ostsee ab und transportieren so Kohlenstoff in tiefere Wasserschichten.",
+          "body": "Kleinste Cyanobakterien tragen in der Ostsee zum Kohlenstofftransport in die Tiefe bei. Das berichtet scinexx unter Berufung auf eine Studie im Fachblatt The ISME Journal. Ein Team um Martin Ekman vom Karolinska-Universitätskrankenhaus untersuchte am Landsorttief in der zentralen Ostsee Wasserproben von Ende Mai bis Anfang September 2018, etwa alle zwei Wochen.\n\nIm Mittelpunkt standen Synechococcus und andere Picocyanobakterien, die kleiner als zwei Mikrometer sind. Zeitweise machten sie bis zu 49 Prozent der gesamten Phytoplankton-Biomasse aus. Einzelzellen erreichten ihren Höhepunkt im Frühsommer, rund zwei Wochen später nahmen die Kolonien zu.\n\n## Kolonien sinken schneller\n\nDer Anteil koloniebildender Picocyanobakterien lag im Mittel in den oberen 20 Metern bei 12 Prozent, in 75 Metern Tiefe dagegen bei 42 Prozent. Genvarianten, die häufig größere Partikel bilden, fanden sich auch stark in Sedimentfallen. Die Koloniebildung scheint also mitzubestimmen, welche Bakterien die lichtdurchflutete Oberfläche verlassen. Partikel können auch sinken, wenn Bakterien an anderen Partikeln haften oder über den Kot kleiner Meerestiere nach unten gelangen.\n\n## Grenzen der Studie\n\nDie Daten stammen von einer einzigen Station, wie verbreitet der Mechanismus in anderen Meeren ist, bleibt offen. Die Studie misst zudem nicht, wie viel des Kohlenstoffs dauerhaft in der Tiefe bleibt. Ob Picoplankton in wärmeren, stärker geschichteten Ozeanen zunimmt und wie sich das auswirkt, lässt sich aus den Daten allein nicht bestimmen. Langzeit-Überwachungsdaten der Ostsee von 2013 bis 2022 zeigen laut Bericht ähnliche saisonale Muster.",
+          "source": "scinexx",
+          "url": "https://www.scinexx.de/news/biowissen/in-der-ostsee-transportieren-bakterien-kohlenstoff-in-in-tiefere-wasserschichten/",
+          "sources": [
+            {
+              "name": "scinexx",
+              "url": "https://www.scinexx.de/news/biowissen/in-der-ostsee-transportieren-bakterien-kohlenstoff-in-in-tiefere-wasserschichten/"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 3,
+          "readingMinutes": 2,
+          "image": null
+        },
+        {
+          "id": "wissenschaft-hamilton-apollo-software-gestorben",
+          "tier": "more",
+          "headline": "Apollo-Softwarepionierin Margaret Hamilton mit 90 gestorben",
+          "summary": "Die US-Informatikerin, die die Bordsoftware der Apollo-Missionen verantwortete, starb laut MIT am 30. September. Bekannt wurde das am Mittwoch.",
+          "body": "Die Informatikerin Margaret Hamilton, Pionierin der Softwareentwicklung, ist tot. Wie science.ORF.at unter Berufung auf AP und das MIT berichtet, starb sie am 30. September im Alter von 90 Jahren. Das MIT machte den Tod am Mittwoch nach Ortszeit öffentlich. Eine zweite unabhängige Bestätigung konnte in diesem Lauf nicht abgerufen werden, die Angabe stützt sich auf den ORF-Bericht.\n\nNach einem Mathematikstudium zog Hamilton 1959 nach Boston. Ab 1965 arbeitete sie am MIT an der Flugsoftware für die geplanten Mondlandungen, 1968 übernahm sie das Team, das für die Bordsoftware der Apollo-Missionen zuständig war. Mit Apollo 11 landeten 1969 erstmals Menschen auf dem Mond. Später gründete sie eine eigene Softwarefirma und veröffentlichte mehr als 130 wissenschaftliche Arbeiten.\n\n## Würdigung\n\nIm Jahr 2016 zeichnete US-Präsident Barack Obama sie mit der Presidential Medal of Freedom aus. NASA-Chef Jared Isaacman nannte sie laut dem Bericht eine Wegbereiterin, deren Arbeit Apollo mit ermöglicht habe. Olivier de Weck, Leiter der Luft- und Raumfahrttechnik am MIT, sagte, sie sei ihrer Zeit weit voraus gewesen.\n\nDen Druck bei den Mondmissionen beschrieb Hamilton 2009 selbst so: Es habe keine zweite Chance gegeben, das hätten sie gewusst. Ihre Arbeit gilt als Grundlage dafür, wie heute fehlertolerante Software für Raumfahrt und andere kritische Systeme entwickelt wird.",
+          "source": "science.ORF.at",
+          "url": "https://science.orf.at/stories/3237662/",
+          "sources": [
+            {
+              "name": "science.ORF.at",
+              "url": "https://science.orf.at/stories/3237662/"
+            }
+          ],
+          "publishedAt": "2026-10-08T10:16:00+02:00",
+          "importance": 4,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Margaret_Hamilton_in_action.jpg/1280px-Margaret_Hamilton_in_action.jpg",
+            "credit": "NASA",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Margaret_Hamilton_in_action.jpg",
+            "alt": "Margaret Hamilton, leitende Apollo-Softwareentwicklerin, in der Kommandokapsel"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gesundheit",
+      "title": "Gesundheit",
+      "emoji": "🩺",
+      "items": [
+        {
+          "id": "gesundheit-stimmung-aerzteschaft-tiefpunkt",
+          "tier": "top",
+          "headline": "Stimmung unter Ärzten erreicht Rekordtief",
+          "summary": "Das Stimmungsbarometer der Stiftung Gesundheit fällt im dritten Quartal auf minus 48,5 Punkte, den niedrigsten Wert seit über 20 Jahren. 92 Prozent sehen die Politik als Belastung.",
+          "body": "Die Stimmung in der deutschen Ärzteschaft ist so schlecht wie nie seit Beginn der Erhebung. Das Stimmungsbarometer der Stiftung Gesundheit für das dritte Quartal 2026 liegt bei minus 48,5 Punkten, mehr als 20 Punkte unter dem Vorwert. Der bisherige Tiefpunkt lag bei minus 38,7. Das Deutsche Ärzteblatt berichtete am 8. Oktober darüber.\n\nHaupttreiber sind die wirtschaftlichen Erwartungen für die kommenden sechs Monate, die um fast 35 Punkte einbrachen. Zugleich gaben 92,0 Prozent der befragten Ärztinnen und Ärzte an, politische Entscheidungen, Gesetze und Vorgaben der Selbstverwaltung hätten sich in den vergangenen drei Monaten negativ auf ihre Arbeit ausgewirkt. Das liegt laut Stiftung mehr als 40 Prozentpunkte vor allen anderen Belastungsfaktoren.\n\n## Hausärzte am schlechtesten gestimmt\n\nNach Gruppen fällt der Wert bei Hausärzten mit minus 55,6 am niedrigsten aus (Rückgang um 25,2 Punkte). Fachärzte liegen bei minus 51,5, psychologische Psychotherapeuten bei minus 48,3. Bei Letzteren war der Absturz mit 33,6 Punkten am größten. Auch die nichtärztlichen Gesundheitsberufe sind pessimistischer: Ihr Wert sank um 8,8 Punkte auf minus 22,6, den tiefsten Stand seit Beginn ihrer Befragung vor fünf Jahren.\n\nKonrad Obermann, Forschungsleiter der Stiftung Gesundheit, nannte die Entwicklung ein „Alarmsignal“, das die Politik nicht ignorieren dürfe. Reformen kämen nicht voran, während Ärzte mit neuen Einzelmaßnahmen und Regulierung konfrontiert seien. Es fehle ein gemeinsames Ziel für den Umbau des Gesundheitssystems.\n\nZahnärzte sind mit minus 36,4 Punkten (Rückgang um 8,9) vergleichsweise am wenigsten pessimistisch, wie die Stiftung laut ZWP online mitteilte. Obermann sagte dort: „Wir erleben hier keine normale Schwankung mehr.“ Der Einbruch erfasst also nahezu alle Fachgruppen und nicht nur einzelne Bereiche.\n\n## Was dahintersteht\n\nDie Stiftung führt den Absturz auf wachsenden Regulierungsdruck und fehlende Planbarkeit zurück. Konkrete einzelne Gesetze nennt die Auswertung nicht, sie fragt allgemein nach politischen Entscheidungen, Gesetzen und Vorgaben der Selbstverwaltung. Auffällig ist der Abstand: Kein anderer abgefragter Belastungsfaktor kommt auch nur annähernd an die 92 Prozent heran.\n\nEinordnung: Befragt wurden 941 Ärztinnen und Ärzte. Die Umfrage misst Stimmung und Erwartungen, nicht die Versorgungsqualität. Für Patienten in Sachsen ist sie dennoch ein Warnzeichen, weil sich Praxisnachfolgen und der Hausärztemangel auf dem Land bei trüber Stimmung eher verschärfen. Ob sich die Stimmung in den nächsten Quartalen erholt, hängt laut Obermann davon ab, ob die Reformen ein erkennbares gemeinsames Ziel bekommen.",
+          "source": "Deutsches Ärzteblatt",
+          "url": "https://www.aerzteblatt.de/news/stimmung-in-der-arzteschaft-sturzt-deutlich-ab-8f9e75be-fc31-4f78-ab16-32b67993a770",
+          "sources": [
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/stimmung-in-der-arzteschaft-sturzt-deutlich-ab-8f9e75be-fc31-4f78-ab16-32b67993a770"
+            },
+            {
+              "name": "ZWP online",
+              "url": "https://www.zwp-online.info/zwpnews/dental-news/branchenmeldungen/arzte-stimmung-sturzt-auf-historischen-tiefstand"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 5,
+          "image": null,
+          "readingMinutes": 2
+        },
+        {
+          "id": "gesundheit-cochrane-pharma-geschenke",
+          "tier": "more",
+          "headline": "Cochrane-Review: Pharma-Geschenke verändern ärztliches Verordnen",
+          "summary": "Ein neuer Cochrane-Review mit 93 Studien sieht Hinweise, dass Zuwendungen der Industrie Verordnungen weniger leitliniengerecht und häufiger machen. Die Evidenz stammt fast nur aus Beobachtungsstudien.",
+          "body": "Geschenke und Zahlungen von Pharmafirmen hängen mit verändertem Verordnungsverhalten von Ärztinnen und Ärzten zusammen. Das ist das Ergebnis eines Cochrane-Reviews, den Cochrane Deutschland am 9. Oktober vorgestellt hat. Das Team um Barbara Mintzes (Universität Sydney) und Joel Lexchin (York University, Toronto) wertete 93 Studien aus, die Literatursuche reichte bis Januar 2025.\n\nBei Geschenken und Zahlungen fanden die Autoren mit hoher Sicherheit, dass Verordnungen weniger leitliniengerecht werden und die verordneten Mengen steigen. Die Kosten steigen wahrscheinlich ebenfalls, hier ist die Sicherheit der Evidenz moderat. In 49 von 62 Studien zeigte sich ein Dosis-Wirkungs-Muster: Schon geringe Beträge wie eine bezahlte Mahlzeit können mit einer Änderung des Verordnens einhergehen. Werbung und Fortbildung durch Hersteller erhöhen die Verordnungsmenge wahrscheinlich. Für kostenlose Arzneimittelmuster reicht die Datenlage für belastbare Schlüsse nicht aus.\n\nInstitutionelle Regeln zu Interessenkonflikten verbessern wahrscheinlich die Verordnungsqualität, strengere und länger geltende Regeln wirkten stärker. Aus Deutschland nennt der Review eine Studie des Universitätsklinikums Freiburg: Ärzte, die an Anwendungsbeobachtungen teilnahmen, verordneten im Teilnahmejahr acht Prozent mehr Packungen.\n\n## Grenzen der Aussagekraft\n\nDie Autoren betonen Einschränkungen. 92 der 93 Studien sind Beobachtungsstudien, nur eine ist randomisiert und zudem mit hohem Verzerrungsrisiko. Ein ursächlicher Zusammenhang ist damit nicht sicher belegt, denn Firmen sprechen offenbar bevorzugt Ärzte an, die ein Mittel ohnehin oft verordnen. 88 Prozent der Studien kommen aus den USA, Länder mit niedrigem und mittlerem Einkommen fehlen ganz.\n\nIn Deutschland sind Geschenke an Ärzte nach dem Heilmittelwerbegesetz verboten, seit 2016 gelten zudem Straftatbestände für Bestechlichkeit im Gesundheitswesen. Die Arzneimittelkommission der deutschen Ärzteschaft rät von der Teilnahme an Anwendungsbeobachtungen grundsätzlich ab.",
+          "source": "Cochrane Deutschland (idw)",
+          "url": "https://idw-online.de/de/news878648",
+          "sources": [
+            {
+              "name": "Cochrane Deutschland (idw)",
+              "url": "https://idw-online.de/de/news878648"
+            }
+          ],
+          "publishedAt": "2026-10-09T02:00:00+02:00",
+          "importance": 5,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "gesundheit-amk-nebenwirkungen-otc-melden",
+          "tier": "more",
+          "headline": "Apotheker sollen auch Nebenwirkungen rezeptfreier Mittel melden",
+          "summary": "Die Arzneimittelkommission der Apotheker mahnt Meldungen bei OTC-Präparaten an. Etwa 4 Prozent der internistischen Klinikaufnahmen in einer Studie gingen auf Selbstmedikation zurück.",
+          "body": "Rezeptfreie Arzneimittel gelten vielen als harmlos, doch auch bei ihnen treten Nebenwirkungen auf. Die Arzneimittelkommission der Deutschen Apotheker (AMK) ruft Apotheken deshalb dazu auf, Verdachtsfälle konsequent zu melden. Das geht aus einem Beitrag im neuen Bulletin zur Arzneimittelsicherheit des BfArM hervor, über den die Pharmazeutische Zeitung am 8. Oktober berichtete.\n\nLaut AMK führt die Wahrnehmung als unbedenklich dazu, dass Nebenwirkungen bei OTC-Produkten seltener erkannt, abgeklärt oder gemeldet werden. Sie verweist auf eine Studie, nach der rund 4 Prozent der stationären Aufnahmen in einer internistischen Klinik auf Neben- und Wechselwirkungen von Selbstmedikation zurückgingen. Von allen AMK-Meldungen der Jahre 2020 bis 2025 betrafen etwa 15 Prozent rezeptfreie Präparate.\n\nGemeldet werden sollen Verdachtsfälle auf Nebenwirkungen, Anwendungsfehler und Qualitätsmängel, auch wenn die Wirkung schon in der Packungsbeilage steht. Besonders wichtig sei das nach einer Entlassung aus der Verschreibungspflicht: Dann nutzten größere und vielfältigere Patientengruppen das Mittel unter Alltagsbedingungen, was eine neue Phase der Sicherheitsüberwachung einleite.\n\nDie Meldekultur ist ein bekanntes Problem. Das Uppsala Monitoring Centre in Schweden, das die internationale #MedsafetyWeek vom 2. bis 8. November organisiert, schätzt, dass weniger als 10 Prozent der Nebenwirkungen gemeldet werden. Das Motto 2026 lautet sinngemäß: Nebenwirkungen nicht übergehen, sondern melden.\n\nFür Verbraucher heißt das: Wer nach einem rezeptfreien Mittel ungewöhnliche Beschwerden bemerkt, kann dies in der Apotheke ansprechen. Solche Meldungen helfen, das Sicherheitsprofil von Arzneimitteln zu schärfen.",
+          "source": "Pharmazeutische Zeitung",
+          "url": "https://www.pharmazeutische-zeitung.de/meldungen-zu-nebenwirkungen-schaerfen-sicherheitsprofil-169055/",
+          "sources": [
+            {
+              "name": "Pharmazeutische Zeitung",
+              "url": "https://www.pharmazeutische-zeitung.de/meldungen-zu-nebenwirkungen-schaerfen-sicherheitsprofil-169055/"
+            }
+          ],
+          "publishedAt": "2026-10-08T15:00:00+02:00",
+          "importance": 4,
+          "image": null,
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "klima",
+      "title": "Klima & Umwelt",
+      "emoji": "🌱",
+      "items": [
+        {
+          "id": "klima-stratosphaerenwinde-strombedarf",
+          "tier": "top",
+          "headline": "Stratosphärenerwärmung kündigt extremen Strombedarf in Europa an",
+          "summary": "Plötzliche Stratosphärenerwärmungen erhöhen laut einer Exeter-Studie das Risiko extremer Stromnachfrage in Nord- und Mitteleuropa um das 1,5- bis 3-Fache – mit Wochen Vorlauf.",
+          "body": "Wenn hoch über der Arktis der winterliche Polarwirbel zusammenbricht, steigt in Europa Wochen später der Strombedarf stark an. Das zeigt eine Studie unter Leitung der Universität Exeter, erschienen in der Fachzeitschrift „Meteorological Applications“. Beteiligt sind Regan Mudhar, inzwischen an der Universität Lausanne, und Hannah Bloomfield von der Universität Newcastle.\n\n## Was die Studie zeigt\n\nSolche plötzlichen Stratosphärenerwärmungen treten etwa alle zwei Jahre auf. Nach einem Ereignis steigt laut Studie die Wahrscheinlichkeit extremer Stromnachfrage in Nord- und Mitteleuropa auf das 1,5- bis 3-Fache. Als extrem gilt ein Verbrauch, der mindestens 20 Prozent über dem Durchschnitt liegt. Die Kälte erreicht den Boden typischerweise einige Wochen nach der Störung der Winde. Regierungen und Energieversorger hätten damit Zeit, sich vorzubereiten.\n\nDie Effekte unterscheiden sich von Land zu Land. In Skandinavien, das an extreme Kälte gut angepasst ist, fiel der Anstieg des Verbrauchs geringer aus. In Frankreich mit seinem stark elektrifizierten Energiesystem war er deutlich steiler. Die Universität verweist auf den Winter 2018 mit dem „Beast from the East“: Auch damals folgte auf eine solche Erwärmung strenge Kälte in Großbritannien und Nordeuropa.\n\n## Wärmepumpen verändern die Lage\n\nBloomfield sagte, im Zuge der Klimaneutralität müsse ein Großteil der klassischen Gasheizungen elektrifiziert werden. Großbritannien komme mit Kälte derzeit gut zurecht, weil es auf Gaszentralheizungen setze. Der Umstieg auf Wärmepumpen könne kalte Phasen mit wenig Wind aber schwerer bezahlbar beherrschbar machen. Mudhar erwartet, dass solche Ereignisse auch künftig auftreten und Kälte mitbringen. Die Ergebnisse könnten helfen, sich auf kommende Fälle vorzubereiten.\n\n## Bedeutung für Deutschland\n\nDie Studie untersucht Europa insgesamt und enthält in den vorliegenden Zusammenfassungen keine eigenen Aussagen zu Deutschland. Der Zusammenhang liegt dennoch nahe: Auch hierzulande wächst der Winterstrombedarf, wenn mehr Wärmepumpen und Elektroautos ans Netz gehen, und kalte Windflauten sind für das Stromsystem die schwierigste Lage. Ein Frühwarnsignal aus der Stratosphäre könnte Netzbetreibern und Kraftwerksbetreibern helfen, Reserven und Speicher rechtzeitig einzuplanen. Wie verlässlich sich das in der Praxis nutzen lässt, zeigt die Studie allerdings nicht.",
+          "source": "Phys.org",
+          "url": "https://phys.org/news/2026-10-stratospheric-extreme-energy-demand-europe.html",
+          "sources": [
+            {
+              "name": "Phys.org",
+              "url": "https://phys.org/news/2026-10-stratospheric-extreme-energy-demand-europe.html"
+            },
+            {
+              "name": "University of Exeter",
+              "url": "https://news.exeter.ac.uk/faculty-of-environment-science-and-economy/stratospheric-winds-can-warn-of-extreme-energy-demand-in-europe/"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regent%27s_Park_in_the_%22Beast_from_the_East%22_snowstorm_%2840654029762%29.jpg/1280px-Regent%27s_Park_in_the_%22Beast_from_the_East%22_snowstorm_%2840654029762%29.jpg",
+            "credit": "Irid Escent",
+            "license": "CC BY-SA 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Regent%27s_Park_in_the_%22Beast_from_the_East%22_snowstorm_(40654029762).jpg",
+            "alt": "Verschneiter Regent's Park in London während der Kältewelle „Beast from the East“ im Februar 2018"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "klima-graeser-artenvielfalt-co2",
+          "tier": "more",
+          "headline": "Weniger Pflanzenvielfalt könnte Graslandsenken um 15 Prozent schwächen",
+          "summary": "Eine PIK-Studie in PNAS zeigt: Würde die Artenvielfalt auf Grasland stark schrumpfen, nähmen Wiesen und Steppen 2050 deutlich weniger CO2 auf.",
+          "body": "Der Verlust an Pflanzenarten auf Grasland könnte die globale Kohlenstoffaufnahme dieser Flächen bis 2050 um etwa 15 Prozent verringern. Das ergibt eine Modellstudie des Potsdam-Instituts für Klimafolgenforschung (PIK) und der Universität Kiel, die in den „Proceedings of the National Academy of Sciences“ erschienen ist. Erstautor ist Stephen Björn Wirth.\n\nDie Forschenden verglichen mit einem globalen Vegetationsmodell Grasland mit erhaltener Vielfalt mit Flächen, auf denen die Vielfalt extrem stark zurückgeht. Sie rechneten zwei Erwärmungsszenarien durch, eines unter 2 Grad und eines bei rund 4 Grad. Im Szenario unter 2 Grad ginge die jährliche Aufnahme 2050 um etwa 11 Milliarden Tonnen CO2 zurück. Nach Angaben der Autoren entspricht das dem Verlust einer Fläche mit durchschnittlicher Produktivität von der Größe der arktischen Tundra. In manchen tropischen und subtropischen Regionen könnte die Aufnahme sogar um bis zu 50 Prozent sinken. Auch die Kohlenstoffvorräte im Boden würden dort schrumpfen, wo die Vielfalt abnimmt.\n\nEinige Regionen könnten den Verlust ausgleichen, teils sogar produktiver werden. Weltweit überwiege aber in beiden Klimaszenarien der Nutzen erhaltener Vielfalt, schreiben die Autoren. Sie weisen zugleich darauf hin, dass die genaue Größenordnung unsicher bleibt, weil das Modell Pflanzeneigenschaften und Wechselwirkungen vereinfacht.\n\nDie Studie verknüpft Artenschutz und Klimaschutz: Wer Grasland vor Übernutzung schützt, stabilisiert demnach nicht nur Weidewirtschaft, vor allem im globalen Süden, sondern auch eine wichtige natürliche CO2-Senke. Für Sachsen mit seinen Wiesen und Weiden heißt das: Artenreiches Grünland ist mehr als Naturschutz, es zählt auch zur Klimabilanz.",
+          "source": "Phys.org (PIK)",
+          "url": "https://phys.org/news/2026-10-diversity-grassland-absorption.html",
+          "sources": [
+            {
+              "name": "Phys.org (PIK)",
+              "url": "https://phys.org/news/2026-10-diversity-grassland-absorption.html"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 4,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "klima-gemeinwohlpraemie-agrarumwelt",
+          "tier": "more",
+          "headline": "Landschaftspfleger werben für Punktesystem bei Agrarumweltprämien ab 2028",
+          "summary": "Der Verband DVL schlägt vor, Umweltleistungen von Betrieben künftig über ein Punktesystem zu honorieren. Ein Simulationsrechner soll die Wirkung zeigen.",
+          "body": "Der Deutsche Verband für Landschaftspflege (DVL) wirbt für ein punktebasiertes Prämiensystem, mit dem Landwirte ab 2028 für Leistungen zugunsten von Natur und Klima bezahlt werden sollen. Das berichtet das Portal Energiezukunft. Hintergrund ist der Vorschlag der EU-Kommission für die Agrarpolitik nach 2027. Danach sollen die bisherigen Öko-Regeln und die Agrarumwelt- und Klimamaßnahmen zu „Agrarumwelt- und Klimaaktionen“ zusammengelegt werden. Diese sollen freiwillig, flexibel und regional abgestuft sein sowie ökologisch und konventionell wirtschaftende Betriebe erreichen.\n\nDer DVL hat dazu vor der Agrarministerkonferenz Ende September ein Positionspapier vorgelegt. Sein Modell „Gemeinwohlprämie 3D“ ordnet wissenschaftlich abgeleitete Umweltwirkungen den Zielen Artenvielfalt, Klima, Boden- und Gewässerschutz sowie Tierwohl zu und bewertet sie auf einer Skala mit zwölf Stufen. Boni gibt es, wenn Maßnahmen kombiniert und über mehrere Jahre umgesetzt werden. Welche Maßnahmen ein Betrieb wählt, bleibt ihm überlassen.\n\nMit dem Rechner „smartGAPP“, der mit dem Verwaltungs- und Kontrollsystem InVeKoS kompatibel ist, können Betriebe das Modell mit eigenen Daten testen. Derzeit läuft ein Praxistest auf Höfen. Die Niederlande nutzen ein vergleichbares Punktesystem bereits bei den Öko-Regeln, Luxemburg prüft eine Übertragung.\n\nFür Sachsen ist die Debatte relevant, weil Prämien für Landschaftspflege und Artenschutz auf Äckern und Wiesen künftig stärker an messbaren Ergebnissen hängen könnten.",
+          "source": "Energiezukunft",
+          "url": "https://www.energiezukunft.eu/umweltschutz/gemeinwohl-praemiensystem-praxistauglich-gestalten",
+          "sources": [
+            {
+              "name": "Energiezukunft",
+              "url": "https://www.energiezukunft.eu/umweltschutz/gemeinwohl-praemiensystem-praxistauglich-gestalten"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 3,
+          "image": null,
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "entertainment",
+      "title": "Games & Entertainment",
+      "emoji": "🎮",
+      "items": [
+        {
+          "id": "entertainment-ki-songs-botbetrug-18-monate",
+          "tier": "top",
+          "headline": "18 Monate Haft im ersten Strafprozess um Bot-Streams",
+          "summary": "Ein US-Musiker, der mit KI-Songs und Bot-Konten rund acht Millionen Dollar Tantiemen erschlich, muss ins Gefängnis. Es ist der erste Strafprozess dieser Art.",
+          "body": "Der 54-jährige Michael Smith aus North Carolina ist zu 18 Monaten Haft verurteilt worden. Richter John G. Koeltl verkündete das Urteil am Dienstag, dem 6. Oktober, vor dem Bundesgericht in Manhattan. Nach der Haft folgen zwei Jahre unter Aufsicht, außerdem muss Smith 8.091.843,64 Dollar an den Staat abgeben. Das ist die Schadenssumme, auf die sich beide Seiten geeinigt hatten. Wie Music Business Worldwide berichtet, gab die Staatsanwaltschaft des Südbezirks von New York das Urteil bekannt.\n\nSmith hatte sich im März 2026 in einem Anklagepunkt der Verschwörung zum Betrug schuldig bekannt. Die Anklage hatte ursprünglich auch Geldwäsche umfasst.\n\n## So lief die Masche\n\nNach Angaben der Ermittler lud Smith über Jahre hunderttausende KI-generierte Songs bei Streamingdiensten hoch. Mit tausenden gefälschten Konten bei Spotify, Apple Music, Amazon Music und YouTube Music ließ er sie milliardenfach abspielen, zeitweise über bis zu 10.000 Bot-Konten gleichzeitig. Die Konten richtete er laut Anklage mit falschen E-Mail-Adressen und unrechtmäßig erlangten Debitkarten ein. Die Tantiemen kassierte er seit etwa 2017.\n\nEin Beispiel aus den Gerichtsunterlagen: Im April 2023 kamen die Bot-Konten auf YouTube Music mit Familientarifen auf 80,9 Millionen Abrufe seiner KI-Titel. Der gesamte Katalog von Taylor Swift brachte es im selben Monat auf 9,3 Millionen. Insgesamt flossen laut Staatsanwaltschaft mehr als 14 Millionen Dollar an Smith.\n\n## Milder als gefordert\n\nDie Anklage hatte mindestens 46 Monate verlangt, die Richtlinien sahen 46 bis 57 Monate vor. Die Bewährungshilfe empfahl 24 Monate, Smiths Anwälte plädierten auf Bewährung ohne Haft. Sie argumentierten, kein Künstler habe einen spürbaren Verlust erlitten und der Einsatz von KI sei nicht per se rechtswidrig. Die US-Staatsanwältin Jamie McDonald sprach dagegen von Betrug an echten Künstlern und Fans.\n\n## Warum das auch hierzulande zählt\n\nStreamingdienste verteilen ihre Einnahmen aus einem gemeinsamen Topf nach dem Anteil der Abrufe. Jeder gefälschte Stream drückt damit die Auszahlung an alle anderen Rechteinhaber, auch an deutsche Künstler und Labels. Der Fall fällt in eine Zeit, in der KI-Musik die Branche beschäftigt: Deezer meldet laut NME, dass mehr als die Hälfte der täglichen Uploads KI-generiert sei, und die deutsche Verwertungsgesellschaft GEMA hat gegen den KI-Anbieter Suno einen Rechtsstreit gewonnen.",
+          "source": "NME",
+          "url": "https://www.nme.com/news/music/man-sentenced-to-prison-and-to-repay-8million-on-slop-royalties-in-first-criminal-bot-streaming-fraud-case-3972676",
+          "sources": [
+            {
+              "name": "NME",
+              "url": "https://www.nme.com/news/music/man-sentenced-to-prison-and-to-repay-8million-on-slop-royalties-in-first-criminal-bot-streaming-fraud-case-3972676"
+            },
+            {
+              "name": "Music Business Worldwide",
+              "url": "https://www.musicbusinessworldwide.com/man-behind-8m-ai-song-and-bot-streaming-fraud-is-sentenced-to-18-months-in-prison/"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Daniel_Patrick_Moynihan_U.S._Courthouse%2C_Manhattan%2C_New_York_%287237347688%29.jpg/1280px-Daniel_Patrick_Moynihan_U.S._Courthouse%2C_Manhattan%2C_New_York_%287237347688%29.jpg",
+            "credit": "Ken Lund from Reno, Nevada, USA",
+            "license": "CC BY-SA 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Daniel_Patrick_Moynihan_U.S._Courthouse,_Manhattan,_New_York_(7237347688).jpg",
+            "alt": "Das Daniel Patrick Moynihan United States Courthouse in Manhattan, New York"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "entertainment-triple-i-showcase-releases",
+          "tier": "top",
+          "headline": "Triple-i-Showcase: Release-Termine für Sulfur, Hela und Rockbeasts",
+          "summary": "Die Indie-Show Triple-i brachte 14 Ankündigungen von Sulfur-Start bis Dave-the-Diver-Crossover. Mehrere Spiele haben nun feste Termine.",
+          "body": "Der Entwickler Evil Empire hat am Donnerstag überraschend eine neue Ausgabe der Triple-i Initiative gezeigt. Die Show lief um 18 Uhr deutscher Zeit auf YouTube und Twitch, dauerte 45 Minuten und bündelte laut Veranstalter Ankündigungen zu rund 40 Indie-Spielen, darunter acht exklusive Weltpremieren. Pure Xbox hat die wichtigsten Enthüllungen zusammengetragen.\n\n## Spiele mit Termin\n\nSulfur verlässt den Early Access: Die Version 1.0 erscheint am 28. Oktober 2026 für den PC. Zeitgleich wurden Konsolenfassungen für PS5, Xbox Series X|S, Switch und Switch 2 angekündigt. Hela: Of Mice & Magic startet am 1. Dezember 2026 und kommt in den Xbox Game Pass. Eine kostenlose Demo gibt es bereits bei Steam, im Epic Games Store und im Microsoft Store. Rockbeasts erscheint im Januar 2027 für Steam, PS5, Xbox Series X|S, Switch und Switch 2. Eine erste öffentliche Demo ist verfügbar, und die Critical-Role-Sprecher Matthew Mercer und Sam Riegel sind Teil der Besetzung. Der Koop-Shooter Canyons von den Machern von Breathedge soll im November 2027 folgen.\n\n## Neue Inhalte für bekannte Titel\n\nFür Risk of Rain 2 ist die vierte Erweiterung Hallowed Concepts ab sofort erhältlich. Escape The Backrooms bekommt mit dem Update After Party einen Koop-Raum für bis zu vier Spieler. Für Brotato ist das DLC Primal Dread für Anfang 2027 angekündigt. Zu Dave the Diver wurde ein Crossover mit Subnautica 2 gezeigt, das ebenfalls Anfang 2027 erscheinen soll. Kingdom Two Crowns bekommt mit Pharaoh Lands eine Erweiterung mit ägyptischem Thema, die noch 2026 erscheinen soll.\n\n## Weltpremieren\n\nAls Weltpremieren nennt Pure Xbox unter anderem Aftergods, ein Überlebensspiel mit Göttern in offener Welt für Steam, Epic, PS5 und Xbox Series X|S ohne Termin, sowie The Escapists 3, das 2027 erscheinen soll. Weitere Demos laufen für Haunted Paws, Prospice: Anomalous Logistics und Militsioner.\n\n## Einordnung\n\nFür Spieler in Deutschland sind vor allem die Demos interessant, die sich ohne Kosten ausprobieren lassen. Die Show zeigt zugleich, wie viele kleine Studios inzwischen gleichzeitig auf PC, Xbox, PlayStation und beide Switch-Konsolen setzen. Gematsu bestätigt Datum, Uhrzeit, Veranstalter und die Zahl der gezeigten Spiele, nennt aber keine Details zu einzelnen Titeln.",
+          "source": "Pure Xbox",
+          "url": "https://www.purexbox.com/features/roundup-all-the-biggest-xbox-reveals-from-the-triple-i-initiative-showcase-october-2026",
+          "sources": [
+            {
+              "name": "Pure Xbox",
+              "url": "https://www.purexbox.com/features/roundup-all-the-biggest-xbox-reveals-from-the-triple-i-initiative-showcase-october-2026"
+            },
+            {
+              "name": "Gematsu",
+              "url": "https://www.gematsu.com/event/the-triple-i-initiative-october-8-2026"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 4,
+          "image": null,
+          "readingMinutes": 2
+        },
+        {
+          "id": "entertainment-dragons-dogma-2-dark-arisen",
+          "tier": "top",
+          "headline": "Dragon's Dogma 2: Dark Arisen startet mit starken Wertungen",
+          "summary": "Capcoms Erweiterung erscheint heute, auch als Paket für Switch 2. Erste Tests fallen überwiegend sehr gut aus.",
+          "body": "Capcom veröffentlicht heute, am 9. Oktober 2026, die Erweiterung Dark Arisen für das Action-Rollenspiel Dragon's Dogma 2. Sie erscheint für PS5, Xbox Series X|S und PC über Steam. Für Switch 2 gibt es erstmals das Hauptspiel, das als Paket zusammen mit der Erweiterung verkauft wird. Das berichtet unter anderem RPG Site.\n\n## Preise und Fassungen\n\nDas Switch-2-Paket mit Grundspiel und Erweiterung kostet in den USA 49,99 Dollar. Wer das Hauptspiel schon besitzt, kann die Erweiterung auf PS5, Xbox und PC einzeln für 29,99 Dollar kaufen. Deutsche Preise nennen die Quellen nicht.\n\n## Was die Erweiterung bietet\n\nDie Spielfigur reist in die lange verlassene nördliche Region Norgan und untersucht dort gemeinsam mit der Figur Eir den untoten gefallenen Drachen. Spieler bergen vergessene Relikte, die neue Waffen und Fähigkeiten freischalten. Dazu kommen zwölf Herausforderungen in sogenannten Lost-Rites-Verliesen, die seltene Ausrüstung bringen, sowie neue Optionen im Charaktereditor wie Frisuren und Tätowierungen.\n\n## Erste Wertungen\n\nNintendo Life hat die ersten Tests zusammengestellt. Push Square vergibt 9 von 10 Punkten, IGN und But Why Tho jeweils 8 von 10, RPGamer 3,5 von 5 Sternen und RPGFan 95 von 100 Punkten. Die Tester loben neue Figuren, Gegner und Story-Inhalte sowie die neuen Gebiete. RPGamer merkt an, dass die Erweiterung Spieler, die schon mit dem Hauptspiel haderten, kaum umstimmen dürfte.\n\n## Einordnung\n\nFür Besitzer einer Switch 2 ist das Paket der erste Zugang zu einem der größeren Rollenspiele des Jahres 2024 auf der Nintendo-Konsole. Auf den anderen Plattformen ist die Erweiterung ein Anlass, ein vorhandenes Spiel noch einmal zu starten. Eine Gesamtwertung bei Metacritic oder OpenCritic lag in den geprüften Quellen noch nicht vor.",
+          "source": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/round-up-the-reviews-for-dragons-dogma-2-dark-arisen-are-in",
+          "sources": [
+            {
+              "name": "Nintendo Life",
+              "url": "https://www.nintendolife.com/news/2026/10/round-up-the-reviews-for-dragons-dogma-2-dark-arisen-are-in"
+            },
+            {
+              "name": "RPG Site",
+              "url": "https://www.rpgsite.net/news/20617-dragons-dogma-2-dark-arisen-launches-on-october-9"
+            }
+          ],
+          "publishedAt": "2026-10-08T06:25:00+02:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Nintendo_Switch_2_in_Docking_Console.jpg/1280px-Nintendo_Switch_2_in_Docking_Console.jpg",
+            "credit": "Crisco 1492",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nintendo_Switch_2_in_Docking_Console.jpg",
+            "alt": "Nintendo Switch 2 in der Dockingstation"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "entertainment-minecraft-switch-2-vorbestellung",
+          "tier": "more",
+          "headline": "Minecraft für Switch 2 ab sofort vorbestellbar",
+          "summary": "Die Switch-2-Fassung erscheint am 27. Oktober. Besitzer der digitalen Switch-Version erhalten einen zeitlich begrenzten kostenlosen Upgrade-Weg.",
+          "body": "Mojang hat die Vorbestellung für Minecraft auf der Nintendo Switch 2 geöffnet. Die Fassung erscheint am 27. Oktober 2026, wie Nintendo Life berichtet. Im Handel wird sie als Game-Key-Card verkauft, also als physischer Datenträger, der als Schlüssel für den Download dient. In den USA kostet sie 29,99 Dollar.\n\nWer Minecraft bereits digital auf der ersten Switch besitzt, kann die Standard-Edition für Switch 2 bis Ende Januar 2027 kostenlos vorbestellen. Mojang nennt das ein zeitlich begrenztes Angebot, das nur über den Nintendo eShop läuft und in den meisten Regionen gilt, nicht aber in Japan und Taiwan. Auch Aufstiege auf die Deluxe oder die Ultimate Collection sind zu vergünstigten Preisen möglich.\n\nFür Besitzer der physischen Switch-Version gibt es nach Angaben von Nintendo Life bislang keinen Upgrade-Weg. Das Magazin will nachtragen, falls einer angekündigt wird.\n\nTechnisch unterstützt die Switch-2-Version das Grafikpaket Vibrant Visuals mit verbesserter Beleuchtung und Schatten. Das Super-Mario-Mash-up-Paket ist in allen Switch-2-Fassungen enthalten.\n\nFür Familien in Deutschland ist vor allem die Frist relevant: Wer die Switch-Version digital besitzt und umsteigen will, sollte nicht bis nach Januar warten. Euro-Preise nennt die Quelle nicht.",
+          "source": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/minecraft-switch-2-pre-orders-now-live-free-digital-upgrade-path-confirmed-as-limited-time-offer",
+          "sources": [
+            {
+              "name": "Nintendo Life",
+              "url": "https://www.nintendolife.com/news/2026/10/minecraft-switch-2-pre-orders-now-live-free-digital-upgrade-path-confirmed-as-limited-time-offer"
+            }
+          ],
+          "publishedAt": "2026-10-08T01:25:00+02:00",
+          "importance": 4,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "entertainment-miley-cyrus-rekordabsturz-charts",
+          "tier": "more",
+          "headline": "Miley Cyrus stürzt von Platz eins auf Rang 157",
+          "summary": "Ihr Album „Bass Persuades“ fällt in den US-Charts so tief wie keines zuvor nach einem Einstieg auf Platz eins.",
+          "body": "Miley Cyrus hat mit ihrem zehnten Studioalbum „Bass Persuades“ einen unrühmlichen Chartrekord aufgestellt. Das Album war am 18. September erschienen und stieg in den US-Albumcharts Billboard 200 mit 61.000 Einheiten auf Platz eins ein. Es war ihr erster Spitzenplatz seit „Bangerz“ im Jahr 2013. Eine Woche später fiel es um 156 Plätze auf Rang 157. Das ist laut NME der größte Absturz in der Geschichte der Billboard 200 direkt nach einem Einstieg an der Spitze.\n\nDer Bericht nennt zwei Alben mit noch tieferem Fall nach einem späteren Comeback an der Spitze. Bon Jovis „This House Is Not For Sale“ kehrte 2018 durch ein Bundle mit Konzertkarten auf Platz eins zurück und rutschte danach auf Rang 169. Travis Scotts Mixtape „Days Before Rodeo“ erreichte ein Jahrzehnt nach Erscheinen Platz eins und verschwand in der Folgewoche ganz aus den Charts. Beide waren also keine Debüts.\n\nIn derselben Chartwoche kehrte Taylor Swift mit „The Life Of A Showgirl: The Encore“ an die Spitze zurück. Tinashes Album „Popstar“ stieg auf Platz sechs ein und ist damit ihr erstes Top-10-Album in den USA. NME bewertete Cyrus' Album mit drei von fünf Sternen.\n\nDie Zahlen gelten für die USA. In Deutschland spielt die Billboard-Rangliste für Hörer keine direkte Rolle, sie zeigt aber, wie stark Veröffentlichungen mit mehreren limitierten Digitalfassungen die erste Woche aufblähen können und wie schnell der Effekt verpufft.",
+          "source": "NME",
+          "url": "https://www.nme.com/news/music/miley-cyrus-bass-persuades-chart-history-biggest-drop-number-one-3972705",
+          "sources": [
+            {
+              "name": "NME",
+              "url": "https://www.nme.com/news/music/miley-cyrus-bass-persuades-chart-history-biggest-drop-number-one-3972705"
+            }
+          ],
+          "publishedAt": "2026-10-08T00:00:00+02:00",
+          "importance": 3,
+          "image": null,
+          "readingMinutes": 1
+        },
+        {
+          "id": "entertainment-xbox-cto-publizieren-vereinfachen",
+          "tier": "more",
+          "headline": "Xbox-Technikchef will Veröffentlichung auf der Plattform vereinfachen",
+          "summary": "Scott Van Vliet reagiert auf Kritik von Entwicklern: Der Weg ins Xbox-Ökosystem soll leichter werden, zunächst bei Konzept und Publishing.",
+          "body": "Xbox-Technikchef Scott Van Vliet hat sich am 7. Oktober auf X zur Kritik von Entwicklern geäußert. Er habe das Feedback gehört und stimme zu, dass es einfacher sein sollte, ein Spiel auf die Xbox zu bringen. Die Arbeit beginne bei den Prozessen für Konzept und Veröffentlichung, die vereinfacht würden. Weitere Details kündigte er für später an.\n\nAm 8. Oktober reagierte er auf den Hinweis eines Nutzers, Rezensionscodes für Xbox kämen oft später als für andere Plattformen. Van Vliet sagte zu, er werde prüfen, ob hier etwas zu tun sei. Pure Xbox weist darauf hin, dass viele Multiplattform-Spiele deshalb zuerst auf der PS5 getestet werden.\n\nHintergrund ist eine interne Ansprache von Xbox-Chefin Asha Sharma. Nach Angaben von Windows Central sagte sie Mitarbeitern in der Microsoft-Zentrale, das Ziel sei einfacheres Publizieren auf Xbox-Konsolen und PC. Derzeit sei es schlicht sehr schwer, mit Xbox zu arbeiten. Geplant seien vereinfachte Zielplattformen, ein Partner Center ohne Oberfläche sowie sauberere und maschinenlesbare Schnittstellen.\n\nFür Spieler zählt das indirekt: Je weniger Hürden kleine und mittlere Studios haben, desto eher erscheinen ihre Spiele zeitgleich auf Xbox. Konkrete Zusagen oder Termine gibt es bisher nicht.",
+          "source": "Pure Xbox",
+          "url": "https://www.purexbox.com/news/2026/10/xbox-cto-shares-statement-about-making-it-easier-for-developers-to-publish-their-games",
+          "sources": [
+            {
+              "name": "Pure Xbox",
+              "url": "https://www.purexbox.com/news/2026/10/xbox-cto-shares-statement-about-making-it-easier-for-developers-to-publish-their-games"
+            }
+          ],
+          "publishedAt": "2026-10-08T12:00:00+02:00",
+          "importance": 3,
+          "image": null,
+          "readingMinutes": 1
+        }
+      ]
+    }
+  ]
+}
