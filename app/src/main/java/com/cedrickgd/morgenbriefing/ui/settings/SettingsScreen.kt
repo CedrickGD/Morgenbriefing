@@ -31,9 +31,12 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.lazy.LazyListState
+import com.cedrickgd.morgenbriefing.BuildConfig
 import com.cedrickgd.morgenbriefing.ai.AiSupport
 import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AccentId
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
@@ -62,8 +65,14 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 
-/** Dialogs of the settings page; saveable so they survive rotation. */
-private enum class SettingsDialog { TIME, HOME_PLACE, DAY_PLACE, TOKEN, REMOVE_TOKEN, AI_KEY, REMOVE_AI_KEY }
+/**
+ * Dialogs of the settings page; saveable so they survive rotation. The AI dialogs about one
+ * provider (key, removal, own model, base URL) keep that provider next to it.
+ */
+private enum class SettingsDialog {
+    TIME, HOME_PLACE, DAY_PLACE, TOKEN, REMOVE_TOKEN,
+    AI_PROVIDERS, AI_LIVE_PROVIDERS, AI_KEY, REMOVE_AI_KEY, AI_CUSTOM_MODEL, AI_DEBUG_URL,
+}
 
 /** Lazy-list keys of the page, in display order. */
 private object Block {
@@ -117,6 +126,7 @@ fun SettingsScreen(
     val source by viewModel.source.collectAsStateWithLifecycle()
     val aiKey by viewModel.aiKey.collectAsStateWithLifecycle()
     val usage by viewModel.usage.collectAsStateWithLifecycle()
+    val serverModels by viewModel.serverModels.collectAsStateWithLifecycle()
     val weather by viewModel.weather.collectAsStateWithLifecycle()
     val weatherLoading by viewModel.weatherLoading.collectAsStateWithLifecycle()
     val update by updateViewModel.state.collectAsStateWithLifecycle()
@@ -130,6 +140,8 @@ fun SettingsScreen(
     val stagger = rememberStagger(enabled = !reduceMotion)
     val now = rememberMinuteClock()
     var dialog by rememberSaveable { mutableStateOf<SettingsDialog?>(null) }
+    // The provider an AI dialog is about (AiProviderId.key), saveable like the dialog itself.
+    var dialogProvider by rememberSaveable { mutableStateOf<String?>(null) }
 
     val density = LocalDensity.current
     val topBarPx = with(density) { (statusBarTop() + TOP_BAR_HEIGHT).toPx() }
@@ -170,9 +182,21 @@ fun SettingsScreen(
         dialog = SettingsDialog.TOKEN
     }
 
-    fun openAiKeyDialog() {
-        viewModel.resetAiKeyState()
-        dialog = SettingsDialog.AI_KEY
+    fun openAiDialog(kind: SettingsDialog, provider: AiProviderId) {
+        if (kind == SettingsDialog.AI_KEY) viewModel.resetAiKeyState()
+        dialogProvider = provider.key
+        dialog = kind
+    }
+
+    /** The key (own server: address) dialog of [provider]; by default the chat provider. */
+    fun openAiKeyDialog(provider: AiProviderId? = null) {
+        openAiDialog(SettingsDialog.AI_KEY, provider ?: settings?.ai?.provider ?: return)
+    }
+
+    /** The KI pill: a provider that cannot run here leads to the picker, everything else to its key. */
+    fun fixAi() {
+        val ai = settings?.ai ?: return
+        if (AiSupport.supports(ai.provider)) openAiKeyDialog(ai.provider) else dialog = SettingsDialog.AI_PROVIDERS
     }
 
     // Sent here from another screen ("Token eintragen", Live's monthly limit): glide to the
@@ -190,6 +214,14 @@ fun SettingsScreen(
                     openTokenDialog()
                 }
                 SettingsTarget.AI -> scrollTo(Block.H_AI)
+                SettingsTarget.AI_PROVIDER -> {
+                    scrollTo(Block.H_AI)
+                    dialog = SettingsDialog.AI_PROVIDERS
+                }
+                SettingsTarget.AI_LIVE_PROVIDER -> {
+                    scrollTo(Block.H_AI)
+                    dialog = SettingsDialog.AI_LIVE_PROVIDERS
+                }
             }
         }
     }
@@ -234,9 +266,9 @@ fun SettingsScreen(
                         openTokenDialog()
                     }
                 }
-                StatusKind.AI -> openAiKeyDialog()
+                StatusKind.AI -> fixAi()
             }
-            StatusLevel.NEUTRAL -> if (item.kind == StatusKind.AI) openAiKeyDialog() else scrollTo(Block.H_SOURCE)
+            StatusLevel.NEUTRAL -> if (item.kind == StatusKind.AI) fixAi() else scrollTo(Block.H_SOURCE)
             StatusLevel.OK -> scrollTo(
                 when (item.kind) {
                     StatusKind.NEWS -> Block.H_SOURCE
@@ -264,9 +296,16 @@ fun SettingsScreen(
         },
     )
 
+    val chatProvider = settings?.ai?.provider ?: AiProviderId.ANTHROPIC
     val aiActions = AiActions(
-        onEditKey = ::openAiKeyDialog,
-        onModel = viewModel::setAiModel,
+        onPickProvider = { dialog = SettingsDialog.AI_PROVIDERS },
+        onEditKey = { openAiKeyDialog(chatProvider) },
+        onModel = { id -> viewModel.setAiModel(chatProvider, id) },
+        onCustomModel = { openAiDialog(SettingsDialog.AI_CUSTOM_MODEL, chatProvider) },
+        onLoadServerModels = viewModel::loadServerModels,
+        onGeminiTier = viewModel::setGeminiTier,
+        onPickLiveProvider = { dialog = SettingsDialog.AI_LIVE_PROVIDERS },
+        onEditDebugBaseUrl = { openAiDialog(SettingsDialog.AI_DEBUG_URL, chatProvider) },
         onLimit = viewModel::setAiMonthlyLimit,
         onLiveAuto = viewModel::setLiveAutoRefresh,
     )
@@ -322,6 +361,7 @@ fun SettingsScreen(
                         weather = weather,
                         weatherLoading = weatherLoading,
                         usage = usage,
+                        serverModels = serverModels,
                         update = update,
                         reduceMotion = reduceMotion,
                     ),
@@ -417,26 +457,80 @@ fun SettingsScreen(
             onDismiss = { dialog = null },
         )
 
-        SettingsDialog.AI_KEY -> AiKeyDialog(
-            hasKey = current.ai.of(current.ai.provider).hasKey,
-            state = aiKey,
-            onSaveAndTest = viewModel::saveAndTestAiKey,
-            onOpenConsole = { links.open(ANTHROPIC_KEYS_URL) },
-            onRemove = { dialog = SettingsDialog.REMOVE_AI_KEY },
-            onDismiss = {
-                dialog = null
-                viewModel.resetAiKeyState()
-            },
-        )
+        SettingsDialog.AI_PROVIDERS, SettingsDialog.AI_LIVE_PROVIDERS -> {
+            val liveOnly = dialog == SettingsDialog.AI_LIVE_PROVIDERS
+            AiProviderPicker(
+                ai = current.ai,
+                sdkAvailable = AiSupport.sdkAvailable,
+                liveOnly = liveOnly,
+                onPick = { picked ->
+                    if (liveOnly) viewModel.setLiveProvider(picked) else picked?.let(viewModel::setAiProvider)
+                    // A provider without key is set up right away; the rest is done.
+                    if (picked != null && !current.ai.isConfigured(picked)) openAiKeyDialog(picked) else dialog = null
+                },
+                onDismiss = { dialog = null },
+            )
+        }
 
-        SettingsDialog.REMOVE_AI_KEY -> RemoveAiKeyDialog(
-            onConfirm = {
-                dialog = null
-                viewModel.resetAiKeyState()
-                viewModel.removeAiKey()
-            },
-            onDismiss = { dialog = SettingsDialog.AI_KEY },
-        )
+        SettingsDialog.AI_KEY -> {
+            val provider = AiProviderId.fromKey(dialogProvider) ?: current.ai.provider
+            AiKeyDialog(
+                spec = ProviderCatalog.spec(provider),
+                stored = current.ai.of(provider),
+                state = aiKey,
+                onSave = { submission -> viewModel.saveAndTestAiKey(provider, submission) },
+                onOpenLink = links::open,
+                onRemove = { dialog = SettingsDialog.REMOVE_AI_KEY },
+                onDismiss = {
+                    dialog = null
+                    viewModel.resetAiKeyState()
+                },
+            )
+        }
+
+        SettingsDialog.REMOVE_AI_KEY -> {
+            val provider = AiProviderId.fromKey(dialogProvider) ?: current.ai.provider
+            RemoveAiKeyDialog(
+                spec = ProviderCatalog.spec(provider),
+                onConfirm = {
+                    dialog = null
+                    viewModel.resetAiKeyState()
+                    viewModel.removeAiKey(provider)
+                },
+                onDismiss = { openAiKeyDialog(provider) },
+            )
+        }
+
+        SettingsDialog.AI_CUSTOM_MODEL -> {
+            val provider = AiProviderId.fromKey(dialogProvider) ?: current.ai.provider
+            val today = now.toLocalDate()
+            CustomModelDialog(
+                spec = ProviderCatalog.spec(provider),
+                current = current.ai.of(provider).model,
+                priceHint = { model -> customModelPriceHint(current.ai, provider, model, today) },
+                onConfirm = { model ->
+                    dialog = null
+                    viewModel.setAiModel(provider, model)
+                },
+                onDismiss = { dialog = null },
+            )
+        }
+
+        SettingsDialog.AI_DEBUG_URL -> {
+            val provider = AiProviderId.fromKey(dialogProvider) ?: current.ai.provider
+            // Debug builds only: in a release build the row (and with it this dialog) never shows.
+            if (BuildConfig.DEBUG) {
+                DebugBaseUrlDialog(
+                    spec = ProviderCatalog.spec(provider),
+                    current = current.ai.of(provider).debugBaseUrl,
+                    onSave = { url ->
+                        dialog = null
+                        viewModel.setDebugBaseUrl(provider, url)
+                    },
+                    onDismiss = { dialog = null },
+                )
+            }
+        }
 
         null -> Unit
     }
@@ -450,6 +544,7 @@ private class BlockContent(
     val weather: WeatherSnapshot?,
     val weatherLoading: Boolean,
     val usage: UsageSnapshot,
+    val serverModels: ServerModels,
     val update: UpdatePanelState,
     val reduceMotion: Boolean,
 )
@@ -490,14 +585,7 @@ private fun SettingsBlock(
 ) {
     when (key) {
         Block.HERO -> {
-            val items = statusItems(
-                content.status,
-                content.source,
-                AiSupport.isSupported,
-                settings.ai.of(settings.ai.provider).hasKey,
-                settings.ai.of(settings.ai.provider).keyUntested,
-                settings.ai.of(settings.ai.provider).keyRejected,
-            )
+            val items = statusItems(content.status, content.source, settings.ai, AiSupport.supports(settings.ai.provider))
             val next = nextBriefingAt(content.now, settings.notifyHour, settings.notifyMinute)
             val hero = heroText(
                 enabled = settings.notificationsEnabled,
@@ -570,11 +658,14 @@ private fun SettingsBlock(
             reduceMotion = content.reduceMotion,
             modifier = modifier,
         )
-        Block.H_AI -> SectionHeading("Claude", "KI", modifier)
+        Block.H_AI -> SectionHeading("Dein Erklärer", "KI", modifier)
         Block.AI -> AiCard(
             settings = settings,
-            supported = AiSupport.isSupported,
             usage = content.usage,
+            serverModels = content.serverModels,
+            today = content.now.toLocalDate(),
+            sdkAvailable = AiSupport.sdkAvailable,
+            debugTools = BuildConfig.DEBUG,
             reduceMotion = content.reduceMotion,
             actions = callbacks.ai,
             modifier = modifier,

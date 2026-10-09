@@ -13,10 +13,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AccentId
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
+import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 import com.cedrickgd.morgenbriefing.ui.theme.MorgenbriefingTheme
@@ -79,7 +81,7 @@ private fun StatusHeroPreview() {
         exactAlarmsAllowed = false,
         batteryUnrestricted = true,
     )
-    val items = statusItems(status, SourceStatus.Connected(0L), aiSupported = true, hasAiKey = false)
+    val items = statusItems(status, SourceStatus.Connected(0L), AiSettings(), aiProviderSupported = true)
     PreviewSky {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             StatusHero(
@@ -102,6 +104,19 @@ private fun StatusHeroPreview() {
     }
 }
 
+private val noAiActions = AiActions(
+    onPickProvider = {},
+    onEditKey = {},
+    onModel = {},
+    onCustomModel = {},
+    onLoadServerModels = {},
+    onGeminiTier = {},
+    onPickLiveProvider = {},
+    onEditDebugBaseUrl = {},
+    onLimit = {},
+    onLiveAuto = {},
+)
+
 @ThemePreviews
 @Composable
 private fun AppearanceAndAiPreview() {
@@ -110,12 +125,61 @@ private fun AppearanceAndAiPreview() {
             AppearanceCard(themeMode = ThemeMode.SYSTEM, accent = AccentId.OZEAN, onThemeMode = {}, onAccent = {})
             AiCard(
                 settings = AppSettings(ai = AiSettings(providers = mapOf(AiProviderId.ANTHROPIC to ProviderSettings(hasKey = true)))),
-                supported = true,
                 usage = UsageSnapshot(month = "2026-10", spentUsd = 0.84, limitUsd = 5.0, requests = 23, webSearches = 7),
+                serverModels = ServerModels(),
+                today = previewNow.toLocalDate(),
+                sdkAvailable = true,
+                debugTools = true,
                 reduceMotion = true,
-                actions = AiActions({}, {}, {}, {}),
+                actions = noAiActions,
             )
         }
+    }
+}
+
+/** Gemini on the free tier: no web search, Pro marked "nur mit Abrechnung", Live via another provider. */
+@ThemePreviews
+@Composable
+private fun GeminiFreePreview() {
+    val ai = AiSettings(
+        provider = AiProviderId.GEMINI,
+        providers = mapOf(AiProviderId.GEMINI to ProviderSettings(hasKey = true, geminiTier = GeminiTier.FREE)),
+    )
+    PreviewSky {
+        AiCard(
+            settings = AppSettings(ai = ai),
+            usage = UsageSnapshot(month = "2026-10", requests = 12),
+            serverModels = ServerModels(),
+            today = previewNow.toLocalDate(),
+            sdkAvailable = true,
+            debugTools = false,
+            reduceMotion = true,
+            actions = noAiActions,
+        )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun ProviderPickerPreview() {
+    MorgenbriefingTheme(themeMode = ThemeMode.SYSTEM, accent = AccentId.MORGENROT) {
+        AiProviderPicker(ai = AiSettings(), sdkAvailable = false, liveOnly = false, onPick = {}, onDismiss = {})
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun GeminiKeyDialogPreview() {
+    MorgenbriefingTheme(themeMode = ThemeMode.SYSTEM, accent = AccentId.MORGENROT) {
+        AiKeyDialog(
+            spec = ProviderCatalog.GEMINI,
+            stored = ProviderSettings(),
+            state = AiKeyState.Idle,
+            onSave = {},
+            onOpenLink = {},
+            onRemove = null,
+            onDismiss = {},
+        )
     }
 }
 

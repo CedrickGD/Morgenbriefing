@@ -10,10 +10,12 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
 import com.cedrickgd.morgenbriefing.ai.AiServices
-import com.cedrickgd.morgenbriefing.ai.AiSupport
 import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.AccentId
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
@@ -45,14 +47,14 @@ import java.time.ZonedDateTime
 /**
  * Settings: every change is written straight to the DataStore (theme and topics apply live,
  * the alarm is re-synced by [MorgenbriefingApp]). Also runs the place search, the GitHub token
- * and Claude key checks, the news connection status and the AI usage. The in-app updater has
- * its own [UpdateViewModel].
+ * and AI key checks, the news connection status and the AI usage. The in-app updater has its
+ * own [UpdateViewModel].
  *
- * @param ai the AI facade, or null where AI cannot run (Android 7) — never touched then.
+ * @param ai the AI facade (safe on every API level; created on first use).
  */
 class SettingsViewModel(
     private val container: AppContainer,
-    private val ai: (() -> AiServices)?,
+    private val ai: () -> AiServices,
     private val clock: () -> ZonedDateTime = { ZonedDateTime.now(BERLIN) },
 ) : ViewModel() {
 
@@ -72,11 +74,18 @@ class SettingsViewModel(
     /** Connection to the briefs repo (status hero + "News-Quelle"). */
     val source: StateFlow<SourceStatus> = _source.asStateFlow()
 
-    private val aiKeyEditor = AiKeyEditor(viewModelScope, container, ai)
+    private val _serverModels = MutableStateFlow(ServerModels())
+
+    /** The own server's models (last connection test or "Vom Server laden"). */
+    internal val serverModels: StateFlow<ServerModels> = _serverModels.asStateFlow()
+
+    private val aiKeyEditor = AiKeyEditor(viewModelScope, container, ai) { ids -> _serverModels.value = ServerModels(ids) }
     val aiKey: StateFlow<AiKeyState> = aiKeyEditor.state
 
-    /** This month's AI spending; zeros where AI is unavailable. */
+    /** This month's AI spending; zeros when the facade is not available. */
     val usage: StateFlow<UsageSnapshot> = aiUsageOrNull() ?: MutableStateFlow(UsageSnapshot()).asStateFlow()
+
+    private var serverModelsJob: Job? = null
 
     private val _weather = MutableStateFlow<WeatherSnapshot?>(null)
 
@@ -200,8 +209,61 @@ class SettingsViewModel(
     /** Article text size, rounded to 5 % steps within 85–140 %. */
     fun setReaderTextScale(scale: Float) = edit { it.copy(readerTextScale = ReaderScale.normalize(scale)) }
 
-    /** [modelId] for the active provider (curated or free text). */
-    fun setAiModel(modelId: String) = edit { it.copy(ai = it.ai.withModel(it.ai.provider, modelId)) }
+    /** "Frag nach" (and Live, unless it has its own provider) runs with [provider] from now on. */
+    fun setAiProvider(provider: AiProviderId) = edit { it.copy(ai = it.ai.copy(provider = provider)) }
+
+    /**
+     * The Live provider as picked in the Live picker: null ("Wie Chat") and the chat provider
+     * itself are stored as "same as chat" ([liveProviderToStore]).
+     */
+    fun setLiveProvider(picked: AiProviderId?) = edit { it.copy(ai = it.ai.copy(liveProvider = liveProviderToStore(it.ai, picked))) }
+
+    /** [modelId] for [provider] (curated or free text); null = the catalog default. */
+    fun setAiModel(provider: AiProviderId, modelId: String?) = edit { it.copy(ai = it.ai.withModel(provider, modelId)) }
+
+    /** The "Tarif" of the Gemini key (G1); a free key never searches and costs nothing. */
+    fun setGeminiTier(tier: GeminiTier) {
+        viewModelScope.launch {
+            val saved = attempt { container.settings.setGeminiTier(tier) }
+            if (saved.isFailure) {
+                Log.w(TAG, "Gemini tier could not be stored", saved.exceptionOrNull())
+                _messages.send("Das konnte gerade nicht gespeichert werden.")
+            }
+        }
+    }
+
+    /**
+     * Debug builds only (G5): points [provider] at [url] (a local mock server); null clears it.
+     * Release builds store nothing.
+     */
+    fun setDebugBaseUrl(provider: AiProviderId, url: String?) {
+        viewModelScope.launch {
+            val stored = attempt { container.settings.setDebugBaseUrl(provider, url) }
+            _messages.send(
+                when {
+                    stored.getOrNull() != true -> "Die Basis-URL konnte nicht gespeichert werden."
+                    url.isNullOrBlank() -> "Wieder die echte API."
+                    else -> "Anfragen gehen jetzt an $url."
+                },
+            )
+        }
+    }
+
+    /**
+     * "Vom Server laden": the model ids of the own server at its stored address (with its stored
+     * key). An empty answer is reported as failed.
+     */
+    fun loadServerModels() {
+        if (serverModelsJob?.isActive == true) return
+        serverModelsJob = viewModelScope.launch {
+            val baseUrl = attempt { container.settings.current().ai.of(AiProviderId.CUSTOM).baseUrl }.getOrNull()
+            if (baseUrl.isNullOrBlank()) return@launch
+            _serverModels.update { it.copy(loading = true, failed = false) }
+            val ids = attempt { ai().listServerModels(baseUrl) }.getOrNull().orEmpty()
+            ensureActive()
+            _serverModels.value = if (ids.isEmpty()) _serverModels.value.copy(loading = false, failed = true) else ServerModels(ids)
+        }
+    }
 
     /** Monthly AI cap in whole dollars, 0 = none. */
     fun setAiMonthlyLimit(usd: Double) = edit { it.copy(aiMonthlyLimitUsd = AiLimit.normalize(usd)) }
@@ -325,18 +387,28 @@ class SettingsViewModel(
     }
 
     /**
-     * "Speichern & testen" of the Claude key: one tiny request through the AI facade; only a key
-     * that works is stored. [skipTest] stores without the request (offline).
+     * "Speichern & testen" of a key (own server: connection) for [provider]: one check through
+     * the AI facade with as few tokens as possible; only what works is stored. With
+     * [KeySubmission.skipTest] it is stored without the check (offline).
      */
-    fun saveAndTestAiKey(raw: String, skipTest: Boolean = false) = aiKeyEditor.saveAndTest(raw, skipTest)
+    internal fun saveAndTestAiKey(provider: AiProviderId, submission: KeySubmission) = aiKeyEditor.saveAndTest(provider, submission)
 
     fun resetAiKeyState() = aiKeyEditor.reset()
 
-    fun removeAiKey() {
+    /** Removes the key of [provider]; for the own server also its address. */
+    fun removeAiKey(provider: AiProviderId) {
         viewModelScope.launch {
-            val removed = attempt { container.settings.setAiKey(container.settings.current().ai.provider, null) }
+            val removed = attempt {
+                container.settings.setAiKey(provider, null)
+                if (provider == AiProviderId.CUSTOM) container.settings.setCustomBaseUrl(null)
+            }
+            if (provider == AiProviderId.CUSTOM) _serverModels.value = ServerModels()
             _messages.send(
-                if (removed.isSuccess) "Key entfernt – die KI-Funktionen sind jetzt aus." else "Der Key konnte nicht entfernt werden.",
+                when {
+                    removed.isFailure -> "Das konnte nicht entfernt werden."
+                    provider == AiProviderId.CUSTOM -> "Server entfernt."
+                    else -> "Key entfernt – ${ProviderCatalog.spec(provider).brand} ist jetzt aus."
+                },
             )
             if (removed.isFailure) Log.w(TAG, "Key could not be removed", removed.exceptionOrNull())
         }
@@ -354,12 +426,11 @@ class SettingsViewModel(
         }
     }
 
-    /** The facade's usage flow; null on Android 7 or when the facade is not available. */
+    /** The facade's usage flow; null when the facade is not available. */
     private fun aiUsageOrNull(): StateFlow<UsageSnapshot>? {
-        val services = ai ?: return null
         return try {
-            services().usage.usage
-        } catch (e: Throwable) {
+            ai().usage.usage
+        } catch (e: Exception) {
             Log.w(TAG, "AI usage unavailable", e)
             null
         }
@@ -391,10 +462,7 @@ class SettingsViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as MorgenbriefingApp
-                SettingsViewModel(
-                    container = app.container,
-                    ai = if (AiSupport.isSupported) ({ app.ai }) else null,
-                )
+                SettingsViewModel(container = app.container, ai = { app.ai })
             }
         }
     }

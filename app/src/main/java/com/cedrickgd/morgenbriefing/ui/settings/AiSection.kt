@@ -10,6 +10,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,89 +23,120 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.Dns
 import androidx.compose.material.icons.rounded.Key
-import androidx.compose.material.icons.rounded.PhoneAndroid
-import androidx.compose.material.icons.rounded.Visibility
-import androidx.compose.material.icons.rounded.VisibilityOff
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
+import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
+import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
 import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
+import java.time.LocalDate
 import kotlin.math.roundToInt
 
 /** Callbacks of [AiCard]. */
 internal class AiActions(
+    /** "Wechseln": the provider picker. */
+    val onPickProvider: () -> Unit,
+    /** The key (own server: address) dialog of the chat provider. */
     val onEditKey: () -> Unit,
-    /** A curated model id of the active provider. */
+    /** A model id of the chat provider (curated, or one the own server listed). */
     val onModel: (String) -> Unit,
+    /** "Eigenes Modell …". */
+    val onCustomModel: () -> Unit,
+    /** "Vom Server laden": the own server's model list. */
+    val onLoadServerModels: () -> Unit,
+    val onGeminiTier: (GeminiTier) -> Unit,
+    /** "Ändern" / "Live-Anbieter wählen": the Live provider picker. */
+    val onPickLiveProvider: () -> Unit,
+    /** Debug builds: "Entwickler: Basis-URL" of the chat provider. */
+    val onEditDebugBaseUrl: () -> Unit,
     val onLimit: (Double) -> Unit,
     val onLiveAuto: (Boolean) -> Unit,
 )
 
+/** The own server's models for the picker: from the last connection test or "Vom Server laden". */
+@Immutable
+internal data class ServerModels(val ids: List<String> = emptyList(), val loading: Boolean = false, val failed: Boolean = false)
+
 /**
- * Settings section 7 "KI" (docs/AI.md): what it does in one line, the Claude API key, the model,
- * the monthly cap with this month's usage and the live auto-refresh switch. On Android 7 only an
- * explanation is shown.
+ * Settings section "KI" (docs/AI-PROVIDERS.md §10.1): what it does in one line, the chosen
+ * provider with its capabilities, its key (own server: address), the Gemini "Tarif", the model,
+ * who runs "⚡ Live", in debug builds the base URL override, the monthly cap with this month's
+ * usage and the live auto-refresh switch.
+ *
+ * @param sdkAvailable the Anthropic SDK runs here (Android 8+); below, Claude asks for another provider.
+ * @param debugTools show "Entwickler: Basis-URL" (BuildConfig.DEBUG only).
  */
 @Composable
 internal fun AiCard(
     settings: AppSettings,
-    supported: Boolean,
     usage: UsageSnapshot,
+    serverModels: ServerModels,
+    today: LocalDate,
+    sdkAvailable: Boolean,
+    debugTools: Boolean,
     reduceMotion: Boolean,
     actions: AiActions,
     modifier: Modifier = Modifier,
 ) {
+    val ai = settings.ai
+    val provider = ai.provider
+    val spec = ProviderCatalog.spec(provider)
+    val supported = !spec.needsSdk || sdkAvailable
     GlassCard(modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             SparkleBadge()
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
-                Overline("Claude · dein Erklärer")
+                Overline("KI · dein Erklärer")
                 Text(
                     "Frag nach & ⚡ Live",
                     style = MaterialTheme.typography.titleLarge.copy(fontFamily = MaterialTheme.typography.headlineSmall.fontFamily),
@@ -112,55 +145,65 @@ internal fun AiCard(
             }
         }
         Text(
-            text = "Frag Claude zu jedem Artikel und hol dir brandaktuelle Meldungen auf Knopfdruck – mit deinem eigenen API-Key.",
+            text = "Frag zu jedem Artikel nach und hol dir brandaktuelle Meldungen – mit deinem eigenen Key bei einem Anbieter deiner Wahl.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 12.dp),
         )
+
+        Spacer(Modifier.height(20.dp))
+        Overline("Anbieter")
+        Spacer(Modifier.height(8.dp))
+        ProviderSummary(spec = spec, ai = ai, onChange = actions.onPickProvider)
         if (!supported) {
-            Spacer(Modifier.height(14.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .lamina()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(Icons.Rounded.PhoneAndroid, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    "Braucht Android 8 oder neuer – auf diesem Gerät bleiben die KI-Funktionen aus. Alles andere läuft wie gewohnt.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+            Text(
+                unsupportedProviderHint(spec),
+                style = MaterialTheme.typography.bodyMedium,
+                color = StatusPalette.attention(),
+                modifier = Modifier.padding(top = 10.dp),
+            )
+        } else {
+            Spacer(Modifier.height(10.dp))
+            if (provider == AiProviderId.CUSTOM) {
+                ServerRow(ai = ai, onEdit = actions.onEditKey)
+            } else {
+                KeyRow(spec = spec, ai = ai, onEdit = actions.onEditKey)
             }
-            return@GlassCard
+
+            if (provider == AiProviderId.GEMINI) {
+                Spacer(Modifier.height(22.dp))
+                Overline("Tarif")
+                Spacer(Modifier.height(8.dp))
+                GeminiTierChoice(selected = ai.of(provider).geminiTier, onSelect = actions.onGeminiTier)
+            }
+
+            Spacer(Modifier.height(22.dp))
+            Overline("Modell")
+            Spacer(Modifier.height(8.dp))
+            if (provider == AiProviderId.CUSTOM) {
+                ServerModelPicker(ai = ai, models = serverModels, actions = actions)
+            } else {
+                ModelPicker(ai = ai, provider = provider, today = today, actions = actions)
+            }
         }
 
-        Spacer(Modifier.height(16.dp))
-        val provider = settings.ai.provider
-        val providerSettings = settings.ai.of(provider)
-        KeyRow(
-            hasKey = providerSettings.hasKey,
-            untested = providerSettings.keyUntested,
-            rejected = providerSettings.keyRejected,
-            onEdit = actions.onEditKey,
-        )
-
         Spacer(Modifier.height(22.dp))
-        Overline("Modell")
+        Overline("⚡ Live")
         Spacer(Modifier.height(8.dp))
-        val selectedModel = ProviderCatalog.effectiveModel(settings.ai, provider)
-        Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            ProviderCatalog.spec(provider).models.forEach { model ->
-                ModelOption(
-                    title = model.label,
-                    subtitle = model.subtitle,
-                    badge = model.badge,
-                    selected = selectedModel == model.id,
-                    onSelect = { actions.onModel(model.id) },
-                )
-            }
+        LiveProviderRow(ai = ai, sdkAvailable = sdkAvailable, onChange = actions.onPickLiveProvider)
+
+        if (debugTools && provider != AiProviderId.CUSTOM) {
+            Spacer(Modifier.height(22.dp))
+            Overline("Entwickler")
+            Spacer(Modifier.height(8.dp))
+            SettingRow(
+                icon = Icons.Rounded.Code,
+                title = "Entwickler: Basis-URL",
+                subtitle = debugBaseUrlLabel(ai.of(provider).debugBaseUrl),
+                action = "Ändern",
+                onAction = actions.onEditDebugBaseUrl,
+                actionDescription = "Basis-URL von ${spec.name} ändern",
+            )
         }
 
         Spacer(Modifier.height(22.dp))
@@ -193,16 +236,122 @@ private fun SparkleBadge() {
     }
 }
 
+/** The chosen provider: name in serif, its tagline and capabilities, and "Wechseln". */
 @Composable
-private fun KeyRow(hasKey: Boolean, untested: Boolean, rejected: Boolean, onEdit: () -> Unit) {
-    // Green only for a key that passed the test or answered a request, amber for one Anthropic
-    // refused.
-    val works = hasKey && !untested && !rejected
+private fun ProviderSummary(spec: ProviderSpec, ai: AiSettings, onChange: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .lamina(strong = true)
+            .padding(start = 16.dp, end = 10.dp, top = 14.dp, bottom = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(end = 10.dp),
+        ) {
+            Text(
+                spec.name,
+                style = MaterialTheme.typography.titleMedium.copy(fontFamily = MaterialTheme.typography.headlineSmall.fontFamily),
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(spec.tagline, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(8.dp))
+            CapabilityChips(capabilities(spec, ai))
+        }
+        GlassPillButton(text = "Wechseln", onClick = onChange, contentDescription = "KI-Anbieter wechseln")
+    }
+}
+
+/** The capability pills of a provider ("✓ Chat", "✗ Live", "ab Android 8"), read as one sentence. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun CapabilityChips(capabilities: List<Capability>, modifier: Modifier = Modifier) {
+    val spoken = capabilitySemantics(capabilities)
+    FlowRow(
+        modifier = modifier.clearAndSetSemantics { contentDescription = spoken },
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        capabilities.forEach { capability ->
+            val tint = if (capability.available) StatusPalette.ok() else MaterialTheme.colorScheme.onSurfaceVariant
+            Row(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(tint.copy(alpha = if (isGlassDark()) 0.16f else 0.10f))
+                    .padding(start = 6.dp, end = 9.dp, top = 3.dp, bottom = 3.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    if (capability.available) Icons.Rounded.Check else Icons.Rounded.Close,
+                    contentDescription = null,
+                    tint = tint,
+                    modifier = Modifier.size(12.dp),
+                )
+                Spacer(Modifier.width(4.dp))
+                Text(capability.label, style = MaterialTheme.typography.labelSmall, color = tint, maxLines = 1)
+            }
+        }
+    }
+}
+
+@Composable
+private fun KeyRow(spec: ProviderSpec, ai: AiSettings, onEdit: () -> Unit) {
+    val p = ai.of(spec.id)
+    // Green only for a key that passed the test or answered a request, amber for one the
+    // provider refused.
+    val works = p.hasKey && !p.keyUntested && !p.keyRejected
     val tint = when {
-        hasKey && rejected -> StatusPalette.attention()
+        p.hasKey && p.keyRejected -> StatusPalette.attention()
         works -> StatusPalette.ok()
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
+    SettingRow(
+        icon = Icons.Rounded.Key,
+        iconTint = tint,
+        title = "API-Key",
+        subtitle = aiKeyRowLabel(spec, p.hasKey, p.keyUntested, p.keyRejected),
+        subtitleColor = tint,
+        action = if (p.hasKey) "Ändern" else "Eintragen",
+        onAction = onEdit,
+        // A missing or refused key needs a new one: the strong button invites the change.
+        strong = !p.hasKey || p.keyRejected,
+        actionDescription = aiKeyDialogTitle(spec, p.hasKey),
+    )
+}
+
+/** The own server: its address, and whether it is set up. */
+@Composable
+private fun ServerRow(ai: AiSettings, onEdit: () -> Unit) {
+    val configured = ai.isConfigured(AiProviderId.CUSTOM)
+    val tint = if (configured) StatusPalette.ok() else MaterialTheme.colorScheme.onSurfaceVariant
+    SettingRow(
+        icon = Icons.Rounded.Dns,
+        iconTint = tint,
+        title = "Server",
+        subtitle = serverLabel(ai.of(AiProviderId.CUSTOM).baseUrl) + if (ai.of(AiProviderId.CUSTOM).hasKey) " · mit Key" else "",
+        subtitleColor = if (configured) MaterialTheme.colorScheme.onSurfaceVariant else tint,
+        action = if (configured) "Ändern" else "Einrichten",
+        onAction = onEdit,
+        strong = !configured,
+        actionDescription = aiKeyDialogTitle(ProviderCatalog.CUSTOM, configured),
+    )
+}
+
+/** A lamina row: icon, title and state, and one pill on the right. */
+@Composable
+private fun SettingRow(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    action: String,
+    onAction: () -> Unit,
+    actionDescription: String,
+    iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    subtitleColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    strong: Boolean = false,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -210,57 +359,182 @@ private fun KeyRow(hasKey: Boolean, untested: Boolean, rejected: Boolean, onEdit
             .padding(start = 16.dp, end = 10.dp, top = 10.dp, bottom = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            Icons.Rounded.Key,
-            contentDescription = null,
-            tint = tint,
-        )
+        Icon(icon, contentDescription = null, tint = iconTint)
         Spacer(Modifier.width(12.dp))
         Column(
             Modifier
                 .weight(1f)
                 .padding(end = 12.dp),
         ) {
-            Text("API-Key", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface)
+            Text(title, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface)
             Text(
-                text = aiKeyRowLabel(hasKey, untested, rejected),
+                text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                color = tint,
+                color = subtitleColor,
             )
         }
         GlassPillButton(
-            text = if (hasKey) "Ändern" else "Eintragen",
-            onClick = onEdit,
-            // A refused key needs a new one: the strong button invites the change.
-            style = if (hasKey && !rejected) PillStyle.Tonal else PillStyle.Filled,
-            contentDescription = if (hasKey) "Claude-API-Key ändern" else "Claude-API-Key eintragen",
+            text = action,
+            onClick = onAction,
+            style = if (strong) PillStyle.Filled else PillStyle.Tonal,
+            contentDescription = actionDescription,
         )
     }
 }
 
-/** A selectable lamina card for one model, with a radio dot. */
+/** The curated models of [provider] with prices, and "Eigenes Modell …". */
 @Composable
-private fun ModelOption(title: String, subtitle: String, badge: String?, selected: Boolean, onSelect: () -> Unit) {
+private fun ModelPicker(ai: AiSettings, provider: AiProviderId, today: LocalDate, actions: AiActions) {
+    val choices = remember(ai, provider, today) { modelChoices(ai, provider, today) }
+    val custom = customModelOf(ai, provider)
+    Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        choices.forEach { choice ->
+            ChoiceRow(
+                title = choice.title,
+                subtitle = choice.subtitle,
+                badge = choice.badge,
+                selected = choice.selected,
+                enabled = choice.enabled,
+                onSelect = { actions.onModel(choice.id) },
+            )
+        }
+        ChoiceRow(
+            title = "Eigenes Modell …",
+            subtitle = custom?.let { id -> "$id · ${priceLine(ai, provider, id, today)}" } ?: "z. B. ${customModelExample(provider)}",
+            selected = custom != null,
+            onSelect = actions.onCustomModel,
+        )
+    }
+}
+
+/**
+ * The own server's models: the ones it listed (last connection test or "Vom Server laden") as
+ * choices, the stored one even when the list is not loaded, and "Eigenes Modell …".
+ */
+@Composable
+private fun ServerModelPicker(ai: AiSettings, models: ServerModels, actions: AiActions) {
+    val stored = ai.of(AiProviderId.CUSTOM).model?.trim()?.takeIf { it.isNotEmpty() }
+    val ids = (listOfNotNull(stored) + models.ids).distinct()
+    Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        ids.forEach { id ->
+            ChoiceRow(
+                title = id,
+                subtitle = if (id in models.ids) "Auf deinem Server · kostenlos" else "Gewählt · kostenlos",
+                selected = id == stored,
+                onSelect = { actions.onModel(id) },
+            )
+        }
+        ChoiceRow(
+            title = "Eigenes Modell …",
+            subtitle = "Modell-ID von Hand, z. B. ${customModelExample(AiProviderId.CUSTOM)}",
+            selected = false,
+            onSelect = actions.onCustomModel,
+        )
+    }
+    if (stored == null) {
+        Text(
+            "Noch kein Modell gewählt – lade die Liste vom Server oder trag eins ein.",
+            style = MaterialTheme.typography.bodySmall,
+            color = StatusPalette.attention(),
+            modifier = Modifier.padding(top = 8.dp),
+        )
+    }
+    if (models.failed) {
+        Text(
+            "Der Server hat keine Modelle geliefert. Läuft er, und stimmt die Adresse?",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+    }
+    if (ai.isConfigured(AiProviderId.CUSTOM)) {
+        Spacer(Modifier.height(10.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            GlassPillButton(
+                text = if (models.loading) "Lade …" else "Vom Server laden",
+                onClick = actions.onLoadServerModels,
+                icon = Icons.Rounded.Refresh,
+                style = PillStyle.Quiet,
+                enabled = !models.loading,
+            )
+            if (models.loading) {
+                Spacer(Modifier.width(10.dp))
+                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+            }
+        }
+    }
+}
+
+/**
+ * "⚡ Live": who researches, and "Ändern"; when nobody can (the chat provider has no Live and no
+ * own Live provider is chosen) the one-sentence reason in amber and "Live-Anbieter wählen".
+ */
+@Composable
+private fun LiveProviderRow(ai: AiSettings, sdkAvailable: Boolean, onChange: () -> Unit) {
+    val line = liveProviderLine(ai)
+    if (line == null) {
+        val chat = ProviderCatalog.spec(ai.effectiveLiveProvider)
+        Text(
+            chat.liveUnavailableText ?: "Live ist gerade nicht verfügbar.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = StatusPalette.attention(),
+        )
+        Spacer(Modifier.height(10.dp))
+        GlassPillButton(text = AiTexts.LIVE_PROVIDER_ACTION, onClick = onChange, icon = Icons.Rounded.Bolt, style = PillStyle.Filled)
+        return
+    }
+    val live = ai.effectiveLiveProvider
+    val liveSpec = ProviderCatalog.spec(live)
+    val supported = !liveSpec.needsSdk || sdkAvailable
+    val ready = supported && ai.isConfigured(live) && liveSpec.live == LiveSupport.YES
+    SettingRow(
+        icon = Icons.Rounded.Bolt,
+        iconTint = if (ready) StatusPalette.ok() else StatusPalette.attention(),
+        title = line,
+        subtitle = providerStatusLine(ai, live, supported),
+        subtitleColor = if (ready) MaterialTheme.colorScheme.onSurfaceVariant else StatusPalette.attention(),
+        action = "Ändern",
+        onAction = onChange,
+        actionDescription = AiTexts.LIVE_PROVIDER_ACTION,
+    )
+}
+
+/**
+ * A selectable lamina row with a radio dot (models, Gemini tariff, picker entries). [enabled]
+ * false greys it out (a Pro model with a free Gemini key); [compact] is for dialogs.
+ */
+@Composable
+internal fun ChoiceRow(
+    title: String,
+    subtitle: String,
+    selected: Boolean,
+    onSelect: () -> Unit,
+    badge: String? = null,
+    enabled: Boolean = true,
+    compact: Boolean = false,
+) {
     val colors = MaterialTheme.colorScheme
     val haptics = rememberToggleHaptics()
-    val ring by animateFloatAsState(if (selected) 1f else 0f, spring(stiffness = Spring.StiffnessMediumLow), label = "modelRing")
+    val ring by animateFloatAsState(if (selected) 1f else 0f, spring(stiffness = Spring.StiffnessMediumLow), label = "choiceRing")
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .alpha(if (enabled) 1f else 0.5f)
             .lamina(GlassShapes.tile, strong = selected)
             .border(2.dp, colors.primary.copy(alpha = ring), GlassShapes.tile)
             .selectable(
                 selected = selected,
+                enabled = enabled,
                 role = Role.RadioButton,
                 onClick = {
                     if (!selected) haptics(true)
                     onSelect()
                 },
             )
-            .heightIn(min = 64.dp)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .heightIn(min = if (compact) 56.dp else 64.dp)
+            .padding(horizontal = 16.dp, vertical = if (compact) 10.dp else 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioDot(selected = selected, progress = ring)
@@ -269,8 +543,10 @@ private fun ModelOption(title: String, subtitle: String, badge: String?, selecte
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontFamily = MaterialTheme.typography.headlineSmall.fontFamily),
+                    style = (if (compact) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleMedium)
+                        .copy(fontFamily = MaterialTheme.typography.headlineSmall.fontFamily),
                     color = colors.onSurface,
+                    modifier = Modifier.weight(1f, fill = false),
                 )
                 if (badge != null) {
                     Spacer(Modifier.width(8.dp))
@@ -278,6 +554,7 @@ private fun ModelOption(title: String, subtitle: String, badge: String?, selecte
                         text = badge,
                         style = MaterialTheme.typography.labelSmall,
                         color = colors.primary,
+                        maxLines = 1,
                         modifier = Modifier
                             .clip(CircleShape)
                             .background(colors.primary.copy(alpha = if (isGlassDark()) 0.2f else 0.12f))
@@ -285,13 +562,17 @@ private fun ModelOption(title: String, subtitle: String, badge: String?, selecte
                     )
                 }
             }
-            Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+            Text(
+                subtitle,
+                style = if (compact) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium,
+                color = colors.onSurfaceVariant,
+            )
         }
     }
 }
 
 @Composable
-private fun RadioDot(selected: Boolean, progress: Float) {
+internal fun RadioDot(selected: Boolean, progress: Float) {
     val colors = MaterialTheme.colorScheme
     Box(
         modifier = Modifier
@@ -347,7 +628,8 @@ private fun LimitControl(limit: Double, onCommit: (Double) -> Unit) {
 
 /**
  * This month's spending: the amount large in serif ("0,84 $" with a quiet "von 5 $"), a labelled
- * bar that starts as a small accent stub, and the request counts on their own line.
+ * bar that starts as a small accent stub, the request counts on their own line and, when some
+ * requests ran with a model the price table does not know, that the sum is partly estimated.
  */
 @Composable
 private fun UsageMeter(usage: UsageSnapshot, limit: Double, reduceMotion: Boolean) {
@@ -365,6 +647,7 @@ private fun UsageMeter(usage: UsageSnapshot, limit: Double, reduceMotion: Boolea
         if (reduceMotion) animated.snapTo(target) else animated.animateTo(target, tween(900))
     }
     val track = if (isGlassDark()) Color.White.copy(alpha = 0.10f) else Color.Black.copy(alpha = 0.07f)
+    val estimated = estimatedNote(usage.estimatedRequests)
     Column(
         Modifier
             .fillMaxWidth()
@@ -372,7 +655,8 @@ private fun UsageMeter(usage: UsageSnapshot, limit: Double, reduceMotion: Boolea
             .padding(16.dp)
             .semantics(mergeDescendants = true) {
                 liveRegion = LiveRegionMode.Polite
-                contentDescription = usageLine(usage.spentUsd, limit, usage.requests, usage.webSearches).replace("$", "Dollar")
+                contentDescription = (usageLine(usage.spentUsd, limit, usage.requests, usage.webSearches) + (estimated?.let { ". $it" } ?: ""))
+                    .replace("$", "Dollar")
             },
     ) {
         Overline("Diesen Monat")
@@ -416,9 +700,17 @@ private fun UsageMeter(usage: UsageSnapshot, limit: Double, reduceMotion: Boolea
             style = MaterialTheme.typography.bodySmall,
             color = colors.onSurfaceVariant,
         )
+        if (estimated != null) {
+            Text(
+                text = estimated,
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
         if (fraction != null && fraction >= 1f) {
             Text(
-                text = "Limit erreicht – bis zum Monatsende pausiert die KI.",
+                text = "Limit erreicht – bis zum Monatsende pausiert die KI (außer kostenlosen Anbietern).",
                 style = MaterialTheme.typography.bodySmall,
                 color = colors.error,
                 modifier = Modifier.padding(top = 4.dp),
@@ -431,183 +723,3 @@ private fun UsageMeter(usage: UsageSnapshot, limit: Double, reduceMotion: Boolea
 private val UsageStub = 8.dp
 
 private const val WARN_AT = 0.8f
-
-/**
- * "Claude-API-Key eintragen/ändern": short steps, link to the Anthropic console, a password
- * field with show/hide, "Speichern & testen" (only a working key is stored; offline also
- * "Ohne Test speichern", which says so) and, for an existing key and a non-null [onRemove],
- * "Key entfernen".
- */
-@Composable
-internal fun AiKeyDialog(
-    hasKey: Boolean,
-    state: AiKeyState,
-    onSaveAndTest: (key: String, skipTest: Boolean) -> Unit,
-    onOpenConsole: () -> Unit,
-    onRemove: (() -> Unit)?,
-    onDismiss: () -> Unit,
-) {
-    // Deliberately not rememberSaveable: the secret should not end up in saved instance state.
-    var key by remember { mutableStateOf("") }
-    var visible by remember { mutableStateOf(false) }
-    val checking = state == AiKeyState.Checking
-    val saved = state == AiKeyState.Saved || state == AiKeyState.SavedUntested || state == AiKeyState.SavedNoCredit
-    val canSave = key.isNotBlank() && !checking
-    val message = aiKeyMessage(state)
-    val colors = MaterialTheme.colorScheme
-
-    GlassDialog(
-        onDismissRequest = onDismiss,
-        title = if (hasKey) "Claude-API-Key ändern" else "Claude-API-Key eintragen",
-        icon = Icons.Rounded.Key,
-        dismissOnClickOutside = !checking,
-        buttons = {
-            if (saved) {
-                DialogButton("Fertig", onDismiss)
-            } else {
-                DialogButton("Abbrechen", onDismiss)
-                DialogButton(
-                    text = if (checking) "Prüfe …" else "Speichern & testen",
-                    onClick = { onSaveAndTest(key, false) },
-                    enabled = canSave,
-                )
-            }
-        },
-    ) {
-        Text(
-            "Der Key gehört dir: Anfragen laufen über dein eigenes Anthropic-Konto, unabhängig von einem Claude-Abo.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = colors.onSurfaceVariant,
-        )
-        Spacer(Modifier.height(14.dp))
-        Steps(
-            listOf(
-                "console.anthropic.com öffnen und anmelden",
-                "„API Keys“ → „Create Key“",
-                "Key kopieren und hier einfügen",
-            ),
-        )
-        Spacer(Modifier.height(12.dp))
-        Text(
-            "Tipp: Setz dir dort unter „Limits“ ein Ausgabenlimit – so wird nie mehr abgebucht, als du willst.",
-            style = MaterialTheme.typography.bodySmall,
-            color = colors.onSurfaceVariant,
-            modifier = Modifier
-                .fillMaxWidth()
-                .lamina()
-                .padding(12.dp),
-        )
-        Spacer(Modifier.height(12.dp))
-        GlassPillButton(
-            text = "console.anthropic.com öffnen",
-            onClick = onOpenConsole,
-            icon = Icons.AutoMirrored.Rounded.OpenInNew,
-            style = PillStyle.Quiet,
-        )
-        Spacer(Modifier.height(14.dp))
-        OutlinedTextField(
-            value = key,
-            onValueChange = { key = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("API-Key") },
-            placeholder = { Text("sk-ant-…") },
-            singleLine = true,
-            enabled = !checking,
-            visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { if (canSave) onSaveAndTest(key, false) }),
-            trailingIcon = {
-                IconButton(onClick = { visible = !visible }) {
-                    Icon(
-                        imageVector = if (visible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
-                        contentDescription = if (visible) "Key verbergen" else "Key anzeigen",
-                    )
-                }
-            },
-            supportingText = {
-                val issue = if (key.isNotBlank()) aiKeyFormatIssue(key) else null
-                Text(issue?.let(::aiKeyFormatHint) ?: "Wird verschlüsselt nur auf diesem Gerät gespeichert.")
-            },
-        )
-        if (message != null) {
-            Row(
-                modifier = Modifier
-                    .padding(top = 6.dp)
-                    .semantics { liveRegion = LiveRegionMode.Polite },
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (checking) {
-                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
-                    Spacer(Modifier.width(8.dp))
-                }
-                Text(
-                    text = message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = when (state) {
-                        AiKeyState.Saved -> StatusPalette.ok()
-                        AiKeyState.SavedNoCredit -> StatusPalette.attention()
-                        AiKeyState.Checking, AiKeyState.SavedUntested -> colors.onSurfaceVariant
-                        else -> colors.error
-                    },
-                )
-            }
-        }
-        if (state == AiKeyState.Failed(AiKeyProblem.NETWORK) && key.isNotBlank()) {
-            Spacer(Modifier.height(8.dp))
-            GlassPillButton(text = "Ohne Test speichern", onClick = { onSaveAndTest(key, true) }, style = PillStyle.Quiet)
-        }
-        if (hasKey && onRemove != null && !saved) {
-            Spacer(Modifier.height(8.dp))
-            DialogButton("Gespeicherten Key entfernen", onRemove, color = colors.error)
-        }
-    }
-}
-
-/** Numbered steps with accent numerals. */
-@Composable
-internal fun Steps(steps: List<String>) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        steps.forEachIndexed { index, step ->
-            Row(verticalAlignment = Alignment.Top) {
-                Box(
-                    modifier = Modifier
-                        .size(22.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = if (isGlassDark()) 0.25f else 0.14f)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        "${index + 1}",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                }
-                Spacer(Modifier.width(10.dp))
-                Text(
-                    step,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(top = 1.dp),
-                )
-            }
-        }
-    }
-}
-
-/** Confirmation before deleting the stored Claude key. */
-@Composable
-internal fun RemoveAiKeyDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    GlassDialog(
-        onDismissRequest = onDismiss,
-        title = "Key entfernen?",
-        buttons = {
-            DialogButton("Abbrechen", onDismiss)
-            DialogButton("Entfernen", onConfirm, color = MaterialTheme.colorScheme.error)
-        },
-    ) {
-        Text(
-            "Danach sind „Frag nach“ und „⚡ Live“ aus, bis du wieder einen Key einträgst. Dein bisheriger Verbrauch bleibt sichtbar.",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-    }
-}

@@ -13,6 +13,12 @@ enum class SettingsTarget {
 
     /** The "KI" section (model, monthly limit, usage). */
     AI,
+
+    /** The "KI" section with the provider picker open ("Anbieter wählen", e.g. Claude below Android 8). */
+    AI_PROVIDER,
+
+    /** The "KI" section with the picker of the Live provider open ("Live-Anbieter wählen"). */
+    AI_LIVE_PROVIDER,
 }
 
 /**

@@ -1,6 +1,9 @@
 package com.cedrickgd.morgenbriefing.ui.settings
 
 import androidx.compose.runtime.Immutable
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
 import com.cedrickgd.morgenbriefing.domain.Fmt
 import com.cedrickgd.morgenbriefing.util.SystemStatus
@@ -52,19 +55,14 @@ sealed interface SourceStatus {
 data class HeroText(val title: String, val subtitle: String, val ready: Boolean)
 
 /**
- * The pills of the status hero, in display order. [aiSupported] false hides the KI pill
- * (Android 7); a missing key is neutral, because KI is optional for the morning briefing, and so
- * is a key saved without a passed test ([aiKeyUntested]): the pill must not claim it works. A key
- * Anthropic refused ([aiKeyRejected]) needs a tap – the pill opens the key dialog – but still
- * does not hold up the morning briefing ([heroText]).
+ * The pills of the status hero, in display order. The KI pill follows the chat provider of [ai]
+ * (docs/AI-PROVIDERS.md §10.5, [aiStatusItem]) and is shown on every API level.
  */
 internal fun statusItems(
     system: SystemStatus,
     source: SourceStatus,
-    aiSupported: Boolean,
-    hasAiKey: Boolean,
-    aiKeyUntested: Boolean = false,
-    aiKeyRejected: Boolean = false,
+    ai: AiSettings,
+    aiProviderSupported: Boolean,
 ): List<StatusItem> = buildList {
     add(
         StatusItem(
@@ -113,26 +111,30 @@ internal fun statusItems(
             },
         ),
     )
-    if (aiSupported) {
-        add(
-            StatusItem(
-                kind = StatusKind.AI,
-                level = when {
-                    !hasAiKey -> StatusLevel.NEUTRAL
-                    aiKeyRejected -> StatusLevel.ATTENTION
-                    aiKeyUntested -> StatusLevel.NEUTRAL
-                    else -> StatusLevel.OK
-                },
-                label = "KI",
-                state = when {
-                    !hasAiKey -> "aus, kein API-Key"
-                    aiKeyRejected -> "Key abgelehnt"
-                    aiKeyUntested -> "Key noch nicht getestet"
-                    else -> "eingerichtet"
-                },
-            ),
-        )
+    add(aiStatusItem(ai, aiProviderSupported))
+}
+
+/**
+ * The KI pill for the chat provider of [ai]. [supported] false (Claude below Android 8) is a
+ * neutral "Claude braucht Android 8". A missing key (own server: address) is neutral, because KI
+ * is optional for the morning briefing, and so is a key saved without a passed test: the pill
+ * must not claim it works. A key the provider refused needs a tap – the pill opens the key
+ * dialog – but still does not hold up the morning briefing ([heroText]).
+ */
+internal fun aiStatusItem(ai: AiSettings, supported: Boolean): StatusItem {
+    val spec = ProviderCatalog.spec(ai.provider)
+    val p = ai.of(spec.id)
+    val custom = spec.id == AiProviderId.CUSTOM
+    val (level, state) = when {
+        !supported -> StatusLevel.NEUTRAL to "${spec.brand} braucht Android 8"
+        custom && !ai.isConfigured(spec.id) -> StatusLevel.NEUTRAL to "aus – kein Server eingerichtet"
+        custom -> StatusLevel.OK to "eingerichtet · eigener Server"
+        !p.hasKey -> StatusLevel.NEUTRAL to "aus – kein Key für ${spec.brand}"
+        p.keyRejected -> StatusLevel.ATTENTION to "Key von ${spec.brand} abgelehnt"
+        p.keyUntested -> StatusLevel.NEUTRAL to "Key noch nicht getestet"
+        else -> StatusLevel.OK to "eingerichtet · ${spec.brand}"
     }
+    return StatusItem(kind = StatusKind.AI, level = level, label = "KI", state = state)
 }
 
 /**

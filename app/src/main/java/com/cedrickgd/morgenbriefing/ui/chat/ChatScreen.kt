@@ -146,7 +146,7 @@ fun ChatScreen(
         onClear = session::clear,
         modifier = modifier,
     )
-    if (keyDialog) InlineAiKeyDialog(onDismiss = { keyDialog = false })
+    if (keyDialog) InlineAiKeyDialog(provider = state.provider ?: AiProviderId.ANTHROPIC, onDismiss = { keyDialog = false })
 }
 
 /**

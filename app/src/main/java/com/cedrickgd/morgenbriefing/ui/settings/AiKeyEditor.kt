@@ -2,6 +2,7 @@ package com.cedrickgd.morgenbriefing.ui.settings
 
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -15,9 +16,13 @@ import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
 import com.cedrickgd.morgenbriefing.ai.AiKeyCheck
 import com.cedrickgd.morgenbriefing.ai.AiServices
-import com.cedrickgd.morgenbriefing.ai.AiSupport
+import com.cedrickgd.morgenbriefing.ai.KeyCheckOutcome
 import com.cedrickgd.morgenbriefing.ai.KeyExtras
+import com.cedrickgd.morgenbriefing.ai.compat.CustomServer
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.AiSettings
+import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.util.attempt
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import kotlinx.coroutines.CancellationException
@@ -35,17 +40,36 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
- * "Speichern & testen" of an AI key: one key check through the AI facade, and only a key that
- * works is stored (offline, "Ohne Test speichern" stores it marked as untested). Shared by the
- * settings page and the in-place key dialog that "Frag nach" and "⚡ Live" open where the user
- * is ([InlineAiKeyDialog]).
+ * What the key dialog hands over: the typed key ([key] blank = keep the stored one, or none for
+ * the own server) and what is stored with it. Never logged: [toString] leaves the key out.
  *
- * @param ai the AI facade, or null where AI cannot run (Android 7) — never touched then.
+ * @property skipTest "Ohne Test speichern" (offline): stored, marked as untested.
+ * @property extras the Anthropic workspace id and the own server's address as typed.
+ * @property geminiTier the chosen "Tarif" of a Gemini key; null for every other provider.
+ */
+@Immutable
+internal class KeySubmission(
+    val key: String,
+    val skipTest: Boolean = false,
+    val extras: KeyExtras = KeyExtras(),
+    val geminiTier: GeminiTier? = null,
+) {
+    override fun toString(): String = "KeySubmission(skipTest=$skipTest, tier=$geminiTier)"
+}
+
+/**
+ * "Speichern & testen" of an AI key, for every provider: one key or connection check through the
+ * AI facade with the candidate configuration, and only what works is stored (offline, "Ohne Test
+ * speichern" stores it marked as untested). Shared by the settings page and the in-place key
+ * dialog that "Frag nach" and "⚡ Live" open where the user is ([InlineAiKeyDialog]).
+ *
+ * @param onServerModels receives the model ids the own server listed in a passed connection test.
  */
 internal class AiKeyEditor(
     private val scope: CoroutineScope,
     private val container: AppContainer,
-    private val ai: (() -> AiServices)?,
+    private val ai: () -> AiServices,
+    private val onServerModels: (List<String>) -> Unit = {},
 ) {
     private val _state = MutableStateFlow<AiKeyState>(AiKeyState.Idle)
     val state: StateFlow<AiKeyState> = _state.asStateFlow()
@@ -53,53 +77,67 @@ internal class AiKeyEditor(
     private var job: Job? = null
 
     /**
-     * Tests [raw] for [provider] (null = the active chat provider) together with [extras] (the
-     * Anthropic workspace id, the own server's address) and stores all of it when it works; with
-     * [skipTest] (offline) it is stored untested and the dialog and the settings say so instead
-     * of claiming it works. A key that works but has no credit is stored with a warning.
+     * Tests [submission] for [provider] and stores the key, the workspace id, the server address
+     * and the Gemini tariff when it works. A blank key re-tests the stored one (a changed
+     * workspace id or tariff); the own server may have no key at all. A key that works but has
+     * no credit is stored with a warning. A freshly connected own server without a chosen model
+     * gets the first model it lists, so the chat can start right away.
      */
-    fun saveAndTest(raw: String, skipTest: Boolean = false, provider: AiProviderId? = null, extras: KeyExtras = KeyExtras()) {
-        val key = raw.trim()
-        if (key.isEmpty()) return
-        val services = ai
-        if (services == null) {
-            _state.value = AiKeyState.Failed(AiKeyProblem.UNSUPPORTED)
-            return
-        }
+    fun saveAndTest(provider: AiProviderId, submission: KeySubmission) {
+        val key = submission.key.trim()
         job?.cancel()
         job = scope.launch {
+            val stored = attempt { container.settings.current().ai }.getOrNull() ?: AiSettings()
+            if (key.isEmpty() && !provider.keyOptional && !stored.of(provider).hasKey) return@launch
             _state.value = AiKeyState.Checking
-            val target = provider ?: attempt { container.settings.current().ai.provider }.getOrNull() ?: AiProviderId.ANTHROPIC
-            var noCredit = false
-            if (!skipTest) {
-                val outcome = try {
-                    services().testKey(target, key, extras).check
+            var outcome: KeyCheckOutcome? = null
+            if (!submission.skipTest) {
+                outcome = try {
+                    ai().testKey(provider, key.ifEmpty { null }, submission.extras)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Throwable) {
-                    // Anything unexpected from the facade (incl. a missing implementation).
+                    // Anything unexpected from the facade.
                     Log.w(TAG, "Key test failed", e)
                     null
                 }
                 ensureActive()
-                val problem = outcome?.toProblem() ?: if (outcome == null) AiKeyProblem.UNKNOWN else null
+                val problem = outcome?.check?.toProblem() ?: if (outcome == null) AiKeyProblem.UNKNOWN else null
                 if (problem != null) {
                     _state.value = AiKeyState.Failed(problem)
                     return@launch
                 }
-                noCredit = outcome == AiKeyCheck.OK_NO_CREDIT
             }
-            val saved = attempt {
-                extras.workspaceId?.let { container.settings.setAnthropicWorkspaceId(it) }
-                extras.baseUrl?.let { container.settings.setCustomBaseUrl(it) }
-                container.settings.setAiKey(target, key, tested = !skipTest)
-            }
-            _state.value = if (saved.isSuccess) {
-                savedKeyState(tested = !skipTest, noCredit = noCredit)
-            } else {
+            val models = outcome?.serverModels.orEmpty()
+            val saved = attempt { store(provider, key, submission, stored, models) }
+            if (saved.isFailure) {
                 Log.w(TAG, "Key could not be stored", saved.exceptionOrNull())
-                AiKeyState.Failed(AiKeyProblem.SAVE_FAILED)
+                _state.value = AiKeyState.Failed(AiKeyProblem.SAVE_FAILED)
+                return@launch
             }
+            if (provider == AiProviderId.CUSTOM && outcome != null) onServerModels(models)
+            _state.value = when {
+                provider == AiProviderId.CUSTOM && outcome != null -> AiKeyState.ServerConnected(models.size)
+                else -> savedKeyState(tested = !submission.skipTest, noCredit = outcome?.check == AiKeyCheck.OK_NO_CREDIT)
+            }
+        }
+    }
+
+    private suspend fun store(provider: AiProviderId, key: String, submission: KeySubmission, stored: AiSettings, models: List<String>) {
+        val settings = container.settings
+        if (provider == AiProviderId.ANTHROPIC) submission.extras.workspaceId?.let { settings.setAnthropicWorkspaceId(it) }
+        if (provider == AiProviderId.CUSTOM) {
+            submission.extras.baseUrl?.let { typed -> settings.setCustomBaseUrl(CustomServer.normalize(typed) ?: typed) }
+        }
+        if (provider == AiProviderId.GEMINI) submission.geminiTier?.let { settings.setGeminiTier(it) }
+        when {
+            key.isNotEmpty() -> settings.setAiKey(provider, key, tested = !submission.skipTest)
+            // The stored key passed again (with a new workspace id or tariff).
+            !submission.skipTest && stored.of(provider).hasKey -> settings.markAiKeyWorks(provider)
+        }
+        val first = models.firstOrNull()
+        if (provider == AiProviderId.CUSTOM && first != null && stored.of(provider).model.isNullOrBlank()) {
+            settings.update { it.copy(ai = it.ai.withModel(AiProviderId.CUSTOM, first)) }
         }
     }
 
@@ -114,18 +152,19 @@ internal class AiKeyEditor(
     }
 }
 
-/** Backs [InlineAiKeyDialog]: the key editor plus whether a key is stored already. */
-internal class AiKeyViewModel(container: AppContainer, ai: (() -> AiServices)?) : ViewModel() {
+/** Backs [InlineAiKeyDialog]: the key editor plus the stored AI settings. */
+internal class AiKeyViewModel(container: AppContainer, ai: () -> AiServices) : ViewModel() {
     private val editor = AiKeyEditor(viewModelScope, container, ai)
     val state: StateFlow<AiKeyState> = editor.state
 
-    val hasKey: StateFlow<Boolean> = container.settings.settings
-        .map { it.ai.of(it.ai.provider).hasKey }
+    /** Null until the DataStore emitted. */
+    val settings: StateFlow<AiSettings?> = container.settings.settings
+        .map { it.ai }
         .distinctUntilChanged()
         .catch { e -> Log.w("AiKeyViewModel", "Settings unavailable", e) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    fun saveAndTest(raw: String, skipTest: Boolean) = editor.saveAndTest(raw, skipTest)
+    fun saveAndTest(provider: AiProviderId, submission: KeySubmission) = editor.saveAndTest(provider, submission)
 
     fun reset() = editor.reset()
 
@@ -133,28 +172,31 @@ internal class AiKeyViewModel(container: AppContainer, ai: (() -> AiServices)?) 
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as MorgenbriefingApp
-                AiKeyViewModel(app.container, if (AiSupport.isSupported) ({ app.ai }) else null)
+                AiKeyViewModel(app.container) { app.ai }
             }
         }
     }
 }
 
 /**
- * The Claude key dialog right where the user needs it (blocked chat, "⚡ Live"), so entering a
- * key never sends them hunting through the settings — and closing it returns them exactly where
- * they were. Removing a stored key stays in the settings.
+ * The key dialog of [provider] right where the user needs it (blocked chat, "⚡ Live"), so
+ * entering a key never sends them hunting through the settings — and closing it returns them
+ * exactly where they were. Removing a stored key stays in the settings.
  */
 @Composable
-fun InlineAiKeyDialog(onDismiss: () -> Unit) {
+fun InlineAiKeyDialog(provider: AiProviderId, onDismiss: () -> Unit) {
     val viewModel: AiKeyViewModel = viewModel(factory = AiKeyViewModel.Factory)
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val hasKey by viewModel.hasKey.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
     val links = rememberLinkActions()
+    // A frame later instead of a dialog that guesses what is stored.
+    val ai = settings ?: return
     AiKeyDialog(
-        hasKey = hasKey,
+        spec = ProviderCatalog.spec(provider),
+        stored = ai.of(provider),
         state = state,
-        onSaveAndTest = viewModel::saveAndTest,
-        onOpenConsole = { links.open(ANTHROPIC_KEYS_URL) },
+        onSave = { viewModel.saveAndTest(provider, it) },
+        onOpenLink = links::open,
         onRemove = null,
         onDismiss = {
             viewModel.reset()

@@ -217,7 +217,7 @@ fun TodayScreen(
         )
     }
     if (keyDialog && AiSupport.isSupported) {
-        InlineAiKeyDialog(onDismiss = { keyDialog = false })
+        InlineAiKeyDialog(provider = live.provider, onDismiss = { keyDialog = false })
     }
 }
 
