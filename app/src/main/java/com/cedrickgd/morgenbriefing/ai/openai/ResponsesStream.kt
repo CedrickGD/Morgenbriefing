@@ -296,7 +296,10 @@ internal class ResponsesEventParser(
                 val name = item.str("name") ?: return
                 val callId = item.str("call_id") ?: id ?: return
                 announceCall(id ?: callId, name)
-                doneCalls[id ?: callId] = FunctionCall(callId, name, item.str("arguments").orEmpty().ifBlank { "{}" })
+                val arguments = item.str("arguments").orEmpty()
+                // Without argument deltas this is the only place the arguments stream (usage estimate).
+                if (dialect.functionCallsOnlyInItemDone) streamedChars += arguments.length
+                doneCalls[id ?: callId] = FunctionCall(callId, name, arguments.ifBlank { "{}" })
             }
             "web_search_call" -> onSearchDone(item.obj("action"))
             "message" -> {
