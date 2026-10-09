@@ -128,6 +128,7 @@ class AiServices(private val context: Context, private val container: AppContain
                 spec = spec,
                 auth = authFor(ai, id, key),
                 model = ProviderCatalog.effectiveModel(ai, id),
+                selectedModel = ProviderCatalog.selectedModel(ai, id),
                 backend = backend,
                 webSearch = ProviderCatalog.chatWebSearch(ai, id),
                 usage = requestUsage(ai, id),

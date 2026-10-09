@@ -729,8 +729,10 @@ of the fallback chain (GE §12.5), reported as `KeyCheckOutcome.fallback` and st
 
 Model fallback in the chat (GE §12.5): a model refused before the stream (404, a 400/403 about the model, a quota of 0)
 → `gemini-3.8-flash` → `gemini-3.7-flash` → `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite`, each once;
-`ChatTurnResult.fallbackModel` → `AiProviderAccess.modelFallback` stores it for the key (dropped when a key, the tariff or
-another model is saved) and the answer gets the note „… ist für deinen Key nicht freigeschaltet – die App nutzt jetzt …“.
+`ChatTurnResult.fallbackModel` → `AiProviderAccess.modelFallback` stores it for the key as chosen model
+(`Resolution.Ready.selectedModel`) → working one, also when the request already ran with a fallback (dropped when a key, the
+tariff or another model is saved), and the answer gets the note „<chosen> ist für deinen Key nicht freigeschaltet – die App
+nutzt jetzt …“. A `ModelUnavailable` of the fallback that ran names the chosen model.
 
 ### 7.3 Chat Completions family (`ai/compat/`)
 

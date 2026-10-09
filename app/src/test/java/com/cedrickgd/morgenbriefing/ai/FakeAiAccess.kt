@@ -51,6 +51,7 @@ internal class FakeAiAccess(
             spec = spec,
             auth = ProviderAuth(id, key, freeTier = ai.isGeminiFree(id)),
             model = ProviderCatalog.effectiveModel(ai, id),
+            selectedModel = ProviderCatalog.selectedModel(ai, id),
             backend = backend,
             webSearch = ProviderCatalog.chatWebSearch(ai, id),
             usage = ProviderUsageSink(usage, free = ai.costsNothing(id)),

@@ -775,10 +775,14 @@ each **once**, without retries or waits. None of them needs billing, so the chai
   the key that answered is still the stored one); the next requests go there directly. The answer carries the calm note
   „Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.7 Flash.“, and Settings → KI shows the
   same line under the model picker (the picker keeps marking the chosen model).
+* A fallback that runs already starts the chain at itself (3.7 refused too → 3.5 Flash-Lite). The new one is stored for the
+  **chosen** model (3.8 → 3.5, never 3.7 → 3.5, which would not apply to the chosen model and send the next question to 3.8 again),
+  and the note names the chosen model.
 * The fallback is dropped when a key is saved, the tariff changes or another model is chosen — the chosen model is tried again.
 * Key test: the model list (§13) tells which fallbacks the key can see; the chosen model is always tried first (aliases and
   typed ids may be missing from the list).
-* When no model answers, the chosen model's refusal is reported (`ModelUnavailable`, with its diagnostic).
+* When no model answers, the chosen model's refusal is reported (`ModelUnavailable` naming the chosen model — also when the chain
+  started at a fallback of it — with the diagnostic of the first refusal).
 
 ### 12.6 Diagnostic line ("Details")
 

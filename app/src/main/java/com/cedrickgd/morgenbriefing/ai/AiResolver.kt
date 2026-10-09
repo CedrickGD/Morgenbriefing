@@ -102,14 +102,18 @@ internal sealed interface Resolution {
     val spec: ProviderSpec
 
     /**
-     * Everything a request needs. [usage] is this provider's sink: it skips the monthly limit
-     * and prices at 0 $ for free providers, and confirms the key once a request went through.
-     * [webSearch]: offer web search in the chat (false for a free Gemini key).
+     * Everything a request needs. [model] is the one requests use ([ProviderCatalog.effectiveModel]:
+     * a Gemini model fallback of the key, if any); [selectedModel] is the one the user chose
+     * ([ProviderCatalog.selectedModel]) — a new fallback is stored for it and named after it.
+     * [usage] is this provider's sink: it skips the monthly limit and prices at 0 $ for free
+     * providers, and confirms the key once a request went through. [webSearch]: offer web search
+     * in the chat (false for a free Gemini key).
      */
     data class Ready(
         override val spec: ProviderSpec,
         val auth: ProviderAuth,
         val model: String,
+        val selectedModel: String,
         val backend: AiBackend,
         val webSearch: Boolean,
         val usage: UsageSink,

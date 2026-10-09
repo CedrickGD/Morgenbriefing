@@ -1,10 +1,12 @@
 package com.cedrickgd.morgenbriefing.ai
 
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.AppJson
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import com.cedrickgd.morgenbriefing.data.withAiKey
 import com.cedrickgd.morgenbriefing.data.withProvider
@@ -530,6 +532,49 @@ class ChatServiceTest {
 
         session.send("Zweite")
         assertEquals("$note\n${AiTexts.WITHOUT_WEB_SEARCH_NOTE}", session.await { it.settled(4) }.messages.last().note)
+    }
+
+    @Test
+    fun `a fallback of an active fallback is kept and named for the chosen model`() = runBlocking<Unit> {
+        // The key already runs 3.7 instead of the chosen 3.8; now Google refuses 3.7 too and 3.5 Flash-Lite answers.
+        val gemini = AiProviderId.GEMINI
+        settings.value = AppSettings().withProvider(gemini) {
+            it.copy(hasKey = true, geminiTier = GeminiTier.PAID, modelFallback = ModelFallback("gemini-3.8-flash", "gemini-3.7-flash"))
+        }
+        val access = access(apiKey = "AIza-test-invalid")
+        engine.scripts += { l ->
+            l.onText("Von 3.5.")
+            ChatTurnResult("Von 3.5.", emptyList(), TurnEnd.COMPLETE, fallbackModel = "gemini-3.5-flash-lite")
+        }
+        val session = service(access = access).session(article)
+        session.send("Erste")
+        val first = session.await { it.settled(2) }.messages.last()
+        // Asked for the active fallback; the new one is stored and named for the chosen model.
+        assertEquals("gemini-3.7-flash", engine.requests.single().model)
+        assertEquals(listOf(listOf(gemini, "AIza-test-invalid", "gemini-3.8-flash", "gemini-3.5-flash-lite")), access.fallbacks)
+        assertEquals("Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.5 Flash-Lite.", first.note)
+
+        // Stored as AiServices does: the next question goes to 3.5 directly, and Settings keeps its note.
+        val (_, _, from, to) = access.fallbacks.single()
+        settings.value = settings.value.withProvider(gemini) { it.copy(modelFallback = ModelFallback(from as String, to as String)) }
+        assertEquals("gemini-3.5-flash-lite", ProviderCatalog.effectiveModel(settings.value.ai, gemini))
+        assertEquals("gemini-3.8-flash" to "gemini-3.5-flash-lite", ProviderCatalog.activeFallback(settings.value.ai, gemini))
+
+        // No model of the chain left: the error names the chosen model, not the fallback the user never picked.
+        engine.scripts += { throw AiException(AiError.ModelUnavailable("gemini-3.5-flash-lite"), diagnostic = "HTTP 404 · NOT_FOUND") }
+        session.send("Zweite")
+        val second = session.await { it.settled(4) }.messages.last()
+        assertEquals("gemini-3.5-flash-lite", engine.requests[1].model)
+        assertEquals(AiError.ModelUnavailable("gemini-3.8-flash"), second.error)
+        assertEquals("HTTP 404 · NOT_FOUND", second.errorDetail)
+        assertEquals(1, access.fallbacks.size)
+
+        // Without a fallback the refused model is the chosen one and keeps its name.
+        settings.value = settings.value.withProvider(gemini) { it.copy(modelFallback = null) }
+        engine.scripts += { throw AiException(AiError.ModelUnavailable("gemini-3.8-flash")) }
+        session.send("Dritte")
+        assertEquals(AiError.ModelUnavailable("gemini-3.8-flash"), session.await { it.settled(6) }.messages.last().error)
+        assertEquals("gemini-3.8-flash", engine.requests[2].model)
     }
 
     @Test

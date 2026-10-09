@@ -277,16 +277,18 @@ internal class ChatServiceImpl(
                     webSearch = resolved.webSearch,
                 )
                 val result = resolved.backend.chat.answer(request, listener, usage)
-                // Another model answered because the chosen one is not open to this key: kept for
-                // the key, so the next question goes there directly (GE §12.5).
+                // Another model answered because the one asked for is not open to this key: kept for
+                // the key, so the next question goes there directly (GE §12.5). Stored and named for
+                // the chosen model — the one asked for may already be a fallback of it, which
+                // ProviderCatalog.effectiveModel would not apply to the chosen one.
                 val fallback = result.fallbackModel?.takeIf { it != resolved.model }
-                if (fallback != null) access.modelFallback(resolved.auth.provider, resolved.auth.apiKey, resolved.model, fallback)
+                if (fallback != null) access.modelFallback(resolved.auth.provider, resolved.auth.apiKey, resolved.selectedModel, fallback)
                 finish(answerId) { message ->
                     val text = result.text.ifBlank { buffer.toString() }.trim()
                     // Grounded text is never shown without its Search Suggestions (Gemini terms).
                     val suggestions = result.searchSuggestionsHtml ?: message.searchSuggestionsHtml
                     val answerNote = listOfNotNull(
-                        fallback?.let { GeminiModels.fallbackNote(resolved.model, it) },
+                        fallback?.let { GeminiModels.fallbackNote(resolved.selectedModel, it) },
                         AiTexts.WITHOUT_WEB_SEARCH_NOTE.takeIf { result.withoutWebSearch },
                     ).joinToString("\n").ifEmpty { null }
                     when (result.end) {
@@ -362,7 +364,7 @@ internal class ChatServiceImpl(
                         text = if (withheld) "" else buffer.toString().trim(),
                         sources = if (withheld) emptyList() else it.sources,
                         status = ChatMessage.Status.FAILED,
-                        error = e.error,
+                        error = e.error.namingChosenModel(resolved),
                         errorDetail = ErrorDiagnostics.redact(e.diagnostic, resolved.auth.apiKey),
                     )
                 }
@@ -490,6 +492,18 @@ internal fun buildApiHistory(messages: List<ChatMessage>, apiTexts: Map<String, 
     }
     return out
 }
+
+/**
+ * The error as the chat shows it: a model refusal of the model the request ran with names the
+ * model the user chose when that one was a fallback of it (GE §12.5) — the user never picked the
+ * fallback, and the chosen model was refused before, or there would be no fallback.
+ */
+private fun AiError.namingChosenModel(resolved: Resolution.Ready): AiError =
+    if (this is AiError.ModelUnavailable && model == resolved.model && resolved.model != resolved.selectedModel) {
+        AiError.ModelUnavailable(resolved.selectedModel)
+    } else {
+        this
+    }
 
 private fun ChatMessage.isUsableAnswer(): Boolean =
     text.isNotBlank() && error !is AiError.Refusal &&
