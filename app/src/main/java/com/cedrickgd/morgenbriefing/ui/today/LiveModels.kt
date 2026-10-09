@@ -42,11 +42,6 @@ data class LiveUi(
     val spec: ProviderSpec get() = ProviderCatalog.spec(provider)
 
     val canRefresh: Boolean get() = blocked == null && !running
-
-    companion object {
-        /** Below Android 8 the AI features are not available at all. */
-        val Unsupported = LiveUi(blocked = AiBlock.UNSUPPORTED_DEVICE)
-    }
 }
 
 /**
@@ -106,6 +101,19 @@ internal fun liveErrorText(error: AiError, spec: ProviderSpec): String {
         is AiError.Unknown -> error.message?.takeIf { it.isNotBlank() } ?: "Da ist etwas schiefgelaufen. Versuch's gleich nochmal."
     }
 }
+
+/**
+ * Before the first run of the day: what "Jetzt aktualisieren" will do ([freshCount] > 0: the
+ * morning's fresh articles are already on screen). [spec] is the Live provider.
+ */
+internal fun liveIntroText(spec: ProviderSpec, freshCount: Int): String = if (freshCount > 0) {
+    "${spec.brand} sucht, was seit dem Morgen-Briefing passiert ist, prüft es an mehreren Quellen und schreibt es dir auf."
+} else {
+    "Seit dem Morgen ist hier noch nichts Neues. ${spec.brand} kann für dich nachsehen, was gerade passiert."
+}
+
+/** The tip under an empty "⚡ Live" view. */
+internal fun liveEmptyTip(spec: ProviderSpec): String = "Tipp: „Jetzt aktualisieren“ lässt ${spec.brand} nach brandaktuellen Meldungen suchen."
 
 /** The status line under "Live": running, last update with count, or what the view shows. */
 internal fun liveStatusLine(live: LiveUi, now: ZonedDateTime): String {

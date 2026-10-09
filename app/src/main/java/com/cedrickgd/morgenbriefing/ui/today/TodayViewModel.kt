@@ -89,7 +89,8 @@ data class OnboardingUi(val hasToken: Boolean)
  * the one on screen is not today's (e.g. the app stayed open overnight or the routine was late).
  * Also drives "⚡ Live" (docs/AI.md §2) and showing/hiding topics from the feed.
  *
- * @param liveService the live research service; null below Android 8 (no AI there).
+ * @param liveService the live research service (every API level; null only in tests or when it
+ *   cannot be created).
  */
 class TodayViewModel(
     private val container: AppContainer,
@@ -126,7 +127,7 @@ class TodayViewModel(
 
     /** "⚡ Live": service state, today's live articles and the AI settings in one. */
     val liveUi: StateFlow<LiveUi> = liveUiFlow()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), if (live == null) LiveUi.Unsupported else LiveUi())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), if (live == null) LiveUnavailable else LiveUi())
 
     private var weatherJob: Job? = null
     private var briefJob: Job? = null
@@ -341,7 +342,7 @@ class TodayViewModel(
     }
 
     private fun liveUiFlow(): Flow<LiveUi> {
-        val service = live ?: return flowOf(LiveUi.Unsupported)
+        val service = live ?: return flowOf(LiveUnavailable)
         // The block as the settings see it (the service adds the monthly limit), the Live
         // provider and the auto-refresh switch.
         val aiSettings = container.settings.settings
@@ -388,13 +389,16 @@ class TodayViewModel(
         private val WEATHER_MAX_AGE: Duration = Duration.ofMinutes(10)
         private val BRIEF_RETRY_AFTER: Duration = Duration.ofMinutes(10)
 
+        /** "⚡ Live" without a service (it could not be created): nothing can run, nothing is offered. */
+        private val LiveUnavailable = LiveUi(blocked = AiBlock.UNSUPPORTED_DEVICE)
+
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as MorgenbriefingApp
                 TodayViewModel(
                     container = app.container,
-                    // Below Android 8 nothing of ai/ beyond the support check is touched.
-                    liveService = { if (AiSupport.isSupported) app.ai.live else null },
+                    // Safe on every API level: only Claude needs Android 8, and it explains itself.
+                    liveService = { app.ai.live },
                 )
             }
         }

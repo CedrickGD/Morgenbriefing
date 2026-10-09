@@ -82,4 +82,12 @@ class LiveModelsTest {
         assertEquals("Da ist etwas schiefgelaufen. Versuch's gleich nochmal.", liveErrorText(AiError.Unknown(null), claude))
         assertEquals("Da ist etwas schiefgelaufen. Versuch's gleich nochmal.", liveErrorText(AiError.Unknown(" "), claude))
     }
+
+    @Test
+    fun `the live texts name who researches`() {
+        assertTrue(liveIntroText(ProviderCatalog.OPENAI, freshCount = 2).startsWith("OpenAI sucht, was seit dem Morgen-Briefing passiert ist"))
+        assertTrue(liveIntroText(ProviderCatalog.XAI, freshCount = 0).contains("Grok kann für dich nachsehen"))
+        assertEquals("Tipp: „Jetzt aktualisieren“ lässt Perplexity nach brandaktuellen Meldungen suchen.", liveEmptyTip(ProviderCatalog.PERPLEXITY))
+        assertEquals("OpenRouter recherchiert gerade …", liveStatusLine(LiveUi(running = true, provider = AiProviderId.OPENROUTER), now))
+    }
 }

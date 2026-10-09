@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cedrickgd.morgenbriefing.ai.AiSupport
 import com.cedrickgd.morgenbriefing.listen
 import com.cedrickgd.morgenbriefing.listen.ListenMiniPlayerDefaults
 import com.cedrickgd.morgenbriefing.listen.ListenState
@@ -54,7 +53,7 @@ import com.cedrickgd.morgenbriefing.listen.showsMiniPlayer
 import com.cedrickgd.morgenbriefing.ui.components.motionDisabled
 import com.cedrickgd.morgenbriefing.ui.glass.LocalGlassState
 import com.cedrickgd.morgenbriefing.ui.glass.glassContent
-import com.cedrickgd.morgenbriefing.ui.reader.AskClaudePill
+import com.cedrickgd.morgenbriefing.ui.reader.AskPill
 import com.cedrickgd.morgenbriefing.ui.reader.AskPillHeight
 import com.cedrickgd.morgenbriefing.ui.reader.ReaderBarHeight
 import com.cedrickgd.morgenbriefing.ui.reader.ReaderMessage
@@ -80,8 +79,9 @@ private val CollapseSpan = 56.dp
  *
  * A calm, opaque reading surface (no sky behind the text) with the picture edge-to-edge under
  * the status bar. Floating glass controls: back, "Zuhören" (via `context.listen`), text size
- * and share; at the bottom "✨ Frag Claude zu diesem Artikel" → [onAskAboutArticle] (hidden on
- * Android < 8 where there is no AI). The glass blurs the article itself (own haze source).
+ * and share; at the bottom "✨ Frag zu diesem Artikel nach" → [onAskAboutArticle] (on every
+ * device: a provider that cannot run here explains itself in the chat). The glass blurs the
+ * article itself (own haze source).
  *
  * Keeps clear of the status bar, the gesture handle / 3-button bar and the shell's
  * [com.cedrickgd.morgenbriefing.listen.ListenMiniPlayer] (lifts the pill while it shows).
@@ -191,7 +191,7 @@ private fun ReaderPager(
     }.collectAsStateWithLifecycle(initialValue = ReaderListenUi(listen.state.value))
     val pagerState = rememberPagerState(initialPage = state.startIndex) { articles.size }
     val listStates = rememberPageListStates(articles.size)
-    // Local chrome state: the "Frag Claude" pill hides while reading down, returns on the way up.
+    // Local chrome state: the "Frag nach" pill hides while reading down, returns on the way up.
     val askChrome = remember { ChromeController() }
     var textPanelOpen by rememberSaveable { mutableStateOf(false) }
 
@@ -216,11 +216,10 @@ private fun ReaderPager(
 
     val statusTop = statusBarTop()
     val navBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-    val askEnabled = AiSupport.isSupported
     val playerLift = if (listenUi.playerVisible) ListenMiniPlayerDefaults.Height + ListenMiniPlayerDefaults.Gap else 0.dp
-    // While the mini player shows, "Frag Claude" moves into the top capsule: one floating layer
+    // While the mini player shows, "Frag nach" moves into the top capsule: one floating layer
     // at the bottom, not two stacked over the text.
-    val askPillShown = askEnabled && !listenUi.playerVisible
+    val askPillShown = !listenUi.playerVisible
     val bottomPadding = navBottom + 32.dp + playerLift + (if (askPillShown) AskPillHeight + 16.dp else 0.dp)
 
     val current = pagerState.currentPage.coerceIn(0, articles.lastIndex)
@@ -254,7 +253,7 @@ private fun ReaderPager(
             modifier = Modifier
                 .fillMaxSize()
                 // The article (on its calm opaque surface) is what the floating glass blurs:
-                // the top bar, "Frag Claude" and the shell's mini player.
+                // the top bar, "Frag nach" and the shell's mini player.
                 .glassContent()
                 .background(MaterialTheme.colorScheme.background),
             beyondViewportPageCount = 1,
@@ -288,14 +287,12 @@ private fun ReaderPager(
 
         // Every glass piece above the article blurs the article itself.
         run {
-            if (askEnabled) {
-                AskClaudePill(
-                    visible = askPillShown && (askChrome.indicatorVisible || atEnd) && !textPanelOpen,
-                    bottomInset = navBottom,
-                    lift = playerLift,
-                    onClick = { onAskAboutArticle(date, currentEntry.item.key) },
-                )
-            }
+            AskPill(
+                visible = askPillShown && (askChrome.indicatorVisible || atEnd) && !textPanelOpen,
+                bottomInset = navBottom,
+                lift = playerLift,
+                onClick = { onAskAboutArticle(date, currentEntry.item.key) },
+            )
             ReaderTopBar(
                 collapse = collapse,
                 collapsed = collapsed,
@@ -315,7 +312,7 @@ private fun ReaderPager(
                 },
                 onTextSize = { textPanelOpen = !textPanelOpen },
                 onShare = { links.shareArticle(currentEntry.item) },
-                onAsk = if (askEnabled && !askPillShown) {
+                onAsk = if (!askPillShown) {
                     { onAskAboutArticle(date, currentEntry.item.key) }
                 } else {
                     null
@@ -389,7 +386,7 @@ private fun ReaderStatusBarIcons(lightIcons: Boolean) {
 
 /**
  * A soft fade from transparent into the reading surface at the bottom of the screen, behind the
- * floating controls ("Frag Claude", the mini player): text glides out instead of peeking out
+ * floating controls ("Frag nach", the mini player): text glides out instead of peeking out
  * around their rounded ends.
  */
 @Composable

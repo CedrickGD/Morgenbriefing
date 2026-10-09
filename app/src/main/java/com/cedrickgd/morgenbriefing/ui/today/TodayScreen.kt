@@ -46,7 +46,6 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cedrickgd.morgenbriefing.ai.AiBlock
-import com.cedrickgd.morgenbriefing.ai.AiSupport
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.Topic
 import com.cedrickgd.morgenbriefing.domain.Fmt
@@ -190,8 +189,14 @@ fun TodayScreen(
         onRefreshLive = viewModel::refreshLive,
         onCancelLive = viewModel::cancelLive,
         onLiveOpened = viewModel::onLiveOpened,
-        // No key: enter it right here. Monthly limit: that lives in the settings' KI section.
-        onFixLive = { block -> if (block == AiBlock.NO_KEY) keyDialog = true else openSettingsAt(SettingsTarget.AI) },
+        // No key: enter it right here. Monthly limit and another provider: the settings' KI section.
+        onFixLive = { block ->
+            when (block) {
+                AiBlock.NO_KEY -> keyDialog = true
+                AiBlock.LIMIT_REACHED -> openSettingsAt(SettingsTarget.AI)
+                AiBlock.UNSUPPORTED_DEVICE, AiBlock.LIVE_UNAVAILABLE -> openSettingsAt(SettingsTarget.AI_LIVE_PROVIDER)
+            }
+        },
         onSetTopicVisible = viewModel::setTopicVisible,
         onSetTopicOrder = viewModel::setTopicOrder,
     )
@@ -216,7 +221,8 @@ fun TodayScreen(
             },
         )
     }
-    if (keyDialog && AiSupport.isSupported) {
+    if (keyDialog) {
+        // The key of the provider that researches: the Live provider, which may not be the chat's.
         InlineAiKeyDialog(provider = live.provider, onDismiss = { keyDialog = false })
     }
 }
@@ -301,11 +307,8 @@ private fun TodayContent(
         onShowSources = { sourcesFor = it },
         onMessage = { snackbar.say(scope, it) },
         onHideTopic = { hideTopic(it.topic) },
-        onAsk = if (AiSupport.isSupported) {
-            { article -> callbacks.onAskAboutArticle(article.date, article.item.key) }
-        } else {
-            null
-        },
+        // On every device: a provider that cannot run here explains itself in the chat.
+        onAsk = { article -> callbacks.onAskAboutArticle(article.date, article.item.key) },
     )
     val onSelect: (FeedFilter) -> Unit = { filter ->
         // Always remember the tap: after a hidden topic fell back to "Für dich", the stored key
@@ -644,11 +647,7 @@ private fun LazyListScope.feedItems(
                         teaser = brief.teaser,
                         meta = feedSummary(feed),
                         stale = news.stale,
-                        action = if (AiSupport.isSupported) {
-                            { AskBriefingPill(onClick = { callbacks.onAskBriefing(brief.date) }) }
-                        } else {
-                            null
-                        },
+                        action = { AskBriefingPill(onClick = { callbacks.onAskBriefing(brief.date) }) },
                         modifier = Modifier.padding(start = 4.dp, top = 4.dp),
                     )
                     news.notice?.let { notice ->
@@ -702,7 +701,7 @@ private fun LazyListScope.feedItems(
             }
             if (fresh.isEmpty()) {
                 item(key = "live-empty", contentType = "info") {
-                    LiveEmpty(blocked = live.blocked != null, modifier = Modifier.animateItem())
+                    LiveEmpty(blocked = live.blocked != null, spec = live.spec, modifier = Modifier.animateItem())
                 }
             } else {
                 articleItems(

@@ -91,7 +91,7 @@ import kotlin.math.abs
 /** Height of the floating control row below the status bar. */
 internal val ReaderBarHeight = 64.dp
 
-/** Height of the "Frag Claude" pill. */
+/** Height of the "Frag nach" pill. */
 internal val AskPillHeight = 52.dp
 
 private val BarShape = RoundedCornerShape(bottomStart = 22.dp, bottomEnd = 22.dp)
@@ -108,7 +108,7 @@ private val SCALE_DOTS = listOf(0.85f, 0.9f, 1.0f, 1.1f, 1.2f, 1.3f, 1.4f)
  * into a frosted bar under which the text glides, with a thin reading-progress line.
  *
  * [collapse] and [readingProgress] are read in the draw phase only — scrolling never recomposes.
- * With [onAsk] the capsule gets a "✨" segment for "Frag Claude" (while the mini player takes the
+ * With [onAsk] the capsule gets a "✨" segment for "Frag nach" (while the mini player takes the
  * bottom of the screen). Once [collapsed] the bar takes every touch inside it, so nothing beneath
  * is hit by accident; over the picture only the button and the capsule do.
  */
@@ -291,7 +291,7 @@ private fun ActionCapsule(
                         .size(ButtonSize)
                         .clip(CircleShape)
                         .clickable(role = Role.Button, onClickLabel = "Chat öffnen", onClick = onAsk)
-                        .semantics { contentDescription = "Frag Claude zu diesem Artikel" },
+                        .semantics { contentDescription = "Frag zu diesem Artikel nach" },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -527,12 +527,12 @@ private fun ScaleDots(scale: Float) {
 }
 
 /**
- * "✨ Frag Claude zu diesem Artikel": a prominent, accent-tinted glass pill at the bottom. Slides
+ * "✨ Frag zu diesem Artikel nach": a prominent, accent-tinted glass pill at the bottom. Slides
  * away while reading down and comes back on the way up; [lift] makes room for the mini player.
  * A soft light sweeps across it once when it first appears.
  */
 @Composable
-internal fun BoxScope.AskClaudePill(
+internal fun BoxScope.AskPill(
     visible: Boolean,
     bottomInset: Dp,
     lift: Dp,
@@ -595,7 +595,7 @@ internal fun BoxScope.AskClaudePill(
             Text(text = "✨", fontSize = 18.sp, modifier = Modifier.clearAndSetSemantics { })
             Spacer(Modifier.width(10.dp))
             Text(
-                text = "Frag Claude zu diesem Artikel",
+                text = "Frag zu diesem Artikel nach",
                 style = MaterialTheme.typography.titleSmall,
                 color = colors.onPrimaryContainer,
                 maxLines = 2,

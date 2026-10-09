@@ -22,10 +22,6 @@ object AiSupport {
 
     /** [provider] can run on this device (only Claude needs the SDK). */
     fun supports(provider: AiProviderId): Boolean = !ProviderCatalog.spec(provider).needsSdk || sdkAvailable
-
-    /** Until the UI gates per provider (docs/AI-PROVIDERS.md T10): the old device-wide check. */
-    @Deprecated("AI runs on every API level now; gate per provider with supports(provider).", ReplaceWith("AiSupport.sdkAvailable"))
-    val isSupported: Boolean get() = sdkAvailable
 }
 
 /** Why an AI feature cannot run right now (shown as a friendly hint, never as an error). */

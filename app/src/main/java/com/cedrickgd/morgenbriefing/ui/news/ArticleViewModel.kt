@@ -10,7 +10,6 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
-import com.cedrickgd.morgenbriefing.ai.AiSupport
 import com.cedrickgd.morgenbriefing.ai.LiveArticle
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
@@ -206,8 +205,8 @@ class ArticleViewModel(
                     container = app.container,
                     date = date,
                     key = key,
-                    // The AI package must not be touched below Android 8 (docs/AI.md).
-                    liveArticles = { day -> if (AiSupport.isSupported) app.ai.live.articles(day) else emptyList() },
+                    // Safe on every API level (docs/AI-PROVIDERS.md D9).
+                    liveArticles = { day -> app.ai.live.articles(day) },
                 )
             }
         }

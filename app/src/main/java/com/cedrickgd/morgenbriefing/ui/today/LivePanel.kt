@@ -30,6 +30,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.SwapHoriz
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.ai.AiBlock
 import com.cedrickgd.morgenbriefing.ai.AiTexts
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.ui.components.Emoji
 import com.cedrickgd.morgenbriefing.ui.components.GlassPillButton
 import com.cedrickgd.morgenbriefing.ui.components.entrance
@@ -67,8 +69,10 @@ private const val VISIBLE_PROGRESS_LINES = 4
 
 /**
  * Head of the "⚡ Live" view: what it shows, when it was last updated, "Jetzt aktualisieren"
- * and — while Claude researches — an animated panel with the live progress lines. Blocks
- * (old Android, no key, monthly limit) and errors are explained in a friendly way.
+ * and — while the Live provider researches — an animated panel with the live progress lines.
+ * Blocks are explained in one friendly sentence with the one way forward: the key dialog, the
+ * monthly limit, or another (Live) provider when this one cannot research here (Gemini's terms,
+ * no web search, Claude below Android 8).
  */
 @Composable
 internal fun LiveHeader(
@@ -116,20 +120,18 @@ internal fun LiveHeader(
             block != null -> {
                 Spacer(Modifier.height(14.dp))
                 Text(text = liveBlockText(block, live.spec), style = MaterialTheme.typography.bodyMedium, color = colors.onSurface)
-                if (block != AiBlock.UNSUPPORTED_DEVICE) {
-                    Spacer(Modifier.height(14.dp))
-                    // No key: entered right here. Monthly limit and the Live provider: in the settings' KI section.
-                    GlassPillButton(
-                        text = when (block) {
-                            AiBlock.NO_KEY -> "Key eintragen"
-                            AiBlock.LIVE_UNAVAILABLE -> AiTexts.LIVE_PROVIDER_ACTION
-                            else -> "Limit anpassen"
-                        },
-                        icon = if (block == AiBlock.NO_KEY) Icons.Rounded.Key else Icons.Rounded.Settings,
-                        onClick = onOpenSettings,
-                        filled = true,
-                    )
-                }
+                Spacer(Modifier.height(14.dp))
+                // No key: entered right here. Monthly limit and another provider: the settings' KI section.
+                GlassPillButton(
+                    text = AiTexts.blockAction(block, live.spec),
+                    icon = when (block) {
+                        AiBlock.NO_KEY -> Icons.Rounded.Key
+                        AiBlock.LIVE_UNAVAILABLE, AiBlock.UNSUPPORTED_DEVICE -> Icons.Rounded.SwapHoriz
+                        AiBlock.LIMIT_REACHED -> Icons.Rounded.Settings
+                    },
+                    onClick = onOpenSettings,
+                    filled = true,
+                )
             }
 
             live.running -> {
@@ -144,11 +146,7 @@ internal fun LiveHeader(
                 } else if (live.lastRunAt == null) {
                     Spacer(Modifier.height(12.dp))
                     Text(
-                        text = if (freshCount > 0) {
-                            "Claude sucht, was seit dem Morgen-Briefing passiert ist, prüft es an mehreren Quellen und schreibt es dir auf."
-                        } else {
-                            "Seit dem Morgen ist hier noch nichts Neues. Claude kann für dich nachsehen, was gerade passiert."
-                        },
+                        text = liveIntroText(live.spec, freshCount),
                         style = MaterialTheme.typography.bodyMedium,
                         color = colors.onSurfaceVariant,
                     )
@@ -275,9 +273,9 @@ private fun ProgressLine(text: String, newest: Boolean, modifier: Modifier = Mod
     }
 }
 
-/** Shown in "⚡ Live" when nothing fresh is there (yet). */
+/** Shown in "⚡ Live" when nothing fresh is there (yet); [spec] is the Live provider. */
 @Composable
-internal fun LiveEmpty(blocked: Boolean, modifier: Modifier = Modifier) {
+internal fun LiveEmpty(blocked: Boolean, spec: ProviderSpec, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -295,7 +293,7 @@ internal fun LiveEmpty(blocked: Boolean, modifier: Modifier = Modifier) {
         if (!blocked) {
             Spacer(Modifier.height(6.dp))
             Text(
-                text = "Tipp: „Jetzt aktualisieren“ lässt Claude nach brandaktuellen Meldungen suchen.",
+                text = liveEmptyTip(spec),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
