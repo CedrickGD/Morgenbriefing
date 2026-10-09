@@ -1,6 +1,7 @@
 package com.cedrickgd.morgenbriefing.ui.chat
 
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
+import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -36,5 +37,21 @@ class ChatTextsTest {
         assertFalse(emptyChatIntro(aboutArticle = true, webSearch = false).contains("Netz"))
         assertFalse(emptyChatIntro(aboutArticle = false, webSearch = false).contains("Netz"))
         assertTrue(emptyChatIntro(aboutArticle = false, webSearch = false).contains("Briefing"))
+    }
+
+    @Test
+    fun `the streaming cursor has a text alternative compose accepts`() {
+        // An empty alternate text made appendInlineContent throw while an answer streamed.
+        assertTrue(CURSOR_ALTERNATE_TEXT.isNotEmpty())
+    }
+
+    @Test
+    fun `gemini grounding sources show their domain, not google's redirect host`() {
+        val grounded = SourceRef("tagesschau.de", "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQ")
+        assertEquals("tagesschau.de" to null, sourceChipParts(grounded))
+        assertEquals("zeit.de" to "Hintergrund", sourceChipParts(SourceRef("Hintergrund", "https://www.zeit.de/x")))
+        assertEquals("zeit.de" to null, sourceChipParts(SourceRef("zeit.de", "https://zeit.de/x")))
+        // A redirect without a title still shows something.
+        assertEquals("vertexaisearch.cloud.google.com" to null, sourceChipParts(SourceRef("", grounded.url)))
     }
 }

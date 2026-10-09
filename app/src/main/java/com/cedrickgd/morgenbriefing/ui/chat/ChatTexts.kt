@@ -1,7 +1,9 @@
 package com.cedrickgd.morgenbriefing.ui.chat
 
+import com.cedrickgd.morgenbriefing.ai.hostOf
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.SourceRef
 
 /*
  * The provider-dependent wording of "Frag nach" (docs/AI-PROVIDERS.md §10.6): who answers, what
@@ -44,3 +46,19 @@ internal fun emptyChatIntro(aboutArticle: Boolean, webSearch: Boolean): String =
 
 /** The input's placeholder while an answer streams. */
 internal fun answeringPlaceholder(spec: ProviderSpec): String = "${answerMark(spec)} antwortet …"
+
+/** Gemini's grounding sources are Google redirects on this host; their title is the real domain (GE §6.2). */
+private const val GROUNDING_REDIRECT_HOST = "vertexaisearch.cloud.google.com"
+
+/**
+ * The two parts of a source pill: the host in bold and the title after it (null when it adds
+ * nothing). A Gemini grounding source is a Google redirect whose title is the domain: the pill
+ * shows that domain alone instead of Google's redirect host. The link itself stays the redirect
+ * and is opened as it is (GE §11).
+ */
+internal fun sourceChipParts(source: SourceRef): Pair<String, String?> {
+    val host = hostOf(source.url)
+    val name = source.name.trim()
+    if (host == GROUNDING_REDIRECT_HOST && name.isNotEmpty()) return name to null
+    return host to name.takeIf { it.isNotEmpty() && it != host }
+}

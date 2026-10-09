@@ -109,7 +109,6 @@ import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.ai.AiBlock
 import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.AiTexts
-import com.cedrickgd.morgenbriefing.ai.hostOf
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import com.cedrickgd.morgenbriefing.ui.components.motionDisabled
@@ -302,8 +301,13 @@ private fun annotated(spans: List<MdSpan>, cursor: Boolean): AnnotatedString = b
             ),
         ) { append(span.text) }
     }
-    if (cursor) appendInlineContent(CURSOR_ID, "")
+    // Compose rejects an empty alternate text (IllegalArgumentException while the answer streams);
+    // a zero-width space keeps the cursor invisible to copy and TalkBack.
+    if (cursor) appendInlineContent(CURSOR_ID, CURSOR_ALTERNATE_TEXT)
 }
+
+/** The streaming cursor's text alternative: not empty (Compose requires that), but nothing to read. */
+internal const val CURSOR_ALTERNATE_TEXT = "​"
 
 @Composable
 private fun rememberCursorContent(): Map<String, InlineTextContent> {
@@ -420,8 +424,7 @@ internal fun SourceChips(sources: List<SourceRef>, onOpen: (String) -> Unit, mod
 
 @Composable
 private fun SourceChip(source: SourceRef, onOpen: (String) -> Unit) {
-    val host = hostOf(source.url)
-    val title = source.name.takeIf { it.isNotBlank() && it != host }
+    val (host, title) = sourceChipParts(source)
     Row(
         modifier = Modifier
             .minimumInteractiveComponentSize()
