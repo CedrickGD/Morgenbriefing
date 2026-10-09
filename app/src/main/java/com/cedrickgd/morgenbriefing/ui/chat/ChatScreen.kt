@@ -469,9 +469,13 @@ private fun MessageList(
         }
         if (footer) {
             item(key = "activity", contentType = "activity") {
+                // No fade-out: the footer goes in the same frame as the follow-up scrollToItem
+                // (the first text arrived), and the fading "disappearing item" — with the line's
+                // endless sweep in an offscreen layer — was left drawn over the answer as a ghost
+                // until the next full layout (seen on API 24 and 36, mock pass 2026-10-09).
                 ActivityLine(
                     text = state.activity ?: "Denkt nach …",
-                    modifier = Modifier.animateItem().padding(start = 2.dp),
+                    modifier = Modifier.animateItem(fadeOutSpec = null).padding(start = 2.dp),
                 )
             }
         }
