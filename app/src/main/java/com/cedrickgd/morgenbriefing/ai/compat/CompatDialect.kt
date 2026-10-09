@@ -44,6 +44,10 @@ internal enum class KeyCheckKind {
  * @property markdownLinkSources OpenRouter: Markdown links in an answer become sources and plain
  *   labels (its search cites as Markdown links; streamed annotations are undocumented, OC §7.5).
  * @property keyOptional the own server: `Authorization` only when a key is set.
+ * @property replaysReasoningDetails OpenRouter: the streamed `delta.reasoning_details` go back
+ *   on the replayed assistant tool-call message of a Live correction (OC §2.4) — Gemini 3
+ *   upstreams reject a function call without its thought signature, Claude upstreams with
+ *   thinking a tool use without its thinking block. Mistral rejects unknown fields, so only here.
  */
 internal enum class CompatDialect(
     val provider: AiProviderId,
@@ -54,6 +58,7 @@ internal enum class CompatDialect(
     val keyCheck: KeyCheckKind,
     val markdownLinkSources: Boolean,
     val keyOptional: Boolean,
+    val replaysReasoningDetails: Boolean,
     val chat: CompatBudget,
     val liveBudget: CompatBudget?,
 ) {
@@ -69,6 +74,7 @@ internal enum class CompatDialect(
         keyCheck = KeyCheckKind.OPENROUTER_KEY,
         markdownLinkSources = true,
         keyOptional = false,
+        replaysReasoningDetails = true,
         chat = CompatBudget(maxTokens = 8_000, effort = "low", maxToolCalls = 3),
         liveBudget = CompatBudget(maxTokens = 32_000, effort = "medium", maxToolCalls = 10),
     ),
@@ -81,6 +87,7 @@ internal enum class CompatDialect(
         keyCheck = KeyCheckKind.MODELS,
         markdownLinkSources = false,
         keyOptional = false,
+        replaysReasoningDetails = false,
         chat = CompatBudget(maxTokens = 4_000, temperature = 0.3),
         liveBudget = null,
     ),
@@ -93,6 +100,7 @@ internal enum class CompatDialect(
         keyCheck = KeyCheckKind.DEEPSEEK_BALANCE,
         markdownLinkSources = false,
         keyOptional = false,
+        replaysReasoningDetails = false,
         chat = CompatBudget(maxTokens = 4_000, thinkingOff = true),
         liveBudget = null,
     ),
@@ -105,6 +113,7 @@ internal enum class CompatDialect(
         keyCheck = KeyCheckKind.MODELS,
         markdownLinkSources = false,
         keyOptional = true,
+        replaysReasoningDetails = false,
         chat = CompatBudget(maxTokens = 4_000, temperature = 0.3),
         liveBudget = null,
     ),

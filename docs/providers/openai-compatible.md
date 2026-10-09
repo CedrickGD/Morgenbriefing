@@ -207,6 +207,8 @@ Tool result message (all providers):
 
 Mistral additionally shows `"name": "<function_name>"` on the tool message [M6]. DeepSeek thinking mode requires the assistant message to carry its `reasoning_content` too (§5.4).
 
+**OpenRouter with reasoning upstreams (app note, 2026-10-09, UNVERIFIED against a live key):** Gemini 3 rejects a function call in the current turn without its `thought_signature` (HTTP 400, GE §7.4), and Claude with thinking needs its thinking block before the `tool_use`. OpenRouter streams both as `delta.reasoning_details` (§2.3). The app keeps them per response — items merged by `index` (else `id`), `text`/`summary`/`data`/`signature` pieces appended, everything else as received — and puts them as `"reasoning_details": […]` on the replayed `{"role":"assistant","content":null,"tool_calls":[…]}` of a Live correction. Only for OpenRouter: Mistral rejects unknown fields. Check once with a real key on `google/gemini-3.8-flash` and `anthropic/claude-sonnet-5.5` (a `live-reject`-style correction) whether OpenRouter accepts the echo and the upstream no longer answers 400.
+
 Tool definition (all Chat Completions providers): `{"type":"function","function":{"name","description","parameters"}}`. Mistral, DeepSeek and OpenRouter document an optional `function.strict` [M2, D7, R11].
 
 ### 2.5 Provider matrix for the shared parser

@@ -40,12 +40,15 @@ internal data class ToolCall(val id: String, val name: String, val arguments: St
  *
  * @property citedByProvider the provider sent `url_citation` annotations (else OpenRouter's
  *   Markdown links are the sources).
+ * @property reasoningDetails OpenRouter: the turn's `reasoning_details` as received (merged per
+ *   item), for the replayed assistant message of a Live correction; null when none came.
  */
 internal class CompatTurn(
     val end: TurnEnd,
     val refusalCategory: String?,
     val toolCalls: List<ToolCall>,
     val citedByProvider: Boolean,
+    val reasoningDetails: JsonArray? = null,
 )
 
 /**
@@ -167,6 +170,10 @@ internal class CompatStreamer(
  * * top-level `error` (OpenRouter, HTTP stays 200) → mapped like its HTTP code, never retried;
  * * `choices[0].delta.content`: a string, or (Mistral) an array whose `text` parts are answer
  *   text and whose `thinking` parts are not; `reasoning_content` / `reasoning` are never shown;
+ * * OpenRouter's `delta.reasoning_details` ([CompatDialect.replaysReasoningDetails]) are never
+ *   shown but kept for the replay: items with the same `index` (else `id`) are merged — text
+ *   pieces (`text`, `summary`, `data`, `signature`) appended, other fields as last received —
+ *   and every other item is kept exactly as it came;
  * * `delta.tool_calls` accumulate by `index` (id and name first, argument fragments appended;
  *   a call that arrives whole works the same; Mistral's id `"null"` is ignored);
  * * `url_citation` annotations (OpenRouter, defensive: their streaming place is undocumented);
@@ -188,6 +195,9 @@ internal class CompatChunkParser(
     }
 
     private val calls = TreeMap<Int, Acc>()
+
+    /** `reasoning_details` items in arrival order, keyed by `index` / `id` (or their position). */
+    private val reasoning = LinkedHashMap<String, MutableMap<String, JsonElement>>()
     private var finishReason: String? = null
     private var usage: JsonObject? = null
     private var refused = false
@@ -214,6 +224,7 @@ internal class CompatChunkParser(
             delta.str("refusal")?.takeIf { it.isNotBlank() }?.let { refused = true }
             delta.objects("tool_calls").forEach(::onToolCall)
             delta.objects("annotations").forEach(::onAnnotation)
+            if (dialect.replaysReasoningDetails) delta.objects("reasoning_details").forEach(::onReasoningDetail)
         }
         choice.str("finish_reason")?.takeIf { it.isNotBlank() }?.let { finishReason = it }
         return true
@@ -241,6 +252,7 @@ internal class CompatChunkParser(
             refusalCategory = if (turnEnd == TurnEnd.REFUSED && !refused) reason else null,
             toolCalls = toolCalls(),
             citedByProvider = cited,
+            reasoningDetails = reasoning.takeIf { it.isNotEmpty() }?.values?.let { items -> JsonArray(items.map(::JsonObject)) },
         )
     }
 
@@ -291,6 +303,27 @@ internal class CompatChunkParser(
         }
     }
 
+    /**
+     * One streamed `reasoning_details` item (OC §2.3): merged into the item with the same `index`
+     * (else `id`), its text pieces appended; an item without either stays on its own.
+     */
+    private fun onReasoningDetail(detail: JsonObject) {
+        val key = detail.long("index")?.let { "index:$it" } ?: detail.str("id")?.let { "id:$it" } ?: "item:${reasoning.size}"
+        val merged = reasoning.getOrPut(key) { LinkedHashMap() }
+        detail.forEach { (name, value) ->
+            val before = merged[name]
+            merged[name] = when {
+                before == null -> value
+                value is JsonNull -> before
+                name in REASONING_PIECES && before.isText() && value.isText() ->
+                    JsonPrimitive((before as JsonPrimitive).content + (value as JsonPrimitive).content)
+                else -> value
+            }
+        }
+    }
+
+    private fun JsonElement.isText(): Boolean = this is JsonPrimitive && isString
+
     /** `{"type":"url_citation","url_citation":{url,title}}`, also the flat form. */
     private fun onAnnotation(annotation: JsonObject) {
         if (annotation.str("type") != "url_citation") return
@@ -310,6 +343,9 @@ internal class CompatChunkParser(
 
         /** Finish reasons of a provider that gave up mid-answer (OC §2.5). */
         val GAVE_UP = setOf("error", "insufficient_system_resource", "aborted")
+
+        /** Fields of a `reasoning_details` item that stream in pieces (text, summary, encrypted data, signature). */
+        val REASONING_PIECES = setOf("text", "summary", "data", "signature")
     }
 }
 

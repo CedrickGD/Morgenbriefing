@@ -146,6 +146,46 @@ class CompatLiveEngineTest {
     }
 
     @Test
+    fun `a correction replays the reasoning details with the tool call`() = runBlocking<Unit> {
+        // Gemini 3 behind OpenRouter thinks (Live: effort medium) and signs its function call; the
+        // signature streams in delta.reasoning_details and must go back with the call (GE §7.4).
+        server.enqueue(
+            CompatSse.response(
+                CompatSse.delta(""""reasoning_details":[{"type":"reasoning.text","text":"Erst ","format":"google-gemini-v1","index":0}]"""),
+                CompatSse.delta(""""reasoning_details":[{"type":"reasoning.text","text":"suchen.","index":0,"signature":null}]"""),
+                CompatSse.delta(""""reasoning_details":[{"type":"reasoning.encrypted","data":"CoMDAXLI","id":"tool_call_1","format":"google-gemini-v1","index":1}]"""),
+                CompatSse.toolCall(0, id = "call_1", name = LivePublish.TOOL_NAME, arguments = articles),
+                CompatSse.delta(""""reasoning_details":[{"type":"reasoning.text","signature":"sig-A","index":0}]""", finish = "tool_calls"),
+                CompatSse.done(),
+            ),
+        )
+        server.enqueue(publishTurn("call_2"))
+        val listener = LiveRecorder(PublishReply(false, "Artikel 1: body zu kurz."))
+
+        assertEquals(TurnEnd.COMPLETE, engine.research(request(), listener, usage).end)
+
+        server.takeJson()
+        val assistant = messagesOf(server.takeJson().second!!)[2]
+        assertEquals(
+            """[{"type":"reasoning.text","text":"Erst suchen.","format":"google-gemini-v1","index":0,"signature":"sig-A"},""" +
+                """{"type":"reasoning.encrypted","data":"CoMDAXLI","id":"tool_call_1","format":"google-gemini-v1","index":1}]""",
+            assistant["reasoning_details"].toString(),
+        )
+        assertEquals("call_1", assistant["tool_calls"]!!.jsonArray.single().jsonObject.string("id"))
+    }
+
+    @Test
+    fun `without reasoning details the replayed call has none`() = runBlocking<Unit> {
+        server.enqueue(publishTurn("call_1"))
+        server.enqueue(publishTurn("call_2"))
+        engine.research(request(), LiveRecorder(PublishReply(false, "Artikel 1: headline fehlt.")), usage)
+        server.takeJson()
+        assertNull(messagesOf(server.takeJson().second!!)[2]["reasoning_details"])
+        // Only OpenRouter replays them: Mistral rejects unknown fields.
+        assertFalse(CompatDialect.entries.filter { it != CompatDialect.OPENROUTER }.any { it.replaysReasoningDetails })
+    }
+
+    @Test
     fun `whole calls work, other tools and Mistral's null ids are ignored`() = runBlocking<Unit> {
         server.enqueue(
             CompatSse.response(

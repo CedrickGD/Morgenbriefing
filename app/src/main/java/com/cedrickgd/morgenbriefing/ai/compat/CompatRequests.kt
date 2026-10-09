@@ -92,10 +92,16 @@ internal object CompatRequests {
         put("content", text)
     }
 
-    /** The assistant turn of a Live request with its tool calls, replayed for the correction (OC §2.4). */
-    fun assistantToolCalls(text: String, calls: List<ToolCall>): JsonObject = buildJsonObject {
+    /**
+     * The assistant turn of a Live request with its tool calls, replayed for the correction
+     * (OC §2.4). [reasoningDetails] (OpenRouter only, [CompatDialect.replaysReasoningDetails]) go
+     * back as received: Gemini 3 rejects a function call without its thought signature (GE §7.4),
+     * Claude with thinking a tool use without its thinking block.
+     */
+    fun assistantToolCalls(text: String, calls: List<ToolCall>, reasoningDetails: JsonArray? = null): JsonObject = buildJsonObject {
         put("role", "assistant")
         if (text.isBlank()) put("content", JsonNull) else put("content", text)
+        if (!reasoningDetails.isNullOrEmpty()) put("reasoning_details", reasoningDetails)
         putJsonArray("tool_calls") {
             calls.forEach { call ->
                 addJsonObject {

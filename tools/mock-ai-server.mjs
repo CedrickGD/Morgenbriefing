@@ -648,6 +648,9 @@ async function chatCompletions(ctx) {
   }
 
   const messages = body?.messages ?? [];
+  if (flavor === 'openrouter' && messages.some((m) => m.role === 'assistant' && m.tool_calls && !m.reasoning_details)) {
+    warn('OpenRouter correction without reasoning_details (Gemini 3 / Claude upstreams answer 400, OC §2.4)');
+  }
   const outputs = messages.filter((m) => m.role === 'tool').map((m) => m.content);
   const question = questionOf([...messages].reverse().find((m) => m.role === 'user')?.content);
   const events = [];
@@ -674,7 +677,14 @@ async function chatCompletions(ctx) {
       broken: verdict === null && switches.has('live-reject'),
       empty: switches.has('live-empty'),
     });
-    chunk({ role: 'assistant', content: null });
+    if (flavor === 'openrouter') {
+      // A thinking upstream's reasoning (Live: effort medium) and the call's signature, in pieces (OC §2.3).
+      chunk({ role: 'assistant', content: null, reasoning_details: [{ type: 'reasoning.text', text: 'Erst suchen, ', format: 'google-gemini-v1', index: 0 }] });
+      chunk({ reasoning_details: [{ type: 'reasoning.text', text: 'dann veröffentlichen.', index: 0 }] });
+      chunk({ reasoning_details: [{ type: 'reasoning.encrypted', data: `MOCK${Date.now().toString(36)}`, id: 'tool_call_mock', format: 'google-gemini-v1', index: 1 }] });
+    } else {
+      chunk({ role: 'assistant', content: null });
+    }
     const parts = splitInto(args, 4);
     parts.forEach((part, i) => chunk({ tool_calls: [{ index: 0, ...(i === 0 ? { id: `call_mock_${Date.now()}`, type: 'function' } : {}),
       function: { ...(i === 0 ? { name: 'publish_articles' } : {}), arguments: part } }] }));

@@ -98,9 +98,10 @@ internal class CompatChatEngine(
  * "⚡ Live" over OpenRouter (OC §7.8): its web search server tool and `publish_articles` in one
  * request; OpenRouter runs the search, the function call comes back to the app. The loop (D6)
  * ends as soon as every `publish_articles` call of a response was accepted. Rejected calls go
- * back as the assistant's tool calls plus one `tool` message per call; a response without a
- * call is reminded once ([AiPrompts.LIVE_NUDGE]). Calls of other tools are ignored (OC §7.8:
- * server tool calls may or may not show up). At most [MAX_REQUESTS] requests.
+ * back as the assistant's tool calls (with OpenRouter's `reasoning_details` of that response, so
+ * Gemini 3 and Claude upstreams accept the replayed call) plus one `tool` message per call; a
+ * response without a call is reminded once ([AiPrompts.LIVE_NUDGE]). Calls of other tools are
+ * ignored (OC §7.8: server tool calls may or may not show up). At most [MAX_REQUESTS] requests.
  */
 internal class CompatLiveEngine(
     private val dialect: CompatDialect,
@@ -143,7 +144,8 @@ internal class CompatLiveEngine(
             val replies = calls.map { listener.onPublish(it.arguments) }
             if (replies.any { it.accepted }) published = true
             if (replies.all { it.accepted }) return LiveResearchResult(true, TurnEnd.COMPLETE)
-            messages += CompatRequests.assistantToolCalls(text.value.trim(), calls)
+            val reasoning = turn.reasoningDetails.takeIf { dialect.replaysReasoningDetails }
+            messages += CompatRequests.assistantToolCalls(text.value.trim(), calls, reasoning)
             messages += calls.zip(replies).map { (call, reply) -> CompatRequests.toolResult(call.id, reply.message) }
         }
         // Request budget used up while the model was still correcting.

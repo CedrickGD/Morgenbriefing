@@ -769,8 +769,11 @@ ignored); `delta.annotations` / `message.annotations` `url_citation` → `addCit
 
 Live (OpenRouter only, OC §7.8): tools = web search server tool + `{"type":"function","function":{"name":"publish_articles","description":…,"parameters":parametersSchema(…, PORTABLE)}}`,
 sent on every request (OC §7.3); `reasoning:{"effort":"medium"}`, `max_tokens: 32000`. Correction:
-`messages += {"role":"assistant","content":null,"tool_calls":[…as received…]}` +
-`{"role":"tool","tool_call_id":…,"content":replyText}` per call.
+`messages += {"role":"assistant","content":null,"reasoning_details":[…as streamed…],"tool_calls":[…as received…]}` +
+`{"role":"tool","tool_call_id":…,"content":replyText}` per call. `reasoning_details` (merged per `index`,
+OC §2.4) carry Gemini 3's thought signatures and Claude's thinking blocks, without which those upstreams
+answer the replayed call with 400; only OpenRouter gets the field (Mistral rejects unknown fields).
+UNVERIFIED against a live key.
 
 Key checks: Mistral `GET /v1/models`; OpenRouter `GET /api/v1/key` (200 OK, 401 INVALID); DeepSeek
 `GET /user/balance` (`is_available:false` → OK_NO_CREDIT); custom §7.6.
