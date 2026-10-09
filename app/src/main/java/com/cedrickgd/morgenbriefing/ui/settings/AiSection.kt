@@ -407,8 +407,9 @@ private fun ModelPicker(ai: AiSettings, provider: AiProviderId, today: LocalDate
         }
         ChoiceRow(
             title = "Eigenes Modell …",
-            subtitle = custom?.let { id -> "$id · ${priceLine(ai, provider, id, today)}" } ?: "z. B. ${customModelExample(provider)}",
-            selected = custom != null,
+            subtitle = customModelSubtitle(ai, provider, today),
+            // A typed Pro id with a free Gemini key is not used (the default runs instead).
+            selected = custom != null && ProviderCatalog.isModelSelectable(ai, provider, custom),
             onSelect = actions.onCustomModel,
         )
     }

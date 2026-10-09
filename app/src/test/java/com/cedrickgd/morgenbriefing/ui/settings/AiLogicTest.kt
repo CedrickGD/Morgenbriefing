@@ -384,6 +384,22 @@ class AiLogicTest {
     }
 
     @Test
+    fun `free gemini - a typed pro id is marked and cannot be taken`() {
+        val free = gemini(GeminiTier.FREE, model = "gemini-pro-latest")
+        assertEquals("gemini-pro-latest · ${GeminiTiers.BILLING_ONLY}", customModelSubtitle(free, AiProviderId.GEMINI, today))
+        // The default runs and shows as chosen.
+        assertTrue(modelChoices(free, AiProviderId.GEMINI, today).single { it.id == "gemini-3.8-flash" }.selected)
+        assertEquals(GeminiTiers.PRO_NEEDS_BILLING, customModelBlockedHint(free, AiProviderId.GEMINI, "gemini-3.1-pro-preview-customtools"))
+        assertNull(customModelBlockedHint(free, AiProviderId.GEMINI, "gemini-3.7-flash"))
+        assertNull(customModelBlockedHint(free, AiProviderId.GEMINI, " "))
+
+        val paid = gemini(GeminiTier.PAID, model = "gemini-pro-latest")
+        assertNull(customModelBlockedHint(paid, AiProviderId.GEMINI, "gemini-pro-latest"))
+        assertEquals("gemini-pro-latest · Preis geschätzt", customModelSubtitle(paid, AiProviderId.GEMINI, today))
+        assertEquals("z. B. ${customModelExample(AiProviderId.GEMINI)}", customModelSubtitle(gemini(GeminiTier.FREE), AiProviderId.GEMINI, today))
+    }
+
+    @Test
     fun `gemini flash prices double in 2027`() {
         val ai = gemini(GeminiTier.PAID)
         assertEquals("1,50 $ / 7,50 $ je 1 Mio. Tokens", plain(priceLine(ai, AiProviderId.GEMINI, "gemini-3.8-flash", LocalDate.of(2027, 1, 1))))

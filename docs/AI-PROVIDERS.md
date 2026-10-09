@@ -1088,7 +1088,11 @@ provider supports Live; selecting one without key opens its key dialog.
 
 Curated `ModelOption`s of the active provider + „Eigenes Modell …“ → small `GlassDialog` with a text
 field („Modell-ID, genau wie beim Anbieter, z. B. gpt-5.6-terra“), hint „Preis geschätzt – dieses
-Modell kennt die App nicht.“ when `AiPricing.ratesFor` is a fallback. Custom server: chips with
+Modell kennt die App nicht.“ when `AiPricing.ratesFor` is a fallback. With a free Gemini key a typed
+Pro id (`ProviderCatalog.requiresBilling`: any id with `pro` as one dash-separated part, e.g.
+`gemini-3.1-pro-preview-customtools`, `gemini-pro-latest`) is refused like the curated Pro model: the
+dialog says „Gemini Pro gibt es nur mit Abrechnung – im kostenlosen Tarif nicht wählbar.“, and a stored
+one shows „nur mit Abrechnung“ while the default runs. Custom server: chips with
 `serverModels` (from the connection test or a „Vom Server laden“ pill → `AiServices.listServerModels`).
 `setAiModel(provider, id)` writes `ai_<p>_model`.
 

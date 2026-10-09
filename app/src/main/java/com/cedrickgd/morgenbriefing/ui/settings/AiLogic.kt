@@ -382,6 +382,26 @@ internal fun customModelOf(ai: AiSettings, id: AiProviderId): String? {
     return stored.takeIf { ProviderCatalog.spec(id).model(it) == null }
 }
 
+/**
+ * The second line of "Eigenes Modell …": the stored free-text model with its price — "nur mit
+ * Abrechnung" when a free Gemini key cannot use it (a typed Pro id) — or an example.
+ */
+internal fun customModelSubtitle(ai: AiSettings, id: AiProviderId, on: LocalDate): String {
+    val custom = customModelOf(ai, id) ?: return "z. B. ${customModelExample(id)}"
+    val price = if (ProviderCatalog.isModelSelectable(ai, id, custom)) priceLine(ai, id, custom, on) else GeminiTiers.BILLING_ONLY
+    return "$custom · $price"
+}
+
+/**
+ * Under the free-text model field: why [modelId] cannot be taken (a Gemini Pro id with a free
+ * key), or null when it can.
+ */
+internal fun customModelBlockedHint(ai: AiSettings, id: AiProviderId, modelId: String): String? {
+    val model = modelId.trim()
+    if (model.isEmpty() || ProviderCatalog.isModelSelectable(ai, id, model)) return null
+    return GeminiTiers.PRO_NEEDS_BILLING
+}
+
 /** Example id under "Eigenes Modell …" and in its dialog. */
 internal fun customModelExample(id: AiProviderId): String = when (id) {
     AiProviderId.ANTHROPIC -> "claude-opus-5"

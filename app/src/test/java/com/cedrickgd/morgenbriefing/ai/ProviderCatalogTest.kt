@@ -109,6 +109,24 @@ class ProviderCatalogTest {
     }
 
     @Test
+    fun `a typed Pro id is no way around the free tier`() {
+        // Pro has no free tier: a free key would only collect 429s the quota text explains wrongly.
+        listOf("gemini-3.1-pro-preview-customtools", "gemini-pro-latest", "models/gemini-2.5-pro", " Gemini-3.1-Pro-Preview ").forEach { id ->
+            assertTrue(id, ProviderCatalog.requiresBilling(AiProviderId.GEMINI, id))
+            assertFalse(id, ProviderCatalog.isModelSelectable(gemini(GeminiTier.FREE), AiProviderId.GEMINI, id))
+            assertEquals(id, "gemini-3.8-flash", ProviderCatalog.effectiveModel(gemini(GeminiTier.FREE, model = id), AiProviderId.GEMINI))
+            assertTrue(id, ProviderCatalog.isModelSelectable(gemini(GeminiTier.PAID), AiProviderId.GEMINI, id))
+            assertEquals(id, id.trim(), ProviderCatalog.effectiveModel(gemini(GeminiTier.PAID, model = id), AiProviderId.GEMINI))
+        }
+        listOf("gemini-3.7-flash", "gemini-3.5-flash-lite", "gemini-flash-latest", "gemini-3-flash-preview").forEach { id ->
+            assertFalse(id, ProviderCatalog.requiresBilling(AiProviderId.GEMINI, id))
+        }
+        // Only Gemini has a free tier to protect; other providers' "pro" models are theirs.
+        assertFalse(ProviderCatalog.requiresBilling(AiProviderId.DEEPSEEK, "deepseek-v4-pro"))
+        assertFalse(ProviderCatalog.requiresBilling(AiProviderId.OPENROUTER, "google/gemini-3.1-pro-preview"))
+    }
+
+    @Test
     fun `models fall back to the catalog default`() {
         val ai = AiSettings()
         assertEquals("claude-sonnet-5-5", ProviderCatalog.effectiveModel(ai, AiProviderId.ANTHROPIC))

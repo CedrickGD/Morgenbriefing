@@ -391,7 +391,8 @@ private fun WorkspaceSection(
 
 /**
  * "Eigenes Modell …": a model id exactly as the provider writes it. A model the price table does
- * not know is allowed, but the dialog says its price is estimated.
+ * not know is allowed, but the dialog says its price is estimated. [blockedHint] names why an id
+ * cannot be taken (a Gemini Pro id with a free key): it is shown instead, and "Übernehmen" waits.
  */
 @Composable
 internal fun CustomModelDialog(
@@ -400,16 +401,19 @@ internal fun CustomModelDialog(
     priceHint: (String) -> String?,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
+    blockedHint: (String) -> String? = { null },
 ) {
     var model by rememberSaveable { mutableStateOf(current.orEmpty()) }
     val clean = model.trim()
+    val blocked = blockedHint(clean)
+    val canConfirm = clean.isNotEmpty() && clean.none { it.isWhitespace() } && blocked == null
     GlassDialog(
         onDismissRequest = onDismiss,
         title = "Eigenes Modell",
         icon = Icons.Rounded.Tune,
         buttons = {
             DialogButton("Abbrechen", onDismiss)
-            DialogButton("Übernehmen", { onConfirm(clean) }, enabled = clean.isNotEmpty() && clean.none { it.isWhitespace() })
+            DialogButton("Übernehmen", { onConfirm(clean) }, enabled = canConfirm)
         },
     ) {
         Text(
@@ -426,8 +430,9 @@ internal fun CustomModelDialog(
             placeholder = { Text(customModelExample(spec.id)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii, imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { if (clean.isNotEmpty()) onConfirm(clean) }),
-            supportingText = priceHint(clean)?.let { hint -> { Text(hint) } },
+            keyboardActions = KeyboardActions(onDone = { if (canConfirm) onConfirm(clean) }),
+            isError = blocked != null,
+            supportingText = (blocked ?: priceHint(clean))?.let { hint -> { Text(hint) } },
         )
     }
 }

@@ -310,9 +310,22 @@ object ProviderCatalog {
         return if (isModelSelectable(ai, id, stored)) stored else spec.defaultModel
     }
 
-    /** False only for a curated model that needs billing while the Gemini key is on the free tier. */
+    /** False only for a model that needs billing ([requiresBilling]) while the Gemini key is on the free tier. */
     fun isModelSelectable(ai: AiSettings, id: AiProviderId, modelId: String): Boolean =
-        !(ai.isGeminiFree(id) && spec(id).model(modelId)?.requiresBilling == true)
+        !(ai.isGeminiFree(id) && requiresBilling(id, modelId))
+
+    /**
+     * [modelId] of [id] has no free tier: a curated model marked so, or any typed Gemini Pro id
+     * (`gemini-3.1-pro-preview-customtools`, `gemini-pro-latest`, GE §3.1) — Google offers Pro
+     * only with billing, and a free key would get a 429 that the quota text would explain wrongly.
+     */
+    fun requiresBilling(id: AiProviderId, modelId: String): Boolean {
+        spec(id).model(modelId)?.let { return it.requiresBilling }
+        return id == AiProviderId.GEMINI && GEMINI_PRO.containsMatchIn(modelId.trim().lowercase())
+    }
+
+    /** "pro" as one dash-separated part of a Gemini model id. */
+    private val GEMINI_PRO = Regex("""(^|[-/])pro(-|$)""")
 
     /**
      * Whether the chat with [id] may search the web as configured: the provider can, and a Gemini
@@ -345,6 +358,9 @@ object GeminiTiers {
 
     /** Marks a model that cannot be picked on the free tier. */
     const val BILLING_ONLY = "nur mit Abrechnung"
+
+    /** Under "Eigenes Modell …" when a free key gets a Pro id typed in. */
+    const val PRO_NEEDS_BILLING = "Gemini Pro gibt es nur mit Abrechnung – im kostenlosen Tarif nicht wählbar."
 
     /** Name of a tariff in the picker. */
     fun label(tier: GeminiTier): String = when (tier) {

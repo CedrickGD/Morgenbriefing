@@ -513,6 +513,7 @@ fun SettingsScreen(
                     viewModel.setAiModel(provider, model)
                 },
                 onDismiss = { dialog = null },
+                blockedHint = { model -> customModelBlockedHint(current.ai, provider, model) },
             )
         }
 
