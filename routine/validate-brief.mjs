@@ -3,8 +3,8 @@
  * Validator for the Morgenbriefing data files on the `briefs` branch
  * (contract: docs/brief-format.md). Zero dependencies, Node >= 18, ESM.
  *
- *   node routine/validate-brief.mjs <datei...> [--max-age-hours 36]
- *   node routine/validate-brief.mjs --section <rubrik.json...> [--max-age-hours 36] [--now <ISO>]
+ *   node routine/validate-brief.mjs <datei...> [--max-age-hours 36] [--require-images]
+ *   node routine/validate-brief.mjs --section <rubrik.json...> [--max-age-hours 36] [--require-images] [--now <ISO>]
  *
  * Every file is classified by its keys: an object with `sections`/`schema` is a daily brief
  * (`briefs/YYYY-MM-DD.json`, `latest.json`), an object with `days` is `index.json`. With
@@ -20,6 +20,10 @@
  * `generatedAt` (never "now"), so the check is deterministic and can also run in CI on files
  * published days ago. Sections have no `generatedAt`; they are checked against the current time
  * or the instant given with `--now`.
+ *
+ * `--require-images` is the picture policy of the routine: every schema-2 article needs an `image`
+ * (without the option a missing picture is fine, so older briefs stay valid). The same picture
+ * twice in one brief – or, with `--section`, in two of the given sections – is a warning.
  *
  * Exit codes: 0 = all files valid, 1 = at least one file invalid, 2 = usage error.
  * Messages are German because the routine (and the human reading CI logs) works in German.
@@ -340,6 +344,62 @@ function hostOf(value) {
   }
 }
 
+const FILE_TITLE_RE = /^(?:file|datei):(.+)$/i;
+const UPLOAD_PATH_RE = /^\/wikipedia\/commons\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\/([^/]+)/i;
+
+/**
+ * Name of the Commons file a picture refers to ("Reichstag pano.jpg"), taken from an
+ * upload.wikimedia.org URL (original or thumbnail of any size), a file page on
+ * commons.wikimedia.org or a "File:…" title. Same file → same name, so duplicates are found even
+ * when one article uses the 1280 px and another the 960 px thumbnail. `null` for anything else.
+ */
+export function commonsFileKey(value) {
+  if (typeof value !== 'string') return null;
+  const text = value.trim();
+  let name = null;
+  const title = FILE_TITLE_RE.exec(text);
+  if (title) {
+    name = title[1];
+  } else {
+    let url;
+    try {
+      url = new URL(text);
+    } catch {
+      return null;
+    }
+    const host = url.hostname.toLowerCase();
+    if (host === 'upload.wikimedia.org' || host === 'thumb.wikimedia.org') {
+      const m = UPLOAD_PATH_RE.exec(url.pathname);
+      if (m) name = m[1];
+    } else if (host === 'commons.wikimedia.org' || host === 'commons.m.wikimedia.org') {
+      const m = /^\/wiki\/(.+)$/.exec(url.pathname);
+      const page = m ? safeDecode(m[1]) : url.searchParams.get('title') ?? '';
+      const file = FILE_TITLE_RE.exec(page);
+      if (file) return tidyFileName(file[1]);
+    }
+  }
+  return name === null ? null : tidyFileName(safeDecode(name));
+}
+
+function safeDecode(text) {
+  try {
+    return decodeURIComponent(text);
+  } catch {
+    return text;
+  }
+}
+
+/** MediaWiki spelling of a file name: spaces instead of underscores, first letter capitalized. */
+function tidyFileName(name) {
+  const tidy = name.replace(/_/g, ' ').replace(/\s+/g, ' ').trim();
+  return tidy === '' ? null : tidy.charAt(0).toUpperCase() + tidy.slice(1);
+}
+
+/** Key for "same picture" checks: the Commons file name, otherwise the normalized URL. */
+export function imageKey(value) {
+  return commonsFileKey(value) ?? urlKey(value);
+}
+
 // ---------------------------------------------------------------------------------------------
 // Article bodies (schema 2)
 // ---------------------------------------------------------------------------------------------
@@ -528,12 +588,13 @@ function checkDate(value, where, c) {
  * Shared state while validating the items of one brief (or one section): duplicate detection and
  * the reference time of the freshness check.
  */
-function itemContext(c, { referenceMs, referenceLabel, maxAgeHours }) {
+function itemContext(c, { referenceMs, referenceLabel, maxAgeHours, requireImages = false }) {
   return {
     c,
     referenceMs,
     referenceLabel,
     maxAgeHours,
+    requireImages,
     urls: new Map(),
     headlines: new Map(),
     ids: new Map(),
@@ -819,6 +880,13 @@ function validateItemV2(item, where, ctx) {
 
   checkPublishedAt(item, where, ctx);
   checkImportance(item, where, c);
+  if (ctx.requireImages && (item.image === undefined || item.image === null)) {
+    const id = typeof item.id === 'string' ? `"${item.id}" ` : '';
+    c.error(
+      `${where}.image`,
+      `Artikel ${id}hat kein Bild – mit --require-images braucht jeder Artikel eins (Commons-Suche, sonst node routine/find-image.mjs --fallback <motiv|rubrik>)`,
+    );
+  }
   checkImage(item.image, `${where}.image`, ctx);
 
   return tier;
@@ -890,9 +958,9 @@ function checkImage(image, where, ctx) {
   } else if (!image.url.startsWith(IMAGE_URL_PREFIX)) {
     c.error(`${where}.url`, `muss mit ${IMAGE_URL_PREFIX} beginnen – nur Bilder von Wikimedia Commons (gefunden: ${show(image.url)})`);
   } else {
-    const key = urlKey(image.url);
+    const key = imageKey(image.url);
     if (ctx.images.has(key)) {
-      c.warn(`${where}.url`, `dasselbe Bild hat schon ${ctx.images.get(key)}`);
+      c.warn(`${where}.url`, `dasselbe Bild hat schon ${ctx.images.get(key)} – jedes Bild nur einmal im Briefing`);
     } else {
       ctx.images.set(key, where);
     }
@@ -952,13 +1020,15 @@ function guessSchema(doc) {
  * Validates a daily brief (`briefs/YYYY-MM-DD.json` or `latest.json`), schema 1 or 2.
  *
  * @param {unknown} doc parsed JSON
- * @param {{ maxAgeHours?: number }} [options] `maxAgeHours` enables the freshness policy:
- *   every item needs `publishedAt` and must not be older than that relative to `generatedAt`.
+ * @param {{ maxAgeHours?: number, requireImages?: boolean }} [options] `maxAgeHours` enables the
+ *   freshness policy: every item needs `publishedAt` and must not be older than that relative to
+ *   `generatedAt`. `requireImages` makes a missing `image` of a schema-2 article an error (the
+ *   routine's rule for new briefs; older briefs without it stay valid).
  * @returns {{ errors: string[], warnings: string[] }} errors make the file unusable;
  *   warnings point at editorial guidelines (≤ 10 words, catalogue order …) and typos.
  */
 export function validateBrief(doc, options = {}) {
-  const { maxAgeHours } = options;
+  const { maxAgeHours, requireImages } = options;
   const c = collector();
   if (!isPlainObject(doc)) {
     c.error('', `Ein Briefing muss ein JSON-Objekt sein (gefunden: ${show(doc)}).`);
@@ -1002,6 +1072,7 @@ export function validateBrief(doc, options = {}) {
     referenceMs: generated === null ? null : generated.epochMs,
     referenceLabel: 'generatedAt',
     maxAgeHours,
+    requireImages,
   });
   const sectionIds = new Map();
   let itemTotal = 0;
@@ -1047,12 +1118,12 @@ export function validateBrief(doc, options = {}) {
  * the routine write it. Without `generatedAt`, the freshness check uses `now`.
  *
  * @param {unknown} doc parsed JSON
- * @param {{ maxAgeHours?: number, now?: number }} [options] `now` = reference instant (epoch ms),
- *   default `Date.now()`
+ * @param {{ maxAgeHours?: number, now?: number, requireImages?: boolean }} [options] `now` =
+ *   reference instant (epoch ms), default `Date.now()`; `requireImages` as in {@link validateBrief}
  * @returns {{ errors: string[], warnings: string[] }}
  */
 export function validateSection(doc, options = {}) {
-  const { maxAgeHours, now = Date.now() } = options;
+  const { maxAgeHours, now = Date.now(), requireImages } = options;
   const c = collector();
   if (!isPlainObject(doc)) {
     c.error('', `Eine Rubrik muss ein JSON-Objekt { id, title, emoji, items } sein (gefunden: ${show(doc)}).`);
@@ -1062,7 +1133,7 @@ export function validateSection(doc, options = {}) {
     c.error('', 'Das ist ein ganzes Briefing, keine einzelne Rubrik – ohne --section prüfen.');
     return { errors: c.errors, warnings: c.warnings };
   }
-  const ctx = itemContext(c, { referenceMs: now, referenceLabel: 'jetzt', maxAgeHours });
+  const ctx = itemContext(c, { referenceMs: now, referenceLabel: 'jetzt', maxAgeHours, requireImages });
   validateSectionV2(doc, '', ctx, null);
   // `where` is empty for the section itself, so the messages read "id: …", "items[0].body: …".
   const strip = (list) => list.map((m) => m.replace(/^\./, ''));
@@ -1138,7 +1209,7 @@ export function validateIndex(doc) {
  * the document is always validated as a single section.
  *
  * @param {unknown} doc
- * @param {{ maxAgeHours?: number, section?: boolean, now?: number }} [options]
+ * @param {{ maxAgeHours?: number, section?: boolean, now?: number, requireImages?: boolean }} [options]
  * @returns {{ kind: 'brief' | 'index' | 'section' | null, errors: string[], warnings: string[] }}
  */
 export function validateDocument(doc, options = {}) {
@@ -1222,7 +1293,7 @@ function describeJsonError(error, text) {
  * Reads, parses and validates one file.
  *
  * @param {string} file
- * @param {{ maxAgeHours?: number, section?: boolean, now?: number }} [options]
+ * @param {{ maxAgeHours?: number, section?: boolean, now?: number, requireImages?: boolean }} [options]
  * @returns {{ file: string, kind: 'brief'|'index'|'section'|null, doc: unknown, errors: string[], warnings: string[] }}
  */
 export function validateFile(file, options = {}) {
@@ -1311,15 +1382,18 @@ export function parseHours(value) {
 const USAGE = `Prüft Morgenbriefing-Dateien (Briefings, index.json, einzelne Rubriken) gegen docs/brief-format.md.
 
 Aufruf:
-  node routine/validate-brief.mjs <datei...> [--max-age-hours <h>]
-  node routine/validate-brief.mjs --section <rubrik.json...> [--max-age-hours <h>] [--now <zeitpunkt>]
+  node routine/validate-brief.mjs <datei...> [--max-age-hours <h>] [--require-images]
+  node routine/validate-brief.mjs --section <rubrik.json...> [--max-age-hours <h>] [--require-images] [--now <zeitpunkt>]
 
 Optionen:
   --section            Jede Datei ist eine einzelne Rubrik { id, title, emoji, items }
                        (Schema 2), wie sie die Rubrik-Agenten der Routine schreiben.
+                       Mehrere Rubriken zusammen: dasselbe Bild in zwei Dateien ist ein Hinweis.
   --max-age-hours <h>  Jede Meldung braucht publishedAt und darf höchstens <h> Stunden
                        alt sein (Routine: 36). Bezug: generatedAt des Briefings, bei
                        Rubriken die aktuelle Uhrzeit bzw. --now.
+  --require-images     Jeder Artikel (Schema 2) braucht ein Bild – ein fehlendes ist ein
+                       Fehler (Routine). Ohne die Option bleibt "image" freiwillig.
   --now <zeitpunkt>    Bezugszeitpunkt für Rubriken, ISO-8601 mit Zeitzone.
   -h, --help           Diese Hilfe.
 
@@ -1329,12 +1403,15 @@ function parseCliArgs(argv) {
   const files = [];
   let maxAgeHours;
   let section = false;
+  let requireImages = false;
   let now;
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '-h' || arg === '--help') return { help: true };
     if (arg === '--section') {
       section = true;
+    } else if (arg === '--require-images') {
+      requireImages = true;
     } else if (arg === '--max-age-hours' || arg.startsWith('--max-age-hours=')) {
       const raw = arg.includes('=') ? arg.slice(arg.indexOf('=') + 1) : argv[++i];
       const hours = parseHours(raw);
@@ -1360,7 +1437,34 @@ function parseCliArgs(argv) {
   }
   if (files.length === 0) return { problem: 'Keine Datei angegeben.' };
   if (now !== undefined && !section) return { problem: '--now gilt nur zusammen mit --section.' };
-  return { files, maxAgeHours, section, now };
+  return { files, maxAgeHours, section, now, requireImages };
+}
+
+/**
+ * Pictures that a section shares with sections checked before it (same Commons file). Records
+ * the section's own pictures in `seen` (image key → "datei items[i]").
+ *
+ * @param {unknown} doc a parsed section `{ id, title, emoji, items }`
+ * @param {string} label how the section is named in messages (usually the file name)
+ * @param {Map<string, string>} seen shared between the sections of one run
+ * @returns {string[]} warnings like "items[2].image.url: dasselbe Bild hat schon ki.json items[0] …"
+ */
+export function crossSectionImageWarnings(doc, label, seen) {
+  const warnings = [];
+  const own = new Map();
+  const items = isPlainObject(doc) && Array.isArray(doc.items) ? doc.items : [];
+  items.forEach((item, i) => {
+    if (!isPlainObject(item) || !isPlainObject(item.image) || typeof item.image.url !== 'string') return;
+    const key = imageKey(item.image.url);
+    const where = `items[${i}]`;
+    if (seen.has(key)) {
+      warnings.push(`${where}.image.url: dasselbe Bild hat schon ${seen.get(key)} – jedes Bild nur einmal im Briefing`);
+    } else if (!own.has(key)) {
+      own.set(key, `${label} ${where}`);
+    }
+  });
+  for (const [key, where] of own) seen.set(key, where);
+  return warnings;
 }
 
 /** Escapes text for a GitHub Actions workflow command. */
@@ -1385,10 +1489,19 @@ export function main(argv = process.argv.slice(2), out = console.log, err = cons
   }
 
   const inActions = process.env.GITHUB_ACTIONS === 'true';
-  const options = { maxAgeHours: args.maxAgeHours, section: args.section, now: args.now };
+  const options = {
+    maxAgeHours: args.maxAgeHours,
+    section: args.section,
+    now: args.now,
+    requireImages: args.requireImages,
+  };
+  const seenImages = new Map();
   let invalid = 0;
   for (const file of args.files) {
     const result = validateFile(file, options);
+    if (args.section && args.files.length > 1) {
+      result.warnings.push(...crossSectionImageWarnings(result.doc, path.basename(file), seenImages));
+    }
     if (result.errors.length === 0) {
       const hint = result.warnings.length > 0 ? ` · ${result.warnings.length} Hinweis(e)` : '';
       out(`OK      ${file} – ${describe(result.kind, result.doc)}${hint}`);
