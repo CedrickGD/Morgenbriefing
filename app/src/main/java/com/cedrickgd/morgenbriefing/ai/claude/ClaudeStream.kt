@@ -15,6 +15,7 @@ import com.anthropic.models.messages.ServerToolUseBlock
 import com.anthropic.models.messages.StopReason
 import com.anthropic.models.messages.Usage
 import com.cedrickgd.morgenbriefing.ai.AiError
+import com.cedrickgd.morgenbriefing.ai.AnswerText
 import com.cedrickgd.morgenbriefing.ai.AiException
 import com.cedrickgd.morgenbriefing.ai.SourceCollector
 import com.cedrickgd.morgenbriefing.ai.TokenUsage
@@ -56,34 +57,6 @@ internal class StreamedTurn(
     val refusalCategory: String?,
     val toolCalls: List<ToolCall>,
 )
-
-/**
- * Joins the text blocks of a whole answer (across `pause_turn` continuations): text that
- * follows a tool call or thinking starts a new paragraph; text blocks that only split for
- * citations are glued together as they are.
- */
-internal class AnswerText {
-    private val builder = StringBuilder()
-    private var afterNonText = false
-
-    val value: String get() = builder.toString()
-
-    /** Called when a text block starts; returns a separator to emit first, if any. */
-    fun startTextBlock(): String? {
-        val separator = if (afterNonText && builder.isNotEmpty() && !builder.endsWith("\n")) "\n\n" else null
-        afterNonText = false
-        separator?.let(builder::append)
-        return separator
-    }
-
-    fun nonTextBlock() {
-        afterNonText = true
-    }
-
-    fun append(text: String) {
-        builder.append(text)
-    }
-}
 
 /**
  * Runs one streaming request (`client.messages().createStreaming`): feeds every event to the

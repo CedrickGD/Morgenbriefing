@@ -1,0 +1,266 @@
+package com.cedrickgd.morgenbriefing.ai.http
+
+import com.cedrickgd.morgenbriefing.ai.AiBlockedException
+import com.cedrickgd.morgenbriefing.ai.AiError
+import com.cedrickgd.morgenbriefing.ai.AiException
+import com.cedrickgd.morgenbriefing.ai.ProviderAuth
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import java.io.IOException
+import java.net.ConnectException
+import java.net.NoRouteToHostException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+import java.net.UnknownServiceException
+import javax.net.ssl.SSLException
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+
+/**
+ * A failure as the UI explains it, plus whether sending the same request again can help (only
+ * ever before the first stream event, see [RetryPolicy]) and how long the server asked to wait.
+ */
+internal data class MappedError(val error: AiError, val retryable: Boolean = false, val retryAfter: Duration? = null)
+
+/** Classifies the failures of one provider's requests; null = not an API failure (pass it on). */
+internal fun interface ErrorMapper {
+    fun map(failure: Throwable): MappedError?
+}
+
+/**
+ * HTTP status, error body, connection problem or mid-stream error → [AiError] for every provider
+ * without an SDK (docs/AI-PROVIDERS.md §8.1, §8.2). Error bodies are parsed leniently and only
+ * steer the classification: a provider's raw message is never shown.
+ */
+internal object ProviderErrors {
+
+    /** The mapper of requests with [auth] for [model] (the model is named when it is unknown). */
+    fun mapper(auth: ProviderAuth, model: String?): ErrorMapper = ErrorMapper { map(auth.provider, it, model, auth.freeTier) }
+
+    /**
+     * Any failure of a request to [provider]. An [AiException] keeps its error, an
+     * [AiBlockedException] is no API failure (null), anything unexpected is [AiError.Unknown].
+     * [freeTier]: a free Gemini key (a 429 then means the free quota is used up).
+     */
+    fun map(provider: AiProviderId, failure: Throwable, model: String?, freeTier: Boolean = false): MappedError? = when (failure) {
+        is AiException -> MappedError(failure.error)
+        is AiBlockedException -> null
+        is HttpFailure -> http(provider, failure.code, failure.body, failure.retryAfter, model, freeTier)
+        is IOException -> io(provider, failure)
+        else -> MappedError(AiError.Unknown(null))
+    }
+
+    /** A non-2xx answer (§8.1). */
+    fun http(
+        provider: AiProviderId,
+        code: Int,
+        body: String,
+        retryAfter: Duration?,
+        model: String?,
+        freeTier: Boolean = false,
+    ): MappedError {
+        val e = ApiErrorBody.parse(body)
+        specific(provider, code, e, retryAfter, model, freeTier)?.let { return it }
+        val brand = brand(provider)
+        return when {
+            code == 401 -> MappedError(AiError.InvalidKey)
+            code == 402 -> MappedError(AiError.NoCredit)
+            code == 404 -> MappedError(AiError.ModelUnavailable(model))
+            code == 408 -> MappedError(AiError.Overloaded, retryable = true, retryAfter = retryAfter)
+            code == 413 -> MappedError(AiError.Unknown("Die Anfrage war zu groß für $brand."))
+            code == 429 -> MappedError(AiError.RateLimited, retryable = true, retryAfter = retryAfter)
+            code == 529 || code in 500..599 -> MappedError(AiError.Overloaded, retryable = true, retryAfter = retryAfter)
+            else -> MappedError(AiError.Unknown("${brand.sentence()} hat die Anfrage abgelehnt (HTTP $code)."))
+        }
+    }
+
+    /** The columns of §8.1 that differ from the common rows. */
+    private fun specific(
+        provider: AiProviderId,
+        code: Int,
+        e: ApiErrorBody,
+        retryAfter: Duration?,
+        model: String?,
+        freeTier: Boolean,
+    ): MappedError? = when (provider) {
+        AiProviderId.OPENAI -> when {
+            code == 400 && e.namesUnknownModel() -> MappedError(AiError.ModelUnavailable(model))
+            code == 403 -> MappedError(AiError.Unknown("OpenAI ist in deiner Region nicht verfügbar."))
+            code == 429 && e.hasCode("credit_balance_exhausted", "insufficient_quota") -> MappedError(AiError.NoCredit)
+            code == 429 && e.hasCode("organization_spend_limit_exceeded", "project_spend_limit_exceeded", "organization_usage_limit_exceeded") ->
+                MappedError(AiError.Unknown("Das Ausgabenlimit deines OpenAI-Projekts ist erreicht."))
+            else -> null
+        }
+        AiProviderId.XAI -> when (code) {
+            403 -> MappedError(AiError.Unknown("Kein Zugriff – Team gesperrt oder Guthaben leer? Schau in console.x.ai nach."))
+            else -> null
+        }
+        AiProviderId.GEMINI -> when {
+            code == 400 && e.isGeminiKeyInvalid() -> MappedError(AiError.InvalidKey)
+            code == 400 && e.status == "FAILED_PRECONDITION" ->
+                MappedError(AiError.Unknown("Gemini braucht für dich eine aktive Abrechnung in AI Studio."))
+            code == 403 -> MappedError(AiError.Unknown("Der Key darf die Gemini API nicht nutzen."))
+            code == 429 && freeTier -> {
+                // G3: the free quota (per minute or per day) is used up. Sent again only when
+                // Google names a short wait – never hammer a daily quota.
+                val wait = e.retryDelay ?: retryAfter
+                MappedError(AiError.QuotaExhausted, retryable = wait != null && wait <= FREE_QUOTA_MAX_WAIT, retryAfter = wait)
+            }
+            code == 429 -> MappedError(AiError.RateLimited, retryable = true, retryAfter = e.retryDelay ?: retryAfter)
+            else -> null
+        }
+        AiProviderId.OPENROUTER -> when {
+            // 402 with Retry-After: an upstream's credit check, temporary (OC §9).
+            code == 402 && retryAfter != null -> MappedError(AiError.RateLimited, retryable = true, retryAfter = retryAfter)
+            code == 403 -> MappedError(AiError.Unknown("OpenRouter hat die Anfrage abgelehnt (Moderation oder Rechte)."))
+            else -> null
+        }
+        AiProviderId.CUSTOM -> when (code) {
+            402 -> MappedError(AiError.Unknown("Dein Server hat die Anfrage abgelehnt (HTTP 402)."))
+            403 -> MappedError(AiError.InvalidKey)
+            else -> null
+        }
+        AiProviderId.ANTHROPIC, AiProviderId.PERPLEXITY, AiProviderId.MISTRAL, AiProviderId.DEEPSEEK -> null
+    }
+
+    /** A connection problem before (or while) the response arrived. */
+    fun io(provider: AiProviderId, e: IOException): MappedError = when {
+        // Plain http:// to a host outside the network security config's allowlist (D10).
+        e is UnknownServiceException -> MappedError(AiError.Unknown(CLEARTEXT_TEXT))
+        provider == AiProviderId.CUSTOM && e is SSLException -> MappedError(AiError.ServerUnreachable)
+        provider == AiProviderId.CUSTOM && e.isUnreachable() -> MappedError(AiError.ServerUnreachable, retryable = true)
+        e is SSLException -> MappedError(AiError.Network)
+        else -> MappedError(AiError.Network, retryable = true)
+    }
+
+    /**
+     * A Responses-family stream ended with `response.failed` or `error` (§8.2); [code] is
+     * `response.error.code` / `error.code`.
+     */
+    fun responsesStreamError(provider: AiProviderId, code: String?): AiError = when (code) {
+        "server_error" -> AiError.Overloaded
+        "rate_limit_exceeded" -> AiError.RateLimited
+        "invalid_prompt", "bio_policy", "misalignment_policy_violation" -> AiError.Refusal(code)
+        "insufficient_quota", "credit_balance_exhausted" -> AiError.NoCredit
+        "invalid_api_key" -> AiError.InvalidKey
+        else -> AiError.Unknown("${brand(provider).sentence()} hat die Antwort abgebrochen.")
+    }
+
+    /**
+     * A chunk with a top-level `error` inside a 200 stream (Gemini's google.rpc object, OpenRouter's
+     * `{code, message}`): classified like the HTTP status it names (§8.2), never retried.
+     */
+    fun streamError(provider: AiProviderId, chunk: JsonObject, model: String?, freeTier: Boolean = false): AiError {
+        val error = chunk["error"] as? JsonObject
+        val code = (error?.get("code") as? JsonPrimitive)?.content?.toIntOrNull()
+            ?: (error?.get("status") as? JsonPrimitive)?.content?.let(::rpcStatusCode)
+        return if (code == null) {
+            AiError.Unknown("${brand(provider).sentence()} hat die Antwort abgebrochen.")
+        } else {
+            http(provider, code, chunk.toString(), null, model, freeTier).error
+        }
+    }
+
+    private fun IOException.isUnreachable(): Boolean =
+        this is ConnectException || this is UnknownHostException || this is NoRouteToHostException ||
+            (this is SocketTimeoutException && message.orEmpty().contains("connect", ignoreCase = true))
+
+    /** google.rpc status names → HTTP codes (for stream errors that only carry the status). */
+    private fun rpcStatusCode(status: String): Int? = when (status) {
+        "INVALID_ARGUMENT", "FAILED_PRECONDITION", "OUT_OF_RANGE" -> 400
+        "UNAUTHENTICATED" -> 401
+        "PERMISSION_DENIED" -> 403
+        "NOT_FOUND" -> 404
+        "RESOURCE_EXHAUSTED" -> 429
+        "INTERNAL", "UNKNOWN", "DATA_LOSS" -> 500
+        "UNAVAILABLE" -> 503
+        "DEADLINE_EXCEEDED" -> 504
+        else -> null
+    }
+
+    private fun brand(provider: AiProviderId): String = ProviderCatalog.spec(provider).brand
+
+    private fun String.sentence(): String = replaceFirstChar { it.uppercaseChar() }
+
+    /** The longest wait a free Gemini quota is retried for; anything longer is reported at once. */
+    private val FREE_QUOTA_MAX_WAIT = 20.seconds
+
+    const val CLEARTEXT_TEXT =
+        "http:// geht nur mit Namen wie nas.fritz.box oder nas.local – nicht mit einer IP-Adresse. Nimm den Namen oder https://."
+}
+
+/**
+ * The fields of an error body that steer the classification, from every shape the providers
+ * use: `{"error": {message, type, code, param}}` (OpenAI style), a flat
+ * `{"object": "error", message, type, code}` (Mistral), google.rpc
+ * `{"error": {code, status, message, details: [ErrorInfo, RetryInfo]}}` — also wrapped in an
+ * array (GE §12.1) — and `{"error": "text"}`. Unknown or broken bodies give empty fields.
+ */
+internal class ApiErrorBody(
+    val message: String? = null,
+    val type: String? = null,
+    /** `error.code` as text (a string or a number, depending on the provider). */
+    val code: String? = null,
+    val param: String? = null,
+    /** google.rpc `status`, e.g. `RESOURCE_EXHAUSTED`. */
+    val status: String? = null,
+    /** google.rpc `ErrorInfo.reason`s, e.g. `API_KEY_INVALID`. */
+    val reasons: List<String> = emptyList(),
+    /** google.rpc `RetryInfo.retryDelay`. */
+    val retryDelay: Duration? = null,
+) {
+    fun hasCode(vararg codes: String): Boolean = codes.any { it == code || it == type }
+
+    /** OpenAI 400: "The model `…` does not exist or you do not have access to it." */
+    fun namesUnknownModel(): Boolean {
+        val text = message.orEmpty()
+        return code == "model_not_found" ||
+            ((param == "model" || text.contains("model", ignoreCase = true)) && text.contains("does not exist", ignoreCase = true))
+    }
+
+    /** Gemini 400 `INVALID_ARGUMENT` with reason `API_KEY_INVALID` ("API key not valid"). */
+    fun isGeminiKeyInvalid(): Boolean =
+        "API_KEY_INVALID" in reasons || message.orEmpty().contains("API key not valid", ignoreCase = true)
+
+    companion object {
+        private val json = Json { ignoreUnknownKeys = true; isLenient = true }
+
+        fun parse(body: String): ApiErrorBody {
+            if (body.isBlank()) return ApiErrorBody()
+            val root = try {
+                json.parseToJsonElement(body)
+            } catch (_: Exception) {
+                return ApiErrorBody()
+            }
+            val top = (if (root is JsonArray) root.firstOrNull() else root) as? JsonObject ?: return ApiErrorBody()
+            return when (val error = top["error"]) {
+                is JsonObject -> of(error)
+                is JsonPrimitive -> ApiErrorBody(message = error.text())
+                else -> of(top)
+            }
+        }
+
+        private fun of(o: JsonObject): ApiErrorBody {
+            val details = (o["details"] as? JsonArray).orEmpty().mapNotNull { it as? JsonObject }
+            return ApiErrorBody(
+                message = o["message"].text() ?: o["detail"].text(),
+                type = o["type"].text(),
+                code = o["code"].text(),
+                param = o["param"].text(),
+                status = o["status"].text(),
+                reasons = details.filter { it["@type"].text().orEmpty().endsWith("ErrorInfo") }.mapNotNull { it["reason"].text() },
+                retryDelay = details.firstOrNull { it["@type"].text().orEmpty().endsWith("RetryInfo") }
+                    ?.let { parseSecondsDuration(it["retryDelay"].text()) },
+            )
+        }
+
+        private fun JsonElement?.text(): String? = (this as? JsonPrimitive)?.takeUnless { it is JsonNull }
+            ?.content?.trim()?.takeIf { it.isNotEmpty() }
+    }
+}
