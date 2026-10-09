@@ -402,6 +402,16 @@ internal fun customModelBlockedHint(ai: AiSettings, id: AiProviderId, modelId: S
     return GeminiTiers.PRO_NEEDS_BILLING
 }
 
+/**
+ * The own server's model rows: in the server's order — a tap must not move the rows under the
+ * finger — with the [stored] model in front only when the server does not list it (not loaded
+ * yet, or typed by hand).
+ */
+internal fun serverModelOrder(stored: String?, listed: List<String>): List<String> {
+    val ids = listed.distinct()
+    return if (stored != null && stored !in ids) listOf(stored) + ids else ids
+}
+
 /** Example id under "Eigenes Modell …" and in its dialog. */
 internal fun customModelExample(id: AiProviderId): String = when (id) {
     AiProviderId.ANTHROPIC -> "claude-opus-5"

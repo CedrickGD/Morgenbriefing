@@ -400,6 +400,17 @@ class AiLogicTest {
     }
 
     @Test
+    fun `own server models keep the server's order when one is picked`() {
+        val listed = listOf("gpt-6.1-sol", "gpt-6-luna", "mistral-small-2603", "llama3.3")
+        // Picking llama3.3 must not move it to the top (the rows would shift under the finger).
+        assertEquals(listed, serverModelOrder("llama3.3", listed))
+        assertEquals(listed, serverModelOrder(null, listed))
+        // Not on the server's list (not loaded yet, or typed): in front.
+        assertEquals(listOf("qwen3:14b") + listed, serverModelOrder("qwen3:14b", listed))
+        assertEquals(listOf("qwen3:14b"), serverModelOrder("qwen3:14b", emptyList()))
+    }
+
+    @Test
     fun `gemini flash prices double in 2027`() {
         val ai = gemini(GeminiTier.PAID)
         assertEquals("1,50 $ / 7,50 $ je 1 Mio. Tokens", plain(priceLine(ai, AiProviderId.GEMINI, "gemini-3.8-flash", LocalDate.of(2027, 1, 1))))

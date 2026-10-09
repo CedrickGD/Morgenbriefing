@@ -422,7 +422,7 @@ private fun ModelPicker(ai: AiSettings, provider: AiProviderId, today: LocalDate
 @Composable
 private fun ServerModelPicker(ai: AiSettings, models: ServerModels, actions: AiActions) {
     val stored = ai.of(AiProviderId.CUSTOM).model?.trim()?.takeIf { it.isNotEmpty() }
-    val ids = (listOfNotNull(stored) + models.ids).distinct()
+    val ids = serverModelOrder(stored, models.ids)
     Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         ids.forEach { id ->
             ChoiceRow(
