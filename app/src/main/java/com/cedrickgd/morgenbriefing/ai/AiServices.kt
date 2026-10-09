@@ -7,6 +7,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.ai.claude.ClaudeBackend
+import com.cedrickgd.morgenbriefing.ai.http.AiHttp
+import com.cedrickgd.morgenbriefing.ai.openai.ResponsesBackend
+import com.cedrickgd.morgenbriefing.ai.openai.ResponsesDialect
 import com.cedrickgd.morgenbriefing.ai.provider.EngineKind
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
@@ -27,6 +30,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.io.File
 import java.time.LocalDate
+import java.util.concurrent.ConcurrentHashMap
 
 /** The one DataStore for this month's AI spending (DataStore forbids two instances per file). */
 private val Context.aiUsageStore: DataStore<Preferences> by preferencesDataStore(name = "ai_usage")
@@ -53,20 +57,28 @@ class AiServices(private val context: Context, private val container: AppContain
         }
     }
 
+    /** Plain OkHttp + SSE for every provider without an SDK (shares the app's connection pool). */
+    private val http: AiHttp by lazy { AiHttp(container.http) }
+
+    /** One backend per provider of the families without an SDK, created on first use. */
+    private val backends = ConcurrentHashMap<AiProviderId, AiBackend>()
+
     /**
      * The backend of the engine family of [id], or null where it cannot run (Claude below
-     * Android 8) or is not built yet. The Responses, Gemini and Chat Completions families
-     * register here (docs/AI-PROVIDERS.md T6–T8); until then only Claude is wired.
+     * Android 8) or is not built yet. The Gemini and Chat Completions families register here
+     * (docs/AI-PROVIDERS.md T7, T8); until then they have no backend.
      */
     internal fun backendFor(id: AiProviderId): AiBackend? = when (ProviderCatalog.spec(id).engine) {
         EngineKind.CLAUDE_SDK -> claude
-        EngineKind.RESPONSES, EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> null
+        EngineKind.RESPONSES -> backends.getOrPut(id) { ResponsesBackend(http, ResponsesDialect.of(id)) }
+        EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> null
     }
 
     /** Whether [id] has a backend in this build, without creating it (no SDK class loading). */
     private fun isWired(id: AiProviderId): Boolean = when (ProviderCatalog.spec(id).engine) {
         EngineKind.CLAUDE_SDK -> AiSupport.sdkAvailable
-        EngineKind.RESPONSES, EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> false
+        EngineKind.RESPONSES -> true
+        EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> false
     }
 
     private val usageStore: UsageStore by lazy {
