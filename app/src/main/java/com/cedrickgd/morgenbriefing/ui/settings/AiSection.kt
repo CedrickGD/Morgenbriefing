@@ -31,6 +31,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Dns
 import androidx.compose.material.icons.rounded.Key
+import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -96,7 +97,7 @@ internal class AiActions(
     val onGeminiTier: (GeminiTier) -> Unit,
     /** "Ändern" / "Live-Anbieter wählen": the Live provider picker. */
     val onPickLiveProvider: () -> Unit,
-    /** Debug builds: "Entwickler: Basis-URL" of the chat provider. */
+    /** Debug builds: "Entwickler: Basis-URL" of every provider. */
     val onEditDebugBaseUrl: () -> Unit,
     val onLimit: (Double) -> Unit,
     val onLiveAuto: (Boolean) -> Unit,
@@ -192,17 +193,17 @@ internal fun AiCard(
         Spacer(Modifier.height(8.dp))
         LiveProviderRow(ai = ai, sdkAvailable = sdkAvailable, onChange = actions.onPickLiveProvider)
 
-        if (debugTools && provider != AiProviderId.CUSTOM) {
+        if (debugTools) {
             Spacer(Modifier.height(22.dp))
             Overline("Entwickler")
             Spacer(Modifier.height(8.dp))
             SettingRow(
                 icon = Icons.Rounded.Code,
                 title = "Entwickler: Basis-URL",
-                subtitle = debugBaseUrlLabel(ai.of(provider).debugBaseUrl),
+                subtitle = debugBaseUrlSummary(ai),
                 action = "Ändern",
                 onAction = actions.onEditDebugBaseUrl,
-                actionDescription = "Basis-URL von ${spec.name} ändern",
+                actionDescription = "Basis-URLs der KI-Anbieter ändern",
             )
         }
 
@@ -284,7 +285,11 @@ internal fun CapabilityChips(capabilities: List<Capability>, modifier: Modifier 
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    if (capability.available) Icons.Rounded.Check else Icons.Rounded.Close,
+                    when {
+                        capability.available -> Icons.Rounded.Check
+                        capability.device -> Icons.Rounded.PhoneAndroid
+                        else -> Icons.Rounded.Close
+                    },
                     contentDescription = null,
                     tint = tint,
                     modifier = Modifier.size(12.dp),

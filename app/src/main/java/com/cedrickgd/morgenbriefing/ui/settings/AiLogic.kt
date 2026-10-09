@@ -10,6 +10,7 @@ import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
+import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import java.net.URI
 import java.net.URISyntaxException
 import java.time.LocalDate
@@ -237,9 +238,12 @@ internal fun workspaceIdHint(raw: String): String? {
 // Provider picker and capabilities
 // -------------------------------------------------------------------------------------------
 
-/** One capability pill of a provider card ("Chat ✓", "Live ✗", "ab Android 8"). */
+/**
+ * One capability pill of a provider card ("Chat ✓", "Live ✗", "ab Android 8"). [device]: the pill
+ * about the Android version, which shows a phone instead of ✗ when the provider needs Android 8.
+ */
 @Immutable
-internal data class Capability(val label: String, val available: Boolean, val spoken: String)
+internal data class Capability(val label: String, val available: Boolean, val spoken: String, val device: Boolean = false)
 
 /**
  * What [spec] can do, as the provider cards show it: Chat, Websuche, Live, Android 7. [ai] makes
@@ -263,6 +267,7 @@ internal fun capabilities(spec: ProviderSpec, ai: AiSettings? = null): List<Capa
             if (android7) "Android 7" else "ab Android 8",
             available = android7,
             spoken = if (android7) "läuft auf Android 7" else "braucht Android 8",
+            device = true,
         ),
     )
 }
@@ -389,8 +394,12 @@ internal fun priceLine(ai: AiSettings, id: AiProviderId, modelId: String, on: Lo
     if (ai.costsNothing(id)) return "kostenlos"
     val (rates, estimated) = AiPricing.ratesFor(id, modelId, on)
     if (estimated) return "Preis geschätzt"
-    return "${perMillionUsd(rates.input)} / ${perMillionUsd(rates.output)} je 1 Mio. Tokens"
+    // Non-breaking inside each amount and the unit: a line never ends with "4" and goes on with "$".
+    return "${perMillionUsd(rates.input)} / ${perMillionUsd(rates.output)} je${NBSP}1${NBSP}Mio.${NBSP}Tokens"
 }
+
+/** Keeps a number and its unit on one line. */
+private const val NBSP = ' '
 
 /** Under the free-text model field: the app has to guess the price of [modelId]. Null when it knows it or it costs nothing. */
 internal fun customModelPriceHint(ai: AiSettings, id: AiProviderId, modelId: String, on: LocalDate): String? {
@@ -399,13 +408,16 @@ internal fun customModelPriceHint(ai: AiSettings, id: AiProviderId, modelId: Str
     return if (AiPricing.ratesFor(id, model, on).second) "Preis geschätzt – dieses Modell kennt die App nicht." else null
 }
 
-/** Prices per million tokens the German way: "2 $", "0,10 $", "0,075 $", "3,75 $" (at most three decimals). */
+/**
+ * Prices per million tokens the German way: "2 $", "0,10 $", "0,075 $", "3,75 $" (at most three
+ * decimals; a non-breaking space before "$").
+ */
 internal fun perMillionUsd(value: Double): String {
-    if (value.isNaN() || value <= 0.0) return "0 $"
+    if (value.isNaN() || value <= 0.0) return "0$NBSP$"
     val millis = (value * 1000).roundToInt()
-    if (millis % 1000 == 0) return "${millis / 1000} $"
+    if (millis % 1000 == 0) return "${millis / 1000}$NBSP$"
     val decimals = if (millis % 10 == 0) 2 else 3
-    return String.format(Locale.GERMANY, "%.${decimals}f $", millis / 1000.0)
+    return String.format(Locale.GERMANY, "%.${decimals}f$NBSP$", millis / 1000.0)
 }
 
 // -------------------------------------------------------------------------------------------
@@ -427,8 +439,23 @@ internal fun debugBaseUrlExample(id: AiProviderId, port: Int = MOCK_SERVER_PORT)
         EngineKind.RESPONSES, EngineKind.CHAT_COMPLETIONS -> "http://10.0.2.2:$port/v1"
     }
 
-/** The developer row's second line: the override, or that the real API is used. */
-internal fun debugBaseUrlLabel(url: String?): String = url?.takeIf { it.isNotBlank() } ?: "Echte API (keine Umleitung)"
+/** The providers a debug build can point elsewhere: all but the own server, which has its own address. */
+internal val debugBaseUrlProviders: List<AiProviderId> = AiProviderId.entries.filter { it != AiProviderId.CUSTOM }
+
+/**
+ * The developer row's second line: the chat provider's override, or how many providers go to a
+ * test server ("3 von 8 Anbietern umgeleitet"), or that every provider talks to its real API.
+ */
+internal fun debugBaseUrlSummary(ai: AiSettings): String {
+    val redirected = debugBaseUrlProviders.count { !ai.of(it).debugBaseUrl.isNullOrBlank() }
+    val chat = ai.of(ai.provider).debugBaseUrl?.takeIf { it.isNotBlank() && ai.provider != AiProviderId.CUSTOM }
+    return when {
+        redirected == 0 -> "Echte APIs (keine Umleitung)"
+        chat != null && redirected == 1 -> chat
+        chat != null -> "$chat · $redirected von ${debugBaseUrlProviders.size} Anbietern umgeleitet"
+        else -> "$redirected von ${debugBaseUrlProviders.size} Anbietern umgeleitet"
+    }
+}
 
 // -------------------------------------------------------------------------------------------
 // Monthly limit and usage
@@ -501,4 +528,13 @@ internal fun estimatedNote(estimatedRequests: Int): String? = when {
     estimatedRequests <= 0 -> null
     estimatedRequests == 1 -> "Preis teils geschätzt: 1 Anfrage lief mit einem Modell, das die App nicht kennt."
     else -> "Preis teils geschätzt: $estimatedRequests Anfragen liefen mit einem Modell, das die App nicht kennt."
+}
+
+/**
+ * The line under a Gemini tariff in the choice ([GeminiTiers.label] is its title, so the
+ * description's leading "Kostenlos:" is not repeated).
+ */
+internal fun geminiTierSubtitle(tier: GeminiTier): String = when (tier) {
+    GeminiTier.FREE -> "Kein Guthaben nötig. Antworten nur aus Artikel und Briefing – ohne Websuche."
+    GeminiTier.PAID -> "Prepay im Google-Projekt. Antworten auch mit Google-Suche und Gemini Pro."
 }

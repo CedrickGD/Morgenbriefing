@@ -233,17 +233,18 @@ class SettingsViewModel(
     }
 
     /**
-     * Debug builds only (G5): points [provider] at [url] (a local mock server); null clears it.
-     * Release builds store nothing.
+     * Debug builds only (G5): points every provider of [urls] at its URL (a local mock server);
+     * null clears it. Release builds store nothing.
      */
-    fun setDebugBaseUrl(provider: AiProviderId, url: String?) {
+    fun setDebugBaseUrls(urls: Map<AiProviderId, String?>) {
         viewModelScope.launch {
-            val stored = attempt { container.settings.setDebugBaseUrl(provider, url) }
+            val stored = attempt { urls.all { (provider, url) -> container.settings.setDebugBaseUrl(provider, url) } }
+            val redirected = urls.values.count { !it.isNullOrBlank() }
             _messages.send(
                 when {
-                    stored.getOrNull() != true -> "Die Basis-URL konnte nicht gespeichert werden."
-                    url.isNullOrBlank() -> "Wieder die echte API."
-                    else -> "Anfragen gehen jetzt an $url."
+                    stored.getOrNull() != true -> "Die Basis-URLs konnten nicht gespeichert werden."
+                    redirected == 0 -> "Alle Anbieter nutzen wieder ihre echte API."
+                    else -> "Gespeichert – $redirected von ${urls.size} Anbietern gehen an den Testserver."
                 },
             )
         }

@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -58,6 +59,7 @@ import com.cedrickgd.morgenbriefing.ai.KeyExtras
 import com.cedrickgd.morgenbriefing.ai.compat.CustomServer
 import com.cedrickgd.morgenbriefing.ai.compat.CustomUrlIssue
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
@@ -154,7 +156,7 @@ internal fun AiKeyDialog(
             Spacer(Modifier.height(18.dp))
             Overline("Tarif")
             Spacer(Modifier.height(8.dp))
-            GeminiTierChoice(selected = tier, onSelect = { tier = it }, compact = true)
+            GeminiTierChoice(selected = tier, onSelect = { tier = it }, compact = true, enabled = !checking && !saved)
         }
         if (custom) {
             Spacer(Modifier.height(14.dp))
@@ -307,17 +309,19 @@ private fun KeyGuide(spec: ProviderSpec, onOpenLink: (String) -> Unit) {
 /**
  * The Gemini "Tarif" (G1): "Kostenlos" (the default of a new setup) or "Mit Abrechnung", each with
  * its one-line explanation, then what Google may do on the free tier and, with billing, the free
- * search allowance. [compact]: inside the key dialog (smaller rows).
+ * search allowance. [compact]: inside the key dialog (smaller rows); [enabled] false while the key
+ * is tested and once it is stored (a change then would not be saved).
  */
 @Composable
-internal fun GeminiTierChoice(selected: GeminiTier, onSelect: (GeminiTier) -> Unit, compact: Boolean = false) {
+internal fun GeminiTierChoice(selected: GeminiTier, onSelect: (GeminiTier) -> Unit, compact: Boolean = false, enabled: Boolean = true) {
     Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         GeminiTier.entries.forEach { tier ->
             ChoiceRow(
                 title = GeminiTiers.label(tier),
-                subtitle = GeminiTiers.description(tier),
+                subtitle = geminiTierSubtitle(tier),
                 selected = tier == selected,
                 onSelect = { onSelect(tier) },
+                enabled = enabled,
                 compact = compact,
             )
         }
@@ -429,52 +433,76 @@ internal fun CustomModelDialog(
 }
 
 /**
- * Debug builds only (G5): points [spec] at a test server instead of its real API, e.g. the mock
- * server of `tools/mock-ai-server.mjs` on the host machine (`10.0.2.2` from the emulator).
- * Release builds never show this and ignore anything stored.
+ * Debug builds only (G5): points any provider at a test server instead of its real API, e.g. the
+ * mock server of `tools/mock-ai-server.mjs` on the host machine (`10.0.2.2` from the emulator) —
+ * one field per provider, so a separate Live provider can be redirected too, and „Alle auf
+ * Mock-Server“ for a whole QA pass. Release builds never show this and ignore anything stored.
+ * [onSave] gets every provider's value (null = the real API).
  */
 @Composable
 internal fun DebugBaseUrlDialog(
-    spec: ProviderSpec,
-    current: String?,
-    onSave: (String?) -> Unit,
+    ai: AiSettings,
+    onSave: (Map<AiProviderId, String?>) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var url by rememberSaveable { mutableStateOf(current.orEmpty()) }
-    val clean = url.trim()
-    val valid = clean.isEmpty() || normalizeBaseUrl(clean) != null
-    val example = debugBaseUrlExample(spec.id)
+    val urls = remember {
+        mutableStateMapOf<AiProviderId, String>().apply {
+            debugBaseUrlProviders.forEach { put(it, ai.of(it).debugBaseUrl.orEmpty()) }
+        }
+    }
+    fun valid(id: AiProviderId): Boolean = urls[id].orEmpty().trim().let { it.isEmpty() || normalizeBaseUrl(it) != null }
+    val allValid = debugBaseUrlProviders.all(::valid)
     GlassDialog(
         onDismissRequest = onDismiss,
         title = "Entwickler: Basis-URL",
         icon = Icons.Rounded.Code,
         buttons = {
-            if (!current.isNullOrBlank()) DialogButton("Zurücksetzen", { onSave(null) })
             DialogButton("Abbrechen", onDismiss)
-            DialogButton("Speichern", { onSave(clean.ifEmpty { null }) }, enabled = valid)
+            DialogButton(
+                "Speichern",
+                { onSave(debugBaseUrlProviders.associateWith { urls[it].orEmpty().trim().ifEmpty { null } }) },
+                enabled = allValid,
+            )
         },
     ) {
         Text(
-            "Leitet alle Anfragen an ${spec.name} auf einen Testserver um, z. B. den Mock-Server aus tools/mock-ai-server.mjs. " +
-                "Nur in Debug-Builds – Release-Builds ignorieren die Einstellung.",
+            "Leitet Anfragen auf einen Testserver um, z. B. den Mock-Server aus tools/mock-ai-server.mjs. " +
+                "Leer = echte API. Nur in Debug-Builds – Release-Builds ignorieren die Einstellung.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(Modifier.height(12.dp))
-        OutlinedTextField(
-            value = url,
-            onValueChange = { url = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Basis-URL") },
-            placeholder = { Text(example) },
-            singleLine = true,
-            isError = !valid,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Done),
-            supportingText = {
-                Text(if (valid) "Leer = echte API. Unverschlüsselt nur für 10.0.2.2, localhost und lokale Namen." else "Keine gültige http(s)-Adresse.")
-            },
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            GlassPillButton(
+                text = "Alle auf Mock-Server",
+                onClick = { debugBaseUrlProviders.forEach { urls[it] = debugBaseUrlExample(it) } },
+                style = PillStyle.Quiet,
+            )
+            GlassPillButton(text = "Alle leeren", onClick = { debugBaseUrlProviders.forEach { urls[it] = "" } }, style = PillStyle.Quiet)
+        }
+        Spacer(Modifier.height(6.dp))
+        debugBaseUrlProviders.forEach { id ->
+            val spec = ProviderCatalog.spec(id)
+            OutlinedTextField(
+                value = urls[id].orEmpty(),
+                onValueChange = { urls[id] = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+                label = { Text(spec.name) },
+                placeholder = { Text(debugBaseUrlExample(id)) },
+                singleLine = true,
+                isError = !valid(id),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
+                supportingText = if (valid(id)) null else ({ Text("Keine gültige http(s)-Adresse.") }),
+            )
+        }
+        Text(
+            "Unverschlüsselt nur für 10.0.2.2, localhost und lokale Namen.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 8.dp),
         )
-        GlassPillButton(text = "Mock-Server einsetzen", onClick = { url = example }, style = PillStyle.Quiet)
     }
 }
 

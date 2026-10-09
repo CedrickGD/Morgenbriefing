@@ -593,8 +593,8 @@ private fun EmptyChat(
                 QuietNote(
                     note,
                     Modifier
-                        .frost(shape = GlassShapes.pill, level = GlassLevel.Thin)
-                        .padding(horizontal = 14.dp, vertical = 9.dp),
+                        .frost(shape = GlassShapes.chip, level = GlassLevel.Thin)
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
                 )
             }
         }

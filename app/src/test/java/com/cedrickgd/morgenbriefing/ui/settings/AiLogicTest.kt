@@ -20,6 +20,13 @@ class AiLogicTest {
     private val claude = ProviderCatalog.ANTHROPIC
     private val today = LocalDate.of(2026, 10, 9)
 
+    /** Price lines keep amounts together with non-breaking spaces; compared as plain text. */
+    private fun plain(text: String) = text.replace(NBSP, ' ')
+
+    private companion object {
+        const val NBSP = ' '
+    }
+
     private fun gemini(tier: GeminiTier, model: String? = null, hasKey: Boolean = true) = AiSettings(
         provider = AiProviderId.GEMINI,
         providers = mapOf(AiProviderId.GEMINI to ProviderSettings(hasKey = hasKey, geminiTier = tier, model = model)),
@@ -328,7 +335,9 @@ class AiLogicTest {
         assertEquals("claude-sonnet-5-5", sonnet.id)
         assertTrue(sonnet.selected)
         assertEquals("Standard", sonnet.badge)
-        assertEquals("Schnell und gründlich · 2 $ / 10 $ je 1 Mio. Tokens", sonnet.subtitle)
+        assertEquals("Schnell und gründlich · 2 $ / 10 $ je 1 Mio. Tokens", plain(sonnet.subtitle))
+        // Amounts and the unit never break across lines.
+        assertTrue(sonnet.subtitle.endsWith("2${NBSP}$ / 10${NBSP}$ je${NBSP}1${NBSP}Mio.${NBSP}Tokens"))
         assertTrue(choices.all { it.enabled })
     }
 
@@ -345,14 +354,14 @@ class AiLogicTest {
 
         val paid = modelChoices(gemini(GeminiTier.PAID), AiProviderId.GEMINI, today)
         assertTrue(paid.all { it.enabled })
-        assertEquals("Stärkstes Gemini · 2 $ / 12 $ je 1 Mio. Tokens", paid.single { it.id == "gemini-3.1-pro-preview" }.subtitle)
-        assertTrue(paid.first().subtitle.endsWith("0,75 $ / 3,75 $ je 1 Mio. Tokens"))
+        assertEquals("Stärkstes Gemini · 2 $ / 12 $ je 1 Mio. Tokens", plain(paid.single { it.id == "gemini-3.1-pro-preview" }.subtitle))
+        assertTrue(plain(paid.first().subtitle).endsWith("0,75 $ / 3,75 $ je 1 Mio. Tokens"))
     }
 
     @Test
     fun `gemini flash prices double in 2027`() {
         val ai = gemini(GeminiTier.PAID)
-        assertEquals("1,50 $ / 7,50 $ je 1 Mio. Tokens", priceLine(ai, AiProviderId.GEMINI, "gemini-3.8-flash", LocalDate.of(2027, 1, 1)))
+        assertEquals("1,50 $ / 7,50 $ je 1 Mio. Tokens", plain(priceLine(ai, AiProviderId.GEMINI, "gemini-3.8-flash", LocalDate.of(2027, 1, 1))))
     }
 
     @Test
@@ -374,11 +383,11 @@ class AiLogicTest {
 
     @Test
     fun `prices per million tokens the german way`() {
-        assertEquals("2 $", perMillionUsd(2.0))
-        assertEquals("0,10 $", perMillionUsd(0.1))
-        assertEquals("0,075 $", perMillionUsd(0.075))
-        assertEquals("3,75 $", perMillionUsd(3.75))
-        assertEquals("0 $", perMillionUsd(0.0))
+        assertEquals("2${NBSP}$", perMillionUsd(2.0))
+        assertEquals("0,10 $", plain(perMillionUsd(0.1)))
+        assertEquals("0,075 $", plain(perMillionUsd(0.075)))
+        assertEquals("3,75 $", plain(perMillionUsd(3.75)))
+        assertEquals("0 $", plain(perMillionUsd(0.0)))
     }
 
     @Test
@@ -388,15 +397,43 @@ class AiLogicTest {
         assertEquals("http://10.0.2.2:8787/v1", debugBaseUrlExample(AiProviderId.OPENAI))
         assertEquals("http://10.0.2.2:8787/v1", debugBaseUrlExample(AiProviderId.PERPLEXITY))
         assertEquals("http://10.0.2.2:8787/v1", debugBaseUrlExample(AiProviderId.DEEPSEEK))
-        assertEquals("Echte API (keine Umleitung)", debugBaseUrlLabel(null))
-        assertEquals("http://10.0.2.2:8787/v1", debugBaseUrlLabel("http://10.0.2.2:8787/v1"))
     }
 
+
+    @Test
+    fun `debug base url summary covers every provider but the own server`() {
+        assertEquals(8, debugBaseUrlProviders.size)
+        assertFalse(AiProviderId.CUSTOM in debugBaseUrlProviders)
+        assertEquals("Echte APIs (keine Umleitung)", debugBaseUrlSummary(AiSettings()))
+        val gemini = AiSettings(
+            provider = AiProviderId.GEMINI,
+            providers = mapOf(AiProviderId.GEMINI to ProviderSettings(debugBaseUrl = "http://10.0.2.2:8787/v1beta")),
+        )
+        assertEquals("http://10.0.2.2:8787/v1beta", debugBaseUrlSummary(gemini))
+        val withLive = gemini.with(AiProviderId.OPENAI, ProviderSettings(debugBaseUrl = "http://10.0.2.2:8787/v1"))
+        assertEquals("http://10.0.2.2:8787/v1beta · 2 von 8 Anbietern umgeleitet", debugBaseUrlSummary(withLive))
+        assertEquals("1 von 8 Anbietern umgeleitet", debugBaseUrlSummary(withLive.copy(provider = AiProviderId.MISTRAL).with(AiProviderId.GEMINI, ProviderSettings())))
+    }
     @Test
     fun `estimated note only when some requests were guessed`() {
         assertNull(estimatedNote(0))
         assertTrue(estimatedNote(1)!!.contains("1 Anfrage"))
         assertTrue(estimatedNote(4)!!.contains("4 Anfragen"))
+    }
+
+    @Test
+    fun `the tariff subtitles do not repeat the tariff name`() {
+        GeminiTier.entries.forEach { tier ->
+            assertFalse(geminiTierSubtitle(tier).startsWith(GeminiTiers.label(tier).substringBefore(" ")))
+        }
+        assertTrue(geminiTierSubtitle(GeminiTier.FREE).contains("ohne Websuche"))
+        assertTrue(geminiTierSubtitle(GeminiTier.PAID).contains("Google-Suche"))
+    }
+
+    @Test
+    fun `the android pill is a device hint, not a cross`() {
+        assertTrue(capabilities(claude).last().device)
+        assertFalse(capabilities(claude).first().device)
     }
 
     @Test

@@ -305,7 +305,7 @@ fun SettingsScreen(
         onLoadServerModels = viewModel::loadServerModels,
         onGeminiTier = viewModel::setGeminiTier,
         onPickLiveProvider = { dialog = SettingsDialog.AI_LIVE_PROVIDERS },
-        onEditDebugBaseUrl = { openAiDialog(SettingsDialog.AI_DEBUG_URL, chatProvider) },
+        onEditDebugBaseUrl = { dialog = SettingsDialog.AI_DEBUG_URL },
         onLimit = viewModel::setAiMonthlyLimit,
         onLiveAuto = viewModel::setLiveAutoRefresh,
     )
@@ -517,15 +517,13 @@ fun SettingsScreen(
         }
 
         SettingsDialog.AI_DEBUG_URL -> {
-            val provider = AiProviderId.fromKey(dialogProvider) ?: current.ai.provider
             // Debug builds only: in a release build the row (and with it this dialog) never shows.
             if (BuildConfig.DEBUG) {
                 DebugBaseUrlDialog(
-                    spec = ProviderCatalog.spec(provider),
-                    current = current.ai.of(provider).debugBaseUrl,
-                    onSave = { url ->
+                    ai = current.ai,
+                    onSave = { urls ->
                         dialog = null
-                        viewModel.setDebugBaseUrl(provider, url)
+                        viewModel.setDebugBaseUrls(urls)
                     },
                     onDismiss = { dialog = null },
                 )
