@@ -81,7 +81,7 @@ private fun suggestionsWebView(context: Context, onLink: (String) -> Unit): WebV
                 return true
             }
 
-            // API 24-only devices without a WebView update still call the String overload.
+            // Old WebView builds may still call the String overload; both open the link outside.
             @Deprecated("Deprecated in Java")
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 onLink(url)
