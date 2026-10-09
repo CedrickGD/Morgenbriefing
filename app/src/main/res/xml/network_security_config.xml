@@ -9,4 +9,15 @@
             <certificates src="@raw/isrg_root_x2" />
         </trust-anchors>
     </base-config>
+    <!-- "Eigener Server" (docs/AI-PROVIDERS.md D10): plain http only for local names. 10.0.2.2 is
+         the emulator's host machine (QA mock servers via the debug-only base URL override). -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">localhost</domain>
+        <domain includeSubdomains="false">10.0.2.2</domain>
+        <domain includeSubdomains="true">local</domain>
+        <domain includeSubdomains="true">lan</domain>
+        <domain includeSubdomains="true">home.arpa</domain>
+        <domain includeSubdomains="true">fritz.box</domain>
+        <domain includeSubdomains="true">internal</domain>
+    </domain-config>
 </network-security-config>
