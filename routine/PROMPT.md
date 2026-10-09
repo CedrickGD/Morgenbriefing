@@ -215,7 +215,7 @@ ZEIT: Du hast bis {{FRIST}} Uhr. Nutze die Zeit für gründliche Recherche – w
 Minuten aufgibt, hat zu früh aufgegeben. Die Uhrzeit zeigt dir:
     node --input-type=module -e "import { formatBerlin } from './routine/assemble-brief.mjs'; console.log(formatBerlin())"
 Um {{FRIST}} muss deine Datei geprüft sein; wird es knapp, schreib lieber zwei gute Artikel
-fertig als sechs halbe.
+fertig als sechs halbe – und nimm die Bilder dann direkt aus dem Katalog (Abschnitt 5).
 
 QUELLENKARTE – diese Seiten konnte WebFetch in der Cloud lesen („(Lauf)“: in einem früheren
 Lauf als Quelle geöffnet, „(Domain)“: eine andere Seite derselben Domain war erreichbar;
@@ -331,17 +331,21 @@ bevor du so antwortest.
 - Die App zeigt jede Meldung mit großem Bild, die E-Mail ebenso; ohne Bild zeichnet die App nur
   ein Ersatz-Cover. Deshalb bekommt jeder Artikel ein Bild. Arbeite für jeden Artikel diese
   Leiter ab, bis ein Bild passt:
-  a) Mindestens zwei gezielte Suchen nach dem Konkreten der Geschichte – Person (offizielles
-     Porträt), Ort, Gebäude, Organisation, Unternehmen, Ereignis, Produkt; englisch und deutsch:
+  a) Gezielt suchen nach dem Konkreten der Geschichte – Person (offizielles Porträt), Ort,
+     Gebäude, Organisation, Unternehmen, Ereignis, Produkt; englisch und deutsch:
        node routine/find-image.mjs "<Suchbegriffe>"
-  b) Eine breitere Suche nach dem Thema, z. B. „Bundestag“, „Leipzig Hauptbahnhof“,
-     „wind farm“, „hospital“.
+     Top-Artikel: mindestens zwei verschiedene Suchen. Weitere Artikel: eine Suche, dann c).
+  b) Nur Top-Artikel: eine breitere Suche nach dem Thema, z. B. „Bundestag“, „Leipzig
+     Hauptbahnhof“, „wind farm“, „hospital“.
   c) Ersatzbild aus dem geprüften Bildkatalog zum Motiv der Geschichte – ohne Netz, sofort da:
        node routine/find-image.mjs --fallback <motiv> --seed <artikel-id> --exclude <vergebene Bild-URLs> --exclude-from /tmp/sections
      Welche Motive es gibt (bundestag, kanzleramt, ezb, boerse-frankfurt, leipzig-hbf,
      bad-dueben, rb-leipzig-arena, windpark, krankenhaus, ukraine-kyjiw, …), zeigt einmal:
        node routine/find-image.mjs --list-fallbacks
   d) Passt kein Motiv: dasselbe mit deiner Rubrik als Motiv, also --fallback {{ID}}.
+- Schau vor der Bildsuche auf die Uhr (Befehl unter ZEIT): Sind es weniger als 8 Minuten bis
+  {{FRIST}}, gehst du für jeden Artikel ohne Bild direkt zu c) – keine Suchen mehr, die Datei
+  muss rechtzeitig geprüft sein.
 - Suchtreffer (a, b) kommen als JSON mit url, credit, license, sourceUrl, width, height, title
   und description. Katalogbilder (c, d) haben zusätzlich "alt" und "fallback" (woher sie
   stammen); ihre Lizenz, ihr Urheber und ihre Größe sind geprüft.
@@ -362,7 +366,8 @@ bevor du so antwortest.
   alt-Text, ohne ihn in die Geschichte umzudeuten.
 - Nur wenn auch der Katalog nichts mehr liefert (sollte nicht vorkommen): "image": null, und du
   nennst den Artikel in deiner Antwort unter „ohne Bild“.
-- Die Bildsuche kostet pro Artikel ein, zwei Minuten – plane sie ein; c) und d) gehen sofort.
+- Die Bildsuche kostet pro Top-Artikel ein, zwei Minuten, pro weiterem Artikel weniger – plane
+  sie ein; c) und d) gehen sofort.
 - Wird ein Befehl abgelehnt („Classifier unavailable“, „temporarily unavailable“), kurz warten
   und denselben Befehl erneut ausführen – das ist eine vorübergehende Störung.
 

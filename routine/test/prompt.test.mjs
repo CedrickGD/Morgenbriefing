@@ -111,9 +111,14 @@ describe('PROMPT.md', () => {
     assert.ok(start !== -1 && end > start, 'Abschnitt 5. BILD fehlt');
     const bild = PROMPT.slice(start, end);
     assert.match(bild, /Pflicht für JEDEN Artikel, Top und Mehr/);
-    for (const step of ['a) Mindestens zwei gezielte Suchen', 'b) Eine breitere Suche', 'c) Ersatzbild aus dem geprüften Bildkatalog', 'd) Passt kein Motiv']) {
+    for (const step of ['a) Gezielt suchen', 'b) Nur Top-Artikel: eine breitere Suche', 'c) Ersatzbild aus dem geprüften Bildkatalog', 'd) Passt kein Motiv']) {
       assert.ok(bild.includes(step), step);
     }
+    // The search ladder fits the 30 minutes of a section agent: full ladder only for top
+    // articles, one search for the others, and straight to the catalogue when time runs out.
+    assert.match(bild, /Top-Artikel: mindestens zwei verschiedene Suchen\. Weitere Artikel: eine Suche, dann c\)\./);
+    assert.match(bild, /weniger als 8 Minuten bis\s+\{\{FRIST\}\}, gehst du für jeden Artikel ohne Bild direkt zu c\)/);
+    assert.match(PROMPT, /wird es knapp, schreib lieber zwei gute Artikel\nfertig als sechs halbe – und nimm die Bilder dann direkt aus dem Katalog/);
     assert.match(bild, /node routine\/find-image\.mjs --fallback <motiv> --seed <artikel-id> --exclude <[^>]+> --exclude-from \/tmp\/sections/);
     assert.match(bild, /node routine\/find-image\.mjs --list-fallbacks/);
     assert.match(bild, /--fallback \{\{ID\}\}/);
