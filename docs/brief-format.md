@@ -185,7 +185,10 @@ Regeln (Test `routine/test/fallback-images.test.mjs`): alle zehn Rubriken vorhan
 bekannter Rubrik, eindeutige Schlüssel und Aliase, keine Datei doppelt, freie Lizenz mit
 Urheber (außer CC0/gemeinfrei), Querformat ab 1200 px, deutscher `alt`-Text, der beschreibt, was
 zu sehen ist. Keine Medienlogos, keine erkennbaren Privatpersonen in heiklen Situationen, kein
-bestimmtes Ereignis.
+bestimmtes Ereignis: Nennt der Dateiname ein Rennen, eine Etappe, eine Partie oder ein Festival
+(etwa „2010 Malaysian GP“, „Tour of Slovenia (Stage 1)“, „A v B“), schlägt der Test an, bis das
+Bild angesehen und ersetzt oder – wenn es nichts davon zeigt, etwa nur einen Ball – in die
+geprüften Ausnahmen des Tests aufgenommen ist.
 
 * `node routine/find-image.mjs --fallback <motiv|rubrik> [--seed <artikel-id>] [--exclude <url,…>] [--exclude-from <pfad>]`
   gibt Katalogbilder als JSON aus (dieselben Felder wie die Suche plus `alt` und `fallback`) –

@@ -2024,14 +2024,25 @@
       ],
       "images": [
         {
-          "title": "File:2010 Malaysian GP opening lap.jpg",
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/2010_Malaysian_GP_opening_lap.jpg/1280px-2010_Malaysian_GP_opening_lap.jpg",
-          "credit": "Morio",
-          "license": "CC BY-SA 3.0",
-          "sourceUrl": "https://commons.wikimedia.org/wiki/File:2010_Malaysian_GP_opening_lap.jpg",
-          "alt": "Formel-1-Wagen in der ersten Kurve eines Grand Prix",
+          "title": "File:Pirelli Tyre Sets at Formula 1 Exhibition, London 01.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Pirelli_Tyre_Sets_at_Formula_1_Exhibition%2C_London_01.jpg/1280px-Pirelli_Tyre_Sets_at_Formula_1_Exhibition%2C_London_01.jpg",
+          "credit": "Hullian111",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pirelli_Tyre_Sets_at_Formula_1_Exhibition,_London_01.jpg",
+          "alt": "Formel-1-Reifen aller Mischungen, aufgereiht in einer Ausstellung",
           "width": 1280,
-          "height": 612,
+          "height": 853,
+          "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Hockenheimring start-ziel-gerade 2010.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Hockenheimring_start-ziel-gerade_2010.jpg/1280px-Hockenheimring_start-ziel-gerade_2010.jpg",
+          "credit": "Kmtextor",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hockenheimring_start-ziel-gerade_2010.jpg",
+          "alt": "Start-Ziel-Gerade einer Rennstrecke mit Tribünen und rot-weißen Randsteinen",
+          "width": 1280,
+          "height": 853,
           "verifiedAt": "2026-10-09"
         }
       ]
@@ -2045,14 +2056,25 @@
       ],
       "images": [
         {
-          "title": "File:2022 Tour of Slovenia (Stage 1, Peloton).jpg",
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/2022_Tour_of_Slovenia_%28Stage_1%2C_Peloton%29.jpg/1280px-2022_Tour_of_Slovenia_%28Stage_1%2C_Peloton%29.jpg",
-          "credit": "Petar Milošević",
-          "license": "CC BY-SA 4.0",
-          "sourceUrl": "https://commons.wikimedia.org/wiki/File:2022_Tour_of_Slovenia_(Stage_1,_Peloton).jpg",
-          "alt": "Radrennfahrer im Peloton auf einer Landstraße",
+          "title": "File:Rennrad Racing Bicycle.JPG",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Rennrad_Racing_Bicycle.JPG/1280px-Rennrad_Racing_Bicycle.JPG",
+          "credit": "GS",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rennrad_Racing_Bicycle.JPG",
+          "alt": "Carbon-Rennrad vor einer weißen Wand",
           "width": 1280,
-          "height": 758,
+          "height": 960,
+          "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Bicycle cassette - 10-speed.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Bicycle_cassette_-_10-speed.jpg/1280px-Bicycle_cassette_-_10-speed.jpg",
+          "credit": "Cjp24",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bicycle_cassette_-_10-speed.jpg",
+          "alt": "Ritzelpaket und Schaltwerk eines Rennrads, Nahaufnahme",
+          "width": 1280,
+          "height": 960,
           "verifiedAt": "2026-10-09"
         }
       ]

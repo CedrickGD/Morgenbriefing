@@ -67,6 +67,31 @@ function smallCatalog() {
   };
 }
 
+/** Names a specific race, stage or match on its own: "Malaysian GP", "Tour of Slovenia", "A v B". */
+const EVENT_ALWAYS = /\b(?:GP|Grand Prix|Tour (?:of|de|du)|Stage \d+|Etappe|Giro|Vuelta|opening lap)\b|\s(?:v|vs\.?)\s/i;
+/** Names a specific event together with a year: "2022 … Cup", "2020-11-11 Handball, Bundesliga". */
+const EVENT_WITH_YEAR =
+  /\b(?:Tour|Stage|Rall(?:y|ye)|Race|Rennen|Marathon|Cup|Pokal|Bundesliga|Liga|League|Championships?|Meisterschaft|Olympi\w*|WM|EM|Finale?|Match|Spiel|Derby|Handball|Fu(?:ß|ss)ball|Football|Soccer|Festival|Konzert|Concert|performance|Gipfel|Summit|Games)\b/i;
+const YEAR = /(?<!\d)(?:19|20)\d{2}(?!\d)/;
+
+/** Whether a Commons title names a specific event – such a photo must not stand in for another. */
+function namesEvent(title) {
+  return EVENT_ALWAYS.test(title) || (YEAR.test(title) && EVENT_WITH_YEAR.test(title));
+}
+
+/**
+ * Catalogue pictures whose Commons title names an event, but whose picture was looked at and
+ * shows nothing of it (routine/PROMPT.md, rule 5: never a photo of another, specific event).
+ * A new title that names an event fails the catalogue test until someone has looked at the
+ * picture: replace it, or add it here with what it shows.
+ */
+const REVIEWED_EVENT_TITLES = new Map([
+  ['File:SK Dětmarovice v FC Hlučín (26 August 2020, MOL Cup) 06.jpg', 'Tornetz in Nahaufnahme, Spielfeld und Zuschauer unscharf'],
+  ['File:2020-11-11 Handball, Bundesliga Frauen, Thüringer HC - Frisch Auf Göppingen 1DX 3576 by Stepro.jpg', 'nur der Ball auf dem Hallenboden'],
+  ['File:2024-09-14 Handball VfL Waiblingen - HSV Solingen-Gräfrath by mroptimax-32.jpg', 'Ball vor einem leeren Tor'],
+  ['File:Beach-Please-2022-crowd-stage-lights-night-performance.jpg', 'anonyme Menge vor Bühnenlicht, kein Festival erkennbar'],
+]);
+
 describe('fallback catalogue (routine/fallback-images.json)', () => {
   it('follows all catalogue rules', () => {
     assert.deepEqual(catalogProblems(CATALOG), []);
@@ -111,6 +136,38 @@ describe('fallback catalogue (routine/fallback-images.json)', () => {
       const result = validateSection(section, { requireImages: false });
       assert.deepEqual(result.errors, [], where);
       assert.deepEqual(result.warnings.filter((w) => w.includes('image')), [], where);
+    }
+  });
+
+  it('shows no specific event: a title naming a race, stage or match needs a reviewed exception', () => {
+    for (const title of ['File:2010 Malaysian GP opening lap.jpg', 'File:2022 Tour of Slovenia (Stage 1, Peloton).jpg',
+      'File:Panoramabild Kurve 2 von Deutschland Tour 2021 Etappe 1.jpg', 'File:Racing bicycles-2009 Tour de France.jpg',
+      'File:Bayern v Dortmund.jpg', 'File:DTM 2015 Race 2 Hockenheim.jpg']) {
+      assert.ok(namesEvent(title), title);
+    }
+    for (const title of ['File:Hockenheimring start-ziel-gerade 2010.jpg', 'File:Berliner Olympiastadion night.jpg',
+      'File:STS-135 final flyaround of ISS 1.jpg', 'File:Technics SL-120 turntable and pickup - front view (2019-04-28).jpg']) {
+      assert.ok(!namesEvent(title), title);
+    }
+
+    const flagged = catalogEntries(CATALOG).filter(({ entry: e }) => namesEvent(e.title));
+    for (const { where, entry: e } of flagged) {
+      assert.ok(REVIEWED_EVENT_TITLES.has(e.title),
+        `${where} (${e.title}) nennt ein bestimmtes Ereignis – Bild ansehen und ersetzen oder nach Prüfung in REVIEWED_EVENT_TITLES aufnehmen`);
+    }
+    for (const title of REVIEWED_EVENT_TITLES.keys()) {
+      assert.ok(flagged.some(({ entry: e }) => e.title === title), `${title}: nicht mehr im Katalog – Ausnahme streichen`);
+    }
+  });
+
+  it('pictures motor racing and cycling without a dated race (formel1, grand-prix, Tour de France)', () => {
+    for (const key of ['formel1', 'grand-prix', 'motorsport', 'Tour de France', 'radrennen']) {
+      const { candidates } = fallbackCandidates(CATALOG, key, { limit: 2 });
+      assert.equal(candidates.length, 2, key);
+      for (const c of candidates) {
+        assert.match(c.fallback, /^motiv:(formel-1|radsport)$/, key);
+        assert.ok(!namesEvent(c.title), `${key}: ${c.title}`);
+      }
     }
   });
 });
