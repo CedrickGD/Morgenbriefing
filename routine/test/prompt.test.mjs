@@ -105,6 +105,35 @@ describe('PROMPT.md', () => {
     }
   });
 
+  it('gives every article a picture: search ladder, catalogue fallback, strict checks', () => {
+    const start = PROMPT.indexOf('5. BILD');
+    const end = PROMPT.indexOf('6. DATEI SCHREIBEN');
+    assert.ok(start !== -1 && end > start, 'Abschnitt 5. BILD fehlt');
+    const bild = PROMPT.slice(start, end);
+    assert.match(bild, /Pflicht für JEDEN Artikel, Top und Mehr/);
+    for (const step of ['a) Gezielt suchen', 'b) Nur Top-Artikel: eine breitere Suche', 'c) Ersatzbild aus dem geprüften Bildkatalog', 'd) Passt kein Motiv']) {
+      assert.ok(bild.includes(step), step);
+    }
+    // The search ladder fits the 30 minutes of a section agent: full ladder only for top
+    // articles, one search for the others, and straight to the catalogue when time runs out.
+    assert.match(bild, /Top-Artikel: mindestens zwei verschiedene Suchen\. Weitere Artikel: eine Suche, dann c\)\./);
+    assert.match(bild, /weniger als 8 Minuten bis\s+\{\{FRIST\}\}, gehst du für jeden Artikel ohne Bild direkt zu c\)/);
+    assert.match(PROMPT, /wird es knapp, schreib lieber zwei gute Artikel\nfertig als sechs halbe – und nimm die Bilder dann direkt aus dem Katalog/);
+    assert.match(bild, /node routine\/find-image\.mjs --fallback <motiv> --seed <artikel-id> --exclude <[^>]+> --exclude-from \/tmp\/sections/);
+    assert.match(bild, /node routine\/find-image\.mjs --list-fallbacks/);
+    assert.match(bild, /--fallback \{\{ID\}\}/);
+    assert.match(bild, /Nie ein Bild, das ein anderes, bestimmtes Ereignis zeigt/);
+    assert.match(bild, /Jedes Bild nur einmal im Briefing/);
+    assert.doesNotMatch(PROMPT, /Für weitere Artikel ist es optional|Lieber kein Bild als ein schiefes/);
+
+    assert.match(PROMPT, /--section \/tmp\/sections\/\{\{ID\}\}\.json --max-age-hours 36 --require-images\n/);
+    assert.match(PROMPT, /--section \/tmp\/sections\/\*\.json --max-age-hours 36 --require-images\n/);
+    assert.match(PROMPT, /validate-brief\.mjs \/tmp\/brief\.json --max-age-hours 36 --require-images\n/);
+    assert.match(PROMPT, /\{\{ID\}\}: <N> Artikel \(<T> Top, <M> Mehr\), <B> Bilder \(<K> aus dem Katalog\) – OK/);
+    assert.match(section('## Schritt 3'), /\*\*Bilder – jeder Artikel braucht eins\.\*\*/);
+    assert.match(section('## Schritt 7'), /48 Artikel · 48 Bilder/);
+  });
+
   it('publishes to the target branch and keeps the 04:50 budget', () => {
     assert.match(PROMPT, /node routine\/publish-brief\.mjs --print-branch/);
     assert.match(PROMPT, /--data-dir \/tmp\/briefs --max-age-hours 36 --branch <ZWEIG>/);

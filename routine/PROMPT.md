@@ -39,8 +39,10 @@ Diese Regeln gelten für dich und für jeden Rubrik-Agenten.
 5. **Nichts abschreiben.** Wir übernehmen keine Artikel und keine Pressefotos. Jeder Text ist in
    eigenen Worten geschrieben und stützt sich auf mehrere Quellen; pro Artikel höchstens **ein**
    kurzes wörtliches Zitat (unter 15 Wörtern, mit Urheber). Bilder kommen ausschließlich von
-   Wikimedia Commons unter freier Lizenz mit Namensnennung (`routine/find-image.mjs`), niemals
-   Logos von Medien; passt keins, bleibt das Bild leer und die App zeichnet ein eigenes Titelbild.
+   Wikimedia Commons unter freier Lizenz mit Namensnennung (`routine/find-image.mjs`, als Ersatz
+   der geprüfte Bildkatalog `routine/fallback-images.json`), niemals Logos von Medien. **Jeder
+   Artikel bekommt ein Bild** – notfalls ein allgemeines Symbolbild aus dem Katalog, aber nie
+   ein Bild, das ein anderes, bestimmtes Ereignis zeigt, als wäre es dieses.
 6. **Die Zeit gehört der Recherche.** Der Lauf startet um 04:00 und muss spätestens um **04:50**
    gepusht haben: Die E-Mail-Routine liest das Briefing um 05:20, die App um 05:30. Bis dahin
    wird gesucht, geprüft und geschrieben – ein Lauf, der um 04:10 fertig ist, hat zu früh
@@ -213,7 +215,7 @@ ZEIT: Du hast bis {{FRIST}} Uhr. Nutze die Zeit für gründliche Recherche – w
 Minuten aufgibt, hat zu früh aufgegeben. Die Uhrzeit zeigt dir:
     node --input-type=module -e "import { formatBerlin } from './routine/assemble-brief.mjs'; console.log(formatBerlin())"
 Um {{FRIST}} muss deine Datei geprüft sein; wird es knapp, schreib lieber zwei gute Artikel
-fertig als sechs halbe.
+fertig als sechs halbe – und nimm die Bilder dann direkt aus dem Katalog (Abschnitt 5).
 
 QUELLENKARTE – diese Seiten konnte WebFetch in der Cloud lesen („(Lauf)“: in einem früheren
 Lauf als Quelle geöffnet, „(Domain)“: eine andere Seite derselben Domain war erreichbar;
@@ -325,23 +327,47 @@ bevor du so antwortest.
 - tier: "top" für die Top-Geschichten, dann "more" für die weiteren. Top-Artikel stehen zuerst,
   innerhalb jeder Gruppe die wichtigste zuerst.
 
-5. BILD – Pflichtversuch für jeden Top-Artikel
-- Die App zeigt jede Meldung mit großem Bild; ohne Bild zeichnet sie nur ein Ersatz-Cover.
-  Für JEDEN Top-Artikel suchst du deshalb ein Bild – mit mindestens zwei verschiedenen
-  Suchbegriffen (z. B. Ort/Gebäude, Person, Institution, Gegenstand; englisch und deutsch),
-  bevor du aufgibst. Für weitere Artikel ist es optional.
-- Suche mit präzisen Begriffen (englisch oder deutsch), z. B. Ort, Gebäude, Person, Gegenstand:
-    node routine/find-image.mjs "<Suchbegriffe>"
-  Du bekommst frei lizenzierte Commons-Bilder als JSON: url, credit, license, sourceUrl, width,
-  height, title, description.
-- Nimm einen Kandidaten NUR, wenn er wirklich zur Geschichte passt: ein Ort, ein Gebäude, eine
+5. BILD – Pflicht für JEDEN Artikel, Top und Mehr
+- Die App zeigt jede Meldung mit großem Bild, die E-Mail ebenso; ohne Bild zeichnet die App nur
+  ein Ersatz-Cover. Deshalb bekommt jeder Artikel ein Bild. Arbeite für jeden Artikel diese
+  Leiter ab, bis ein Bild passt:
+  a) Gezielt suchen nach dem Konkreten der Geschichte – Person (offizielles Porträt), Ort,
+     Gebäude, Organisation, Unternehmen, Ereignis, Produkt; englisch und deutsch:
+       node routine/find-image.mjs "<Suchbegriffe>"
+     Top-Artikel: mindestens zwei verschiedene Suchen. Weitere Artikel: eine Suche, dann c).
+  b) Nur Top-Artikel: eine breitere Suche nach dem Thema, z. B. „Bundestag“, „Leipzig
+     Hauptbahnhof“, „wind farm“, „hospital“.
+  c) Ersatzbild aus dem geprüften Bildkatalog zum Motiv der Geschichte – ohne Netz, sofort da:
+       node routine/find-image.mjs --fallback <motiv> --seed <artikel-id> --exclude <vergebene Bild-URLs> --exclude-from /tmp/sections
+     Welche Motive es gibt (bundestag, kanzleramt, ezb, boerse-frankfurt, leipzig-hbf,
+     bad-dueben, rb-leipzig-arena, windpark, krankenhaus, ukraine-kyjiw, …), zeigt einmal:
+       node routine/find-image.mjs --list-fallbacks
+  d) Passt kein Motiv: dasselbe mit deiner Rubrik als Motiv, also --fallback {{ID}}.
+- Schau vor der Bildsuche auf die Uhr (Befehl unter ZEIT): Sind es weniger als 8 Minuten bis
+  {{FRIST}}, gehst du für jeden Artikel ohne Bild direkt zu c) – keine Suchen mehr, die Datei
+  muss rechtzeitig geprüft sein.
+- Suchtreffer (a, b) kommen als JSON mit url, credit, license, sourceUrl, width, height, title
+  und description. Katalogbilder (c, d) haben zusätzlich "alt" und "fallback" (woher sie
+  stammen); ihre Lizenz, ihr Urheber und ihre Größe sind geprüft.
+- Ein Suchtreffer passt NUR, wenn er wirklich zur Geschichte gehört: ein Ort, ein Gebäude, eine
   Person in einem offiziellen Porträt, ein Gegenstand oder eine eindeutige Symbolszene. Prüfe
-  title und description. Nie Logos von Medien; kein Bild, das ein anderes Ereignis zeigt (etwa
-  ein altes Unglücksfoto zu einem neuen Unglück); keine Personen, die mit der Geschichte nichts
-  zu tun haben.
-- Übernimm url, credit, license und sourceUrl unverändert und ergänze "alt": eine kurze deutsche
-  Beschreibung dessen, was zu sehen ist.
-- Passt nach zwei Suchen nichts: "image": null. Lieber kein Bild als ein schiefes.
+  title und description. Nie Logos von Medien; keine Personen, die mit der Geschichte nichts zu
+  tun haben.
+- Nie ein Bild, das ein anderes, bestimmtes Ereignis zeigt, als wäre es dieses – etwa ein altes
+  Unglücksfoto zu einem neuen Unglück oder das Foto einer anderen Partie. Allgemeine
+  Symbolbilder (das Gebäude, die Stadt, der Gegenstand, die Landschaft) sind in Ordnung.
+- Jedes Bild nur einmal im Briefing: Gib bei --fallback mit --exclude alle Bild-URLs an, die du
+  schon vergeben hast (kommagetrennt); --exclude-from /tmp/sections schließt die Bilder der
+  schon fertigen Rubriken aus, --seed mit der Artikel-id verteilt parallele Rubriken auf
+  verschiedene Bilder. Nimm den ersten Kandidaten, der passt – stammt er aus einem anderen Motiv
+  deiner Rubrik, prüfe, dass er nichts Falsches nahelegt, sonst nimm den nächsten.
+- Übernimm url, credit, license und sourceUrl unverändert. "alt" ist eine kurze deutsche
+  Beschreibung dessen, was zu sehen ist – bei Katalogbildern übernimmst du den mitgelieferten
+  alt-Text, ohne ihn in die Geschichte umzudeuten.
+- Nur wenn auch der Katalog nichts mehr liefert (sollte nicht vorkommen): "image": null, und du
+  nennst den Artikel in deiner Antwort unter „ohne Bild“.
+- Die Bildsuche kostet pro Top-Artikel ein, zwei Minuten, pro weiterem Artikel weniger – plane
+  sie ein; c) und d) gehen sofort.
 - Wird ein Befehl abgelehnt („Classifier unavailable“, „temporarily unavailable“), kurz warten
   und denselben Befehl erneut ausführen – das ist eine vorübergehende Störung.
 
@@ -381,15 +407,18 @@ Schreibe /tmp/sections/{{ID}}.json (UTF-8) genau in diesem Aufbau:
 
 Anführungszeichen im Text immer als „…“ schreiben – ein gerades " zerstört das JSON. Dann prüfen:
 
-    node routine/validate-brief.mjs --section /tmp/sections/{{ID}}.json --max-age-hours 36
+    node routine/validate-brief.mjs --section /tmp/sections/{{ID}}.json --max-age-hours 36 --require-images
 
 Korrigiere jeden Fehler und prüfe erneut, bis die Ausgabe mit OK beginnt. Nimm auch die Hinweise
 ernst. Ist eine Meldung zu alt, ersetze sie durch eine frischere, geprüfte – ändere niemals ein
-Datum, nur damit die Prüfung durchgeht.
+Datum, nur damit die Prüfung durchgeht. „hat kein Bild“ heißt: die Bildleiter aus Abschnitt 5
+für diesen Artikel zu Ende gehen. Nur für einen Artikel, für den auch der Katalog nachweislich
+nichts mehr liefert, prüfst du ohne --require-images.
 
 7. ANTWORT
 Antworte zum Schluss mit genau einer Zeile:
-  {{ID}}: <N> Artikel (<T> Top, <M> Mehr), <B> Bilder – OK
+  {{ID}}: <N> Artikel (<T> Top, <M> Mehr), <B> Bilder (<K> aus dem Katalog) – OK
+Fehlt ausnahmsweise ein Bild, hängst du vor „– OK“ an: , ohne Bild: <artikel-id>, <artikel-id>
 oder, wenn es nach der vollständigen Suchleiter nichts Belastbares gab:
   {{ID}}: keine Meldungen – <Grund in wenigen Worten>; Leiter: <S> Startseiten (<welche>), <Q> Suchen, <W> Wiederholungen
 ````
@@ -448,7 +477,7 @@ Warte, bis auch der zweite Durchgang geantwortet hat. Dann:
 
 ```bash
 ls /tmp/sections
-node routine/validate-brief.mjs --section /tmp/sections/*.json --max-age-hours 36
+node routine/validate-brief.mjs --section /tmp/sections/*.json --max-age-hours 36 --require-images
 node routine/assemble-brief.mjs --overview /tmp/sections
 ```
 
@@ -456,6 +485,20 @@ node routine/assemble-brief.mjs --overview /tmp/sections
   lange Überschrift) und prüfe erneut. Lässt sie sich nicht retten, lösche sie – die Rubrik
   fehlt dann heute. Rubriken ohne Datei („keine Meldungen“ nach zwei Durchgängen) werden
   einfach ausgelassen.
+- **Bilder – jeder Artikel braucht eins.** Die Prüfung oben listet jeden Artikel ohne Bild
+  („… hat kein Bild“) und jedes Bild, das zwei Rubriken vergeben haben („dasselbe Bild hat
+  schon …“ – parallele Agenten können dasselbe Katalogbild ziehen). Behebe das vor dem
+  Veröffentlichen: Hol für den betroffenen Artikel ein Bild – zuerst eine Commons-Suche nach dem
+  Konkreten der Geschichte wie in Abschnitt 5 der Vorlage, wird es knapp, direkt aus dem
+  Katalog:
+  ```bash
+  node routine/find-image.mjs --fallback <motiv|rubrik> --seed <artikel-id> --exclude-from /tmp/sections
+  ```
+  Trag url, credit, license, sourceUrl und alt in die Rubrik-Datei ein (bei doppelten Bildern
+  beim zweiten Artikel) und prüfe erneut, bis keine Rubrik mehr „hat kein Bild“ oder „dasselbe
+  Bild“ meldet. Nur ein Artikel, für den auch der Katalog nachweislich nichts mehr liefert,
+  bleibt ohne Bild – dann prüfst du diese Datei und das Briefing ohne `--require-images` und
+  nennst ihn im Abschluss.
 - **Neu oder schon gemeldet?** Vergleiche die Überschriften mit der Übersicht des letzten
   Briefings aus Schritt 1. Einen gültigen Artikel entfernst du nur, wenn genau diese Geschichte
   dort schon steht und er keine neue Entwicklung bringt – nie, weil ein Rubrik-Agent meint, sie
@@ -481,7 +524,7 @@ Jetzt zusammensetzen – das Skript ordnet die Rubriken nach dem Katalog, lässt
 
 ```bash
 node routine/assemble-brief.mjs --sections /tmp/sections --teaser "<TEASER>" --generated-at "<GENERATED_AT>" --out /tmp/brief.json --max-age-hours 36
-node routine/validate-brief.mjs /tmp/brief.json --max-age-hours 36
+node routine/validate-brief.mjs /tmp/brief.json --max-age-hours 36 --require-images
 ```
 
 Bei `FEHLER` jede genannte Stelle in der betroffenen Datei unter `/tmp/sections` korrigieren und
@@ -567,17 +610,19 @@ der Ausgabe von Schritt 3 (pro Rubrik) und Schritt 5 (gesamt).
 
 - Erfolg:
   ```
-  Fertig: Briefing 2026-10-06 · 48 Artikel · 27 Bilder · gepusht nach briefs
+  Fertig: Briefing 2026-10-06 · 48 Artikel · 48 Bilder · gepusht nach briefs
   🤖 ki 6 · 📈 wirtschaft 5 · 🏛️ politik 6 · 🌍 welt 5 · 📍 region 4 · ⚽ sport 6 · 🔭 wissenschaft 4 · 🩺 gesundheit 4 · 🌱 klima 4 · 🎮 entertainment 4
   ```
   Ausgelassene Rubriken mit kurzem Grund dahinter, z. B.
   `🌱 klima – keine Meldungen (2 Durchgänge, 7 Startseiten, 13 Suchen)`. Fehlt an einem Werktag
   welt, politik, wirtschaft oder sport, steht `FEHLT` davor, z. B.
-  `🌍 welt – FEHLT: keine Meldungen (2 Durchgänge, …)`.
+  `🌍 welt – FEHLT: keine Meldungen (2 Durchgänge, …)`. Bilder und Artikel sind gleich viele;
+  blieb ausnahmsweise ein Artikel ohne Bild (Katalog erschöpft), folgt eine letzte Zeile
+  `Ohne Bild: <artikel-id>, <artikel-id>`.
 - Testlauf: wie oben, aber erste Zeile
-  `Testlauf: Briefing 2026-10-06 · 48 Artikel · 27 Bilder · gepusht nach briefs-test (App und E-Mail lesen weiter briefs)`
+  `Testlauf: Briefing 2026-10-06 · 48 Artikel · 48 Bilder · gepusht nach briefs-test (App und E-Mail lesen weiter briefs)`
 - Notlösung: wie oben, aber erste Zeile
-  `Achtung: Briefing 2026-10-06 · 48 Artikel · 27 Bilder · gepusht nach claude/briefs – Push auf briefs ist nicht erlaubt, die App sieht es so nicht`
+  `Achtung: Briefing 2026-10-06 · 48 Artikel · 48 Bilder · gepusht nach claude/briefs – Push auf briefs ist nicht erlaubt, die App sieht es so nicht`
 - Fehler: `Fehlgeschlagen: Briefing 2026-10-06 nicht veröffentlicht – <Grund in wenigen Worten>`
 
 ## Manueller Testlauf
