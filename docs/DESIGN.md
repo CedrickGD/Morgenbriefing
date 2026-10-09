@@ -68,8 +68,9 @@ für Android.
 * Innere horizontale Scroller (Chip-Reihe, Leser-Pager) haben Vorrang vor dem Seitenwischen:
   was die Chip-Reihe am Anfang/Ende nicht mehr nutzt, verschluckt sie (kein Seitenwechsel).
 * Querverweise in die Einstellungen landen am Ziel („Token eintragen“ → News-Quelle mit offenem
-  Dialog). Den Claude-Key trägt man dort ein, wo man ihn braucht (Chat, Live) – im Dialog an Ort
-  und Stelle, Zurück führt dorthin zurück.
+  Dialog, „Anbieter wählen“ → KI mit offener Anbieterwahl). Den KI-Key trägt man dort ein, wo man
+  ihn braucht (Chat, Live) – im Key-Dialog genau des Anbieters, der gerade fehlt, an Ort und
+  Stelle; Zurück führt dorthin zurück.
 
 ## 4. Seitenkopf
 
@@ -128,7 +129,15 @@ für Android.
 
 **Artikel-Leser** – gleiche Typografie wie der Feed (Serif-Schlagzeile, Serif-Fließtext), großes
 Bild oben, Glas-Steuerleiste (Zurück, Zuhören, Textgröße, Teilen), Quellen am Ende, Wischen
-zum nächsten Artikel.
+zum nächsten Artikel; unten die Pill „✨ Frag zu diesem Artikel nach“.
+
+**Frag nach** (Chat) – Nachrichten direkt auf dem Himmel, Glas-Kopfleiste und schwebende
+Glas-Eingabe. Über jeder Antwort ein kleines „✦ Gemini“ (Name des Anbieters), die Antwort in der
+Leser-Serif, Quellen als Glas-Pills. Kann der Chat nicht im Netz suchen (Gemini kostenlos,
+Mistral, DeepSeek, eigener Server), steht das einmal als ruhige Zeile mit Symbol über dem
+Gespräch. Unter einer Antwort mit Google-Suche stehen Googles Suchvorschläge **unverändert** in
+ihrem eigenen Look (hell/dunkel nach dem Look der App) und so breit wie die Antwort – das ist die
+einzige Fläche, die die Glas-Regeln bewusst nicht übernimmt.
 
 **Verlauf** – Kopf „DEIN ARCHIV / Verlauf“. Eine **Zeitleiste**: dünne vertikale Linie links,
 pro Tag ein Punkt; Monatsüberschriften als Glas-Pills; jeder Tag eine Glas-Karte mit großer
@@ -137,8 +146,8 @@ Artikel; heute hervorgehoben.
 
 **Einstellungen** – Kopf „DEIN MORGEN / Einstellungen“, dann:
 1. **Status-Karte**: großes ✓ „Alles bereit für morgen, 05:30“ oder freundliche Hinweise;
-   vier Status-Pills (Benachrichtigungen, Exakte Uhrzeit, Akku, News-Verbindung) grün/amber –
-   Antippen behebt.
+   Status-Pills (Benachrichtigungen, Exakte Uhrzeit, Akku, News-Verbindung, KI mit dem Namen des
+   Anbieters) grün/amber/neutral – Antippen behebt; die KI-Pill hält das Briefing nie auf.
 2. **Morgenbriefing**: riesige Uhrzeit in Serif („05:30“, antippen → Zeitwahl), Schalter,
    „Nächstes Briefing: morgen · in 9 Std.“, Test-Benachrichtigung als Glas-Pill.
 3. **Darstellung**: drei Vorschau-Kacheln (Mini-Handy mit Himmel + Glaskarte) für
@@ -148,8 +157,25 @@ Artikel; heute hervorgehoben.
 5. **Orte & Zeitfenster**: zwei Ortskarten mit Live-Mini-Wetter; Zeitfenster-Slider mit
    Sonnensymbolen.
 6. **Lesen**: Textgröße mit Live-Vorschau im Leser-Stil.
-7. **News-Quelle**: Verbindungs-Pill („Verbunden ✓ · geprüft 18:52“), Token nie anzeigen.
-8. **App**: Version, Update-Karte, Links (Open-Meteo, Quellcode).
+7. **KI** („DEIN ERKLÄRER / KI“): eine Glaskarte mit
+   * **Anbieter** als starke Lamina: Name in Serif, Tagline, Fähigkeits-Pills (✓/✗ Chat, Websuche,
+     Live, Android 7; grün bzw. gedämpft, für TalkBack ein Satz) und „Wechseln“ → Dialog
+     „KI-Anbieter wählen“ (eine Karte je Anbieter mit Radiopunkt und Akzentring, Status „Key
+     gespeichert ✓“/„Kein Key“; nicht lauffähige Anbieter gedimmt, nicht wählbar). Ohne Key öffnet
+     die Wahl gleich den Key-Dialog;
+   * **Key-Zeile** (eigener Server: Server-Zeile) und den Key-Dialog je Anbieter: Anleitung in
+     nummerierten Schritten (Gemini: eine Zeile „aistudio.google.com → Get API key → Create API
+     key“), Tipp-Lamina, Link-Pill zur Konsole, Passwortfeld mit Formathinweis, „Speichern &
+     testen“; Claude mit aufklappbarem „Erweitert: Workspace-ID“;
+   * bei Gemini den **Tarif** als zwei Auswahlzeilen („Kostenlos (ohne Abrechnung)“ / „Mit
+     Abrechnung (Paid Tier)“) mit je einer Zeile Erklärung und dem Datenschutzsatz darunter;
+   * **Modell**: Auswahlzeilen mit Preis je 1 Mio. Tokens, „Standard“-Badge, „nur mit Abrechnung“
+     gedimmt, „Eigenes Modell …“;
+   * **⚡ Live**: „Live über OpenAI (wie Chat)“ + „Ändern“ – oder, wenn der Chat-Anbieter kein Live
+     kann, ein Satz in Amber und „Live-Anbieter wählen“;
+   * in Debug-Builds „Entwickler: Basis-URL“; dann Monatslimit, Verbrauch und Live-Automatik.
+8. **News-Quelle**: Verbindungs-Pill („Verbunden ✓ · geprüft 18:52“), Token nie anzeigen.
+9. **App**: Version, Update-Karte, Links (Open-Meteo, Quellcode).
 
 ## 8. Qualitätsregeln
 

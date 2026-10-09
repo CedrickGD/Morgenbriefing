@@ -17,7 +17,8 @@ jeden Morgen eine Claude-Cloud-Routine frisch, das Wetter kommt immer live.
 | **Artikel lesen** | Ein Tipp öffnet den **vollständigen Artikel** direkt in der App: eigene Texte der Routine, aus mehreren Quellen recherchiert, mit Zwischenüberschriften, Lesezeit, Quellenliste und Bildnachweis. Schriftgröße einstellbar. |
 | **10 Rubriken** | 🤖 KI & Tech · 📈 Wirtschaft & Märkte · 🏛️ Politik · 🌍 Welt · 📍 Leipzig & Region · ⚽ Sport · 🔭 Wissenschaft & Raumfahrt · 🩺 Gesundheit · 🌱 Klima & Umwelt · 🎮 Games & Entertainment – Reihenfolge und Auswahl legst du in den Einstellungen fest. |
 | **Verlauf** | Alle bisherigen Tage mit Teaser, dem Wetter vom Morgen und dem kompletten Briefing – auch offline. |
-| **Einstellungen** | Hell, Dunkel oder wie das System; Akzentfarben (Material You, Morgenrot, Sonne, Ozean, Wald, Lavendel, Beere, Graphit); Rubriken sortieren und ausblenden; Schriftgröße im Artikel; Uhrzeit der Benachrichtigung; Orte und Zeitfenster; GitHub-Token; Akku-Optimierung; Updates. |
+| **Frag nach & ⚡ Live** | Zu jedem Artikel und zum ganzen Briefing nachfragen – mit Quellen, auf Wunsch mit Websuche – und auf Knopfdruck brandaktuelle Meldungen recherchieren lassen. Mit deinem eigenen Key bei einem Anbieter deiner Wahl: Claude, OpenAI, Google Gemini (auch kostenlos, ohne Abrechnung), xAI Grok, Perplexity, OpenRouter, Mistral, DeepSeek oder dein eigener Server (Ollama, LM Studio). Monatslimit für alle zusammen. Details: [docs/AI.md](docs/AI.md). |
+| **Einstellungen** | Hell, Dunkel oder wie das System; Akzentfarben (Material You, Morgenrot, Sonne, Ozean, Wald, Lavendel, Beere, Graphit); Rubriken sortieren und ausblenden; Schriftgröße im Artikel; Uhrzeit der Benachrichtigung; Orte und Zeitfenster; KI-Anbieter, Key, Modell und Monatslimit; GitHub-Token; Akku-Optimierung; Updates. |
 | **Updates in der App** | Die App sieht selbst nach, ob es auf GitHub eine neuere Version gibt, lädt sie herunter und startet die Installation – kein Umweg über den Browser. |
 | **5:30-Benachrichtigung** | Ein exakter Alarm holt Live-Wetter und das frische Briefing und zeigt eine ausklappbare Benachrichtigung mit Wetter, Kleidungstipp und den Top-Schlagzeilen. |
 | **E-Mail-Briefing** | Auf Wunsch kommt das Briefing um 5:20 Uhr zusätzlich als E-Mail (Wetter, Kleidungstipp, Top-Meldungen mit Bildern und Quellen) – an dich oder an bis zu zehn Adressen. Schalter und Empfänger stellst du in der App ein. |
@@ -300,9 +301,10 @@ KEY_PASSWORD=…
 
 ```
 app/                 Android-App (Kotlin, Jetpack Compose, Material 3)
-docs/                Architektur und Datenformat
+docs/                Architektur, Datenformat, KI-Anbieter (Design und Wire-Formate)
 routine/             Prompt der Cloud-Routine, Validator, Bildsuche, Zusammensetzen, Veröffentlichen, Tests
 scripts/             Release-Skript (Version erhöhen, signiert bauen, veröffentlichen)
+tools/               mock-ai-server.mjs: Test-Server für alle KI-Anbieter (QA ohne echte Keys, docs/AI-PROVIDERS.md §14)
 .github/workflows/   Build und Tests, Releases, Routine-Skripte, Prüfung des Branches briefs
 ```
 
@@ -326,4 +328,9 @@ und die Einstellungen des E-Mail-Briefings unter `config/`.
   einmal aus deinem eigenen Gmail-Konto an die erste Adresse, alle weiteren stehen in „Bcc“ –
   niemand sieht die anderen Empfänger. Bilder darin lädt das E-Mail-Programm von Wikimedia
   Commons, es gibt keine Zählpixel und keine Tracking-Links.
+- KI: Fragen, der Artikel- bzw. Briefing-Kontext und Live-Recherchen gehen direkt von der App an den
+  Anbieter, den du gewählt hast – mit deinem eigenen Key, der verschlüsselt auf dem Gerät liegt.
+  Im kostenlosen Gemini-Tarif darf Google die Anfragen zur Verbesserung seiner Produkte nutzen;
+  mit dem eigenen Server bleibt alles in deinem Netz. Solange du keinen Anbieter einrichtest, geht
+  nichts an eine KI.
 - Kein Tracking, keine Werbung, keine Analyse-Dienste.

@@ -34,8 +34,11 @@ zu den Artikeln und auf Wunsch dasselbe Briefing als E-Mail. Hell/Dunkel + Akzen
   [routine/PROMPT.md](../routine/PROMPT.md) (News, zwei Cron-Starts + Berlin-Zeit-Wächter wegen
   Sommer-/Winterzeit) und [routine/EMAIL_PROMPT.md](../routine/EMAIL_PROMPT.md) (E-Mail, nur
   Gmail-Connector, keine Web-Werkzeuge, Empfänger ausschließlich aus `email-config.mjs`).
-* **KI** (Chat „Frag nach“, Live-News): direkt von der App an die Claude-API mit dem eigenen
-  API-Key des Nutzers, nur ab Android 8 – Details in [AI.md](AI.md).
+* **KI** (Chat „Frag nach“, Live-News): direkt von der App an den gewählten Anbieter (Claude,
+  OpenAI, Gemini, xAI, Perplexity, OpenRouter, Mistral, DeepSeek oder ein eigener Server) mit dem
+  eigenen API-Key des Nutzers; optional ein eigener Anbieter für Live. Nur Claude (Anthropic-SDK)
+  braucht Android 8, alles andere läuft ab Android 7 – Details in [AI.md](AI.md), Design in
+  [AI-PROVIDERS.md](AI-PROVIDERS.md).
 * **Updates**: die App prüft GitHub Releases des privaten Repos, lädt die APK, prüft die Signatur
   und übergibt sie dem System-Installer. Releases baut `scripts/release.ps1` lokal und signiert
   sie mit dem Release-Key.
@@ -51,7 +54,10 @@ zu den Artikeln und auf Wunsch dasselbe Briefing als E-Mail. Hell/Dunkel + Akzen
 | `domain` | `Condition`, `WeatherInsights`, `ClothingAdvisor` (Headline, Kleidung, Warnungen, Notification-Text), `Fmt` |
 | `notify` | `AlarmScheduler`, `MorningAlarmReceiver`, `SystemEventsReceiver`, `MorningWorker`, `NewsFollowUpWorker`, `Notifications` |
 | `update` | In-App-Updater: `UpdateChecker`, `ApkDownloader`, `ApkVerifier`, `ApkInstaller`, `UpdateWorker` |
-| `ai`, `ai/claude` | Chat, Live-News, Kosten/Limit (`UsageStore`), Claude-Anbindung (Anthropic Java SDK, Streaming) |
+| `ai` | Chat, Live-News, Kosten/Limit (`UsageStore`, `AiPricing`), Anbieter-Auswahl (`AiResolver`, `AiServices`), Texte (`AiTexts`) |
+| `ai/provider` | `ProviderCatalog`: neun Anbieter mit Fähigkeiten, Key-Anleitungen, Modellen; Gemini-Tarif |
+| `ai/claude` | Claude über das Anthropic Java SDK (Streaming, Workspace-ID), nur ab Android 8 |
+| `ai/http`, `ai/openai`, `ai/gemini`, `ai/compat` | OkHttp + SSE ohne SDK: Retry, Fehler-Mapping; Responses API (OpenAI, xAI, Perplexity), Gemini, Chat Completions (OpenRouter, Mistral, DeepSeek, eigener Server) |
 | `listen` | „Zuhören“: Text-to-Speech der Artikel, Mini-Player, Audio-Fokus |
 | `ui/shell` | Wischbarer Pager Verlauf ← Heute → Einstellungen, Glas-Seitenindikator, Chrome-Steuerung |
 | `ui/glass` | Morgenglas: `Modifier.glass`, `GlassCard`, durchgehender Himmel (`AmbientSky`), Seitentitel/-leiste |
@@ -70,10 +76,12 @@ erreicht, KI und Vorlesen über `context.ai` / `context.listen`. ViewModels übe
 ## Plattform-Regeln
 
 * **minSdk 24 (Android 7.0)**, target/compile 36. `java.time` via Core-Library-Desugaring.
-  Alles, was neuer ist, mit `Build.VERSION.SDK_INT`-Checks (KI 26+, Dynamic Color 31+, echte
+  Alles, was neuer ist, mit `Build.VERSION.SDK_INT`-Checks (Claude-SDK 26+, Dynamic Color 31+, echte
   Glas-Unschärfe 31+ sonst getönte Fläche, POST_NOTIFICATIONS 33+, exakte Alarme 31+).
 * Android 7 kennt die Let's-Encrypt-Wurzel nicht: `network_security_config.xml` bündelt
-  ISRG Root X1/X2 zusätzlich zu den System-Zertifikaten.
+  ISRG Root X1/X2 zusätzlich zu den System-Zertifikaten. Klartext-`http://` ist aus – außer zu
+  lokalen Namen (`localhost`, `10.0.2.2`, `*.local`, `*.lan`, `*.home.arpa`, `*.fritz.box`,
+  `*.internal`) für den eigenen KI-Server und den Mock-Server im Emulator.
 * **Edge-to-edge** auf allen Versionen, Insets korrekt für **Gesten- und 3-Tasten-Navigation**
   (Samsung One UI kann beides). Keine Leiste unten: zwischen den Seiten wird gewischt, der
   Glas-Indikator sitzt über der Navigationsleiste.
