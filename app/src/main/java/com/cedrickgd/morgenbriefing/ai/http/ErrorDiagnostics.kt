@@ -12,8 +12,10 @@ import java.io.IOException
  *
  * Key-free by construction: only the HTTP status and identifier-like fields of the error body
  * go in (google.rpc `status`, `ErrorInfo.reason`, the quota id and limit, `RetryInfo`, an
- * OpenAI-style `code`), each one checked against a strict pattern; never a message, a metadata
- * value, a help link or any URL. [redact] removes the key once more where it is at hand.
+ * OpenAI-style `code`), each one checked against a strict pattern that also turns away anything
+ * shaped like a key ([token]); never a message, a metadata value, a help link or any URL. A
+ * server that echoes the key into one of those fields therefore loses the field, not the key.
+ * [redact] removes the key once more where it is at hand.
  */
 internal object ErrorDiagnostics {
     const val SEPARATOR = " · "
@@ -64,8 +66,24 @@ internal object ErrorDiagnostics {
         return out.toList()
     }
 
-    /** [text] when it looks like an identifier (letters, digits, `_ . -`, at most 64), else null. */
-    private fun token(text: String?): String? = text?.trim()?.takeIf { TOKEN.matches(it) }
+    /**
+     * [text] when it looks like an identifier (letters, digits, `_ . -`, at most 64) and not like
+     * a key ([looksLikeKey]), else null. Identifiers of error bodies are UPPER_SNAKE
+     * (`API_KEY_SERVICE_BLOCKED`), lower_snake (`insufficient_quota`) or CamelCase words
+     * (`GenerateRequestsPerDayPerProjectPerModel-FreeTier`) — a key matches the pattern too.
+     */
+    private fun token(text: String?): String? = text?.trim()?.takeIf { TOKEN.matches(it) && !looksLikeKey(it) }
+
+    /**
+     * Shaped like an API key: it starts like one of the providers' keys (`AIza…` and `AQ.…` of
+     * Gemini, `sk-…`, `xai-…`, `pplx-…`), or it is a random-looking secret of 20 characters or
+     * more that mixes upper- and lower-case letters with digits (a Mistral key has no prefix).
+     */
+    private fun looksLikeKey(text: String): Boolean =
+        KEY_PREFIXES.any { text.startsWith(it, ignoreCase = true) } ||
+            (text.length >= 20 && text.any(Char::isDigit) && text.any(Char::isUpperCase) && text.any(Char::isLowerCase))
 
     private val TOKEN = Regex("""[A-Za-z][A-Za-z0-9_.\-]{0,63}""")
+
+    private val KEY_PREFIXES = listOf("AIza", "AQ.", "sk-", "xai-", "pplx-")
 }

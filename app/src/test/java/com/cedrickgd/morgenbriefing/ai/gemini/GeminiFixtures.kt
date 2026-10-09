@@ -17,6 +17,14 @@ internal object GeminiSse {
     /** Newer AI Studio key shape (`AQ.…`, GE §13). */
     const val AQ_KEY = "AQ.test-invalid"
 
+    /**
+     * Fake keys of full length that only use identifier characters, so that the diagnostic's
+     * identifier pattern alone would let them through: what [GeminiErrors.keyEcho] puts in the
+     * fields the Details read. 39 characters like a real `AIza…` key, 53 like an `AQ.…` key.
+     */
+    const val ECHO_KEY = "AIzaSyFakeTestKey0123456789012345678901"
+    const val ECHO_AQ_KEY = "AQ.FakeTestKeyForDiagnosticsOnly-0123456789abcdefghij"
+
     const val SUGGESTIONS = """<style>.container{display:flex}</style><div class="container"><a class="chip" href="https://www.google.com/search?q=EZB+Zins">EZB Zins</a></div>"""
 
     fun response(vararg chunks: String): MockResponse = MockResponse()
@@ -143,6 +151,22 @@ internal object GeminiErrors {
 
     /** 429 of a free-tier quota per minute, with QuotaFailure, Help and RetryInfo. */
     const val QUOTA_PER_MINUTE = """{"error":{"code":429,"message":"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 10, model: gemini-3.8-flash\nPlease retry in 37.5s.","status":"RESOURCE_EXHAUSTED","details":[{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-3.8-flash"},"quotaValue":"10"}]},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"37s"}]}}"""
+
+    /**
+     * 400 for an invalid key whose body echoes [key] wherever it can: the message, `code` and
+     * `type`, `ErrorInfo.reason` and its metadata, a `QuotaFailure` metric and id, a `Help` link —
+     * and, with [status] = the key, the status too. Not an observed shape: the worst case for the
+     * Details, which must never show the key (GE §12.6).
+     */
+    fun keyEcho(key: String, status: String = "INVALID_ARGUMENT"): String {
+        val k = GeminiSse.str(key)
+        return """{"error":{"code":$k,"type":$k,"message":${GeminiSse.str("API key not valid. Please pass a valid API key. Received: $key")},""" +
+            """"status":${GeminiSse.str(status)},"details":[""" +
+            """{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":$k,"domain":"googleapis.com",""" +
+            """"metadata":{"service":"generativelanguage.googleapis.com","key":$k,"consumer":${GeminiSse.str("api_key:$key")}}},""" +
+            """{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":$k,"quotaId":$k}]},""" +
+            """{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":$k,"url":${GeminiSse.str("https://aistudio.google.com/apikey?key=$key")}}]}]}}"""
+    }
 
     /** 429 with a quota of 0: the free tier does not offer this model to the project. */
     fun zeroQuota(model: String = "gemini-3.8-flash") =

@@ -162,6 +162,47 @@ class GeminiErrorMappingTest {
     }
 
     @Test
+    fun `a key echoed into every field of the body never reaches the diagnostic`() {
+        listOf(GeminiSse.ECHO_KEY, GeminiSse.ECHO_AQ_KEY).forEach { key ->
+            // The fixture really puts the key where the diagnostic reads (and everywhere else).
+            val echoed = ApiErrorBody.parse(GeminiErrors.keyEcho(key, status = key))
+            assertEquals(key, echoed.status)
+            assertEquals(key, echoed.code)
+            assertEquals(key, echoed.type)
+            assertEquals(listOf(key), echoed.reasons)
+            assertEquals(key, echoed.quotaViolations.single().id)
+            assertTrue(echoed.message!!.contains(key))
+            assertTrue(echoed.metadata.values.any { it.contains(key) })
+            assertTrue(echoed.helpLinks.single().contains(key))
+
+            // HTTP answer, stream error chunk: only what is not the key stays.
+            assertEquals("HTTP 400", ErrorDiagnostics.http(400, GeminiErrors.keyEcho(key, status = key)))
+            assertEquals("HTTP 400 · INVALID_ARGUMENT", ErrorDiagnostics.http(400, GeminiErrors.keyEcho(key)))
+            val chunk = Json.parseToJsonElement(GeminiErrors.keyEcho(key)).jsonObject
+            assertEquals("Stream · INVALID_ARGUMENT", ErrorDiagnostics.stream(chunk))
+            // Classified as the invalid key it is.
+            assertEquals(AiError.InvalidKey, map(400, GeminiErrors.keyEcho(key)).error)
+        }
+        // Other providers' key shapes in an identifier field are dropped too (all fake).
+        listOf(
+            "sk-0123456789abcdef0123456789abcdef",
+            "Xq7Lm2Pz9Rt4Vw8Ka1Bc6De3Fg5Hj0Nn",
+            "pplx-0123456789abcdef",
+            "xai-FakeTestKey",
+        ).forEach { secret ->
+            assertEquals(secret, "HTTP 400", ErrorDiagnostics.http(400, """{"error":{"code":"$secret","type":"$secret"}}"""))
+        }
+        // Real identifiers stay, however long: reasons, OpenAI codes, quota ids.
+        listOf(
+            "API_KEY_HTTP_REFERRER_BLOCKED",
+            "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+            "unsupported_country_region_territory",
+            "organization_spend_limit_exceeded",
+        ).forEach { id -> assertEquals(id, "HTTP 403 · $id", ErrorDiagnostics.http(403, """{"error":{"code":"$id"}}""")) }
+        assertEquals("HTTP 400 · SSLHandshakeException", ErrorDiagnostics.http(400, """{"error":{"type":"SSLHandshakeException"}}"""))
+    }
+
+    @Test
     fun `an exception carries the diagnostic of its cause, and a known key is never shown`() {
         val failure = HttpFailure(401, GeminiErrors.AUTH_KEY_REJECTED, null)
         val e = AiException(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED), failure)

@@ -5,6 +5,7 @@ import com.cedrickgd.morgenbriefing.ai.claude.ClaudeClients
 import com.cedrickgd.morgenbriefing.ai.compat.CompatBackend
 import com.cedrickgd.morgenbriefing.ai.compat.CompatDialect
 import com.cedrickgd.morgenbriefing.ai.gemini.GeminiBackend
+import com.cedrickgd.morgenbriefing.ai.gemini.GeminiSse
 import com.cedrickgd.morgenbriefing.ai.http.AiHttp
 import com.cedrickgd.morgenbriefing.ai.http.RetryPolicy
 import com.cedrickgd.morgenbriefing.ai.openai.ResponsesBackend
@@ -164,6 +165,21 @@ class MockServerContractTest {
             } catch (e: AiException) {
                 assertEquals(mode, expected.second, e.error)
                 assertTrue(mode, e.diagnostic!!.startsWith("HTTP "))
+            }
+        }
+
+        // A server that echoes the key it got into every field of the error body: the Details still hold no key.
+        for (key in listOf(GeminiSse.ECHO_KEY, GeminiSse.ECHO_AQ_KEY)) {
+            val echo = ProviderAuth(AiProviderId.GEMINI, key, "$base/mock/400-key-echo/v1beta", freeTier = true)
+            val outcome = runBlocking { GeminiBackend(http, retry).keys.check(echo, model, RecordingUsage()) }
+            assertEquals(AiKeyCheck.INVALID, outcome.check)
+            assertEquals("HTTP 400 · INVALID_ARGUMENT", outcome.diagnostic)
+            try {
+                chat(GeminiBackend(http, retry), echo, model, search = false)
+                fail("400-key-echo: expected an error")
+            } catch (e: AiException) {
+                assertEquals(AiError.InvalidKey, e.error)
+                assertEquals("HTTP 400 · INVALID_ARGUMENT", e.diagnostic)
             }
         }
 

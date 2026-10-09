@@ -20,7 +20,8 @@
 //   errors   400 401 402 403 404 429 500 503 529, and variants 400-workspace 400-model 429-quota 429-short
 //            Gemini (GE §12.4): 401-auth-key (ACCESS_TOKEN_TYPE_UNSUPPORTED), 403-blocked (API_KEY_SERVICE_BLOCKED),
 //            403-disabled (SERVICE_DISABLED), 403-restricted (API_KEY_ANDROID_APP_BLOCKED), 400-region
-//            (FAILED_PRECONDITION: free tier not in your country); other families answer them with the base status
+//            (FAILED_PRECONDITION: free tier not in your country), 400-key-echo (an invalid key echoed into every
+//            field of the error body, GE §12.6); other families answer them with the base status
 //   modes    slow, no-search, free-tier-search, free-tier-search-400, refusal, truncated, midstream-error,
 //            live-reject, live-empty,
 //            Gemini model fallback (GE §12.5): model-gone (gemini-3.8-flash: 404 NOT_FOUND, missing from the list),
@@ -44,7 +45,7 @@ const DELAY_MS = Number(args.delay ?? process.env.MOCK_DELAY_MS ?? 35);
 
 const ERROR_SWITCHES = new Set(['400', '401', '402', '403', '404', '429', '500', '503', '529',
   '400-workspace', '400-model', '429-quota', '429-short',
-  '401-auth-key', '403-blocked', '403-disabled', '403-restricted', '400-region']);
+  '401-auth-key', '403-blocked', '403-disabled', '403-restricted', '400-region', '400-key-echo']);
 const MODE_SWITCHES = new Set(['slow', 'no-search', 'free-tier-search', 'free-tier-search-400', 'refusal', 'truncated',
   'midstream-error', 'live-reject', 'live-empty', 'model-gone', 'model-no-quota']);
 
@@ -628,7 +629,8 @@ function geminiModelList(ctx) {
 }
 
 function geminiError(ctx, error, model, streamed) {
-  const info = (reason, metadata = {}) => ({ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason, domain: 'googleapis.com', metadata: { service: 'generativelanguage.googleapis.com', ...metadata } });
+  const key = ctx.req.headers['x-goog-api-key'] ?? '';
+  const info =(reason, metadata = {}) => ({ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason, domain: 'googleapis.com', metadata: { service: 'generativelanguage.googleapis.com', ...metadata } });
   const help = (url) => ({ '@type': 'type.googleapis.com/google.rpc.Help', links: [{ description: 'Google developers console API activation', url }] });
   const project = '000000000000';
   const activation = `https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=${project}`;
@@ -646,6 +648,13 @@ function geminiError(ctx, error, model, streamed) {
     '403-disabled': rpc(403, 'PERMISSION_DENIED', `Generative Language API has not been used in project ${project} before or it is disabled. Enable it by visiting ${activation} then retry.`, [info('SERVICE_DISABLED', { consumer: `projects/${project}`, activationUrl: activation }), help(activation)]),
     '403-restricted': rpc(403, 'PERMISSION_DENIED', 'Requests from this Android client application <empty> are blocked.', [info('API_KEY_ANDROID_APP_BLOCKED', { consumer: `projects/${project}` })]),
     '400-region': rpc(400, 'FAILED_PRECONDITION', 'Gemini API free tier is not available in your country. Please enable billing on your project in Google AI Studio.'),
+    // GE §12.6: the worst case for the app's "Details" – the key it sent comes back in every field the line could read
+    // (code, type, ErrorInfo.reason, the quota id) and in those it never reads (message, metadata, Help link).
+    '400-key-echo': [400, { error: {
+      code: key, type: key, message: `API key not valid. Please pass a valid API key. Received: ${key}`, status: 'INVALID_ARGUMENT',
+      details: [info(key, { key, consumer: `api_key:${key}` }), help(`https://aistudio.google.com/apikey?key=${encodeURIComponent(key)}`),
+        { '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaMetric: key, quotaId: key }] }],
+    } }],
     'model-no-quota': rpc(429, 'RESOURCE_EXHAUSTED', `You exceeded your current quota, please check your plan and billing details. Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: ${model}`, [quota('generate_content_free_tier_requests', 0), retry('20s')]),
     '402': rpc(402, 'RESOURCE_EXHAUSTED', 'Your prepayment credits are depleted. Please go to AI Studio to manage your billing.'),
     '403': rpc(403, 'PERMISSION_DENIED', "Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."),

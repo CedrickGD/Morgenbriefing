@@ -554,6 +554,32 @@ class GeminiChatEngineTest {
     }
 
     @Test
+    fun `a key echoed into the error body stays out of the details, before and inside the stream`() = runBlocking<Unit> {
+        listOf(GeminiSse.ECHO_KEY, GeminiSse.ECHO_AQ_KEY).forEach { key ->
+            // Refused before the stream: the key is in the reason, the code, the quota id, the metadata, the links.
+            server.enqueue(GeminiSse.httpError(400, GeminiErrors.keyEcho(key)))
+            try {
+                backend.chat.answer(request(auth = auth(key = key)), ChatRecorder(), usage)
+                fail("expected the refused key")
+            } catch (e: AiException) {
+                assertEquals(AiError.InvalidKey, e.error)
+                assertEquals("HTTP 400 · INVALID_ARGUMENT", e.diagnostic)
+            }
+            // The same body as an error chunk inside a 200 stream.
+            server.enqueue(GeminiSse.response(GeminiSse.text("Anfang"), GeminiSse.chunk(GeminiErrors.keyEcho(key))))
+            try {
+                backend.chat.answer(request(auth = auth(key = key), webSearch = false), ChatRecorder(), usage)
+                fail("expected the stream error")
+            } catch (e: AiException) {
+                assertEquals(AiError.InvalidKey, e.error)
+                assertEquals("Stream · INVALID_ARGUMENT", e.diagnostic)
+            }
+        }
+        // One request each: an invalid key is neither retried nor sent to another model or without search.
+        assertEquals(4, server.requestCount)
+    }
+
+    @Test
     fun `rate limits and overload of a paid key are retried before the first event`() = runBlocking<Unit> {
         server.enqueue(GeminiSse.httpError(429, GeminiSse.rpc(429, "RESOURCE_EXHAUSTED", "Resource has been exhausted.", retryDelay = "2s")))
         server.enqueue(GeminiSse.httpError(503, GeminiSse.rpc(503, "UNAVAILABLE", "The model is overloaded.")))

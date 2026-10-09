@@ -791,8 +791,13 @@ Every failed chat answer and every failed key test carries one key-free technica
 „Details“, select and copy: `HTTP <code> · <status> · <ErrorInfo.reason…> · <QuotaFailure.quotaId> · limit <n> · retry <s>s`
 (stream errors: `Stream · <code> · <status>`; connection problems: `Verbindung · <ExceptionClass>`), e.g.
 `HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED`. Only identifier-like fields go in (pattern
-`[A-Za-z][A-Za-z0-9_.-]{0,63}`), never a message, metadata (project numbers, activation URLs), a help link or any URL; where the
-key is at hand the line is dropped if it should ever contain it (`ErrorDiagnostics.redact`). Stored with the chat history.
+`[A-Za-z][A-Za-z0-9_.-]{0,63}`), never a message, metadata (project numbers, activation URLs), a help link or any URL. A key
+matches that pattern too (a 39-character `AIza…` key, a ~53-character `AQ.…` key), so a field that **looks like a key** is left
+out as well: one starting like a provider key (`AIza`, `AQ.`, `sk-`, `xai-`, `pplx-`), or a random-looking value of 20+
+characters mixing upper case, lower case and digits (a Mistral key has no prefix). A server that echoes the key into `reason`,
+`code` or the quota id therefore loses that field, not the key (fixture `GeminiErrors.keyEcho`, mock switch `400-key-echo`).
+Where the key is at hand the line is also dropped if it should ever contain it (`ErrorDiagnostics.redact`). Stored with the chat
+history.
 
 ---
 

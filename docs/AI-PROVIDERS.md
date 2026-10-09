@@ -1324,6 +1324,7 @@ and the row and its dialog only exist when `BuildConfig.DEBUG`.
 | `400-model`, `429-quota`, `429-short` | Unknown model; OpenAI `insufficient_quota`; a 429 with a 3 s wait (a free Gemini key retries once). |
 | `free-tier-search`, `free-tier-search-400` | Gemini rejects `googleSearch` (429 grounding quota with limit 0, or 400 `FAILED_PRECONDITION`); requests without search work. Tests the safety net of a key set to „Mit Abrechnung“ that is a free one. |
 | `401-auth-key`, `403-blocked`, `403-disabled`, `403-restricted`, `400-region` | Gemini's refusals of GE §12.4 on every Gemini route, the model list included: `ACCESS_TOKEN_TYPE_UNSUPPORTED`, `API_KEY_SERVICE_BLOCKED`, `SERVICE_DISABLED` (with Help link), `API_KEY_ANDROID_APP_BLOCKED`, `FAILED_PRECONDITION` (free tier not in your country). Other families answer them with the base status (`403-blocked` → their `403`). |
+| `400-key-echo` | Gemini: 400 for an invalid key whose body echoes the key it got into every field (code, type, `ErrorInfo.reason` and metadata, quota id, message, Help link) — the Details must stay key-free (GE §12.6). Other families: their `400`. |
 | `model-gone`, `model-no-quota` | Gemini: `gemini-3.8-flash` answers 404 `NOT_FOUND` (and is missing from the model list), or 429 with a free-tier quota of 0; every other model works. The chat and the key test fall back to `gemini-3.7-flash` (GE §12.5). |
 | `no-search` | Never search, even when asked. |
 | `refusal`, `truncated`, `midstream-error` | A refusal, a cut-off answer, an error after the first words. |

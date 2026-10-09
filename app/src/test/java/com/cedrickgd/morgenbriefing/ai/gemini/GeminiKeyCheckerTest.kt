@@ -130,6 +130,25 @@ class GeminiKeyCheckerTest {
     }
 
     @Test
+    fun `a key echoed into the error body stays out of the details, at the list and at the generation`() {
+        listOf(GeminiSse.ECHO_KEY, GeminiSse.ECHO_AQ_KEY).forEach { key ->
+            // The list refuses the key and echoes it into every field.
+            server.enqueue(json(400, GeminiErrors.keyEcho(key)))
+            val atList = check(key = key)
+            assertEquals(AiKeyCheck.INVALID, atList.check)
+            assertEquals("HTTP 400 · INVALID_ARGUMENT", atList.diagnostic)
+            // The list goes through, the generation refuses and echoes.
+            server.enqueue(GeminiSse.modelList("gemini-3.8-flash"))
+            server.enqueue(json(400, GeminiErrors.keyEcho(key)))
+            val atGeneration = check(key = key)
+            assertEquals(AiKeyCheck.INVALID, atGeneration.check)
+            assertEquals("HTTP 400 · INVALID_ARGUMENT", atGeneration.diagnostic)
+        }
+        assertEquals(6, server.requestCount)
+        assertTrue(usage.records.isEmpty())
+    }
+
+    @Test
     fun `generation decides what the list cannot see`() {
         // Listed fine, but Google does not let the key generate: the real reason, not "OK".
         val cases = listOf(
