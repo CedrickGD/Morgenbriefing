@@ -128,7 +128,7 @@ private fun ProviderCard(spec: ProviderSpec, ai: AiSettings, supported: Boolean,
 private fun SameAsChatCard(chat: ProviderSpec, selected: Boolean, onPick: () -> Unit) {
     PickerCard(selected = selected, enabled = true, onPick = onPick) {
         Text(
-            "Wie Chat (${chat.name})",
+            sameAsChatLabel(chat),
             style = MaterialTheme.typography.titleMedium.copy(fontFamily = MaterialTheme.typography.headlineSmall.fontFamily),
             color = MaterialTheme.colorScheme.onSurface,
         )

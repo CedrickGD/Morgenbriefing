@@ -2,6 +2,7 @@ package com.cedrickgd.morgenbriefing.ui.settings
 
 import com.cedrickgd.morgenbriefing.ai.AiKeyCheck
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
+import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
@@ -337,6 +338,25 @@ class AiLogicTest {
         // Gemini cannot run Live (Google's terms): the section explains and offers a Live provider.
         assertNull(liveProviderLine(AiSettings(provider = AiProviderId.GEMINI)))
         assertNull(liveProviderLine(AiSettings(provider = AiProviderId.CUSTOM)))
+    }
+
+    @Test
+    fun `live labels name the brand without nested brackets`() {
+        assertEquals("Live über Claude (wie Chat)", liveProviderLine(AiSettings(provider = AiProviderId.ANTHROPIC)))
+        assertEquals("Wie Chat (Claude)", sameAsChatLabel(ProviderCatalog.ANTHROPIC))
+        assertEquals("Live über Grok", liveProviderLine(AiSettings(provider = AiProviderId.OPENAI, liveProvider = AiProviderId.XAI)))
+        ProviderCatalog.all.filter { it.live == LiveSupport.YES }.forEach { spec ->
+            val labels = listOfNotNull(
+                liveProviderLine(AiSettings(provider = spec.id)),
+                liveProviderLine(AiSettings(provider = AiProviderId.GEMINI, liveProvider = spec.id)),
+                sameAsChatLabel(spec),
+            )
+            assertEquals(spec.id.key, 3, labels.size)
+            labels.forEach { label ->
+                assertTrue(label, label.count { it == '(' } <= 1)
+                assertTrue(label, label.contains(spec.brand))
+            }
+        }
     }
 
     @Test

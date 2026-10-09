@@ -320,14 +320,18 @@ internal fun unsupportedProviderHint(spec: ProviderSpec): String = "${spec.brand
 /**
  * Settings → KI → "⚡ Live": who researches. Null when the effective Live provider cannot run Live
  * (the chat provider has none and no own Live provider is chosen) — the section then explains
- * why ([ProviderSpec.liveUnavailableText]) and offers "Live-Anbieter wählen".
+ * why ([ProviderSpec.liveUnavailableText]) and offers "Live-Anbieter wählen". Names the brand
+ * ("Claude", not "Claude (Anthropic)"), so "(wie Chat)" never nests in another bracket.
  */
 internal fun liveProviderLine(ai: AiSettings): String? {
     val spec = ProviderCatalog.spec(ai.effectiveLiveProvider)
     if (spec.live != LiveSupport.YES) return null
     val sameAsChat = ai.liveProvider == null || ai.liveProvider == ai.provider
-    return if (sameAsChat) "Live über ${spec.name} (wie Chat)" else "Live über ${spec.name}"
+    return if (sameAsChat) "Live über ${spec.brand} (wie Chat)" else "Live über ${spec.brand}"
 }
+
+/** Title of the "Wie Chat" choice of the Live picker, e.g. "Wie Chat (Claude)": the brand, no nested brackets. */
+internal fun sameAsChatLabel(chat: ProviderSpec): String = "Wie Chat (${chat.brand})"
 
 /**
  * The choices of the Live provider picker: null = "Wie Chat" (only when the chat provider can
