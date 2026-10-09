@@ -11,10 +11,21 @@ import kotlin.math.roundToInt
  */
 
 /** Where the user creates a Claude API key. */
-internal const val ANTHROPIC_KEYS_URL = "https://console.anthropic.com/settings/keys"
+internal const val ANTHROPIC_KEYS_URL = "https://platform.claude.com/settings/keys"
 
 /** Why "Speichern & testen" did not store the key. */
-enum class AiKeyProblem { INVALID, NETWORK, UNSUPPORTED, SAVE_FAILED, UNKNOWN }
+enum class AiKeyProblem {
+    INVALID,
+    NETWORK,
+    UNSUPPORTED,
+    SAVE_FAILED,
+    UNKNOWN,
+    WORKSPACE_REQUIRED,
+    WORKSPACE_INVALID,
+    SERVER_UNREACHABLE,
+    CLEARTEXT_BLOCKED,
+    NOT_AN_AI_SERVER,
+}
 
 /** State of the API key dialog. */
 @Immutable
@@ -27,18 +38,33 @@ sealed interface AiKeyState {
 
     /** Stored without a passed test ("Ohne Test speichern"): nobody knows yet whether it works. */
     data object SavedUntested : AiKeyState
+
+    /** Tested and stored, but the account has no credit left: requests fail until it is topped up. */
+    data object SavedNoCredit : AiKeyState
     data class Failed(val problem: AiKeyProblem) : AiKeyState
 }
 
-/** What the dialog says once the key is stored: [tested] only after a passed "Speichern & testen". */
-internal fun savedKeyState(tested: Boolean): AiKeyState = if (tested) AiKeyState.Saved else AiKeyState.SavedUntested
+/**
+ * What the dialog says once the key is stored: [tested] only after a passed "Speichern & testen";
+ * [noCredit] when the test found the key fine but the balance empty.
+ */
+internal fun savedKeyState(tested: Boolean, noCredit: Boolean = false): AiKeyState = when {
+    !tested -> AiKeyState.SavedUntested
+    noCredit -> AiKeyState.SavedNoCredit
+    else -> AiKeyState.Saved
+}
 
-/** Maps the facade's check result; null = OK (store the key). */
+/** Maps the facade's check result; null = the key works (store it, also without credit). */
 internal fun AiKeyCheck.toProblem(): AiKeyProblem? = when (this) {
-    AiKeyCheck.OK -> null
+    AiKeyCheck.OK, AiKeyCheck.OK_NO_CREDIT -> null
     AiKeyCheck.INVALID -> AiKeyProblem.INVALID
     AiKeyCheck.NETWORK -> AiKeyProblem.NETWORK
     AiKeyCheck.UNSUPPORTED -> AiKeyProblem.UNSUPPORTED
+    AiKeyCheck.WORKSPACE_REQUIRED -> AiKeyProblem.WORKSPACE_REQUIRED
+    AiKeyCheck.WORKSPACE_INVALID -> AiKeyProblem.WORKSPACE_INVALID
+    AiKeyCheck.SERVER_UNREACHABLE -> AiKeyProblem.SERVER_UNREACHABLE
+    AiKeyCheck.CLEARTEXT_BLOCKED -> AiKeyProblem.CLEARTEXT_BLOCKED
+    AiKeyCheck.NOT_AN_AI_SERVER -> AiKeyProblem.NOT_AN_AI_SERVER
 }
 
 /** German feedback line under the key field; null while idle. */
@@ -47,12 +73,20 @@ internal fun aiKeyMessage(state: AiKeyState): String? = when (state) {
     AiKeyState.Checking -> "Prüfe den Key bei Anthropic …"
     AiKeyState.Saved -> "✓ Der Key funktioniert und ist gespeichert."
     AiKeyState.SavedUntested -> "Gespeichert – noch nicht getestet. Die erste Anfrage zeigt, ob er funktioniert."
+    AiKeyState.SavedNoCredit -> "Gespeichert ✓ – aber dein Guthaben ist leer. Lade es auf, sonst schlagen Anfragen fehl."
     is AiKeyState.Failed -> when (state.problem) {
         AiKeyProblem.INVALID -> "✗ Anthropic lehnt den Key ab – hast du ihn vollständig kopiert?"
         AiKeyProblem.NETWORK -> "✗ Keine Verbindung zu Anthropic – bist du online?"
         AiKeyProblem.UNSUPPORTED -> "✗ KI-Funktionen laufen erst ab Android 8."
         AiKeyProblem.SAVE_FAILED -> "✗ Der Key konnte nicht gespeichert werden. Versuch's nochmal."
         AiKeyProblem.UNKNOWN -> "✗ Das hat gerade nicht geklappt – versuch's gleich nochmal."
+        AiKeyProblem.WORKSPACE_REQUIRED ->
+            "✗ Dieser Key gehört zu keinem Workspace. Trag unten die Workspace-ID ein – oder erstell den Key mit Workspace „Default Workspace“."
+        AiKeyProblem.WORKSPACE_INVALID -> "✗ Diese Workspace-ID kennt Anthropic nicht (oder dein Key darf ihn nicht nutzen)."
+        AiKeyProblem.SERVER_UNREACHABLE -> "✗ Dein Server antwortet nicht. Stimmt die Adresse, und läuft er im selben Netz?"
+        AiKeyProblem.CLEARTEXT_BLOCKED ->
+            "✗ http:// geht nur mit Namen wie nas.fritz.box oder nas.local – nicht mit einer IP-Adresse. Nimm den Namen oder https://."
+        AiKeyProblem.NOT_AN_AI_SERVER -> "✗ Unter dieser Adresse läuft kein OpenAI-kompatibler Server. Endet sie auf /v1?"
     }
 }
 

@@ -10,9 +10,14 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
+import com.cedrickgd.morgenbriefing.ai.AiBlock
+import com.cedrickgd.morgenbriefing.ai.AiPurpose
 import com.cedrickgd.morgenbriefing.ai.AiSupport
 import com.cedrickgd.morgenbriefing.ai.LiveNewsService
+import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
+import com.cedrickgd.morgenbriefing.ai.aiBlock
 import com.cedrickgd.morgenbriefing.data.BERLIN
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
@@ -337,12 +342,21 @@ class TodayViewModel(
 
     private fun liveUiFlow(): Flow<LiveUi> {
         val service = live ?: return flowOf(LiveUi.Unsupported)
+        // The block as the settings see it (the service adds the monthly limit), the Live
+        // provider and the auto-refresh switch.
         val aiSettings = container.settings.settings
-            .map { it.ai.isConfigured(it.ai.effectiveLiveProvider) to it.liveAutoRefresh }
+            .map { settings ->
+                val ai = settings.ai
+                LiveSettings(
+                    blocked = aiBlock(ai, AiPurpose.LIVE, AiSupport.sdkAvailable, UsageSnapshot()),
+                    provider = ai.effectiveLiveProvider,
+                    autoRefresh = settings.liveAutoRefresh,
+                )
+            }
             .distinctUntilChanged()
             .catch { e ->
                 Log.w(TAG, "Settings unavailable for live news", e)
-                emit(false to false)
+                emit(LiveSettings(blocked = AiBlock.NO_KEY, provider = AiProviderId.ANTHROPIC, autoRefresh = false))
             }
         val articles = service.todayArticles
             .onStart { emit(emptyList()) }
@@ -350,13 +364,16 @@ class TodayViewModel(
                 Log.w(TAG, "Live articles unavailable", e)
                 emit(emptyList())
             }
-        return combine(service.state, articles, aiSettings) { state, list, (hasKey, auto) ->
-            liveUi(state, list, hasKey, auto)
+        return combine(service.state, articles, aiSettings) { state, list, s ->
+            liveUi(state, list, s.blocked, s.autoRefresh, s.provider)
         }.catch { e ->
             Log.w(TAG, "Live state unavailable", e)
             emit(LiveUi())
         }
     }
+
+    /** What "⚡ Live" takes from the settings. */
+    private data class LiveSettings(val blocked: AiBlock?, val provider: AiProviderId, val autoRefresh: Boolean)
 
     /** The settings that change what the weather call returns. */
     private data class WeatherInputs(val home: Place, val day: Place, val start: Int, val end: Int) {

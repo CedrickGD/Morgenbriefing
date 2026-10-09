@@ -109,6 +109,7 @@ import com.cedrickgd.morgenbriefing.ai.AiBlock
 import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.hostOf
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import com.cedrickgd.morgenbriefing.ui.components.motionDisabled
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
@@ -487,6 +488,7 @@ internal fun TruncatedNote(modifier: Modifier = Modifier) {
 @Composable
 internal fun ErrorCard(
     error: AiError,
+    spec: ProviderSpec,
     canRetry: Boolean,
     onRetry: () -> Unit,
     onOpenSettings: () -> Unit,
@@ -514,14 +516,14 @@ internal fun ErrorCard(
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                AiTexts.error(error),
+                AiTexts.error(error, spec),
                 style = MaterialTheme.typography.bodyMedium,
                 color = if (refusal) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onErrorContainer,
                 modifier = Modifier.weight(1f),
             )
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            if (error == AiError.InvalidKey) {
+            if (AiTexts.needsKeyChange(error)) {
                 TextButton(onClick = onOpenSettings) { Text("Key ändern") }
             } else if (canRetry && AiTexts.isRetryable(error)) {
                 TextButton(onClick = onRetry) { Text("Nochmal versuchen") }
@@ -630,7 +632,7 @@ private fun SendStopButton(busy: Boolean, canSend: Boolean, onSend: () -> Unit, 
  * place of the input, with the way to the settings where that helps.
  */
 @Composable
-internal fun BlockedCard(block: AiBlock, onOpenSettings: () -> Unit, modifier: Modifier = Modifier) {
+internal fun BlockedCard(block: AiBlock, spec: ProviderSpec, onOpenSettings: () -> Unit, modifier: Modifier = Modifier) {
     GlassCard(
         modifier = modifier.fillMaxWidth().semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
         level = GlassLevel.Thick,
@@ -648,6 +650,7 @@ internal fun BlockedCard(block: AiBlock, onOpenSettings: () -> Unit, modifier: M
                         AiBlock.NO_KEY -> Icons.Rounded.Key
                         AiBlock.LIMIT_REACHED -> Icons.Rounded.Savings
                         AiBlock.UNSUPPORTED_DEVICE -> Icons.Rounded.PhoneAndroid
+                        AiBlock.LIVE_UNAVAILABLE -> Icons.Rounded.ErrorOutline
                     },
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -657,12 +660,12 @@ internal fun BlockedCard(block: AiBlock, onOpenSettings: () -> Unit, modifier: M
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    AiTexts.blockTitle(block),
+                    AiTexts.blockTitle(block, spec),
                     style = MaterialTheme.typography.titleMedium.copy(fontFamily = FontFamily.Serif, fontWeight = FontWeight.SemiBold),
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(Modifier.height(4.dp))
-                Text(AiTexts.blockBody(block), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(AiTexts.blockBody(block, spec), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         if (block != AiBlock.UNSUPPORTED_DEVICE) {

@@ -1,6 +1,8 @@
 package com.cedrickgd.morgenbriefing.ai
 
 import android.os.Build
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import kotlinx.coroutines.flow.Flow
@@ -8,29 +10,69 @@ import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 
 /*
- * Contracts for the AI features (docs/AI.md). The UI only talks to these types; everything
- * that touches the Anthropic SDK lives behind them in this package and is never loaded below
- * API 26 (the SDK does not run on Android 7).
+ * Contracts for the AI features (docs/AI.md, docs/AI-PROVIDERS.md). The UI only talks to these
+ * types; the provider backends live behind them in this package. Only the Claude backend
+ * (Anthropic SDK) needs Android 8.0+ and is never loaded below API 26; everything else runs on
+ * every API level.
  */
 
 object AiSupport {
-    /** The Anthropic Java SDK needs Android 8.0+. Check before any other ai/ call. */
-    val isSupported: Boolean get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+    /** The Anthropic Java SDK needs Android 8.0+. Check before touching ai.claude. */
+    val sdkAvailable: Boolean get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+
+    /** [provider] can run on this device (only Claude needs the SDK). */
+    fun supports(provider: AiProviderId): Boolean = !ProviderCatalog.spec(provider).needsSdk || sdkAvailable
+
+    /** Until the UI gates per provider (docs/AI-PROVIDERS.md T10): the old device-wide check. */
+    @Deprecated("AI runs on every API level now; gate per provider with supports(provider).", ReplaceWith("AiSupport.sdkAvailable"))
+    val isSupported: Boolean get() = sdkAvailable
 }
 
 /** Why an AI feature cannot run right now (shown as a friendly hint, never as an error). */
-enum class AiBlock { UNSUPPORTED_DEVICE, NO_KEY, LIMIT_REACHED }
+enum class AiBlock {
+    /** The chosen provider needs Android 8.0+ (Claude) or has no backend on this device. */
+    UNSUPPORTED_DEVICE,
+
+    /** No key for the provider (own server: no address). */
+    NO_KEY,
+
+    /** This month's spending reached the user's cap (never for free providers). */
+    LIMIT_REACHED,
+
+    /** "⚡ Live" only: the Live provider cannot research (no web search, or Gemini's terms). */
+    LIVE_UNAVAILABLE,
+}
 
 sealed interface AiError {
     data object InvalidKey : AiError
     data object RateLimited : AiError
     data object Overloaded : AiError
     data object Network : AiError
+
     /** The model declined; [category] from `stop_details` when present. */
     data class Refusal(val category: String?) : AiError
+
     /** Hit max_tokens – the answer is shown but marked as cut off. */
     data object Truncated : AiError
     data class Unknown(val message: String?) : AiError
+
+    /** The account's credit is used up (HTTP 402, billing errors). */
+    data object NoCredit : AiError
+
+    /** Anthropic: an identity-linked key that is not bound to a workspace needs a workspace id. */
+    data object WorkspaceRequired : AiError
+
+    /** Anthropic: the workspace id is malformed, unknown, or the key may not act in it. */
+    data object WorkspaceNotFound : AiError
+
+    /** The provider does not know [model] (any more), or the key may not use it. */
+    data class ModelUnavailable(val model: String?) : AiError
+
+    /** The own server did not answer (not running, other network, wrong address). */
+    data object ServerUnreachable : AiError
+
+    /** A free tier's quota is used up for now (a free Gemini key, HTTP 429): later it works again. */
+    data object QuotaExhausted : AiError
 }
 
 data class ChatMessage(
@@ -42,6 +84,13 @@ data class ChatMessage(
     val sources: List<SourceRef> = emptyList(),
     val status: Status = Status.DONE,
     val error: AiError? = null,
+    /**
+     * Gemini with Google Search: HTML of the Search Suggestions, which must be shown unmodified
+     * with this answer whenever it is shown (also from history).
+     */
+    val searchSuggestionsHtml: String? = null,
+    /** A quiet line under the answer, e.g. "Ohne Websuche beantwortet …". */
+    val note: String? = null,
 ) {
     enum class Role { USER, ASSISTANT }
     enum class Status { STREAMING, DONE, FAILED }
@@ -59,6 +108,14 @@ data class ChatUiState(
     /** Suggested follow-up questions (chips). */
     val suggestions: List<String> = emptyList(),
     val blocked: AiBlock? = null,
+    /** The chat provider ([com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec.name]); "" until known. */
+    val providerName: String = "",
+    val provider: AiProviderId? = null,
+    /**
+     * A calm hint about this chat as a whole, e.g. that a free Gemini key answers without web
+     * search; null when there is nothing to say.
+     */
+    val note: String? = null,
 )
 
 interface ChatSession {
@@ -88,6 +145,9 @@ data class LiveState(
     val newCount: Int = 0,
     val error: AiError? = null,
     val blocked: AiBlock? = null,
+    /** The Live provider; null until known. */
+    val provider: AiProviderId? = null,
+    val providerName: String = "",
 )
 
 interface LiveNewsService {
@@ -116,4 +176,35 @@ interface UsageTracker {
     val usage: StateFlow<UsageSnapshot>
 }
 
-enum class AiKeyCheck { OK, INVALID, NETWORK, UNSUPPORTED }
+enum class AiKeyCheck {
+    OK,
+
+    /** The key works, but the account has no credit left: stored, with a warning. */
+    OK_NO_CREDIT,
+    INVALID,
+    NETWORK,
+
+    /** The provider cannot run on this device. */
+    UNSUPPORTED,
+
+    /** Anthropic: the key needs a workspace id. */
+    WORKSPACE_REQUIRED,
+
+    /** Anthropic: the workspace id is unknown or not allowed for the key. */
+    WORKSPACE_INVALID,
+
+    /** Own server: no connection to the address. */
+    SERVER_UNREACHABLE,
+
+    /** Own server: plain http:// to a host outside the cleartext allowlist. */
+    CLEARTEXT_BLOCKED,
+
+    /** Own server: something answers, but not an OpenAI-compatible API. */
+    NOT_AN_AI_SERVER,
+}
+
+/** Result of a key or connection test; [serverModels] = the own server's model ids. */
+data class KeyCheckOutcome(val check: AiKeyCheck, val serverModels: List<String> = emptyList())
+
+/** What a key test needs besides the key: the Anthropic workspace id, the own server's address. */
+data class KeyExtras(val workspaceId: String? = null, val baseUrl: String? = null)

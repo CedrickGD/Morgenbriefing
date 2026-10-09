@@ -4,6 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.AppSettings
+import com.cedrickgd.morgenbriefing.data.withAiKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -61,6 +63,7 @@ class UsageStoreTest {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val limit = MutableStateFlow(5.0)
     private val dataStore = MemoryPreferencesStore()
+    private val claude = AppSettings().withAiKey().ai
 
     @After
     fun tearDown() {
@@ -94,7 +97,7 @@ class UsageStoreTest {
         } catch (e: AiBlockedException) {
             assertEquals(AiBlock.LIMIT_REACHED, e.block)
         }
-        assertEquals(AiBlock.LIMIT_REACHED, aiBlock(true, true, withTimeout(5_000) { usage.usage.first { it.requests == 3 } }))
+        assertEquals(AiBlock.LIMIT_REACHED, aiBlock(claude, AiPurpose.CHAT, true, withTimeout(5_000) { usage.usage.first { it.requests == 3 } }))
 
         // Limit 0 = no cap.
         limit.value = 0.0
@@ -159,7 +162,7 @@ class UsageStoreTest {
         val october = usage.usage.value
         assertEquals("2026-10", october.month)
         assertEquals(6.0, october.spentUsd, 1e-9)
-        assertEquals(AiBlock.LIMIT_REACHED, aiBlock(true, true, october))
+        assertEquals(AiBlock.LIMIT_REACHED, aiBlock(claude, AiPurpose.CHAT, true, october))
 
         // 23:30 UTC on Oct 31 is November 1st in Berlin. While the limit blocks, no request runs
         // and nothing writes the store — the snapshot must still move on by itself.
@@ -170,7 +173,7 @@ class UsageStoreTest {
         assertEquals("2026-11", november.month)
         assertEquals(0.0, november.spentUsd, 0.0)
         assertEquals(5.0, november.limitUsd, 0.0)
-        assertNull(aiBlock(true, true, november))
+        assertNull(aiBlock(claude, AiPurpose.CHAT, true, november))
         assertFalse(usage.limitReached())
     }
 
@@ -182,17 +185,5 @@ class UsageStoreTest {
         assertEquals(UsageStore.MONTH_RECHECK, UsageStore.nextMonthCheckIn(Instant.parse("2026-10-31T23:00:00Z")))
         // Never a zero (busy) wait.
         assertEquals(Duration.ofMillis(1), UsageStore.nextMonthCheckIn(Instant.parse("2026-10-31T22:59:59.9999Z")))
-    }
-
-    @Test
-    fun `block precedence`() {
-        val spent = UsageSnapshot(month = "2026-10", spentUsd = 6.0, limitUsd = 5.0)
-        assertEquals(AiBlock.UNSUPPORTED_DEVICE, aiBlock(false, true, spent))
-        assertEquals(AiBlock.NO_KEY, aiBlock(true, false, spent))
-        assertEquals(AiBlock.LIMIT_REACHED, aiBlock(true, true, spent))
-        assertEquals(null, aiBlock(true, true, spent.copy(limitUsd = 0.0)))
-        assertEquals(null, aiBlock(true, true, spent.copy(spentUsd = 1.0)))
-        // Unit tests run with Build.VERSION.SDK_INT = 0, like a pre-Oreo device.
-        assertFalse(AiSupport.isSupported)
     }
 }

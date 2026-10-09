@@ -451,7 +451,7 @@ internal fun AiKeyDialog(
     var key by remember { mutableStateOf("") }
     var visible by remember { mutableStateOf(false) }
     val checking = state == AiKeyState.Checking
-    val saved = state == AiKeyState.Saved || state == AiKeyState.SavedUntested
+    val saved = state == AiKeyState.Saved || state == AiKeyState.SavedUntested || state == AiKeyState.SavedNoCredit
     val canSave = key.isNotBlank() && !checking
     val message = aiKeyMessage(state)
     val colors = MaterialTheme.colorScheme
@@ -545,6 +545,7 @@ internal fun AiKeyDialog(
                     style = MaterialTheme.typography.bodyMedium,
                     color = when (state) {
                         AiKeyState.Saved -> StatusPalette.ok()
+                        AiKeyState.SavedNoCredit -> StatusPalette.attention()
                         AiKeyState.Checking, AiKeyState.SavedUntested -> colors.onSurfaceVariant
                         else -> colors.error
                     },

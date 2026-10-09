@@ -1,9 +1,7 @@
 package com.cedrickgd.morgenbriefing.ai
 
 import android.util.Log
-import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.BERLIN
-import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.Topic
@@ -34,28 +32,25 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 /**
- * "⚡ Live" (docs/AI.md §2): one research run at a time through [engine], results stored per
- * run in [store]. A null engine means API < 26 ([AiBlock.UNSUPPORTED_DEVICE]).
+ * "⚡ Live" (docs/AI.md §2): one research run at a time with the Live provider [access] resolves
+ * for it (its own one or the chat provider, D1), results stored per run in [store]. The state
+ * shows the provider and why it is blocked, live ([AiProviderAccess.status]); a key the provider
+ * refuses ([AiError.InvalidKey]) is reported to [AiProviderAccess.keyRejected].
  *
+ * @param settings for the topics of a run (order, hidden ones).
  * @param briefOf today's (or any day's) stored morning brief, for "since when" and for the
  *   headlines the reader already knows.
- * @param keyRejected told the key a run used when Anthropic refused it ([AiError.InvalidKey]);
- *   must not throw.
  */
 internal class LiveNewsServiceImpl(
     private val scope: CoroutineScope,
     private val settings: Flow<AppSettings>,
-    private val apiKey: suspend () -> String?,
-    private val usageSink: UsageSink,
-    usageState: StateFlow<UsageSnapshot>,
-    private val engine: LiveEngine?,
+    private val access: AiProviderAccess,
     private val store: LiveStore,
     private val briefOf: suspend (LocalDate) -> Brief?,
     private val clock: Clock = Clock.system(BERLIN),
-    private val keyRejected: suspend (apiKey: String) -> Unit = {},
 ) : LiveNewsService {
 
-    private val _state = MutableStateFlow(LiveState(blocked = if (engine == null) AiBlock.UNSUPPORTED_DEVICE else null))
+    private val _state = MutableStateFlow(LiveState())
     override val state: StateFlow<LiveState> = _state.asStateFlow()
 
     /** Bumped whenever articles were stored; drives [todayArticles]. */
@@ -74,8 +69,8 @@ internal class LiveNewsServiceImpl(
             if (last != null) _state.update { it.copy(lastRunAt = it.lastRunAt ?: last) }
         }
         scope.launch {
-            aiBlockFlow(engine != null, settings, usageState).collect { block ->
-                _state.update { it.copy(blocked = block) }
+            access.status(AiPurpose.LIVE).collect { status ->
+                _state.update { it.copy(blocked = status.block, provider = status.spec.id, providerName = status.spec.name) }
             }
         }
     }
@@ -96,14 +91,21 @@ internal class LiveNewsServiceImpl(
     // -------------------------------------------------------------------------------------
 
     private suspend fun run(requestedTopics: List<String>) {
-        val engine = engine ?: return
-        val key = apiKey()
-        if (key == null) {
-            _state.update { it.copy(blocked = AiBlock.NO_KEY) }
+        val resolved = when (val resolution = access.resolve(AiPurpose.LIVE)) {
+            is Resolution.Blocked -> {
+                _state.update { it.copy(blocked = resolution.block) }
+                return
+            }
+            is Resolution.Ready -> resolution
+        }
+        val engine = resolved.backend.live ?: run {
+            _state.update { it.copy(blocked = AiBlock.LIVE_UNAVAILABLE) }
             return
         }
+        val usage = resolved.usage
+        val provider = resolved.auth.provider
         try {
-            usageSink.beforeRequest()
+            usage.beforeRequest()
         } catch (e: AiBlockedException) {
             _state.update { it.copy(blocked = e.block) }
             return
@@ -133,13 +135,16 @@ internal class LiveNewsServiceImpl(
         }.toMutableSet()
 
         _state.update { it.copy(running = true, progress = listOf("Starte die Recherche …"), newCount = 0, error = null) }
-        val model = ProviderCatalog.effectiveModel(current.ai, AiProviderId.ANTHROPIC)
+        val model = resolved.model
         val topicIds = topics.map { it.id }
         var newCount = 0
         var attempts = 0
 
         val listener = object : LiveResearchListener {
-            override fun onSearch(query: String) = progress("Suche: ${query.trim().take(80)}")
+            override fun onSearch(query: String) {
+                val what = query.trim().take(80)
+                progress(if (what.isEmpty()) "Suche im Netz …" else "Suche: $what")
+            }
             override fun onFetch(url: String) = progress("Lese ${hostOf(url)}")
             override fun onToolCall(name: String) {
                 if (name == LivePublish.TOOL_NAME) progress("Schreibe die Artikel …")
@@ -155,7 +160,7 @@ internal class LiveNewsServiceImpl(
                 // After the corrections budget: keep what is valid instead of looping on.
                 if (outcome.accepted.isNotEmpty()) {
                     try {
-                        store.append(clock.instant(), model, topicIds, outcome.accepted)
+                        store.append(clock.instant(), provider.key, model, topicIds, outcome.accepted)
                     } catch (e: IOException) {
                         Log.w(TAG, "Live articles could not be stored", e)
                         return@withLock PublishReply(accepted = false, message = "Speichern fehlgeschlagen. Beende den Lauf.")
@@ -173,19 +178,19 @@ internal class LiveNewsServiceImpl(
         try {
             val result = engine.research(
                 LiveResearchRequest(
-                    apiKey = key,
+                    auth = resolved.auth,
                     model = model,
                     systemPrompt = AiPrompts.LIVE_SYSTEM,
                     userPrompt = AiPrompts.liveRequest(now, since, topics, known),
                 ),
                 listener,
-                usageSink,
+                usage,
             )
             val finishedAt = clock.instant()
             // Only a run that really finished counts as "checked up to now": it becomes the next
             // run's "since" and, after a restart, the status line. Refused, cut-off or
             // unfinished runs without articles leave no trace (runs with articles are stored anyway).
-            if (result.end == TurnEnd.COMPLETE && newCount == 0) markChecked(finishedAt, model, topicIds)
+            if (result.end == TurnEnd.COMPLETE && newCount == 0) markChecked(finishedAt, provider.key, model, topicIds)
             val error = when (result.end) {
                 TurnEnd.REFUSED -> AiError.Refusal(result.refusalCategory)
                 TurnEnd.TRUNCATED -> if (newCount == 0) AiError.Truncated else null
@@ -222,14 +227,14 @@ internal class LiveNewsServiceImpl(
             _state.update { it.copy(running = false, blocked = e.block, newCount = newCount) }
         } catch (e: AiException) {
             // Settings → KI says so before the panel shows the error.
-            if (e.error == AiError.InvalidKey) keyRejected(key)
+            if (e.error == AiError.InvalidKey) access.keyRejected(provider, resolved.auth.apiKey)
             _state.update { it.copy(running = false, error = e.error, newCount = newCount) }
         }
     }
 
-    private suspend fun markChecked(at: Instant, model: String, topicIds: List<String>) {
+    private suspend fun markChecked(at: Instant, provider: String, model: String, topicIds: List<String>) {
         try {
-            store.append(at, model, topicIds, emptyList())
+            store.append(at, provider, model, topicIds, emptyList())
         } catch (e: IOException) {
             Log.w(TAG, "Live run could not be recorded", e)
         }
@@ -248,7 +253,7 @@ internal class LiveNewsServiceImpl(
         const val MAX_PROGRESS_LINES = 8
         const val MAX_CORRECTIONS = 2
 
-        /** A run that stopped before Claude published anything (request budget, no publish call). */
+        /** A run that stopped before the model published anything (request budget, no publish call). */
         const val INCOMPLETE_TEXT = "Die Recherche ist nicht fertig geworden. Versuch's gleich nochmal."
 
         fun List<String>.withLine(line: String): List<String> =

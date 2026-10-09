@@ -1,9 +1,13 @@
 package com.cedrickgd.morgenbriefing.ai
 
+import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
 import com.cedrickgd.morgenbriefing.data.AppJson
-import com.cedrickgd.morgenbriefing.data.withAiKey
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
+import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
+import com.cedrickgd.morgenbriefing.data.withAiKey
+import com.cedrickgd.morgenbriefing.data.withProvider
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,22 +70,20 @@ class ChatServiceTest {
         else LoadedChatContext("Neue Buslinie nach Leipzig", "Kontext: Artikel ${ctx.articleKey}")
     }
 
+    private fun access(engine: ChatEngine? = this.engine, apiKey: String? = "test-key") =
+        FakeAiAccess(settings, usageState, usage, engine?.let { FakeBackend(it) }, apiKey)
+
     private fun service(
         engine: ChatEngine? = this.engine,
         apiKey: String? = "test-key",
         contexts: ChatContextSource = articleContexts,
-        keyRejected: suspend (String) -> Unit = {},
+        access: AiProviderAccess = access(engine, apiKey),
     ) = ChatServiceImpl(
         scope = scope,
-        settings = settings,
-        apiKey = { apiKey },
-        usageSink = usage,
-        usageState = usageState,
-        engine = engine,
+        access = access,
         store = ChatStore(folder.root.resolve("chat"), AppJson),
         contexts = contexts,
         clock = clock,
-        keyRejected = keyRejected,
     )
 
     private suspend fun ChatSession.await(predicate: (ChatUiState) -> Boolean): ChatUiState =
@@ -188,17 +190,17 @@ class ChatServiceTest {
 
     @Test
     fun `a refused key is reported with the key the turn used, other errors are not`() = runBlocking<Unit> {
-        val rejected = mutableListOf<String>()
+        val access = access(apiKey = "sk-ant-old")
         engine.scripts += { throw AiException(AiError.Network) }
         engine.scripts += { throw AiException(AiError.InvalidKey) }
-        val session = service(apiKey = "sk-ant-old", keyRejected = { synchronized(rejected) { rejected += it } }).session(article)
+        val session = service(access = access).session(article)
         session.send("Frage")
         assertEquals(AiError.Network, session.await { it.settled(2) }.messages.last().error)
-        assertTrue(rejected.isEmpty())
+        assertTrue(access.rejected.isEmpty())
 
         session.send("Noch eine")
         assertEquals(AiError.InvalidKey, session.await { it.settled(4) }.messages.last().error)
-        assertEquals(listOf("sk-ant-old"), rejected)
+        assertEquals(listOf(AiProviderId.ANTHROPIC to "sk-ant-old"), access.rejected)
     }
 
     @Test
@@ -306,7 +308,7 @@ class ChatServiceTest {
 
     @Test
     fun `blocked states`() = runBlocking<Unit> {
-        assertEquals(AiBlock.UNSUPPORTED_DEVICE, service(engine = null).session(article).state.value.blocked)
+        service(engine = null).session(article).await { it.blocked == AiBlock.UNSUPPORTED_DEVICE }
 
         settings.value = AppSettings()
         val noKey = service(apiKey = null).session(ChatContext("2026-10-04", "x"))
@@ -330,6 +332,113 @@ class ChatServiceTest {
         limited.await { it.blocked == AiBlock.LIMIT_REACHED }
         usageState.value = UsageSnapshot(month = "2026-10", spentUsd = 5.5, limitUsd = 10.0)
         limited.await { it.blocked == null }
+    }
+
+    @Test
+    fun `the session names its provider and the provider of each turn answers`() = runBlocking<Unit> {
+        val session = service().session(article)
+        val claude = session.await { it.provider != null }
+        assertEquals(AiProviderId.ANTHROPIC, claude.provider)
+        assertEquals("Claude (Anthropic)", claude.providerName)
+        assertEquals(null, claude.note)
+
+        settings.value = AppSettings().withProvider(AiProviderId.OPENAI) { it.copy(hasKey = true, model = "gpt-6-luna") }
+        session.await { it.provider == AiProviderId.OPENAI && it.providerName == "OpenAI" }
+        session.send("Frage")
+        session.await { it.settled(2) }
+        val request = engine.requests.single()
+        assertEquals(AiProviderId.OPENAI, request.auth.provider)
+        assertEquals("gpt-6-luna", request.model)
+        assertTrue(request.webSearch)
+    }
+
+    @Test
+    fun `a free Gemini key chats without web search, at no cost and past the monthly limit`() = runBlocking<Unit> {
+        settings.value = AppSettings().withAiKey(AiProviderId.GEMINI)
+        // Spent more than the cap: paid providers are blocked, the free tier is not.
+        usage.limitReached = true
+        usageState.value = UsageSnapshot(month = "2026-10", spentUsd = 6.0, limitUsd = 5.0)
+        val gemini = object : ChatEngine {
+            val requests = mutableListOf<ChatTurnRequest>()
+            override suspend fun answer(request: ChatTurnRequest, listener: ChatTurnListener, usage: UsageSink): ChatTurnResult {
+                synchronized(requests) { requests += request }
+                usage.beforeRequest()
+                usage.record(request.auth.provider, request.model, TokenUsage(inputTokens = 4_000, outputTokens = 300))
+                listener.onText("Aus dem Artikel: …")
+                return ChatTurnResult("Aus dem Artikel: …", emptyList(), TurnEnd.COMPLETE)
+            }
+        }
+        val session = service(engine = gemini).session(article)
+        val ready = session.await { it.provider == AiProviderId.GEMINI }
+        assertEquals(null, ready.blocked)
+        assertEquals(GeminiTiers.NO_WEB_SEARCH_NOTE, ready.note)
+        assertEquals("Google Gemini", ready.providerName)
+
+        session.send("Worum geht es?")
+        val answer = session.await { it.settled(2) }.messages.last()
+        assertEquals(ChatMessage.Status.DONE, answer.status)
+        val request = gemini.requests.single()
+        assertFalse(request.webSearch)
+        assertTrue(request.auth.freeTier)
+        assertEquals("gemini-3.8-flash", request.model)
+        // Counted as a request, priced at 0 $.
+        assertEquals(0.0, usage.records.single().second.reportedCostUsd!!, 0.0)
+        assertEquals(listOf(AiProviderId.GEMINI), usage.providers)
+    }
+
+    @Test
+    fun `a paid Gemini key searches and the limit applies`() = runBlocking<Unit> {
+        settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true, geminiTier = GeminiTier.PAID) }
+        usageState.value = UsageSnapshot(month = "2026-10", spentUsd = 6.0, limitUsd = 5.0)
+        val session = service().session(article)
+        val limited = session.await { it.provider == AiProviderId.GEMINI && it.blocked != null }
+        assertEquals(AiBlock.LIMIT_REACHED, limited.blocked)
+        assertEquals(null, limited.note)
+
+        usageState.value = UsageSnapshot(month = "2026-10", spentUsd = 1.0, limitUsd = 5.0)
+        session.await { it.blocked == null }
+        session.send("Was gibt es Neues?")
+        session.await { it.settled(2) }
+        assertTrue(engine.requests.single().webSearch)
+        assertFalse(engine.requests.single().auth.freeTier)
+    }
+
+    @Test
+    fun `search suggestions and the fallback note stay with the answer, also after a restart`() = runBlocking<Unit> {
+        settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true, geminiTier = GeminiTier.PAID) }
+        val html = """<div class="container"><a class="chip" href="https://www.google.com/search?q=ezb">EZB Zins</a></div>"""
+        engine.scripts += { l ->
+            l.onText("Die EZB …")
+            l.onSearchSuggestions(html)
+            ChatTurnResult("Die EZB …", emptyList(), TurnEnd.COMPLETE, searchSuggestionsHtml = html)
+        }
+        engine.scripts += { l ->
+            l.onText("Ohne Suche.")
+            ChatTurnResult("Ohne Suche.", emptyList(), TurnEnd.COMPLETE, withoutWebSearch = true)
+        }
+        val session = service().session(article)
+        session.send("Erste")
+        session.await { it.settled(2) }
+        session.send("Zweite")
+        val done = session.await { it.settled(4) }
+        assertEquals(html, done.messages[1].searchSuggestionsHtml)
+        assertEquals(null, done.messages[1].note)
+        assertEquals(null, done.messages[3].searchSuggestionsHtml)
+        assertEquals(AiTexts.WITHOUT_WEB_SEARCH_NOTE, done.messages[3].note)
+
+        val restored = service().session(article).await { it.messages.size == 4 }
+        assertEquals(html, restored.messages[1].searchSuggestionsHtml)
+        assertEquals(AiTexts.WITHOUT_WEB_SEARCH_NOTE, restored.messages[3].note)
+    }
+
+    @Test
+    fun `a provider without backend is blocked as unsupported`() = runBlocking<Unit> {
+        settings.value = AppSettings().withAiKey(AiProviderId.MISTRAL)
+        val session = service(engine = null).session(article)
+        val blocked = session.await { it.provider == AiProviderId.MISTRAL && it.blocked != null }
+        assertEquals(AiBlock.UNSUPPORTED_DEVICE, blocked.blocked)
+        // Mistral has no web search: the chat says so calmly.
+        assertEquals("Ohne Websuche – mit Mistral nicht verfügbar", blocked.note)
     }
 
     @Test

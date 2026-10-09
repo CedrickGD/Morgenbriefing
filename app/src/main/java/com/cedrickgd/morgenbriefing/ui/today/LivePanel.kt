@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.ai.AiBlock
+import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ui.components.Emoji
 import com.cedrickgd.morgenbriefing.ui.components.GlassPillButton
 import com.cedrickgd.morgenbriefing.ui.components.entrance
@@ -114,12 +115,16 @@ internal fun LiveHeader(
         when {
             block != null -> {
                 Spacer(Modifier.height(14.dp))
-                Text(text = liveBlockText(block), style = MaterialTheme.typography.bodyMedium, color = colors.onSurface)
+                Text(text = liveBlockText(block, live.spec), style = MaterialTheme.typography.bodyMedium, color = colors.onSurface)
                 if (block != AiBlock.UNSUPPORTED_DEVICE) {
                     Spacer(Modifier.height(14.dp))
-                    // No key: entered right here. Monthly limit: adjusted in the settings' KI section.
+                    // No key: entered right here. Monthly limit and the Live provider: in the settings' KI section.
                     GlassPillButton(
-                        text = if (block == AiBlock.NO_KEY) "Key eintragen" else "Limit anpassen",
+                        text = when (block) {
+                            AiBlock.NO_KEY -> "Key eintragen"
+                            AiBlock.LIVE_UNAVAILABLE -> AiTexts.LIVE_PROVIDER_ACTION
+                            else -> "Limit anpassen"
+                        },
                         icon = if (block == AiBlock.NO_KEY) Icons.Rounded.Key else Icons.Rounded.Settings,
                         onClick = onOpenSettings,
                         filled = true,
@@ -135,7 +140,7 @@ internal fun LiveHeader(
             else -> {
                 if (error != null) {
                     Spacer(Modifier.height(14.dp))
-                    Text(text = liveErrorText(error), style = MaterialTheme.typography.bodyMedium, color = colors.error)
+                    Text(text = liveErrorText(error, live.spec), style = MaterialTheme.typography.bodyMedium, color = colors.error)
                 } else if (live.lastRunAt == null) {
                     Spacer(Modifier.height(12.dp))
                     Text(

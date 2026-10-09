@@ -37,6 +37,10 @@ internal data class StoredChatMessage(
     /** "done" or "failed" (streaming answers are stored as what was received). */
     val status: String = STATUS_DONE,
     val error: StoredAiError? = null,
+    /** Gemini: the Search Suggestions HTML shown with the answer (kept with the chat history only). */
+    val searchSuggestionsHtml: String? = null,
+    /** A quiet line under the answer, e.g. "Ohne Websuche beantwortet …". */
+    val note: String? = null,
 ) {
     companion object {
         const val ROLE_USER = "user"
@@ -55,6 +59,13 @@ internal data class StoredAiError(val kind: String, val detail: String? = null) 
         "network" -> AiError.Network
         "refusal" -> AiError.Refusal(detail)
         "truncated" -> AiError.Truncated
+        "no_credit" -> AiError.NoCredit
+        "workspace_required" -> AiError.WorkspaceRequired
+        "workspace_not_found" -> AiError.WorkspaceNotFound
+        "model_unavailable" -> AiError.ModelUnavailable(detail)
+        "server_unreachable" -> AiError.ServerUnreachable
+        "quota_exhausted" -> AiError.QuotaExhausted
+        // Unknown kinds (a newer app version wrote them) stay readable.
         else -> AiError.Unknown(detail)
     }
 
@@ -67,6 +78,12 @@ internal data class StoredAiError(val kind: String, val detail: String? = null) 
             is AiError.Refusal -> StoredAiError("refusal", error.category)
             AiError.Truncated -> StoredAiError("truncated")
             is AiError.Unknown -> StoredAiError("unknown", error.message)
+            AiError.NoCredit -> StoredAiError("no_credit")
+            AiError.WorkspaceRequired -> StoredAiError("workspace_required")
+            AiError.WorkspaceNotFound -> StoredAiError("workspace_not_found")
+            is AiError.ModelUnavailable -> StoredAiError("model_unavailable", error.model)
+            AiError.ServerUnreachable -> StoredAiError("server_unreachable")
+            AiError.QuotaExhausted -> StoredAiError("quota_exhausted")
         }
     }
 }

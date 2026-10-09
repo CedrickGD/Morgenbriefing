@@ -7,7 +7,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.ai.claude.ClaudeBackend
+import com.cedrickgd.morgenbriefing.ai.provider.EngineKind
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.AiSettings
+import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
 import com.cedrickgd.morgenbriefing.data.model.NewsSection
@@ -17,6 +21,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.io.File
 import java.time.LocalDate
@@ -25,18 +32,18 @@ import java.time.LocalDate
 private val Context.aiUsageStore: DataStore<Preferences> by preferencesDataStore(name = "ai_usage")
 
 /**
- * Entry point for all AI features, owned by MorgenbriefingApp (`context.ai`). Must be safe to
- * construct on every API level: on API < 26 it hands out services that only ever report
- * [AiBlock.UNSUPPORTED_DEVICE] and never load SDK classes — the Claude backend
- * ([ClaudeBackend], the only code that touches `com.anthropic.*`) is created lazily and only
- * behind [AiSupport.isSupported].
+ * Entry point for all AI features, owned by MorgenbriefingApp (`context.ai`). Safe to construct
+ * and use on every API level (D9): the provider backends are created on first use, and the
+ * Claude backend ([ClaudeBackend], the only code that touches `com.anthropic.*`) only behind
+ * [AiSupport.sdkAvailable] — below Android 8 a Claude chat reports [AiBlock.UNSUPPORTED_DEVICE]
+ * while every other provider runs.
  */
 class AiServices(private val context: Context, private val container: AppContainer) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val storeDir = File(context.applicationContext.filesDir, "store")
 
-    private val backend: AiBackend? by lazy {
-        if (!AiSupport.isSupported) return@lazy null
+    private val claude: AiBackend? by lazy {
+        if (!AiSupport.sdkAvailable) return@lazy null
         try {
             ClaudeBackend()
         } catch (e: LinkageError) {
@@ -44,6 +51,22 @@ class AiServices(private val context: Context, private val container: AppContain
             Log.w(TAG, "Claude SDK not usable on this device", e)
             null
         }
+    }
+
+    /**
+     * The backend of the engine family of [id], or null where it cannot run (Claude below
+     * Android 8) or is not built yet. The Responses, Gemini and Chat Completions families
+     * register here (docs/AI-PROVIDERS.md T6–T8); until then only Claude is wired.
+     */
+    internal fun backendFor(id: AiProviderId): AiBackend? = when (ProviderCatalog.spec(id).engine) {
+        EngineKind.CLAUDE_SDK -> claude
+        EngineKind.RESPONSES, EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> null
+    }
+
+    /** Whether [id] has a backend in this build, without creating it (no SDK class loading). */
+    private fun isWired(id: AiProviderId): Boolean = when (ProviderCatalog.spec(id).engine) {
+        EngineKind.CLAUDE_SDK -> AiSupport.sdkAvailable
+        EngineKind.RESPONSES, EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> false
     }
 
     private val usageStore: UsageStore by lazy {
@@ -54,46 +77,57 @@ class AiServices(private val context: Context, private val container: AppContain
         )
     }
 
-    /**
-     * Usage of chat and Live requests. Usage only exists for a request Anthropic accepted, so it
-     * also confirms a key that was saved without a test or was rejected before
-     * ([com.cedrickgd.morgenbriefing.data.model.ProviderSettings.keyUntested],
-     * [com.cedrickgd.morgenbriefing.data.model.ProviderSettings.keyRejected]).
-     */
-    private val requestUsage: UsageSink by lazy {
-        object : UsageSink by usageStore {
-            override suspend fun record(provider: AiProviderId, modelId: String, usage: TokenUsage) {
-                usageStore.record(provider, modelId, usage)
-                markKeyWorks()
-            }
+    /** The usage sink of chat and Live requests with [id]; see [ProviderUsageSink]. */
+    private fun requestUsage(ai: AiSettings, id: AiProviderId): UsageSink =
+        ProviderUsageSink(usageStore, free = ai.costsNothing(id), onRecorded = ::markKeyWorks)
+
+    private val access: AiProviderAccess = object : AiProviderAccess {
+        override suspend fun resolve(purpose: AiPurpose): Resolution {
+            val ai = settingsOrDefault().ai
+            val id = ai.providerFor(purpose)
+            val spec = ProviderCatalog.spec(id)
+            val backend = backendFor(id)
+            // The monthly limit is checked fresh by the sink right before the request.
+            aiBlock(ai, purpose, AiSupport.sdkAvailable, UsageSnapshot(), hasBackend = backend != null)
+                ?.let { return Resolution.Blocked(spec, it) }
+            if (backend == null) return Resolution.Blocked(spec, AiBlock.UNSUPPORTED_DEVICE)
+            if (purpose == AiPurpose.LIVE && backend.live == null) return Resolution.Blocked(spec, AiBlock.LIVE_UNAVAILABLE)
+            val key = keyOrNull(id)
+            if (key == null && !id.keyOptional) return Resolution.Blocked(spec, AiBlock.NO_KEY)
+            return Resolution.Ready(
+                spec = spec,
+                auth = authFor(ai, id, key),
+                model = ProviderCatalog.effectiveModel(ai, id),
+                backend = backend,
+                webSearch = ProviderCatalog.chatWebSearch(ai, id),
+                usage = requestUsage(ai, id),
+            )
         }
+
+        override fun status(purpose: AiPurpose): Flow<AiStatus> =
+            combine(container.settings.settings.map { it.ai }.distinctUntilChanged(), usageStore.usage) { ai, usage ->
+                aiStatus(ai, purpose, AiSupport.sdkAvailable, usage, hasBackend = isWired(ai.providerFor(purpose)))
+            }.distinctUntilChanged()
+
+        override suspend fun keyRejected(provider: AiProviderId, key: String?) = markKeyRejected(provider, key)
     }
 
     private val liveService: LiveNewsServiceImpl by lazy {
         LiveNewsServiceImpl(
             scope = scope,
             settings = container.settings.settings,
-            apiKey = ::apiKeyOrNull,
-            usageSink = requestUsage,
-            usageState = usageStore.usage,
-            engine = backend?.live,
+            access = access,
             store = LiveStore(File(storeDir, "live"), container.json),
             briefOf = { date -> container.store.loadBrief(date) },
-            keyRejected = ::markKeyRejected,
         )
     }
 
     private val chatService: ChatServiceImpl by lazy {
         ChatServiceImpl(
             scope = scope,
-            settings = container.settings.settings,
-            apiKey = ::apiKeyOrNull,
-            usageSink = requestUsage,
-            usageState = usageStore.usage,
-            engine = backend?.chat,
+            access = access,
             store = ChatStore(File(storeDir, "chat"), container.json),
             contexts = ChatContextSource(::loadChatContext),
-            keyRejected = ::markKeyRejected,
         )
     }
 
@@ -101,42 +135,83 @@ class AiServices(private val context: Context, private val container: AppContain
     val live: LiveNewsService get() = liveService
     val usage: UsageTracker get() = usageStore
 
-    /** Cheap key check for the settings screen (one tiny request). */
-    suspend fun testKey(key: String): AiKeyCheck {
-        val checker = backend?.keys ?: return AiKeyCheck.UNSUPPORTED
-        val clean = key.trim()
-        if (clean.isEmpty() || clean.any { it.isWhitespace() }) return AiKeyCheck.INVALID
-        return checker.check(clean, usageStore)
+    /**
+     * Key or connection test for the settings (as few tokens as possible) with the candidate
+     * configuration: [key] null = the stored key; a null field of [extras] = the stored
+     * workspace id or server address, "" = none.
+     */
+    suspend fun testKey(provider: AiProviderId, key: String?, extras: KeyExtras = KeyExtras()): KeyCheckOutcome {
+        if (!AiSupport.supports(provider)) return KeyCheckOutcome(AiKeyCheck.UNSUPPORTED)
+        val backend = backendFor(provider) ?: return KeyCheckOutcome(AiKeyCheck.UNSUPPORTED)
+        val candidate = key?.trim()?.takeIf { it.isNotEmpty() } ?: keyOrNull(provider)
+        if (candidate == null && !provider.keyOptional) return KeyCheckOutcome(AiKeyCheck.INVALID)
+        if (candidate != null && candidate.any { it.isWhitespace() }) return KeyCheckOutcome(AiKeyCheck.INVALID)
+        val ai = settingsOrDefault().ai
+        val stored = ai.of(provider)
+        val tested = ai.with(
+            provider,
+            stored.copy(
+                workspaceId = extras.workspaceId?.let { it.trim().ifEmpty { null } } ?: stored.workspaceId.takeIf { extras.workspaceId == null },
+                baseUrl = extras.baseUrl?.let { it.trim().ifEmpty { null } } ?: stored.baseUrl.takeIf { extras.baseUrl == null },
+            ),
+        )
+        // Priced like a request, but it does not confirm the stored key: the candidate may be another one.
+        val usage = ProviderUsageSink(usageStore, free = tested.costsNothing(provider))
+        return backend.keys.check(authFor(tested, provider, candidate), ProviderCatalog.effectiveModel(tested, provider), usage)
     }
 
-    private suspend fun markKeyWorks() {
+    /**
+     * Credentials and endpoint of [id] as configured in [ai]: the own server's address, else the
+     * debug base URL (always null in release builds), else the catalog default.
+     */
+    private fun authFor(ai: AiSettings, id: AiProviderId, key: String?): ProviderAuth {
+        val p = ai.of(id)
+        return ProviderAuth(
+            provider = id,
+            apiKey = key,
+            baseUrl = if (id == AiProviderId.CUSTOM) p.baseUrl else p.debugBaseUrl,
+            workspaceId = p.workspaceId.takeIf { id == AiProviderId.ANTHROPIC },
+            freeTier = ai.isGeminiFree(id),
+        )
+    }
+
+    private suspend fun markKeyWorks(provider: AiProviderId) {
         try {
-            container.settings.markAiKeyWorks(AiProviderId.ANTHROPIC)
+            container.settings.markAiKeyWorks(provider)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Claude key could not be marked as working", e)
+            Log.w(TAG, "${provider.key} key could not be marked as working", e)
         }
     }
 
     /** A chat or Live request with [key] ended in [AiError.InvalidKey]: Settings → KI says so. */
-    private suspend fun markKeyRejected(key: String) {
+    private suspend fun markKeyRejected(provider: AiProviderId, key: String?) {
         try {
-            container.settings.markAiKeyRejected(AiProviderId.ANTHROPIC, key)
+            container.settings.markAiKeyRejected(provider, key)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Claude key could not be marked as rejected", e)
+            Log.w(TAG, "${provider.key} key could not be marked as rejected", e)
         }
     }
 
-    private suspend fun apiKeyOrNull(): String? = try {
-        container.settings.aiKey(AiProviderId.ANTHROPIC)
+    private suspend fun keyOrNull(provider: AiProviderId): String? = try {
+        container.settings.aiKey(provider)
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
-        Log.w(TAG, "Claude key could not be read", e)
+        Log.w(TAG, "${provider.key} key could not be read", e)
         null
+    }
+
+    private suspend fun settingsOrDefault(): AppSettings = try {
+        container.settings.current()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Log.w(TAG, "Settings could not be read", e)
+        AppSettings()
     }
 
     /**

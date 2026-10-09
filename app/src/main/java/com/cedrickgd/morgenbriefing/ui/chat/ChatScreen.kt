@@ -86,6 +86,9 @@ import com.cedrickgd.morgenbriefing.ai.ChatMessage
 import com.cedrickgd.morgenbriefing.ai.ChatSession
 import com.cedrickgd.morgenbriefing.ai.ChatUiState
 import com.cedrickgd.morgenbriefing.ai.RetryableChatSession
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.ui.components.entrance
 import com.cedrickgd.morgenbriefing.ui.components.rememberEntrance
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
@@ -238,7 +241,7 @@ internal fun ChatContent(
             // A running answer keeps its stop button even if the limit is reached meanwhile.
             if (blocked != null && !state.busy) {
                 // Same 20 dp gutter as the cards of the chat above.
-                BlockedCard(blocked, onOpenSettings, Modifier.padding(horizontal = 8.dp))
+                BlockedCard(blocked, state.providerSpec, onOpenSettings, Modifier.padding(horizontal = 8.dp))
             } else {
                 ChatInputBar(
                     value = draft,
@@ -418,6 +421,7 @@ private fun MessageList(
                 }
                 ChatMessage.Role.ASSISTANT -> AssistantMessage(
                     message = message,
+                    spec = state.providerSpec,
                     isLast = index == state.messages.lastIndex,
                     onRetry = onRetry,
                     onOpenSettings = onOpenSettings,
@@ -450,6 +454,7 @@ private fun MessageList(
 @Composable
 private fun AssistantMessage(
     message: ChatMessage,
+    spec: ProviderSpec,
     isLast: Boolean,
     onRetry: () -> Unit,
     onOpenSettings: () -> Unit,
@@ -472,7 +477,7 @@ private fun AssistantMessage(
         val error = message.error
         if (message.status == ChatMessage.Status.FAILED && error != null) {
             if (message.text.isNotBlank()) Spacer(Modifier.height(12.dp))
-            ErrorCard(error = error, canRetry = isLast, onRetry = onRetry, onOpenSettings = onOpenSettings)
+            ErrorCard(error = error, spec = spec, canRetry = isLast, onRetry = onRetry, onOpenSettings = onOpenSettings)
         }
         if (message.sources.isNotEmpty()) {
             Spacer(Modifier.height(14.dp))
@@ -650,3 +655,7 @@ private fun shareAnswer(context: Context, title: String, message: ChatMessage) {
 
 /** Scroll offset that lands on the very end of the last item (LazyColumn clamps it). */
 private const val END_OFFSET = 100_000
+
+/** The chat provider (Claude until the session knows it). */
+private val ChatUiState.providerSpec: ProviderSpec
+    get() = ProviderCatalog.spec(provider ?: AiProviderId.ANTHROPIC)

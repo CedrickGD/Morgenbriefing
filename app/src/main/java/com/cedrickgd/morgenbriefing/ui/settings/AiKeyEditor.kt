@@ -13,8 +13,10 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
+import com.cedrickgd.morgenbriefing.ai.AiKeyCheck
 import com.cedrickgd.morgenbriefing.ai.AiServices
 import com.cedrickgd.morgenbriefing.ai.AiSupport
+import com.cedrickgd.morgenbriefing.ai.KeyExtras
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.util.attempt
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
@@ -33,10 +35,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
- * "Speichern & testen" of the Claude API key: one tiny request through the AI facade, and only
- * a key that works is stored (offline, "Ohne Test speichern" stores it marked as untested).
- * Shared by the settings page and the in-place key dialog that "Frag nach" and "⚡ Live" open
- * where the user is ([InlineAiKeyDialog]).
+ * "Speichern & testen" of an AI key: one key check through the AI facade, and only a key that
+ * works is stored (offline, "Ohne Test speichern" stores it marked as untested). Shared by the
+ * settings page and the in-place key dialog that "Frag nach" and "⚡ Live" open where the user
+ * is ([InlineAiKeyDialog]).
  *
  * @param ai the AI facade, or null where AI cannot run (Android 7) — never touched then.
  */
@@ -51,10 +53,12 @@ internal class AiKeyEditor(
     private var job: Job? = null
 
     /**
-     * Tests [raw] and stores it when it works; with [skipTest] (offline) it is stored untested
-     * and the dialog and the settings say so instead of claiming it works.
+     * Tests [raw] for [provider] (null = the active chat provider) together with [extras] (the
+     * Anthropic workspace id, the own server's address) and stores all of it when it works; with
+     * [skipTest] (offline) it is stored untested and the dialog and the settings say so instead
+     * of claiming it works. A key that works but has no credit is stored with a warning.
      */
-    fun saveAndTest(raw: String, skipTest: Boolean = false) {
+    fun saveAndTest(raw: String, skipTest: Boolean = false, provider: AiProviderId? = null, extras: KeyExtras = KeyExtras()) {
         val key = raw.trim()
         if (key.isEmpty()) return
         val services = ai
@@ -65,25 +69,33 @@ internal class AiKeyEditor(
         job?.cancel()
         job = scope.launch {
             _state.value = AiKeyState.Checking
+            val target = provider ?: attempt { container.settings.current().ai.provider }.getOrNull() ?: AiProviderId.ANTHROPIC
+            var noCredit = false
             if (!skipTest) {
-                val problem = try {
-                    services().testKey(key).toProblem()
+                val outcome = try {
+                    services().testKey(target, key, extras).check
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Throwable) {
                     // Anything unexpected from the facade (incl. a missing implementation).
                     Log.w(TAG, "Key test failed", e)
-                    AiKeyProblem.UNKNOWN
+                    null
                 }
                 ensureActive()
+                val problem = outcome?.toProblem() ?: if (outcome == null) AiKeyProblem.UNKNOWN else null
                 if (problem != null) {
                     _state.value = AiKeyState.Failed(problem)
                     return@launch
                 }
+                noCredit = outcome == AiKeyCheck.OK_NO_CREDIT
             }
-            val saved = attempt { container.settings.setAiKey(AiProviderId.ANTHROPIC, key, tested = !skipTest) }
+            val saved = attempt {
+                extras.workspaceId?.let { container.settings.setAnthropicWorkspaceId(it) }
+                extras.baseUrl?.let { container.settings.setCustomBaseUrl(it) }
+                container.settings.setAiKey(target, key, tested = !skipTest)
+            }
             _state.value = if (saved.isSuccess) {
-                savedKeyState(tested = !skipTest)
+                savedKeyState(tested = !skipTest, noCredit = noCredit)
             } else {
                 Log.w(TAG, "Key could not be stored", saved.exceptionOrNull())
                 AiKeyState.Failed(AiKeyProblem.SAVE_FAILED)
@@ -108,7 +120,7 @@ internal class AiKeyViewModel(container: AppContainer, ai: (() -> AiServices)?) 
     val state: StateFlow<AiKeyState> = editor.state
 
     val hasKey: StateFlow<Boolean> = container.settings.settings
-        .map { it.ai.of(AiProviderId.ANTHROPIC).hasKey }
+        .map { it.ai.of(it.ai.provider).hasKey }
         .distinctUntilChanged()
         .catch { e -> Log.w("AiKeyViewModel", "Settings unavailable", e) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)

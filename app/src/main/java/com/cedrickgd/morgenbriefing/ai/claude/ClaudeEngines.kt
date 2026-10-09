@@ -17,17 +17,18 @@ import com.cedrickgd.morgenbriefing.ai.ChatEngine
 import com.cedrickgd.morgenbriefing.ai.ChatTurnListener
 import com.cedrickgd.morgenbriefing.ai.ChatTurnRequest
 import com.cedrickgd.morgenbriefing.ai.ChatTurnResult
+import com.cedrickgd.morgenbriefing.ai.KeyCheckOutcome
 import com.cedrickgd.morgenbriefing.ai.KeyChecker
 import com.cedrickgd.morgenbriefing.ai.LiveEngine
 import com.cedrickgd.morgenbriefing.ai.LivePublish
 import com.cedrickgd.morgenbriefing.ai.LiveResearchListener
 import com.cedrickgd.morgenbriefing.ai.LiveResearchRequest
 import com.cedrickgd.morgenbriefing.ai.LiveResearchResult
+import com.cedrickgd.morgenbriefing.ai.ProviderAuth
 import com.cedrickgd.morgenbriefing.ai.SourceCollector
 import com.cedrickgd.morgenbriefing.ai.TokenUsage
 import com.cedrickgd.morgenbriefing.ai.TurnEnd
 import com.cedrickgd.morgenbriefing.ai.UsageSink
-import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import com.cedrickgd.morgenbriefing.data.model.Topics
@@ -44,7 +45,7 @@ import java.io.IOException
 internal class ClaudeChatEngine(private val clients: ClaudeClients) : ChatEngine {
 
     override suspend fun answer(request: ChatTurnRequest, listener: ChatTurnListener, usage: UsageSink): ChatTurnResult {
-        val client = clients.forKey(request.apiKey)
+        val client = clients.forKey(requireNotNull(request.auth.apiKey) { "Claude needs a key" })
         val params = ClaudeRequests.chat(request.model, request.systemPrompt, request.context)
         val messages = ClaudeRequests.toParams(request.history).toMutableList()
         val sources = SourceCollector()
@@ -93,7 +94,7 @@ internal class ClaudeChatEngine(private val clients: ClaudeClients) : ChatEngine
 internal class ClaudeLiveEngine(private val clients: ClaudeClients) : LiveEngine {
 
     override suspend fun research(request: LiveResearchRequest, listener: LiveResearchListener, usage: UsageSink): LiveResearchResult {
-        val client = clients.forKey(request.apiKey)
+        val client = clients.forKey(requireNotNull(request.auth.apiKey) { "Claude needs a key" })
         val params = ClaudeRequests.live(request.model, request.systemPrompt, Topics.ALL.map { it.id })
         val messages = mutableListOf<MessageParam>(ClaudeRequests.userText(request.userPrompt))
         val callbacks = object : StreamCallbacks {
@@ -161,8 +162,11 @@ internal class ClaudeLiveEngine(private val clients: ClaudeClients) : LiveEngine
 /** One tiny request with the given key: 401/403 → INVALID, no connection → NETWORK. */
 internal class ClaudeKeyChecker(private val clients: ClaudeClients) : KeyChecker {
 
-    override suspend fun check(key: String, usage: UsageSink): AiKeyCheck {
-        val model = ProviderCatalog.ANTHROPIC.defaultModel
+    override suspend fun check(auth: ProviderAuth, model: String, usage: UsageSink): KeyCheckOutcome =
+        KeyCheckOutcome(checkKey(auth, model, usage))
+
+    private suspend fun checkKey(auth: ProviderAuth, model: String, usage: UsageSink): AiKeyCheck {
+        val key = auth.apiKey ?: return AiKeyCheck.INVALID
         val client = clients.create(key)
         return try {
             val message = runInterruptible(Dispatchers.IO) { client.messages().create(ClaudeRequests.keyCheck(model)) }

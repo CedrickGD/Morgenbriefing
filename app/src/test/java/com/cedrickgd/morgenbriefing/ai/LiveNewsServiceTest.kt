@@ -2,10 +2,12 @@ package com.cedrickgd.morgenbriefing.ai
 
 import com.cedrickgd.morgenbriefing.data.AppJson
 import com.cedrickgd.morgenbriefing.data.withAiKey
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
 import com.cedrickgd.morgenbriefing.data.model.NewsSection
+import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,21 +69,23 @@ class LiveNewsServiceTest {
 
     private val liveStore by lazy { LiveStore(folder.root.resolve("live"), AppJson) }
 
+    private val noChat = object : ChatEngine {
+        override suspend fun answer(request: ChatTurnRequest, listener: ChatTurnListener, usage: UsageSink): ChatTurnResult = error("not used")
+    }
+
+    private fun access(engine: LiveEngine?) = FakeAiAccess(settings, usageState, usage, engine?.let { FakeBackend(noChat, it) })
+
     private fun service(
         engine: LiveEngine?,
         clock: Clock = this.clock,
-        keyRejected: suspend (String) -> Unit = {},
+        access: AiProviderAccess = access(engine),
     ) = LiveNewsServiceImpl(
         scope = scope,
         settings = settings,
-        apiKey = { "test-key" },
-        usageSink = usage,
-        usageState = usageState,
-        engine = engine,
+        access = access,
         store = liveStore,
         briefOf = { date -> brief.takeIf { date.toString() == it.date } },
         clock = clock,
-        keyRejected = keyRejected,
     )
 
     private suspend fun LiveNewsService.await(predicate: (LiveState) -> Boolean): LiveState =
@@ -151,18 +155,19 @@ class LiveNewsServiceTest {
 
     @Test
     fun `a refused key is reported with the key the run used, other errors are not`() = runBlocking<Unit> {
-        val rejected = mutableListOf<String>()
-        val report: suspend (String) -> Unit = { synchronized(rejected) { rejected += it } }
-
-        val offline = service(FakeLiveEngine { _, _ -> throw AiException(AiError.Network) }, keyRejected = report)
+        val offlineEngine = FakeLiveEngine { _, _ -> throw AiException(AiError.Network) }
+        val offlineAccess = access(offlineEngine)
+        val offline = service(offlineEngine, access = offlineAccess)
         offline.refresh(listOf("region"))
         assertEquals(AiError.Network, offline.await { !it.running && it.error != null }.error)
-        assertTrue(rejected.isEmpty())
+        assertTrue(offlineAccess.rejected.isEmpty())
 
-        val refused = service(FakeLiveEngine { _, _ -> throw AiException(AiError.InvalidKey) }, keyRejected = report)
+        val refusingEngine = FakeLiveEngine { _, _ -> throw AiException(AiError.InvalidKey) }
+        val refusingAccess = access(refusingEngine)
+        val refused = service(refusingEngine, access = refusingAccess)
         refused.refresh(listOf("region"))
         assertEquals(AiError.InvalidKey, refused.await { !it.running && it.error != null }.error)
-        assertEquals(listOf("test-key"), rejected)
+        assertEquals(listOf(AiProviderId.ANTHROPIC to "test-key"), refusingAccess.rejected)
     }
 
     @Test
@@ -225,7 +230,7 @@ class LiveNewsServiceTest {
     @Test
     fun `unsupported devices and the monthly limit block a run`() = runBlocking<Unit> {
         val unsupported = service(engine = null)
-        assertEquals(AiBlock.UNSUPPORTED_DEVICE, unsupported.state.value.blocked)
+        unsupported.await { it.blocked == AiBlock.UNSUPPORTED_DEVICE }
         unsupported.refresh(listOf("ki"))
 
         // The sink and the usage snapshot read the same numbers in the app.
@@ -236,6 +241,52 @@ class LiveNewsServiceTest {
         limited.refresh(listOf("ki"))
         limited.await { it.blocked == AiBlock.LIMIT_REACHED }
         assertTrue(engine.requests.isEmpty())
+    }
+
+    @Test
+    fun `Live runs with its own provider and stores it with the run`() = runBlocking<Unit> {
+        // Chat on Mistral (no search), Live on OpenAI.
+        settings.value = AppSettings().withAiKey(AiProviderId.MISTRAL).let { s ->
+            s.copy(ai = s.ai.copy(liveProvider = AiProviderId.OPENAI).with(AiProviderId.OPENAI, ProviderSettings(hasKey = true, model = "gpt-6-luna")))
+        }
+        val engine = FakeLiveEngine { _, listener ->
+            assertTrue(listener.onPublish(LiveFixtures.payload(LiveFixtures.article())).accepted)
+            LiveResearchResult(published = true, end = TurnEnd.COMPLETE)
+        }
+        val live = service(engine)
+        val ready = live.await { it.provider == AiProviderId.OPENAI }
+        assertEquals("OpenAI", ready.providerName)
+        assertNull(ready.blocked)
+
+        live.refresh(listOf("region"))
+        live.await { !it.running && it.lastRunAt != null }
+        val request = engine.requests.single()
+        assertEquals(AiProviderId.OPENAI, request.auth.provider)
+        assertEquals("gpt-6-luna", request.model)
+        val stored = AppJson.decodeFromString(StoredLiveRun.serializer(), folder.root.resolve("live/2026-10-05-1430.json").readText())
+        assertEquals("openai", stored.provider)
+        assertEquals("gpt-6-luna", stored.model)
+    }
+
+    @Test
+    fun `Gemini and providers without search cannot run Live`() = runBlocking<Unit> {
+        listOf(AiProviderId.GEMINI, AiProviderId.MISTRAL, AiProviderId.DEEPSEEK).forEach { id ->
+            settings.value = AppSettings().withAiKey(id)
+            val engine = FakeLiveEngine { _, _ -> error("must not run") }
+            val live = service(engine)
+            live.await { it.provider == id && it.blocked == AiBlock.LIVE_UNAVAILABLE }
+            live.refresh(listOf("ki"))
+            kotlinx.coroutines.delay(100)
+            assertTrue(engine.requests.isEmpty())
+            assertFalse(live.state.value.running)
+        }
+        // A backend without Live engine is caught at run time, too.
+        settings.value = AppSettings().withAiKey(AiProviderId.OPENAI)
+        val chatOnly = FakeAiAccess(settings, usageState, usage, FakeBackend(noChat, live = null))
+        val live = service(engine = null, access = chatOnly)
+        live.await { it.provider == AiProviderId.OPENAI }
+        live.refresh(listOf("ki"))
+        live.await { it.blocked == AiBlock.LIVE_UNAVAILABLE }
     }
 
     @Test

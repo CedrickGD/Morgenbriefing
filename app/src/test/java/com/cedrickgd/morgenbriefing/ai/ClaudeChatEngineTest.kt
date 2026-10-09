@@ -2,6 +2,7 @@ package com.cedrickgd.morgenbriefing.ai
 
 import com.cedrickgd.morgenbriefing.ai.claude.ClaudeBackend
 import com.cedrickgd.morgenbriefing.ai.claude.ClaudeClients
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +47,7 @@ class ClaudeChatEngineTest {
 
     private fun request(history: List<ApiMessage> = listOf(ApiMessage(true, "Worum geht es?\n\n(Heute ist Montag, 5. Oktober 2026, es ist 14:20 Uhr.)"))) =
         ChatTurnRequest(
-            apiKey = Sse.TEST_KEY,
+            auth = ProviderAuth(AiProviderId.ANTHROPIC, Sse.TEST_KEY),
             model = "claude-sonnet-5-5",
             systemPrompt = AiPrompts.CHAT_SYSTEM,
             context = "Kontext: ein Artikel aus dem Morgenbriefing vom Montag, 5. Oktober 2026.",
@@ -333,9 +334,9 @@ class ClaudeChatEngineTest {
                     """"stop_reason":"end_turn","stop_sequence":null,"stop_details":null,"usage":{"input_tokens":12,"output_tokens":3}}""",
             ),
         )
-        assertEquals(AiKeyCheck.OK, backend.keys.check("sk-test", usage))
+        assertEquals(AiKeyCheck.OK, backend.keys.check(ProviderAuth(AiProviderId.ANTHROPIC, "sk-test"), "claude-sonnet-5-5", usage).check)
         server.enqueue(Sse.error(401, "authentication_error", "invalid x-api-key"))
-        assertEquals(AiKeyCheck.INVALID, backend.keys.check("sk-wrong", usage))
+        assertEquals(AiKeyCheck.INVALID, backend.keys.check(ProviderAuth(AiProviderId.ANTHROPIC, "sk-wrong"), "claude-sonnet-5-5", usage).check)
         val (_, body) = takeBody()
         assertEquals(16L, body["max_tokens"]!!.jsonPrimitive.content.toLong())
         assertNull(body["tools"])

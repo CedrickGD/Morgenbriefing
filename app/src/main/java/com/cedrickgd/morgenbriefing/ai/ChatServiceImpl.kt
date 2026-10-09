@@ -1,10 +1,7 @@
 package com.cedrickgd.morgenbriefing.ai
 
 import android.util.Log
-import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.BERLIN
-import com.cedrickgd.morgenbriefing.data.model.AiProviderId
-import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -12,11 +9,9 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,24 +38,17 @@ interface RetryableChatSession : ChatSession {
 
 /**
  * "Frag nach" (docs/AI.md §1): one session per [ChatContext], kept for the whole process and
- * restored from [store] after a restart. Streams answers through [engine]; a null engine means
- * the device cannot run the SDK (API < 26) and every session reports
- * [AiBlock.UNSUPPORTED_DEVICE].
- *
- * @param keyRejected told the key a turn used when Anthropic refused it ([AiError.InvalidKey]);
- *   must not throw.
+ * restored from [store] after a restart. Each turn asks [access] for the chat provider of that
+ * moment (D1) and streams the answer through its backend; every session shows the provider and
+ * why it is blocked, live ([AiProviderAccess.status]). A key the provider refuses
+ * ([AiError.InvalidKey]) is reported to [AiProviderAccess.keyRejected].
  */
 internal class ChatServiceImpl(
     private val scope: CoroutineScope,
-    private val settings: Flow<AppSettings>,
-    private val apiKey: suspend () -> String?,
-    private val usageSink: UsageSink,
-    private val usageState: StateFlow<UsageSnapshot>,
-    private val engine: ChatEngine?,
+    private val access: AiProviderAccess,
     private val store: ChatStore,
     private val contexts: ChatContextSource,
     private val clock: Clock = Clock.system(BERLIN),
-    private val keyRejected: suspend (apiKey: String) -> Unit = {},
 ) : ChatService {
     private val sessions = HashMap<ChatContext, ChatSessionImpl>()
 
@@ -73,7 +61,6 @@ internal class ChatServiceImpl(
             ChatUiState(
                 title = if (context.articleKey == null) AiPrompts.BRIEF_TITLE else "",
                 suggestions = suggestions(),
-                blocked = if (engine == null) AiBlock.UNSUPPORTED_DEVICE else null,
             ),
         )
         override val state: StateFlow<ChatUiState> = _state.asStateFlow()
@@ -98,8 +85,15 @@ internal class ChatServiceImpl(
 
         init {
             scope.launch {
-                aiBlockFlow(engine != null, settings, usageState).collect { block ->
-                    _state.update { it.copy(blocked = block) }
+                access.status(AiPurpose.CHAT).collect { status ->
+                    _state.update {
+                        it.copy(
+                            blocked = status.block,
+                            provider = status.spec.id,
+                            providerName = status.spec.name,
+                            note = AiTexts.chatNote(status.spec, status.webSearch, status.freeTier),
+                        )
+                    }
                 }
             }
         }
@@ -178,14 +172,16 @@ internal class ChatServiceImpl(
 
         private suspend fun runTurn(question: String) {
             ready.await()
-            val engine = engine ?: return
-            val key = apiKey()
-            if (key == null) {
-                _state.update { it.copy(blocked = AiBlock.NO_KEY) }
-                return
+            val resolved = when (val resolution = access.resolve(AiPurpose.CHAT)) {
+                is Resolution.Blocked -> {
+                    _state.update { it.copy(blocked = resolution.block) }
+                    return
+                }
+                is Resolution.Ready -> resolution
             }
+            val usage = resolved.usage
             try {
-                usageSink.beforeRequest()
+                usage.beforeRequest()
             } catch (e: AiBlockedException) {
                 _state.update { it.copy(blocked = e.block) }
                 return
@@ -217,8 +213,13 @@ internal class ChatServiceImpl(
                     _state.update { s -> s.copy(messages = s.messages.replace(answerId) { it.copy(sources = sources) }) }
                 }
 
+                override fun onSearchSuggestions(html: String) {
+                    _state.update { s -> s.copy(messages = s.messages.replace(answerId) { it.copy(searchSuggestionsHtml = html) }) }
+                }
+
                 override fun onSearch(query: String) {
-                    _state.update { it.copy(activity = "Suche im Netz: ${query.trim().take(80)}") }
+                    val what = query.trim().take(80)
+                    _state.update { it.copy(activity = if (what.isEmpty()) "Suche im Netz …" else "Suche im Netz: $what") }
                 }
 
                 override fun onFetch(url: String) {
@@ -243,23 +244,27 @@ internal class ChatServiceImpl(
                     return
                 }
 
-                val model = ProviderCatalog.effectiveModel(settings.first().ai, AiProviderId.ANTHROPIC)
                 val request = ChatTurnRequest(
-                    apiKey = key,
-                    model = model,
+                    auth = resolved.auth,
+                    model = resolved.model,
                     systemPrompt = AiPrompts.CHAT_SYSTEM,
                     context = ctx.text,
                     history = history + ApiMessage(fromUser = true, text = apiText),
+                    webSearch = resolved.webSearch,
                 )
-                val result = engine.answer(request, listener, usageSink)
+                val result = resolved.backend.chat.answer(request, listener, usage)
                 finish(answerId) { message ->
                     val text = result.text.ifBlank { buffer.toString() }.trim()
+                    // Grounded text is never shown without its Search Suggestions (Gemini terms).
+                    val suggestions = result.searchSuggestionsHtml ?: message.searchSuggestionsHtml
+                    val answerNote = if (result.withoutWebSearch) AiTexts.WITHOUT_WEB_SEARCH_NOTE else null
                     when (result.end) {
                         TurnEnd.REFUSED -> message.copy(
                             text = "",
                             sources = emptyList(),
                             status = ChatMessage.Status.FAILED,
                             error = AiError.Refusal(result.refusalCategory),
+                            searchSuggestionsHtml = null,
                         )
                         // INCOMPLETE: not produced by the chat engine; shown like a cut-off answer.
                         TurnEnd.TRUNCATED, TurnEnd.INCOMPLETE -> message.copy(
@@ -267,11 +272,24 @@ internal class ChatServiceImpl(
                             sources = result.sources,
                             status = if (text.isEmpty()) ChatMessage.Status.FAILED else ChatMessage.Status.DONE,
                             error = AiError.Truncated,
+                            searchSuggestionsHtml = suggestions.takeIf { text.isNotEmpty() },
+                            note = answerNote,
                         )
                         TurnEnd.COMPLETE -> if (text.isEmpty()) {
-                            message.copy(status = ChatMessage.Status.FAILED, error = AiError.Unknown("Darauf kam leider keine Antwort. Versuch es noch einmal."))
+                            message.copy(
+                                status = ChatMessage.Status.FAILED,
+                                error = AiError.Unknown("Darauf kam leider keine Antwort. Versuch es noch einmal."),
+                                searchSuggestionsHtml = null,
+                            )
                         } else {
-                            message.copy(text = text, sources = result.sources, status = ChatMessage.Status.DONE, error = null)
+                            message.copy(
+                                text = text,
+                                sources = result.sources,
+                                status = ChatMessage.Status.DONE,
+                                error = null,
+                                searchSuggestionsHtml = suggestions,
+                                note = answerNote,
+                            )
                         }
                     }
                 }
@@ -292,14 +310,14 @@ internal class ChatServiceImpl(
                 val partial = buffer.toString().trim()
                 finish(answerId) {
                     if (partial.isEmpty()) {
-                        it.copy(status = ChatMessage.Status.FAILED, error = AiError.Unknown(AiTexts.blockBody(e.block)))
+                        it.copy(status = ChatMessage.Status.FAILED, error = AiError.Unknown(AiTexts.blockBody(e.block, resolved.spec)))
                     } else {
                         it.copy(text = partial, status = ChatMessage.Status.DONE)
                     }
                 }
             } catch (e: AiException) {
                 // Settings → KI says so before the chat shows the error.
-                if (e.error == AiError.InvalidKey) keyRejected(key)
+                if (e.error == AiError.InvalidKey) access.keyRejected(resolved.auth.provider, resolved.auth.apiKey)
                 finish(answerId) { it.copy(text = buffer.toString().trim(), status = ChatMessage.Status.FAILED, error = e.error) }
             }
         }
@@ -435,6 +453,8 @@ private fun ChatMessage.toStored(apiText: String?): StoredChatMessage? {
         sources = sources,
         status = if (status == ChatMessage.Status.FAILED) StoredChatMessage.STATUS_FAILED else StoredChatMessage.STATUS_DONE,
         error = error?.let(StoredAiError::of),
+        searchSuggestionsHtml = searchSuggestionsHtml,
+        note = note,
     )
 }
 
@@ -451,6 +471,8 @@ private fun StoredChatMessage.toChatMessage(): ChatMessage? {
         sources = sources,
         status = if (status == StoredChatMessage.STATUS_FAILED) ChatMessage.Status.FAILED else ChatMessage.Status.DONE,
         error = error?.toAiError(),
+        searchSuggestionsHtml = searchSuggestionsHtml,
+        note = note,
     )
 }
 

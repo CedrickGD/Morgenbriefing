@@ -23,6 +23,8 @@ internal data class StoredLiveRun(
     val version: Int = 1,
     /** ISO-8601 with offset: when the articles were published to the app. */
     val fetchedAt: String,
+    /** [com.cedrickgd.morgenbriefing.data.model.AiProviderId.key] of the run; "" = written by v1.2 (Claude). */
+    val provider: String = "",
     val model: String = "",
     val topicIds: List<String> = emptyList(),
     val articles: List<StoredLiveArticle> = emptyList(),
@@ -44,11 +46,12 @@ internal class LiveStore(
     private val lock = Mutex()
 
     /**
-     * Adds [articles] to the run file of [fetchedAt]'s minute (merging with an earlier write in
-     * the same minute; an article with the same key replaces the older copy).
+     * Adds [articles] of a run with [provider] (its [com.cedrickgd.morgenbriefing.data.model.AiProviderId.key])
+     * and [model] to the run file of [fetchedAt]'s minute (merging with an earlier write in the same
+     * minute; an article with the same key replaces the older copy).
      * @throws IOException when the disk refuses the write.
      */
-    suspend fun append(fetchedAt: Instant, model: String, topicIds: List<String>, articles: List<StoredLiveArticle>) =
+    suspend fun append(fetchedAt: Instant, provider: String, model: String, topicIds: List<String>, articles: List<StoredLiveArticle>) =
         withContext(Dispatchers.IO) {
             val local = fetchedAt.atZone(BERLIN)
             val file = File(dir, local.format(FILE_NAME) + ".json")
@@ -56,7 +59,7 @@ internal class LiveStore(
             lock.withLock {
                 val existing = decode(file)
                 val merged = if (existing == null) {
-                    StoredLiveRun(fetchedAt = iso, model = model, topicIds = topicIds, articles = articles)
+                    StoredLiveRun(fetchedAt = iso, provider = provider, model = model, topicIds = topicIds, articles = articles)
                 } else {
                     val keys = articles.map { it.item.key }.toSet()
                     existing.copy(
