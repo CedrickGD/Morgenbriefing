@@ -380,7 +380,10 @@ private fun MessageList(
     val footer = footerShown(state)
     val note = state.note
     val itemCount = state.messages.size + (if (footer) 1 else 0) + (if (note != null) 1 else 0)
-    val lastLength = state.messages.lastOrNull()?.text?.length ?: 0
+    val last = state.messages.lastOrNull()
+    val lastLength = last?.text?.length ?: 0
+    // The Search Suggestions' WebView measures itself after the HTML loaded: one more follow then.
+    var lastSuggestionsHeight by remember { mutableIntStateOf(0) }
 
     // Follow the newest text while the reader is at the end; a drag upwards lets them read in peace.
     var follow by remember { mutableStateOf(true) }
@@ -393,7 +396,17 @@ private fun MessageList(
         follow = true
         if (itemCount > 0) listState.animateScrollToItem(itemCount - 1, END_OFFSET)
     }
-    LaunchedEffect(lastLength, footer, state.activity) {
+    // Also when the answer finishes: its Search Suggestions, final sources and copy/share row only
+    // appear then and would stay behind the input bar (the suggestions are a Gemini terms duty).
+    LaunchedEffect(
+        lastLength,
+        footer,
+        state.activity,
+        last?.status,
+        last?.sources?.size,
+        last?.searchSuggestionsHtml != null,
+        lastSuggestionsHeight,
+    ) {
         if (follow && itemCount > 0 && !dragged) listState.scrollToItem(itemCount - 1, END_OFFSET)
     }
     // The keyboard (or a taller input) shrinks the viewport: keep the end in view.
@@ -444,10 +457,12 @@ private fun MessageList(
                 ChatMessage.Role.ASSISTANT -> {
                     // Each answer under its own author, also after a provider switch.
                     val spec = answerSpec(message, state.providerSpec)
+                    val isLast = index == state.messages.lastIndex
                     AssistantMessage(
                         message = message,
                         spec = spec,
-                        isLast = index == state.messages.lastIndex,
+                        isLast = isLast,
+                        onSuggestionsResized = { height -> if (isLast) lastSuggestionsHeight = height },
                         onRetry = onRetry,
                         onChangeKey = { onChangeKey(spec.id) },
                         onOpenSource = links::open,
@@ -493,6 +508,7 @@ private fun AssistantMessage(
     onCopy: () -> Unit,
     onShare: () -> Unit,
     modifier: Modifier = Modifier,
+    onSuggestionsResized: (Int) -> Unit = {},
 ) {
     val streaming = message.status == ChatMessage.Status.STREAMING
     Column(modifier.fillMaxWidth().padding(end = 4.dp)) {
@@ -506,7 +522,11 @@ private fun AssistantMessage(
         val suggestions = message.searchSuggestionsHtml
         if (suggestions != null && message.text.isNotBlank()) {
             Spacer(Modifier.height(12.dp))
-            SearchSuggestions(html = suggestions, onOpenLink = onOpenSource)
+            SearchSuggestions(
+                html = suggestions,
+                onOpenLink = onOpenSource,
+                modifier = Modifier.onSizeChanged { onSuggestionsResized(it.height) },
+            )
         }
         message.note?.let { note ->
             Spacer(Modifier.height(10.dp))
