@@ -61,8 +61,15 @@ SSE, no vendor SDK. Host: `generativelanguage.googleapis.com`, auth header `x-go
 | G34 | OpenAI compatibility | https://ai.google.dev/gemini-api/docs/openai | 2026-09-02 |
 | G35 | **Vertex AI** doc: Google Search suggestions display requirements (same Search-grounding product, Google Cloud docs; supplementary) | https://docs.cloud.google.com/vertex-ai/generative-ai/docs/grounding/grounding-search-suggestions | 2026-10-07 |
 | G36 | countTokens API reference | https://ai.google.dev/api/tokens | 2026-08-17 |
+| G37 | Available regions | https://ai.google.dev/gemini-api/docs/available-regions | 2026-04-28 |
 | P1 | **OBSERVED** live probes with fake keys (no real credentials), 2026-10-09 05:53 UTC | see §12.1 | – |
 | F1 | Forum (unofficial, user posts): AQ.-prefix keys and 401s | https://discuss.ai.google.dev/t/aq-prefix-key-returns-401-unauthenticated-via-key-on-generatecontent-key-confirmed-valid-in-ai-studio/178923 , https://discuss.ai.google.dev/t/ai-studio-generates-aq-key-instead-of-aizasy-key-google-genai-sdk-returns-access-token-type-unsupported/187266 | posts 2026-08-19 … 2026-10-08 |
+
+**Re-check 2026-10-09 (evening), for the "nothing works with my new `AQ.` key" report (v1.3.1):** G22
+(api-key, LU 2026-10-06), G20 (troubleshooting, LU 2026-10-01), G18 (generateContent API errors, LU
+2026-09-20), G23 (billing, LU 2026-09-28), G8 (models API, LU 2026-09-23) and G37 were fetched again;
+F1 was read again. What is new or newly relevant is in §12.4–§12.6 and §13; nothing in the official
+docs says that auth keys need another header or endpoint.
 
 ---
 
@@ -90,7 +97,10 @@ SSE, no vendor SDK. Host: `generativelanguage.googleapis.com`, auth header `x-go
 * **Usage:** `usageMetadata` has prompt/cached/candidates/thoughts/toolUse/total token counts, **no cost and no search count** [G6];
   count distinct non-empty `webSearchQueries` yourself (Gemini 3 bills per executed query [G10]).
 * **Invalid key = HTTP 400 `INVALID_ARGUMENT` / reason `API_KEY_INVALID`** for classic keys [G18, P1], but
-  **401 `UNAUTHENTICATED` / `ACCESS_TOKEN_TYPE_UNSUPPORTED`** for an invalid `AQ.`-style key [P1]. Map both to "Key ungültig".
+  **401 `UNAUTHENTICATED` / `ACCESS_TOKEN_TYPE_UNSUPPORTED`** for an `AQ.`-style key [P1] — for a mistyped one *and*, per
+  user reports, for new auth keys that AI Studio shows as valid [F1]. The app explains the second case (§12.4), maps
+  blocked/disabled APIs, the free-tier region and leaked keys on their own, falls back to another model when the chosen one
+  is not open to the key (§12.5) and shows a key-free diagnostic line under "Details" (§12.6).
 * **Gemini 3 rules:** don't send `temperature`/`topP`/`topK` (deprecated, ignored, future 400), no `candidateCount`,
   **no prefilled model turn** (400), `thinkingLevel` instead of `thinkingBudget` (never both → 400),
   **thought signatures must be echoed** in function-calling turns (else 400) [G5, G16, G17].
@@ -686,13 +696,19 @@ Parse: accept object or array; read `error.code` (HTTP), `error.status`, `detail
 | HTTP | `status` / reason | Meaning | App reaction |
 |---|---|---|---|
 | 400 | `INVALID_ARGUMENT` + `API_KEY_INVALID` | Invalid key | "API-Key ungültig" → settings, no retry |
-| 401 | `UNAUTHENTICATED` (e.g. `ACCESS_TOKEN_TYPE_UNSUPPORTED`) | Invalid/unsupported key (seen for `AQ.` keys) | same as above |
-| 400 | `INVALID_ARGUMENT` (other) | Malformed request: schema, `minimal` thinking on 3.8/3.7/3.1 Pro, `thinkingLevel`+`thinkingBudget`, prefilled model turn, missing thought signature, interleaved FC/FR | log `message`, no retry |
-| 400 | `FAILED_PRECONDITION` | "Gemini API free tier is not available in your country. Please enable billing" | "Abrechnung in AI Studio einrichten" |
+| 401 | `UNAUTHENTICATED` + `ACCESS_TOKEN_TYPE_UNSUPPORTED` | Key not taken as an API key (mistyped `AQ.` key, or a new auth key Google rejects, §12.4) | AUTH_KEY_REJECTED text + "Neuen Key in AI Studio", key marked rejected |
+| 401 | `UNAUTHENTICATED` (other) | Invalid key | "API-Key ungültig" |
+| 400 | `INVALID_ARGUMENT` (other) | Malformed request: schema, `minimal` thinking on 3.8/3.7/3.1 Pro, `thinkingLevel`+`thinkingBudget`, prefilled model turn, missing thought signature, interleaved FC/FR; or a message about the model (`unexpected model name format`, `not supported`) → model fallback (§12.5) | log `message`, no retry |
+| 400 | `FAILED_PRECONDITION` | "Gemini API free tier is not available in your country. Please enable billing" | FREE_TIER_UNAVAILABLE text + "Abrechnung in AI Studio" |
 | 402 | (doc table says `RESOURCE_EXHAUSTED`) | **Prepay credit balance depleted** – all keys of that billing account stop | "Guthaben aufgebraucht", **don't retry** |
-| 403 | `PERMISSION_DENIED` | Key lacks permission / restricted for other APIs / no key | "Key hat keine Berechtigung für die Gemini API" |
-| 404 | `NOT_FOUND` | Unknown model or resource (also possible for restricted 2.5 models – UNVERIFIED) | model fallback / message |
-| 429 | `RESOURCE_EXHAUSTED` | Rate limit: RPM, TPM, RPD **or spend-based** limit (rolling 10 min) | exponential backoff + jitter (1 s, 2 s, 4 s, 8 s), max ~4 tries; then "Limit erreicht" |
+| 401/403 | reason `API_KEY_SERVICE_BLOCKED` / `SERVICE_DISABLED` | Gemini API blocked for the key / not enabled in its project (§12.4) | API_BLOCKED text + "Gemini API aktivieren" |
+| 403 | reason `API_KEY_ANDROID_APP_BLOCKED` / `…_IOS_APP_…` / `…_HTTP_REFERRER_…` / `…_IP_ADDRESS_BLOCKED` | Application restriction of the key does not fit | KEY_RESTRICTED text + "Key-Beschränkung prüfen" |
+| 403 | message "reported as leaked" | Key blocked as leaked [G20] | KEY_LEAKED text + "Neuen Key in AI Studio", key marked rejected |
+| 403 | `PERMISSION_DENIED`, message about the model | Project may not use this model | model fallback (§12.5) |
+| 403 | `PERMISSION_DENIED` (other) | Key lacks permission / no key | "Der Key darf die Gemini API nicht nutzen." |
+| 404 | `NOT_FOUND` | Unknown model or resource; new projects do not get older models [G30] | model fallback (§12.5), then "Modell nicht verfügbar" |
+| 429 | `RESOURCE_EXHAUSTED` + `QuotaFailure` with `quotaValue` "0" (or "limit: 0") | The tier offers this model no quota at all (not the search's quota) | model fallback (§12.5) |
+| 429 | `RESOURCE_EXHAUSTED` | Rate limit: RPM, TPM, RPD **or spend-based** limit (rolling 10 min) | exponential backoff + jitter (1 s, 2 s, 4 s, 8 s), max ~4 tries; then "Limit erreicht" (free tier: quota text, retried only for `RetryInfo` ≤ 20 s) |
 | 499 | `CANCELLED` | Client closed | ignore |
 | 500 | `INTERNAL` | Server error (doc example: input context too long) | retry once, then message |
 | 503 | `UNAVAILABLE` | **"temporarily overloaded or down"** | backoff retry |
@@ -712,20 +728,96 @@ Parse: accept object or array; read `error.code` (HTTP), `error.status`, `detail
 Generation errors: `malformed_function_call`, `malformed_tool_call`, `unexpected_tool_call`, `too_many_tool_calls`, `missing_thought_signature`.
 Streaming errors arrive as `event_type: "error"`. (But see §12.1: auth errors were observed in google.rpc format.)
 
+### 12.4 Why a key "does nothing": the known causes (app texts, v1.3.1)
+
+A user report on 2026-10-09 ("new `AQ.` key, nothing works") had five plausible causes; the official docs document only some
+of them, the rest come from forum threads (F1) and the Google Cloud error model. Every cause is decided by the google.rpc
+`ErrorInfo.reason` (or the status) — **not by the HTTP code alone**: the same reason came as 403 and, with the key sent as a
+bearer token, as 401 [F1, post of 2026-10-08].
+
+| Cause | Signal | Source | App (`AiError.GeminiAccess` / key test) | Link |
+|---|---|---|---|---|
+| (a) Google does not take the auth key | 401 `UNAUTHENTICATED` + `ACCESS_TOKEN_TYPE_UNSUPPORTED` | P1 (fake key), F1 (real keys AI Studio shows as valid; recreating the key sometimes helps; **no official fix**, no Google staff answer) | AUTH_KEY_REJECTED: „Google nimmt deinen Key gerade nicht an. Das passiert derzeit bei manchen neuen Keys („AQ.…“), auch wenn AI Studio sie als gültig zeigt: Erstell in AI Studio einen neuen Key und prüf, dass sein Projekt die Gemini API nutzen darf.“ Key marked rejected. | https://aistudio.google.com/apikey |
+| (b) API blocked / disabled for the project | reason `API_KEY_SERVICE_BLOCKED` (403; 401 seen with a bearer header) or `SERVICE_DISABLED` (403, with a `Help` link to the activation page) | F1; G22 ("if you don't select the Generative Language API, Gemini requests with that key will fail"); Cloud error model | API_BLOCKED: „Die Gemini API ist für dein Google-Projekt gesperrt oder nicht aktiviert. …“; „Ohne Test speichern“ offered | https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com |
+| (b′) Key restricted to other apps | reason `API_KEY_ANDROID_APP_BLOCKED`, `API_KEY_IOS_APP_BLOCKED`, `API_KEY_HTTP_REFERRER_BLOCKED`, `API_KEY_IP_ADDRESS_BLOCKED` | Cloud error model (UNVERIFIED for Gemini) | KEY_RESTRICTED | https://console.cloud.google.com/apis/credentials |
+| (b″) Key blocked as leaked | message "Your API key was reported as leaked. Please use another API key." (status not documented) | G20 | KEY_LEAKED: „Google hat deinen Key gesperrt, weil er öffentlich aufgetaucht ist. …“ Key marked rejected. | https://aistudio.google.com/apikey |
+| (c) Free tier not available for the country/project | 400 `FAILED_PRECONDITION` "free tier is not available in your country … enable billing" | G18 (solution: "Set up a paid plan through Google AI Studio"). G37 lists Germany, all EU states, CH, UK, NO, IS, LI as available regions (LU 2026-04-28) but says nothing about the free tier per country | FREE_TIER_UNAVAILABLE: „Der kostenlose Gemini-Tarif ist für dein Land/Projekt nicht freigeschaltet – aktivier die Abrechnung in AI Studio oder wähl einen anderen Anbieter.“; „Ohne Test speichern“ offered | https://aistudio.google.com/projects (Billing Tier column, "Set up billing" [G23]) |
+| (d) Model not open to the project | 404 `NOT_FOUND`; 400/403 whose message is about the model; 429 with a `QuotaFailure.quotaValue` of "0" (free tier offers the model no quota) | G30 (2.5 models only for previous users; "for any new projects, use … 3.5 Flash-Lite or 3.8 Flash"), forum F1 ("2.5-flash may not be enabled for new projects") | automatic model fallback (§12.5), then `ModelUnavailable` | – |
+| (e) Quota | 429 `RESOURCE_EXHAUSTED` (+ `QuotaFailure`, `RetryInfo`) | G18, G21 | existing texts: free tier „Gemini-Gratiskontingent … aufgebraucht“, paid „zu viele Anfragen“ | – |
+
+Shape of the bodies the app parses (fixtures in `GeminiFixtures.kt` → `GeminiErrors`, mock switches in
+docs/AI-PROVIDERS.md §14; the 401 shape is OBSERVED [P1], the others follow the documented google.rpc error model and the
+forum quotes — UNVERIFIED against a real blocked project):
+
+```json
+{"error":{"code":403,"message":"Generative Language API has not been used in project 000000000000 before or it is disabled. …","status":"PERMISSION_DENIED",
+ "details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com",
+             "metadata":{"service":"generativelanguage.googleapis.com","consumer":"projects/000000000000","activationUrl":"https://console.developers.google.com/…"}},
+            {"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/…"}]}]}}
+{"error":{"code":429,"message":"You exceeded your current quota … limit: 0, model: gemini-3.8-flash","status":"RESOURCE_EXHAUSTED",
+ "details":[{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests",
+              "quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-3.8-flash"},"quotaValue":"0"}]},
+            {"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"20s"}]}}
+```
+
+`ApiErrorBody` reads all of it: `error.code`, `status`, `message`, `ErrorInfo.reason`/`domain`/`metadata`, `Help.links[].url`,
+`QuotaFailure.violations[]` (metric, id, value, dimensions) and `RetryInfo.retryDelay` — the message, metadata and links only to
+classify, never to show.
+
+### 12.5 Model fallback
+
+When Google refuses the **model** for the key before the stream starts (404, a 400/403 about the model, a quota of 0 that is not
+the search's), the chat and the key test try the next model of the chain **`gemini-3.8-flash` → `gemini-3.7-flash` →
+`gemini-3.5-flash-lite` → `gemini-3.1-flash-lite`** (a model outside the chain, e.g. 3.1 Pro or a typed id, starts at the top),
+each **once**, without retries or waits. None of them needs billing, so the chain works on both tiers.
+
+* Chat: the model that answered is kept **for this key** (`ProviderSettings.modelFallback` = chosen → working, stored only while
+  the key that answered is still the stored one); the next requests go there directly. The answer carries the calm note
+  „Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.7 Flash.“, and Settings → KI shows the
+  same line under the model picker (the picker keeps marking the chosen model).
+* The fallback is dropped when a key is saved, the tariff changes or another model is chosen — the chosen model is tried again.
+* Key test: the model list (§13) tells which fallbacks the key can see; the chosen model is always tried first (aliases and
+  typed ids may be missing from the list).
+* When no model answers, the chosen model's refusal is reported (`ModelUnavailable`, with its diagnostic).
+
+### 12.6 Diagnostic line ("Details")
+
+Every failed chat answer and every failed key test carries one key-free technical line that the user can open under
+„Details“, select and copy: `HTTP <code> · <status> · <ErrorInfo.reason…> · <QuotaFailure.quotaId> · limit <n> · retry <s>s`
+(stream errors: `Stream · <code> · <status>`; connection problems: `Verbindung · <ExceptionClass>`), e.g.
+`HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED`. Only identifier-like fields go in (pattern
+`[A-Za-z][A-Za-z0-9_.-]{0,63}`), never a message, metadata (project numbers, activation URLs), a help link or any URL; where the
+key is at hand the line is dropped if it should ever contain it (`ErrorDiagnostics.redact`). Stored with the chat history.
+
 ---
 
 ## 13. Key format and key test
 
-* **Format: not documented** on the official key page [G22]. The page says new keys created in AI Studio since **2026-05-28 are
-  "auth keys"** bound to a service account; **unrestricted standard keys are rejected**; dormant unrestricted keys are blocked since
-  2026-05-07 [G22]. Forum posts (F1, unofficial) say new keys start with **`AQ.`**, legacy keys with **`AIza`**; P1 shows the server
-  treats `AQ.` strings like OAuth tokens. → **Validate loosely** (non-empty, no whitespace); never check a prefix or length.
-* **Key test (no tokens):** `GET https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash` with `x-goog-api-key` →
-  200 + `Model` JSON (`inputTokenLimit`, `outputTokenLimit`, `thinking`, …) [G8]. Bad key → 400/401 (§12.1).
-  This does **not** prove billing (402), paid tier or Search entitlement.
-* **Deeper test (costs a few tokens):** `POST …:generateContent` with `{"contents":[{"parts":[{"text":"Antworte nur: OK"}]}],"generationConfig":{"thinkingConfig":{"thinkingLevel":"low"}}}`.
-  For the Search entitlement add `"tools":[{"googleSearch":{}}]` (one search query ≈ $0.014 or from the free allowance). The error a
-  free-tier key gets here is **not documented** (Open question) – show "Websuche braucht ein Projekt mit Abrechnung (Paid Tier)".
+* **Format: not documented** on the official key page [G22]. The page (LU 2026-10-06, re-read 2026-10-09) says: standard keys
+  "don't identify a caller"; **auth keys** are "bound directly to a Google Cloud service account", restricted to the Gemini API
+  by default, with fast-acting leaked-key enforcement; "Starting May 28, 2026, all new API keys created in Google AI Studio are
+  automatically created as auth keys"; creating one needs the IAM permissions `iam.serviceAccounts.create` and
+  `iam.serviceAccountApiKeyBindings.create`; **unrestricted standard keys are rejected** (restricted ones still work); dormant
+  unrestricted keys are blocked since 2026-05-07 ("Blocked" tag in AI Studio); a Cloud Console key without the Generative
+  Language API in its API restrictions fails [G22]. Forum posts (F1, unofficial) say new keys start with **`AQ.`**, legacy keys
+  with **`AIza`**; P1 shows the server treats `AQ.` strings like OAuth tokens.
+* **Header/endpoint for auth keys: no difference documented.** G22's REST sample sends the auth key in **`x-goog-api-key`** to
+  the same host (`generativelanguage.googleapis.com/v1beta/…`); no `Authorization: Bearer`, no other endpoint. The forum user who
+  tried `Authorization: Bearer` got 401 `API_KEY_SERVICE_BLOCKED` [F1] → keep `x-goog-api-key` (the mock server warns about an
+  `Authorization` header on Gemini routes).
+* → **Validate loosely**: the app cleans a pasted key (spaces, line breaks, quotes around it, invisible characters such as a
+  zero-width space or a BOM anywhere — `cleanApiKey`) and refuses only inner spaces or non-ASCII characters; never a prefix or a
+  length check (`AIza…` and `AQ.…` of any length).
+* **Key test (v1.3.1), two steps:**
+  1. `GET /v1beta/models?pageSize=1000` (no tokens; 1000 is the documented page maximum [G8]) proves the key and lists the
+     models it can see (`models[].name`, `supportedGenerationMethods` contains `generateContent`). A refusal of the key or the
+     project ends the test here with its cause (§12.2, §12.4).
+  2. `POST /v1beta/models/{model}:generateContent` with
+     `{"contents":[{"role":"user","parts":[{"text":"Antworte nur: OK"}]}],"generationConfig":{"thinkingConfig":{"thinkingLevel":"low"},"maxOutputTokens":32}}`
+     (no tools, a few tokens, recorded like a request; 0 $ on the free tier). This is what makes the test fail with the real cause
+     (blocked generation, free tier not in the country, model not open) instead of "OK". A refused model → the listed fallbacks
+     (§12.5). 429 → the key works, stored with „Kontingent gerade aufgebraucht“; 402 → stored, prepaid credit used up.
+  Search entitlement is **not** tested (one query ≈ $0.014); the chat's safety net handles it (docs/AI-PROVIDERS.md §7.2).
 * Rate limits/usage are per **project**, not per key [G21].
 
 ---
@@ -768,6 +860,15 @@ Streaming errors arrive as `event_type: "error"`. (But see §12.1: auth errors w
 23. Use the header, not `?key=` (API reference samples still show `?key=`) [G6, G9].
 24. SSE readers must tolerate long silences (thinking + search before the first token): OkHttp `readTimeout` 0 or ≥ 120 s, plus a user "Abbrechen".
 25. `MALFORMED_FUNCTION_CALL` when the prompt demands structured text right before a tool call → don't ask for pre-tool text [G12].
+26. **New AI Studio keys (`AQ.…`, auth keys since 2026-05-28) can be rejected with 401 `ACCESS_TOKEN_TYPE_UNSUPPORTED` although AI
+    Studio lists them as valid** [G22, F1]; no official fix as of 2026-10-09. Send them exactly like `AIza…` keys (`x-goog-api-key`),
+    never as `Authorization: Bearer` (that got `API_KEY_SERVICE_BLOCKED` in F1), and explain the error instead of "Key ungültig" (§12.4).
+27. **Branch on `ErrorInfo.reason`, not only on the HTTP status**: `API_KEY_SERVICE_BLOCKED` came as 403 and 401; `SERVICE_DISABLED`
+    is a 403 like "no key" (§12.4).
+28. **A 429 with a quota limit of 0 is no rate limit**: the free tier does not offer that model (or the search) to the project — retrying
+    never helps, another model does (§12.5).
+29. **The model list proves the key, not the generation**: a key can list models and still be refused on `generateContent`; the key
+    test therefore generates a few tokens (§13).
 
 ---
 
@@ -781,6 +882,10 @@ Streaming errors arrive as `event_type: "error"`. (But see §12.1: auth errors w
 6. How to tell RPM vs RPD vs spend-limit 429s apart on generateContent (no documented `ErrorInfo.reason`/`QuotaFailure`).
 7. Can `functionCallingConfig.mode: ANY` be combined with built-in tools (forcing `publish_articles` while still searching)?
 8. `AQ.` auth keys with `x-goog-api-key` on REST: official docs silent on the format; forum users report 401s (F1) without an official resolution.
+   Re-checked 2026-10-09: G22 still documents no other header or endpoint for auth keys; F1 has new posts (2026-10-07/08: a freshly
+   created `AQ.` key failed with `ACCESS_TOKEN_TYPE_UNSUPPORTED` in the SDK and with `API_KEY_SERVICE_BLOCKED` as a bearer token) and
+   still no answer from Google. Unknown: the exact status of a key blocked as leaked (G20 quotes only the message), and whether
+   `API_KEY_SERVICE_BLOCKED` on `x-goog-api-key` is a 401 or a 403 (the app does not depend on it).
 9. Interactions: `v1beta` vs `v1beta2` path; `interaction.status_update` vs `interaction.in_progress`/`requires_action`; `gemini-3.5-flash-lite` is listed in the overview but missing from the reference's model enum.
 10. Targets of the `gemini-*-latest` aliases.
 11. Whether `groundingChunks[].web.uri` redirect links expire, and whether showing the resolved destination URL would violate the Terms.
