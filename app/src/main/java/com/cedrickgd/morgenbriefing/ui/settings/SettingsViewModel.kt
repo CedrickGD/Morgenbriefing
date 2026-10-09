@@ -14,7 +14,6 @@ import com.cedrickgd.morgenbriefing.ai.AiSupport
 import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.AccentId
-import com.cedrickgd.morgenbriefing.data.model.AiModel
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
@@ -201,7 +200,8 @@ class SettingsViewModel(
     /** Article text size, rounded to 5 % steps within 85–140 %. */
     fun setReaderTextScale(scale: Float) = edit { it.copy(readerTextScale = ReaderScale.normalize(scale)) }
 
-    fun setAiModel(model: AiModel) = edit { it.copy(aiModel = model) }
+    /** [modelId] for the active provider (curated or free text). */
+    fun setAiModel(modelId: String) = edit { it.copy(ai = it.ai.withModel(it.ai.provider, modelId)) }
 
     /** Monthly AI cap in whole dollars, 0 = none. */
     fun setAiMonthlyLimit(usd: Double) = edit { it.copy(aiMonthlyLimitUsd = AiLimit.normalize(usd)) }
@@ -334,7 +334,7 @@ class SettingsViewModel(
 
     fun removeAiKey() {
         viewModelScope.launch {
-            val removed = attempt { container.settings.setAiKey(null) }
+            val removed = attempt { container.settings.setAiKey(container.settings.current().ai.provider, null) }
             _messages.send(
                 if (removed.isSuccess) "Key entfernt – die KI-Funktionen sind jetzt aus." else "Der Key konnte nicht entfernt werden.",
             )

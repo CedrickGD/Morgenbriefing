@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ai
 
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -19,6 +20,6 @@ internal fun aiBlock(supported: Boolean, hasKey: Boolean, usage: UsageSnapshot):
 
 /** [aiBlock] as a live flow over the settings and this month's usage. */
 internal fun aiBlockFlow(supported: Boolean, settings: Flow<AppSettings>, usage: Flow<UsageSnapshot>): Flow<AiBlock?> =
-    combine(settings.map { it.hasAiKey }.distinctUntilChanged(), usage) { hasKey, snapshot ->
+    combine(settings.map { it.ai.isConfigured(AiProviderId.ANTHROPIC) }.distinctUntilChanged(), usage) { hasKey, snapshot ->
         aiBlock(supported, hasKey, snapshot)
     }.distinctUntilChanged()

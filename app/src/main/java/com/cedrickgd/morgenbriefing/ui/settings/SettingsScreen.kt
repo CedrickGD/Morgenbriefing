@@ -418,7 +418,7 @@ fun SettingsScreen(
         )
 
         SettingsDialog.AI_KEY -> AiKeyDialog(
-            hasKey = current.hasAiKey,
+            hasKey = current.ai.of(current.ai.provider).hasKey,
             state = aiKey,
             onSaveAndTest = viewModel::saveAndTestAiKey,
             onOpenConsole = { links.open(ANTHROPIC_KEYS_URL) },
@@ -494,9 +494,9 @@ private fun SettingsBlock(
                 content.status,
                 content.source,
                 AiSupport.isSupported,
-                settings.hasAiKey,
-                settings.aiKeyUntested,
-                settings.aiKeyRejected,
+                settings.ai.of(settings.ai.provider).hasKey,
+                settings.ai.of(settings.ai.provider).keyUntested,
+                settings.ai.of(settings.ai.provider).keyRejected,
             )
             val next = nextBriefingAt(content.now, settings.notifyHour, settings.notifyMinute)
             val hero = heroText(

@@ -1,7 +1,9 @@
 package com.cedrickgd.morgenbriefing.ai
 
 import android.util.Log
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.BERLIN
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.Topic
@@ -131,7 +133,7 @@ internal class LiveNewsServiceImpl(
         }.toMutableSet()
 
         _state.update { it.copy(running = true, progress = listOf("Starte die Recherche …"), newCount = 0, error = null) }
-        val model = current.aiModel.apiId
+        val model = ProviderCatalog.effectiveModel(current.ai, AiProviderId.ANTHROPIC)
         val topicIds = topics.map { it.id }
         var newCount = 0
         var attempts = 0

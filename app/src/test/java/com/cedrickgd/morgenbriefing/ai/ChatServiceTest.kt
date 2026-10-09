@@ -1,6 +1,7 @@
 package com.cedrickgd.morgenbriefing.ai
 
 import com.cedrickgd.morgenbriefing.data.AppJson
+import com.cedrickgd.morgenbriefing.data.withAiKey
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import kotlinx.coroutines.CompletableDeferred
@@ -30,7 +31,7 @@ class ChatServiceTest {
     val folder = TemporaryFolder()
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val settings = MutableStateFlow(AppSettings(hasAiKey = true))
+    private val settings = MutableStateFlow(AppSettings().withAiKey())
     private val usageState = MutableStateFlow(UsageSnapshot(month = "2026-10", limitUsd = 5.0))
     private val usage = RecordingUsage()
     private val engine = FakeChatEngine()
@@ -307,14 +308,14 @@ class ChatServiceTest {
     fun `blocked states`() = runBlocking<Unit> {
         assertEquals(AiBlock.UNSUPPORTED_DEVICE, service(engine = null).session(article).state.value.blocked)
 
-        settings.value = AppSettings(hasAiKey = false)
+        settings.value = AppSettings()
         val noKey = service(apiKey = null).session(ChatContext("2026-10-04", "x"))
         noKey.await { it.blocked == AiBlock.NO_KEY }
         noKey.send("Hallo")
         kotlinx.coroutines.delay(200)
         assertTrue(noKey.state.value.messages.isEmpty())
 
-        settings.value = AppSettings(hasAiKey = true)
+        settings.value = AppSettings().withAiKey()
         // The sink and the usage snapshot read the same numbers in the app.
         usage.limitReached = true
         usageState.value = UsageSnapshot(month = "2026-10", spentUsd = 5.0, limitUsd = 5.0)

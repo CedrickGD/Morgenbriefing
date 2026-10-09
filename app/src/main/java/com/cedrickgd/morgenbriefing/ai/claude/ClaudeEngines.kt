@@ -27,7 +27,7 @@ import com.cedrickgd.morgenbriefing.ai.SourceCollector
 import com.cedrickgd.morgenbriefing.ai.TokenUsage
 import com.cedrickgd.morgenbriefing.ai.TurnEnd
 import com.cedrickgd.morgenbriefing.ai.UsageSink
-import com.cedrickgd.morgenbriefing.data.model.AiModel
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import com.cedrickgd.morgenbriefing.data.model.Topics
 import kotlinx.coroutines.CancellationException
@@ -161,7 +161,7 @@ internal class ClaudeLiveEngine(private val clients: ClaudeClients) : LiveEngine
 internal class ClaudeKeyChecker(private val clients: ClaudeClients) : KeyChecker {
 
     override suspend fun check(key: String, usage: UsageSink): AiKeyCheck {
-        val model = AiModel.SONNET.apiId
+        val model = ProviderCatalog.ANTHROPIC.defaultModel
         val client = clients.create(key)
         return try {
             val message = runInterruptible(Dispatchers.IO) { client.messages().create(ClaudeRequests.keyCheck(model)) }

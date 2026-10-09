@@ -14,7 +14,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
 import com.cedrickgd.morgenbriefing.data.model.AccentId
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
+import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 import com.cedrickgd.morgenbriefing.ui.theme.MorgenbriefingTheme
 import com.cedrickgd.morgenbriefing.update.ApkAsset
@@ -106,7 +109,7 @@ private fun AppearanceAndAiPreview() {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             AppearanceCard(themeMode = ThemeMode.SYSTEM, accent = AccentId.OZEAN, onThemeMode = {}, onAccent = {})
             AiCard(
-                settings = AppSettings(hasAiKey = true),
+                settings = AppSettings(ai = AiSettings(providers = mapOf(AiProviderId.ANTHROPIC to ProviderSettings(hasKey = true)))),
                 supported = true,
                 usage = UsageSnapshot(month = "2026-10", spentUsd = 0.84, limitUsd = 5.0, requests = 23, webSearches = 7),
                 reduceMotion = true,

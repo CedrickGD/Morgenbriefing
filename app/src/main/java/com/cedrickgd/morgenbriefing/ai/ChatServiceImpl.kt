@@ -1,7 +1,9 @@
 package com.cedrickgd.morgenbriefing.ai
 
 import android.util.Log
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.BERLIN
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import kotlinx.coroutines.CancellationException
@@ -241,7 +243,7 @@ internal class ChatServiceImpl(
                     return
                 }
 
-                val model = settings.first().aiModel.apiId
+                val model = ProviderCatalog.effectiveModel(settings.first().ai, AiProviderId.ANTHROPIC)
                 val request = ChatTurnRequest(
                     apiKey = key,
                     model = model,

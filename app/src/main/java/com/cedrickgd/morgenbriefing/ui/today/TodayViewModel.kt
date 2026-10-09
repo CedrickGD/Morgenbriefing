@@ -338,7 +338,7 @@ class TodayViewModel(
     private fun liveUiFlow(): Flow<LiveUi> {
         val service = live ?: return flowOf(LiveUi.Unsupported)
         val aiSettings = container.settings.settings
-            .map { it.hasAiKey to it.liveAutoRefresh }
+            .map { it.ai.isConfigured(it.ai.effectiveLiveProvider) to it.liveAutoRefresh }
             .distinctUntilChanged()
             .catch { e ->
                 Log.w(TAG, "Settings unavailable for live news", e)

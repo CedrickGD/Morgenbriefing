@@ -1,6 +1,7 @@
 package com.cedrickgd.morgenbriefing.ai
 
 import com.cedrickgd.morgenbriefing.data.AppJson
+import com.cedrickgd.morgenbriefing.data.withAiKey
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
@@ -33,7 +34,7 @@ class LiveNewsServiceTest {
     val folder = TemporaryFolder()
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val settings = MutableStateFlow(AppSettings(hasAiKey = true))
+    private val settings = MutableStateFlow(AppSettings().withAiKey())
     private val usageState = MutableStateFlow(UsageSnapshot(month = "2026-10"))
     private val usage = RecordingUsage()
     private val clock = Clock.fixed(LiveFixtures.NOW, ZoneId.of("Europe/Berlin"))

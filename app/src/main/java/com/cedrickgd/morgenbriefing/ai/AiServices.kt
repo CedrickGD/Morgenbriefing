@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.ai.claude.ClaudeBackend
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
 import com.cedrickgd.morgenbriefing.data.model.NewsSection
@@ -56,8 +57,8 @@ class AiServices(private val context: Context, private val container: AppContain
     /**
      * Usage of chat and Live requests. Usage only exists for a request Anthropic accepted, so it
      * also confirms a key that was saved without a test or was rejected before
-     * ([com.cedrickgd.morgenbriefing.data.model.AppSettings.aiKeyUntested],
-     * [com.cedrickgd.morgenbriefing.data.model.AppSettings.aiKeyRejected]).
+     * ([com.cedrickgd.morgenbriefing.data.model.ProviderSettings.keyUntested],
+     * [com.cedrickgd.morgenbriefing.data.model.ProviderSettings.keyRejected]).
      */
     private val requestUsage: UsageSink by lazy {
         object : UsageSink by usageStore {
@@ -110,7 +111,7 @@ class AiServices(private val context: Context, private val container: AppContain
 
     private suspend fun markKeyWorks() {
         try {
-            container.settings.markAiKeyWorks()
+            container.settings.markAiKeyWorks(AiProviderId.ANTHROPIC)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -121,7 +122,7 @@ class AiServices(private val context: Context, private val container: AppContain
     /** A chat or Live request with [key] ended in [AiError.InvalidKey]: Settings → KI says so. */
     private suspend fun markKeyRejected(key: String) {
         try {
-            container.settings.markAiKeyRejected(key)
+            container.settings.markAiKeyRejected(AiProviderId.ANTHROPIC, key)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -130,7 +131,7 @@ class AiServices(private val context: Context, private val container: AppContain
     }
 
     private suspend fun apiKeyOrNull(): String? = try {
-        container.settings.aiKey()
+        container.settings.aiKey(AiProviderId.ANTHROPIC)
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {

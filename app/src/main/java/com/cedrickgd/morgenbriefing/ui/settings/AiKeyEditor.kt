@@ -15,6 +15,7 @@ import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
 import com.cedrickgd.morgenbriefing.ai.AiServices
 import com.cedrickgd.morgenbriefing.ai.AiSupport
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.util.attempt
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import kotlinx.coroutines.CancellationException
@@ -80,7 +81,7 @@ internal class AiKeyEditor(
                     return@launch
                 }
             }
-            val saved = attempt { container.settings.setAiKey(key, tested = !skipTest) }
+            val saved = attempt { container.settings.setAiKey(AiProviderId.ANTHROPIC, key, tested = !skipTest) }
             _state.value = if (saved.isSuccess) {
                 savedKeyState(tested = !skipTest)
             } else {
@@ -107,7 +108,7 @@ internal class AiKeyViewModel(container: AppContainer, ai: (() -> AiServices)?) 
     val state: StateFlow<AiKeyState> = editor.state
 
     val hasKey: StateFlow<Boolean> = container.settings.settings
-        .map { it.hasAiKey }
+        .map { it.ai.of(AiProviderId.ANTHROPIC).hasKey }
         .distinctUntilChanged()
         .catch { e -> Log.w("AiKeyViewModel", "Settings unavailable", e) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)

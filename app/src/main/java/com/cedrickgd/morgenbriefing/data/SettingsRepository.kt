@@ -12,9 +12,13 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.cedrickgd.morgenbriefing.BuildConfig
 import com.cedrickgd.morgenbriefing.data.local.TokenCipher
 import com.cedrickgd.morgenbriefing.data.model.AccentId
+import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
+import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +32,11 @@ import kotlinx.serialization.SerializationException
 import java.io.IOException
 
 /** The one DataStore instance per process (DataStore forbids two instances on the same file). */
-private val Context.settingsStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+private val Context.settingsStore: DataStore<Preferences> by preferencesDataStore(
+    name = "settings",
+    // v1.2's single Claude key moves into the Anthropic slot before the first read.
+    produceMigrations = { listOf(AiProvidersMigration) },
+)
 
 /**
  * Preferences DataStore named "settings". The GitHub token is stored encrypted via
@@ -84,74 +92,141 @@ class SettingsRepository(context: Context) {
     }
 
     /**
-     * Claude API key (docs/AI.md), stored encrypted like the GitHub token.
-     * Trims whitespace; null/blank clears it. [tested] false marks it as saved without a passed
-     * test ([AppSettings.aiKeyUntested]) until [markAiKeyWorks]. Saving a key (or none) always
-     * drops the rejected mark ([AppSettings.aiKeyRejected]) of the previous one.
+     * The API key of [provider] (docs/AI-PROVIDERS.md §3), stored encrypted like the GitHub
+     * token. Trims whitespace; null/blank clears it with its flags (a removed Anthropic key also
+     * takes its workspace id along, a removed Gemini key its tariff, so the next setup starts
+     * fresh). [tested] false marks it as saved without a passed test
+     * ([ProviderSettings.keyUntested]) until [markAiKeyWorks]. Saving a key (or none) always
+     * drops the rejected mark ([ProviderSettings.keyRejected]) of the previous one.
      * @throws IOException if DataStore cannot persist the change.
      * @throws java.security.GeneralSecurityException if the keystore cannot encrypt.
      */
-    suspend fun setAiKey(key: String?, tested: Boolean = true) {
+    suspend fun setAiKey(provider: AiProviderId, key: String?, tested: Boolean = true) {
         val clean = key?.trim().orEmpty()
         if (clean.isEmpty()) {
             store.edit {
-                it.remove(Keys.AI_KEY)
-                it.remove(Keys.AI_KEY_UNTESTED)
-                it.remove(Keys.AI_KEY_REJECTED)
+                it.remove(AiPrefKeys.keyEnc(provider))
+                it.remove(AiPrefKeys.untested(provider))
+                it.remove(AiPrefKeys.rejected(provider))
+                when (provider) {
+                    AiProviderId.ANTHROPIC -> it.remove(AiPrefKeys.ANTHROPIC_WORKSPACE_ID)
+                    AiProviderId.GEMINI -> it.remove(AiPrefKeys.GEMINI_TIER)
+                    else -> Unit
+                }
             }
             return
         }
         val encrypted = withContext(Dispatchers.IO) { TokenCipher.encrypt(clean) }
         store.edit {
-            it[Keys.AI_KEY] = encrypted
-            if (tested) it.remove(Keys.AI_KEY_UNTESTED) else it[Keys.AI_KEY_UNTESTED] = true
-            it.remove(Keys.AI_KEY_REJECTED)
+            it[AiPrefKeys.keyEnc(provider)] = encrypted
+            if (tested) it.remove(AiPrefKeys.untested(provider)) else it[AiPrefKeys.untested(provider)] = true
+            it.remove(AiPrefKeys.rejected(provider))
         }
     }
 
     /**
-     * Anthropic accepted a request with the stored key: it is neither untested nor rejected any
+     * [provider] accepted a request with its stored key: it is neither untested nor rejected any
      * more. No write when it was not marked.
      * @throws IOException if DataStore cannot persist the change.
      */
-    suspend fun markAiKeyWorks() {
+    suspend fun markAiKeyWorks(provider: AiProviderId) {
+        val untested = AiPrefKeys.untested(provider)
+        val rejected = AiPrefKeys.rejected(provider)
         store.edit {
-            if (Keys.AI_KEY_UNTESTED in it) it.remove(Keys.AI_KEY_UNTESTED)
-            if (Keys.AI_KEY_REJECTED in it) it.remove(Keys.AI_KEY_REJECTED)
+            if (untested in it) it.remove(untested)
+            if (rejected in it) it.remove(rejected)
         }
     }
 
     /**
-     * Anthropic refused a chat or Live request made with [key] as not authenticated (HTTP 401):
-     * marks the stored key as rejected ([AppSettings.aiKeyRejected]) — but only while [key] is
-     * still the stored one, so a request that was under way while a new key was saved cannot
-     * brand the new key.
+     * [provider] refused a chat or Live request made with [key] as not authenticated: marks the
+     * stored key as rejected ([ProviderSettings.keyRejected]) — but only while [key] is still the
+     * stored one, so a request that was under way while a new key was saved cannot brand the new
+     * key. No-op without a key (custom server without one).
      * @throws IOException if DataStore cannot persist the change.
      */
-    suspend fun markAiKeyRejected(key: String) {
-        val encrypted = try {
-            store.data.first()[Keys.AI_KEY]
-        } catch (_: IOException) {
-            null
-        }
+    suspend fun markAiKeyRejected(provider: AiProviderId, key: String?) {
+        val candidate = key?.trim().orEmpty()
+        if (candidate.isEmpty()) return
+        val slot = AiPrefKeys.keyEnc(provider)
+        val encrypted = readPrefs()?.get(slot)
         if (encrypted.isNullOrBlank()) return
         val stored = withContext(Dispatchers.IO) { TokenCipher.decrypt(encrypted) }?.trim()
-        if (stored == null || stored != key.trim()) return
+        if (stored == null || stored != candidate) return
         // Same ciphertext as checked above: no other key was saved in between.
-        store.edit { if (it[Keys.AI_KEY] == encrypted) it[Keys.AI_KEY_REJECTED] = true }
+        store.edit { if (it[slot] == encrypted) it[AiPrefKeys.rejected(provider)] = true }
     }
 
-    /** Decrypted Claude API key or null. */
-    suspend fun aiKey(): String? {
-        val encrypted = try {
-            store.data.first()[Keys.AI_KEY]
-        } catch (_: IOException) {
-            null
-        }
+    /** Decrypted API key of [provider] or null. */
+    suspend fun aiKey(provider: AiProviderId): String? {
+        val slot = AiPrefKeys.keyEnc(provider)
+        val encrypted = readPrefs()?.get(slot)
         if (encrypted.isNullOrBlank()) return null
         val plain = withContext(Dispatchers.IO) { TokenCipher.decrypt(encrypted) }
-        if (plain == null) forgetUndecryptable(Keys.AI_KEY, encrypted)
+        if (plain == null) forgetUndecryptable(slot, encrypted)
         return plain?.trim()?.takeIf { it.isNotEmpty() }
+    }
+
+    /**
+     * Address of the "Eigener Server" (already normalized by the caller, e.g. with the custom
+     * server's `/v1` rule); null/blank clears it.
+     * @throws IllegalArgumentException when [url] is not an http(s) address.
+     * @throws IOException if DataStore cannot persist the change.
+     */
+    suspend fun setCustomBaseUrl(url: String?) {
+        val raw = url?.trim().orEmpty()
+        if (raw.isEmpty()) {
+            store.edit { it.remove(AiPrefKeys.CUSTOM_BASE_URL) }
+            return
+        }
+        val clean = requireNotNull(normalizeBaseUrl(raw)) { "Keine gültige Server-Adresse" }
+        store.edit { it[AiPrefKeys.CUSTOM_BASE_URL] = clean }
+    }
+
+    /**
+     * `anthropic-workspace-id` for an Anthropic key that is not bound to one workspace; trimmed,
+     * null/blank clears it.
+     * @throws IOException if DataStore cannot persist the change.
+     */
+    suspend fun setAnthropicWorkspaceId(id: String?) {
+        val clean = id?.trim().orEmpty()
+        store.edit {
+            if (clean.isEmpty()) it.remove(AiPrefKeys.ANTHROPIC_WORKSPACE_ID) else it[AiPrefKeys.ANTHROPIC_WORKSPACE_ID] = clean
+        }
+    }
+
+    /**
+     * The "Tarif" of the Gemini key ([GeminiTier.FREE] when never set).
+     * @throws IOException if DataStore cannot persist the change.
+     */
+    suspend fun setGeminiTier(tier: GeminiTier) {
+        store.edit { it[AiPrefKeys.GEMINI_TIER] = tier.key }
+    }
+
+    /**
+     * Debug builds only ("Entwickler: Basis-URL"): points [provider] at [url] (e.g. a mock server
+     * at `http://10.0.2.2:8080/v1`) instead of its real API; null/blank clears it. Release builds
+     * neither store nor read it.
+     * @return false when nothing was stored: a release build, or [url] is no http(s) address.
+     * @throws IOException if DataStore cannot persist the change.
+     */
+    suspend fun setDebugBaseUrl(provider: AiProviderId, url: String?): Boolean {
+        if (!BuildConfig.DEBUG) return false
+        val raw = url?.trim().orEmpty()
+        val slot = AiPrefKeys.debugBaseUrl(provider)
+        if (raw.isEmpty()) {
+            store.edit { it.remove(slot) }
+            return true
+        }
+        val clean = normalizeBaseUrl(raw) ?: return false
+        store.edit { it[slot] = clean }
+        return true
+    }
+
+    private suspend fun readPrefs(): Preferences? = try {
+        store.data.first()
+    } catch (_: IOException) {
+        null
     }
 
     private suspend fun forgetUndecryptableToken(encrypted: String) = forgetUndecryptable(Keys.TOKEN, encrypted)
@@ -194,10 +269,7 @@ class SettingsRepository(context: Context) {
                 ?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }?.toSet()
                 ?: defaults.hiddenTopics,
             readerTextScale = this[Keys.READER_TEXT_SCALE]?.takeIf { it in 0.85f..1.4f } ?: defaults.readerTextScale,
-            hasAiKey = !this[Keys.AI_KEY].isNullOrBlank(),
-            aiKeyUntested = !this[Keys.AI_KEY].isNullOrBlank() && this[Keys.AI_KEY_UNTESTED] == true,
-            aiKeyRejected = !this[Keys.AI_KEY].isNullOrBlank() && this[Keys.AI_KEY_REJECTED] == true,
-            aiModel = enumOrDefault(this[Keys.AI_MODEL], defaults.aiModel),
+            ai = readAiSettings(this, debugOverrides = BuildConfig.DEBUG),
             aiMonthlyLimitUsd = this[Keys.AI_MONTHLY_LIMIT]?.takeIf { it in 0.0..1000.0 } ?: defaults.aiMonthlyLimitUsd,
             liveAutoRefresh = this[Keys.LIVE_AUTO_REFRESH] ?: defaults.liveAutoRefresh,
         )
@@ -226,7 +298,7 @@ class SettingsRepository(context: Context) {
         this[Keys.TOPIC_ORDER] = s.topicOrder.filter { it.isNotBlank() && ',' !in it }.distinct().joinToString(",")
         this[Keys.HIDDEN_TOPICS] = s.hiddenTopics.filter { it.isNotBlank() && ',' !in it }.sorted().joinToString(",")
         this[Keys.READER_TEXT_SCALE] = s.readerTextScale.coerceIn(0.85f, 1.4f)
-        this[Keys.AI_MODEL] = s.aiModel.name
+        writeAiSettings(s.ai)
         this[Keys.AI_MONTHLY_LIMIT] = s.aiMonthlyLimitUsd.coerceIn(0.0, 1000.0)
         this[Keys.LIVE_AUTO_REFRESH] = s.liveAutoRefresh
     }
@@ -260,10 +332,6 @@ class SettingsRepository(context: Context) {
         val TOPIC_ORDER = stringPreferencesKey("topic_order")
         val HIDDEN_TOPICS = stringPreferencesKey("hidden_topics")
         val READER_TEXT_SCALE = floatPreferencesKey("reader_text_scale")
-        val AI_KEY = stringPreferencesKey("ai_key_enc")
-        val AI_KEY_UNTESTED = booleanPreferencesKey("ai_key_untested")
-        val AI_KEY_REJECTED = booleanPreferencesKey("ai_key_rejected")
-        val AI_MODEL = stringPreferencesKey("ai_model")
         val AI_MONTHLY_LIMIT = doublePreferencesKey("ai_monthly_limit_usd")
         val LIVE_AUTO_REFRESH = booleanPreferencesKey("live_auto_refresh")
         val TOKEN = stringPreferencesKey("gh_token_enc")

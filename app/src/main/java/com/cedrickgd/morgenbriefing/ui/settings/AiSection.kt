@@ -68,7 +68,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
-import com.cedrickgd.morgenbriefing.data.model.AiModel
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
@@ -78,7 +78,8 @@ import kotlin.math.roundToInt
 /** Callbacks of [AiCard]. */
 internal class AiActions(
     val onEditKey: () -> Unit,
-    val onModel: (AiModel) -> Unit,
+    /** A curated model id of the active provider. */
+    val onModel: (String) -> Unit,
     val onLimit: (Double) -> Unit,
     val onLiveAuto: (Boolean) -> Unit,
 )
@@ -137,31 +138,29 @@ internal fun AiCard(
         }
 
         Spacer(Modifier.height(16.dp))
+        val provider = settings.ai.provider
+        val providerSettings = settings.ai.of(provider)
         KeyRow(
-            hasKey = settings.hasAiKey,
-            untested = settings.aiKeyUntested,
-            rejected = settings.aiKeyRejected,
+            hasKey = providerSettings.hasKey,
+            untested = providerSettings.keyUntested,
+            rejected = providerSettings.keyRejected,
             onEdit = actions.onEditKey,
         )
 
         Spacer(Modifier.height(22.dp))
         Overline("Modell")
         Spacer(Modifier.height(8.dp))
+        val selectedModel = ProviderCatalog.effectiveModel(settings.ai, provider)
         Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            ModelOption(
-                title = "Claude Sonnet 5.5",
-                subtitle = "Schnell & günstig",
-                badge = "Standard",
-                selected = settings.aiModel == AiModel.SONNET,
-                onSelect = { actions.onModel(AiModel.SONNET) },
-            )
-            ModelOption(
-                title = "Claude Opus 5.5",
-                subtitle = "Maximale Qualität, etwa doppelter Preis",
-                badge = null,
-                selected = settings.aiModel == AiModel.OPUS,
-                onSelect = { actions.onModel(AiModel.OPUS) },
-            )
+            ProviderCatalog.spec(provider).models.forEach { model ->
+                ModelOption(
+                    title = model.label,
+                    subtitle = model.subtitle,
+                    badge = model.badge,
+                    selected = selectedModel == model.id,
+                    onSelect = { actions.onModel(model.id) },
+                )
+            }
         }
 
         Spacer(Modifier.height(22.dp))
