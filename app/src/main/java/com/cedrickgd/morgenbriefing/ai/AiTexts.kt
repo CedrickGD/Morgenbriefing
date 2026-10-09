@@ -66,7 +66,11 @@ object AiTexts {
             AiError.WorkspaceNotFound -> "Diesen Workspace findet Anthropic nicht. Prüf die Workspace-ID in den Einstellungen."
             is AiError.ModelUnavailable -> {
                 val model = error.model?.trim()?.takeIf { it.isNotEmpty() }?.let { "Das Modell „$it“" } ?: "Das gewählte Modell"
-                "$model gibt es bei $brand nicht (mehr), oder dein Key darf es nicht nutzen. Wähl in den Einstellungen ein anderes."
+                if (spec.id == AiProviderId.CUSTOM) {
+                    "$model läuft nicht auf deinem Server. Wähl in den Einstellungen eines, das er anbietet."
+                } else {
+                    "$model gibt es bei $brand nicht (mehr), oder dein Key darf es nicht nutzen. Wähl in den Einstellungen ein anderes."
+                }
             }
             is AiError.Refusal -> refusal(error.category)
             AiError.Truncated -> "Die Antwort war zu lang und wurde gekürzt."

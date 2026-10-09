@@ -44,6 +44,11 @@ class AiTextsTest {
             AiTexts.error(AiError.ModelUnavailable("gpt-9"), ProviderCatalog.OPENAI),
         )
         assertTrue(AiTexts.error(AiError.ModelUnavailable(null), claude).startsWith("Das gewählte Modell gibt es bei Claude"))
+        // Ollama & Co. answer 404 for a model that is not pulled.
+        assertEquals(
+            "Das Modell „llama9“ läuft nicht auf deinem Server. Wähl in den Einstellungen eines, das er anbietet.",
+            AiTexts.error(AiError.ModelUnavailable("llama9"), server),
+        )
         assertTrue(AiTexts.error(AiError.WorkspaceRequired, claude).contains("Workspace-ID"))
         ProviderCatalog.all.forEach { spec -> allErrors.forEach { assertTrue(AiTexts.error(it, spec).isNotBlank()) } }
     }
