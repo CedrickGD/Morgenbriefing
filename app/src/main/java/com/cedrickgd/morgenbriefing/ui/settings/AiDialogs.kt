@@ -2,6 +2,8 @@ package com.cedrickgd.morgenbriefing.ui.settings
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +44,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -112,6 +115,15 @@ internal fun AiKeyDialog(
     val canSave = !checking && if (custom) addressIssue == null else key.isNotBlank() || stored.hasKey
     val message = aiKeyMessage(state, spec)
     val colors = MaterialTheme.colorScheme
+    // The check's line sits under the key field: with the Gemini tariff texts above it, it can be
+    // below the fold when "Speichern & testen" was tapped — scrolled into view once it changes.
+    val messageInView = remember { BringIntoViewRequester() }
+    LaunchedEffect(state) {
+        if (state != AiKeyState.Idle) {
+            withFrameNanos { }
+            messageInView.bringIntoView()
+        }
+    }
 
     fun submit(skipTest: Boolean) {
         onSave(
@@ -220,6 +232,7 @@ internal fun AiKeyDialog(
         if (message != null) {
             Row(
                 modifier = Modifier
+                    .bringIntoViewRequester(messageInView)
                     .padding(top = 6.dp)
                     .semantics { liveRegion = LiveRegionMode.Polite },
                 verticalAlignment = Alignment.CenterVertically,
