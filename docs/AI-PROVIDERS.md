@@ -717,7 +717,8 @@ once without `tools`; result `withoutWebSearch = true`; remember per key hash fo
 Gemini ein Projekt mit Abrechnung.“
 
 Key check: `GET {base}/models/{model}` → 200 OK; 400 `API_KEY_INVALID`, 401, 403 → INVALID; 404 → OK
-(key fine, model unknown); 402 → OK_NO_CREDIT (GE §13).
+(key fine, model unknown); 400 `FAILED_PRECONDITION`, 402 → OK_NO_CREDIT (GE §13); any other 400 → OK
+like 404 (the model id is the problem, not the key — the same line as the chat's mapping in §8.1).
 
 ### 7.3 Chat Completions family (`ai/compat/`)
 

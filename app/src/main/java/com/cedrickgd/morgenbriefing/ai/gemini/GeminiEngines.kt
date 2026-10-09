@@ -98,6 +98,8 @@ internal class GeminiChatEngine(private val streamer: GeminiStreamer) : ChatEngi
  * * 400 `API_KEY_INVALID` (classic `AIza…` keys), 401 (`AQ.…` keys), 403 → INVALID;
  * * 400 `FAILED_PRECONDITION` (the free tier is not offered in the country) and 402 (prepaid
  *   credit used up) → OK_NO_CREDIT: the key is fine, but needs billing;
+ * * any other 400 (e.g. `INVALID_ARGUMENT` for a typed model id) → OK, like 404: the key got
+ *   through, the model is the problem — the same line as the chat's error mapping (§7.2, §8.1);
  * * 429 → OK (authenticated, just busy); 5xx and connection problems → NETWORK.
  */
 internal class GeminiKeyChecker(private val http: AiHttp) : KeyChecker {
@@ -120,7 +122,14 @@ internal class GeminiKeyChecker(private val http: AiHttp) : KeyChecker {
 
     private fun verdict(code: Int, body: String): AiKeyCheck = when (code) {
         in 200..299, 404, 429 -> AiKeyCheck.OK
-        400 -> if (ApiErrorBody.parse(body).status == "FAILED_PRECONDITION") AiKeyCheck.OK_NO_CREDIT else AiKeyCheck.INVALID
+        400 -> {
+            val error = ApiErrorBody.parse(body)
+            when {
+                error.isGeminiKeyInvalid() -> AiKeyCheck.INVALID
+                error.status == "FAILED_PRECONDITION" -> AiKeyCheck.OK_NO_CREDIT
+                else -> AiKeyCheck.OK
+            }
+        }
         401, 403 -> AiKeyCheck.INVALID
         402 -> AiKeyCheck.OK_NO_CREDIT
         else -> AiKeyCheck.NETWORK

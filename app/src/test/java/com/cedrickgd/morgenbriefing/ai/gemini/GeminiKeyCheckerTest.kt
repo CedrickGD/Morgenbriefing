@@ -62,6 +62,8 @@ class GeminiKeyCheckerTest {
             json(401, GeminiSse.rpc(401, "UNAUTHENTICATED", "Request had invalid authentication credentials.", reason = "ACCESS_TOKEN_TYPE_UNSUPPORTED")) to AiKeyCheck.INVALID,
             json(403, GeminiSse.rpc(403, "PERMISSION_DENIED", "Method doesn't allow unregistered callers.")) to AiKeyCheck.INVALID,
             json(400, GeminiSse.rpc(400, "FAILED_PRECONDITION", "Gemini API free tier is not available in your country. Please enable billing.")) to AiKeyCheck.OK_NO_CREDIT,
+            // Another 400 is about the request (a typed model id), not the key: like 404.
+            json(400, GeminiSse.rpc(400, "INVALID_ARGUMENT", "* GenerateContentRequest.model: unexpected model name format")) to AiKeyCheck.OK,
             json(402, GeminiSse.rpc(402, "RESOURCE_EXHAUSTED", "Prepay credit balance depleted.")) to AiKeyCheck.OK_NO_CREDIT,
             json(429, GeminiSse.rpc(429, "RESOURCE_EXHAUSTED", "Quota exceeded.")) to AiKeyCheck.OK,
             json(503, GeminiSse.rpc(503, "UNAVAILABLE", "The service is currently unavailable.")) to AiKeyCheck.NETWORK,
