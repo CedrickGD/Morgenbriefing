@@ -97,8 +97,9 @@ internal class AiKeyEditor(
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Throwable) {
-                    // Anything unexpected from the facade.
-                    Log.w(TAG, "Key test failed", e)
+                    // Anything unexpected from the facade. Only its type is logged: a message
+                    // could quote the key (OkHttp names a header value it refuses).
+                    Log.w(TAG, "Key test failed: ${e.javaClass.name}")
                     null
                 }
                 ensureActive()
