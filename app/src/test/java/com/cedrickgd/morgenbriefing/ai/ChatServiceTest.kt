@@ -433,6 +433,76 @@ class ChatServiceTest {
     }
 
     @Test
+    fun `grounded text that fails before its Search Suggestions is neither shown nor kept`() = runBlocking<Unit> {
+        settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true, geminiTier = GeminiTier.PAID) }
+        engine.scripts += { l ->
+            // Grounding queries and sources arrive first; the suggestions would come last.
+            l.onSearch("EZB Zinsentscheid")
+            l.onGrounded()
+            l.onSources(listOf(SourceRef("tagesschau.de", "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AAA")))
+            l.onText("Die EZB hat heute ")
+            throw AiException(AiError.Network)
+        }
+        val session = service().session(article) as RetryableChatSession
+        session.send("Was hat die EZB entschieden?")
+        val failed = session.await { it.settled(2) }.messages.last()
+        assertEquals(ChatMessage.Status.FAILED, failed.status)
+        assertEquals(AiError.Network, failed.error)
+        assertEquals("", failed.text)
+        assertTrue(failed.sources.isEmpty())
+        assertEquals(null, failed.searchSuggestionsHtml)
+        // Not on disk either.
+        val restored = service().session(article).await { it.messages.size == 2 }.messages.last()
+        assertEquals("", restored.text)
+        assertTrue(restored.sources.isEmpty())
+
+        // Ungrounded text (no search ran) keeps its words, as for every provider.
+        engine.scripts += { l ->
+            l.onText("Aus dem Artikel: ")
+            throw AiException(AiError.Network)
+        }
+        session.retry()
+        val kept = session.await { it.settled(2) && it.messages.last().text.isNotEmpty() }.messages.last()
+        assertEquals("Aus dem Artikel:", kept.text)
+        assertEquals(ChatMessage.Status.FAILED, kept.status)
+    }
+
+    @Test
+    fun `stopping a grounded answer before its Search Suggestions drops it`() = runBlocking<Unit> {
+        settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true, geminiTier = GeminiTier.PAID) }
+        val streaming = CompletableDeferred<Unit>()
+        engine.scripts += { l ->
+            l.onGrounded()
+            l.onText("Laut tagesschau.de ")
+            streaming.complete(Unit)
+            awaitCancellation()
+        }
+        val session = service().session(article)
+        session.send("Was gibt es Neues?")
+        withTimeout(10_000) { streaming.await() }
+        session.stop()
+        val stopped = session.await { it.settled(1) }
+        assertEquals(ChatMessage.Role.USER, stopped.messages.single().role)
+
+        // With its suggestions already there, a stopped grounded answer keeps its text.
+        val html = """<div class="container"><a class="chip" href="https://www.google.com/search?q=x">x</a></div>"""
+        val again = CompletableDeferred<Unit>()
+        engine.scripts += { l ->
+            l.onGrounded()
+            l.onText("Laut tagesschau.de …")
+            l.onSearchSuggestions(html)
+            again.complete(Unit)
+            awaitCancellation()
+        }
+        (session as RetryableChatSession).retry()
+        withTimeout(10_000) { again.await() }
+        session.stop()
+        val kept = session.await { it.settled(2) }.messages.last()
+        assertEquals("Laut tagesschau.de …", kept.text)
+        assertEquals(html, kept.searchSuggestionsHtml)
+    }
+
+    @Test
     fun `a provider without backend is blocked as unsupported`() = runBlocking<Unit> {
         settings.value = AppSettings().withAiKey(AiProviderId.MISTRAL)
         val session = service(engine = null).session(article)

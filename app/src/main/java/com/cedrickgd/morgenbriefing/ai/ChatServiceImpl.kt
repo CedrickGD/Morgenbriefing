@@ -21,6 +21,7 @@ import java.time.Clock
 import java.time.ZonedDateTime
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 
 /** Title and context text of a conversation (an article or a whole brief). */
 internal data class LoadedChatContext(val title: String, val text: String)
@@ -202,7 +203,13 @@ internal class ChatServiceImpl(
                 it.copy(messages = it.messages + user + placeholder, busy = true, activity = null, suggestions = emptyList())
             }
             val buffer = StringBuilder()
+            // Gemini grounded this answer in Google Search: its text needs the Search Suggestions.
+            val grounded = AtomicBoolean(false)
             val listener = object : ChatTurnListener {
+                override fun onGrounded() {
+                    grounded.set(true)
+                }
+
                 override fun onText(delta: String) {
                     buffer.append(delta)
                     val text = buffer.toString()
@@ -294,9 +301,10 @@ internal class ChatServiceImpl(
                     }
                 }
             } catch (e: CancellationException) {
-                // stop(): keep what has streamed so far; drop an empty answer.
+                // stop(): keep what has streamed so far; drop an empty answer — and a grounded one
+                // that ended before its Search Suggestions came (Gemini terms, GE §11).
                 withContext(NonCancellable) {
-                    val partial = buffer.toString().trim()
+                    val partial = if (withheld(answerId, grounded)) "" else buffer.toString().trim()
                     if (partial.isEmpty()) {
                         _state.update { s -> s.copy(messages = s.messages.filterNot { it.id == answerId }) }
                         endTurn()
@@ -307,10 +315,16 @@ internal class ChatServiceImpl(
                 throw e
             } catch (e: AiBlockedException) {
                 _state.update { it.copy(blocked = e.block) }
-                val partial = buffer.toString().trim()
+                val withheld = withheld(answerId, grounded)
+                val partial = if (withheld) "" else buffer.toString().trim()
                 finish(answerId) {
                     if (partial.isEmpty()) {
-                        it.copy(status = ChatMessage.Status.FAILED, error = AiError.Unknown(AiTexts.blockBody(e.block, resolved.spec)))
+                        it.copy(
+                            text = "",
+                            sources = if (withheld) emptyList() else it.sources,
+                            status = ChatMessage.Status.FAILED,
+                            error = AiError.Unknown(AiTexts.blockBody(e.block, resolved.spec)),
+                        )
                     } else {
                         it.copy(text = partial, status = ChatMessage.Status.DONE)
                     }
@@ -318,9 +332,26 @@ internal class ChatServiceImpl(
             } catch (e: AiException) {
                 // Settings → KI says so before the chat shows the error.
                 if (e.error == AiError.InvalidKey) access.keyRejected(resolved.auth.provider, resolved.auth.apiKey)
-                finish(answerId) { it.copy(text = buffer.toString().trim(), status = ChatMessage.Status.FAILED, error = e.error) }
+                val withheld = withheld(answerId, grounded)
+                finish(answerId) {
+                    it.copy(
+                        text = if (withheld) "" else buffer.toString().trim(),
+                        sources = if (withheld) emptyList() else it.sources,
+                        status = ChatMessage.Status.FAILED,
+                        error = e.error,
+                    )
+                }
             }
         }
+
+        /**
+         * An answer that ended early (stopped, failed, limit) is Gemini text grounded in Google
+         * Search whose Search Suggestions never came (they come with the last chunk): it may not be
+         * shown or kept, nor its grounded sources (GE §11) — "a mid-stream error keeps the text"
+         * does not hold for it (docs/AI-PROVIDERS.md §8.2).
+         */
+        private fun withheld(answerId: String, grounded: AtomicBoolean): Boolean =
+            grounded.get() && _state.value.messages.firstOrNull { it.id == answerId }?.searchSuggestionsHtml == null
 
         /** Applies [change] to the answer, ends the busy state and saves the conversation. */
         private suspend fun finish(answerId: String, change: (ChatMessage) -> ChatMessage) {

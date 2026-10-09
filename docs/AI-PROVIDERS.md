@@ -895,6 +895,11 @@ google.rpc `{"error":{"code","status","message","details":[{"@type":"…ErrorInf
 | Compat | `finish_reason` `error` / `insufficient_system_resource` / `aborted` | Overloaded |
 
 A mid-stream error after text was shown keeps the text (as Claude does today: FAILED with partial text).
+This does **not** hold for Gemini text grounded in Google Search (`ChatTurnListener.onGrounded`: the
+first query or grounding source arrived) whose Search Suggestions have not come yet — they come with
+the last chunk, and grounded results may only be shown with them (GE §11): on an error or the monthly
+limit the answer keeps neither text nor sources (only the error and „Nochmal“), and Stop removes it
+like an empty one.
 
 ---
 

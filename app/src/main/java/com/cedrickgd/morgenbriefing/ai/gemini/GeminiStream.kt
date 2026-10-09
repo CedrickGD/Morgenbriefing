@@ -134,6 +134,8 @@ internal class GeminiStreamer(
  *   as cited sources (the title is a domain, the uri a Google redirect that is opened as it is,
  *   never resolved, GE §11); each new distinct `webSearchQueries` entry is one billed search
  *   (GE §3.3); `searchEntryPoint.renderedContent` is the Search Suggestions HTML (latest wins).
+ *   The first query or source marks the answer grounded ([ChatTurnListener.onGrounded]): the
+ *   suggestions only come with the last chunk.
  * * `finishReason` is remembered, reading goes on to EOF (grounding and usage may follow).
  * * A top-level `error` is a mid-stream failure; `promptFeedback.blockReason` a blocked prompt.
  */
@@ -154,6 +156,7 @@ internal class GeminiChunkParser(
     private var usage: JsonObject? = null
     private var suggestions: String? = null
     private var textStarted = false
+    private var grounded = false
     private var streamedChars = 0L
 
     /** Handles one event; always true (the stream ends at EOF). */
@@ -200,11 +203,15 @@ internal class GeminiChunkParser(
         grounding.array("webSearchQueries").orEmpty().forEach { element ->
             val query = (element as? JsonPrimitive)?.content?.trim()?.takeIf { it.isNotEmpty() } ?: return@forEach
             // Empty queries are not billed; the status line only makes sense before the answer.
-            if (queries.add(query) && !textStarted) listener.onSearch(query)
+            if (queries.add(query)) {
+                markGrounded()
+                if (!textStarted) listener.onSearch(query)
+            }
         }
         var changed = false
         grounding.objects("groundingChunks").forEach { chunk ->
             val web = chunk.obj("web") ?: return@forEach
+            markGrounded()
             changed = sources.addCited(web.str("uri"), web.str("title")) || changed
         }
         if (changed) listener.onSources(sources.ranked())
@@ -214,6 +221,13 @@ internal class GeminiChunkParser(
                 listener.onSearchSuggestions(html)
             }
         }
+    }
+
+    /** Tells the listener once that this answer is grounded (before its suggestions arrive). */
+    private fun markGrounded() {
+        if (grounded) return
+        grounded = true
+        listener.onGrounded()
     }
 
     /**

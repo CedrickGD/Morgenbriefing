@@ -50,9 +50,14 @@ class GeminiChatEngineTest {
         val searches = mutableListOf<String>()
         var sources: List<SourceRef> = emptyList()
         val suggestions = mutableListOf<String>()
+        var grounded = 0
 
         override fun onText(delta: String) {
             text.append(delta)
+        }
+
+        override fun onGrounded() {
+            grounded++
         }
 
         override fun onSearch(query: String) {
@@ -141,6 +146,8 @@ class GeminiChatEngineTest {
         assertEquals(expected, recorder.sources)
         assertEquals(GeminiSse.SUGGESTIONS, result.searchSuggestionsHtml)
         assertEquals(listOf(GeminiSse.SUGGESTIONS), recorder.suggestions)
+        // Grounded from the first query on, said once (the chat then needs the suggestions).
+        assertEquals(1, recorder.grounded)
         assertFalse(result.withoutWebSearch)
 
         assertEquals(1, usage.checks)
@@ -295,6 +302,26 @@ class GeminiChatEngineTest {
         // Every answered request is billed, also the aborted one; nothing is sent twice.
         assertEquals(4, usage.records.size)
         assertEquals(4, server.requestCount)
+    }
+
+    @Test
+    fun `grounding is announced before the suggestions, also when the stream then fails`() = runBlocking<Unit> {
+        server.enqueue(
+            GeminiSse.response(
+                GeminiSse.text("Die EZB ", grounding = GeminiSse.grounding(queries = listOf("EZB Zinsentscheid"))),
+                GeminiSse.chunk("""{"error":{"code":503,"message":"The model is overloaded.","status":"UNAVAILABLE"}}"""),
+            ),
+        )
+        val recorder = Recorder()
+        assertError(AiError.Overloaded) { backend.chat.answer(request(), recorder, usage) }
+        assertEquals(1, recorder.grounded)
+        assertTrue(recorder.suggestions.isEmpty())
+
+        // Without search nothing is grounded.
+        server.enqueue(ok())
+        val plain = Recorder()
+        backend.chat.answer(request(auth = auth(freeTier = true)), plain, usage)
+        assertEquals(0, plain.grounded)
     }
 
     @Test

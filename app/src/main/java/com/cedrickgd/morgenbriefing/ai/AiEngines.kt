@@ -81,6 +81,13 @@ internal interface ChatTurnListener : ToolActivityListener {
 
     /** Gemini only: HTML of the Search Suggestions that must be shown with the answer. */
     fun onSearchSuggestions(html: String) {}
+
+    /**
+     * Gemini only: the answer is grounded in Google Search (the first search query or grounding
+     * source arrived). Grounded text may only be shown with its Search Suggestions (GE §11), which
+     * come last — an answer that ends before them must not keep the grounded text.
+     */
+    fun onGrounded() {}
 }
 
 internal enum class TurnEnd {
