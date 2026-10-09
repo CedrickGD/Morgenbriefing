@@ -487,6 +487,23 @@ class GeminiChatEngineTest {
     }
 
     @Test
+    fun `a refused request that mentions the model is no model refusal and swaps nothing`() = runBlocking<Unit> {
+        // A typed older model that cannot take the app's thinkingLevel: the request is the problem, not the model.
+        server.enqueue(GeminiSse.httpError(400, GeminiSse.rpc(400, "INVALID_ARGUMENT", "thinking_level is not supported by this model.")))
+        try {
+            backend.chat.answer(request(model = "gemini-2.0-flash", webSearch = false), ChatRecorder(), usage)
+            fail("expected the refused request")
+        } catch (e: AiException) {
+            assertEquals(AiError.Unknown("Gemini hat die Anfrage abgelehnt (HTTP 400)."), e.error)
+            assertEquals("HTTP 400 · INVALID_ARGUMENT", e.diagnostic)
+        }
+        // One request: no model of the chain was tried, no fallback to keep.
+        assertEquals(1, server.requestCount)
+        assertEquals("/v1beta/models/gemini-2.0-flash:streamGenerateContent", server.takeRequest().requestUrl!!.encodedPath)
+        assertTrue(slept.isEmpty())
+    }
+
+    @Test
     fun `when no model of the chain answers, the chosen one's refusal is reported with its details`() = runBlocking<Unit> {
         server.enqueue(GeminiSse.httpError(404, GeminiErrors.modelNotFound("gemini-3.7-flash")))
         server.enqueue(GeminiSse.httpError(429, GeminiErrors.zeroQuota("gemini-3.5-flash-lite")))

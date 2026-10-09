@@ -698,13 +698,14 @@ Parse: accept object or array; read `error.code` (HTTP), `error.status`, `detail
 | 400 | `INVALID_ARGUMENT` + `API_KEY_INVALID` | Invalid key | "API-Key ungültig" → settings, no retry |
 | 401 | `UNAUTHENTICATED` + `ACCESS_TOKEN_TYPE_UNSUPPORTED` | Key not taken as an API key (mistyped `AQ.` key, or a new auth key Google rejects, §12.4) | AUTH_KEY_REJECTED text + "Neuen Key in AI Studio", key marked rejected |
 | 401 | `UNAUTHENTICATED` (other) | Invalid key | "API-Key ungültig" |
-| 400 | `INVALID_ARGUMENT` (other) | Malformed request: schema, `minimal` thinking on 3.8/3.7/3.1 Pro, `thinkingLevel`+`thinkingBudget`, prefilled model turn, missing thought signature, interleaved FC/FR; or a message about the model (`unexpected model name format`, `not supported`) → model fallback (§12.5) | log `message`, no retry |
+| 400 | `INVALID_ARGUMENT`, Google's words about the model id: `is not found for API version`, `is not supported for generateContent`, `unexpected model name format` | Unknown model, or one that cannot generate | model fallback (§12.5) |
+| 400 | `INVALID_ARGUMENT` (other) | Malformed request: schema, `minimal` thinking on 3.8/3.7/3.1 Pro, `thinkingLevel`+`thinkingBudget`, prefilled model turn, missing thought signature, interleaved FC/FR — also when the message mentions the model ("thinking_level is not supported by this model": every model of the chain would refuse it) | "Gemini hat die Anfrage abgelehnt (HTTP 400)" with its Details, no retry, **no** model fallback |
 | 400 | `FAILED_PRECONDITION` | "Gemini API free tier is not available in your country. Please enable billing" | FREE_TIER_UNAVAILABLE text + "Abrechnung in AI Studio" |
 | 402 | (doc table says `RESOURCE_EXHAUSTED`) | **Prepay credit balance depleted** – all keys of that billing account stop | "Guthaben aufgebraucht", **don't retry** |
 | 401/403 | reason `API_KEY_SERVICE_BLOCKED` / `SERVICE_DISABLED` | Gemini API blocked for the key / not enabled in its project (§12.4) | API_BLOCKED text + "Gemini API aktivieren" |
 | 403 | reason `API_KEY_ANDROID_APP_BLOCKED` / `…_IOS_APP_…` / `…_HTTP_REFERRER_…` / `…_IP_ADDRESS_BLOCKED` | Application restriction of the key does not fit | KEY_RESTRICTED text + "Key-Beschränkung prüfen" |
 | 403 | message "reported as leaked" | Key blocked as leaked [G20] | KEY_LEAKED text + "Neuen Key in AI Studio", key marked rejected |
-| 403 | `PERMISSION_DENIED`, message about the model | Project may not use this model | model fallback (§12.5) |
+| 403 | `PERMISSION_DENIED`, message denying the model ("does not have access to model …", "no access to the model") | Project may not use this model | model fallback (§12.5) |
 | 403 | `PERMISSION_DENIED` (other) | Key lacks permission / no key | "Der Key darf die Gemini API nicht nutzen." |
 | 404 | `NOT_FOUND` | Unknown model or resource; new projects do not get older models [G30] | model fallback (§12.5), then "Modell nicht verfügbar" |
 | 429 | `RESOURCE_EXHAUSTED` + `QuotaFailure` with `quotaValue` "0" (or "limit: 0") | The tier offers this model no quota at all (not the search's quota) | model fallback (§12.5) |
@@ -742,7 +743,7 @@ bearer token, as 401 [F1, post of 2026-10-08].
 | (b′) Key restricted to other apps | reason `API_KEY_ANDROID_APP_BLOCKED`, `API_KEY_IOS_APP_BLOCKED`, `API_KEY_HTTP_REFERRER_BLOCKED`, `API_KEY_IP_ADDRESS_BLOCKED` | Cloud error model (UNVERIFIED for Gemini) | KEY_RESTRICTED | https://console.cloud.google.com/apis/credentials |
 | (b″) Key blocked as leaked | message "Your API key was reported as leaked. Please use another API key." (status not documented) | G20 | KEY_LEAKED: „Google hat deinen Key gesperrt, weil er öffentlich aufgetaucht ist. …“ Key marked rejected. | https://aistudio.google.com/apikey |
 | (c) Free tier not available for the country/project | 400 `FAILED_PRECONDITION` "free tier is not available in your country … enable billing" | G18 (solution: "Set up a paid plan through Google AI Studio"). G37 lists Germany, all EU states, CH, UK, NO, IS, LI as available regions (LU 2026-04-28) but says nothing about the free tier per country | FREE_TIER_UNAVAILABLE: „Der kostenlose Gemini-Tarif ist für dein Land/Projekt nicht freigeschaltet – aktivier die Abrechnung in AI Studio oder wähl einen anderen Anbieter.“; „Ohne Test speichern“ offered | https://aistudio.google.com/projects (Billing Tier column, "Set up billing" [G23]) |
-| (d) Model not open to the project | 404 `NOT_FOUND`; 400/403 whose message is about the model; 429 with a `QuotaFailure.quotaValue` of "0" (free tier offers the model no quota) | G30 (2.5 models only for previous users; "for any new projects, use … 3.5 Flash-Lite or 3.8 Flash"), forum F1 ("2.5-flash may not be enabled for new projects") | automatic model fallback (§12.5), then `ModelUnavailable` | – |
+| (d) Model not open to the project | 404 `NOT_FOUND`; a 400 in Google's words about the model id or a 403 denying access to the model (§12.2); 429 with a `QuotaFailure.quotaValue` of "0" (free tier offers the model no quota) | G30 (2.5 models only for previous users; "for any new projects, use … 3.5 Flash-Lite or 3.8 Flash"), forum F1 ("2.5-flash may not be enabled for new projects") | automatic model fallback (§12.5), then `ModelUnavailable` | – |
 | (e) Quota | 429 `RESOURCE_EXHAUSTED` (+ `QuotaFailure`, `RetryInfo`) | G18, G21 | existing texts: free tier „Gemini-Gratiskontingent … aufgebraucht“, paid „zu viele Anfragen“ | – |
 
 Shape of the bodies the app parses (fixtures in `GeminiFixtures.kt` → `GeminiErrors`, mock switches in
@@ -766,8 +767,8 @@ classify, never to show.
 
 ### 12.5 Model fallback
 
-When Google refuses the **model** for the key before the stream starts (404, a 400/403 about the model, a quota of 0 that is not
-the search's), the chat and the key test try the next model of the chain **`gemini-3.8-flash` → `gemini-3.7-flash` →
+When Google refuses the **model** for the key before the stream starts (404, a 400 in Google's words about the model id, a 403
+denying access to the model, a quota of 0 that is not the search's — never another 400 that merely mentions the model, §12.2), the chat and the key test try the next model of the chain **`gemini-3.8-flash` → `gemini-3.7-flash` →
 `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite`** (a model outside the chain, e.g. 3.1 Pro or a typed id, starts at the top),
 each **once**, without retries or waits. None of them needs billing, so the chain works on both tiers.
 

@@ -218,25 +218,38 @@ internal object ProviderErrors {
     private fun String.sentence(): String = replaceFirstChar { it.uppercaseChar() }
 
     /**
-     * A Gemini answer that is about the model, not the key or the project (GE §12.5): 400 or 403
-     * whose message is about the model (`… is not found`, `… is not supported for generateContent`,
-     * `unexpected model name format`, no access to it), or a 429 for a quota with limit 0 that is
+     * A Gemini answer that refuses the model itself, not the key, the project or the request
+     * (GE §12.5): a 400 in one of Google's phrasings about the model's identity ([MODEL_400]), a
+     * 403 that denies access to the model ([MODEL_403]), or a 429 for a quota with limit 0 that is
      * not the search's (the free tier does not offer this model to the project). A 404 is a model
      * problem on every provider (the common rows).
+     *
+     * Any other 400 `INVALID_ARGUMENT` is about the request, even when it mentions the model
+     * ("thinking_level is not supported by this model"): every model of the chain would refuse it
+     * the same way, so it stays [AiError.Unknown] with its Details instead of a silent model swap.
      */
     private fun ApiErrorBody.isGeminiModelProblem(code: Int): Boolean = when (code) {
-        400, 403 -> status != "FAILED_PRECONDITION" && reasons.none { r -> ACCOUNT_REASONS.any(r::startsWith) } && message.orEmpty().let { text ->
-            text.contains("model", ignoreCase = true) && MODEL_WORDS.any { text.contains(it, ignoreCase = true) }
-        }
+        400 -> status != "FAILED_PRECONDITION" && !hasAccountReason() && MODEL_400.any { message.orEmpty().contains(it, ignoreCase = true) }
+        403 -> !hasAccountReason() && MODEL_403.containsMatchIn(message.orEmpty())
         429 -> hasZeroQuota && !isSearchQuota
         else -> false
     }
 
+    private fun ApiErrorBody.hasAccountReason(): Boolean = reasons.any { r -> ACCOUNT_REASONS.any(r::startsWith) }
+
     /** ErrorInfo reasons about the key, the project or its billing: never a model problem. */
     private val ACCOUNT_REASONS = listOf("API_KEY", "CONSUMER", "SERVICE", "BILLING", "ACCESS_TOKEN")
 
-    /** What a message about an unusable model says (EN, as Google words it). */
-    private val MODEL_WORDS = listOf("not found", "not supported", "unexpected model name", "not available", "does not have access", "do not have access", "no access")
+    /**
+     * How Google's 400 names a model that does not exist (for this API version or method) or a
+     * model id it cannot read: "models/… is not found for API version v1beta, or is not supported
+     * for generateContent", "* GenerateContentRequest.model: unexpected model name format".
+     */
+    private val MODEL_400 = listOf("is not found for API version", "is not supported for generateContent", "unexpected model name format")
+
+    /** A 403 whose subject is the model: "Your project does not have access to model …", "no access to this model". */
+    private val MODEL_403 =
+        Regex("""\b(?:(?:do|does)\s+not\s+have|(?:doesn|don)['’]t\s+have|no)\s+access\s+to\s+(?:the\s+|this\s+)?model\b""", RegexOption.IGNORE_CASE)
 
     /** ErrorInfo reasons of a Gemini API that is blocked or switched off for the key's project. */
     private val GEMINI_API_BLOCKED = arrayOf("API_KEY_SERVICE_BLOCKED", "SERVICE_DISABLED")

@@ -96,6 +96,46 @@ class GeminiErrorMappingTest {
     }
 
     @Test
+    fun `only Google's phrasings about the model itself are a model refusal`() {
+        val invalid = { message: String -> GeminiSse.rpc(400, "INVALID_ARGUMENT", message) }
+        // The model id is unknown, unreadable or cannot generate: the fallback chain may help.
+        listOf(
+            "models/gemini-9 is not found for API version v1beta, or is not supported for generateContent. Call ListModels …",
+            "models/text-embedding-005 is not supported for generateContent.",
+            "* GenerateContentRequest.model: unexpected model name format",
+        ).forEach { assertEquals(it, AiError.ModelUnavailable(model), map(400, invalid(it)).error) }
+        listOf(
+            "Your project does not have access to model gemini-3.1-pro-preview.",
+            "You don't have access to this model.",
+            "The caller has no access to the model gemini-3.1-pro-preview.",
+        ).forEach { assertEquals(it, AiError.ModelUnavailable(model), map(403, GeminiSse.rpc(403, "PERMISSION_DENIED", it)).error) }
+
+        // About the request, not the model: every model of the chain would refuse it the same way.
+        val request = AiError.Unknown("Gemini hat die Anfrage abgelehnt (HTTP 400).")
+        listOf(
+            "thinking_level is not supported by this model.",
+            "Function calling is not supported for this model.",
+            "Thinking level MINIMAL is not available for model gemini-3.8-flash.",
+            "The requested model setting was not found.",
+            "Request contains an invalid argument.",
+        ).forEach { message ->
+            assertEquals(message, request, map(400, invalid(message)).error)
+            assertFalse(message, GeminiStreamer.isModelUnavailable(HttpFailure(400, invalid(message), null), model, freeTier = true))
+        }
+        // A 403 that does not deny the model is the key's or the project's.
+        listOf("The caller does not have permission.", "Model access is not available for this API key.").forEach { message ->
+            assertEquals(message, AiError.Unknown("Der Key darf die Gemini API nicht nutzen."), map(403, GeminiSse.rpc(403, "PERMISSION_DENIED", message)).error)
+        }
+        // A model phrasing next to a reason about the key or the project is no model problem.
+        assertEquals(
+            AiError.GeminiAccess(GeminiProblem.API_BLOCKED),
+            map(403, GeminiSse.rpc(403, "PERMISSION_DENIED", "Your project does not have access to model x.", reason = "SERVICE_DISABLED")).error,
+        )
+        // Their Details stay with them.
+        assertEquals("HTTP 400 · INVALID_ARGUMENT", ErrorDiagnostics.http(400, invalid("thinking_level is not supported by this model.")))
+    }
+
+    @Test
     fun `the diagnostic names status, reason and quota but never a key, a URL or a project`() {
         val cases = mapOf(
             (401 to GeminiErrors.AUTH_KEY_REJECTED) to "HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED",

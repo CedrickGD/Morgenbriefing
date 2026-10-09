@@ -364,9 +364,10 @@ object ProviderCatalog {
 
 /**
  * Gemini's model fallback (docs/providers/gemini.md §12.5): when Google refuses the chosen model
- * for a key (404 `NOT_FOUND`, a 400/403 about the model, a free-tier quota of 0 — new projects do
- * not get every model, preview models are restricted), the chat and the key test try the next
- * model of [CHAIN] once each, and the app keeps the one that answered for this key.
+ * for a key (404 `NOT_FOUND`, a 400 about the model id, a 403 denying the model, a free-tier
+ * quota of 0 — new projects do not get every model, preview models are restricted), the chat and
+ * the key test try the next model of [CHAIN] once each, and the app keeps the one that answered
+ * for this key.
  */
 object GeminiModels {
     /** From the newest Flash down to the cheapest Flash-Lite; none of them needs billing. */

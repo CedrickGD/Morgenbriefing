@@ -141,6 +141,8 @@ class GeminiKeyCheckerTest {
             json(500, GeminiSse.rpc(500, "INTERNAL", "An internal error has occurred.")) to AiKeyCheck.NETWORK,
             // Another 400 is about the tiny request, not the key: it got through.
             json(400, GeminiSse.rpc(400, "INVALID_ARGUMENT", "Request contains an invalid argument.")) to AiKeyCheck.OK,
+            // Even when it mentions the model: no model refusal, no fallback.
+            json(400, GeminiSse.rpc(400, "INVALID_ARGUMENT", "thinking_level is not supported by this model.")) to AiKeyCheck.OK,
         )
         cases.forEach { (response, expected) ->
             server.enqueue(GeminiSse.modelList("gemini-3.8-flash"))

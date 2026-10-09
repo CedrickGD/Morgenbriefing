@@ -727,7 +727,8 @@ of the fallback chain (GE §12.5), reported as `KeyCheckOutcome.fallback` and st
 400 `FAILED_PRECONDITION` → FREE_TIER_UNAVAILABLE; 429 → OK_QUOTA_EXHAUSTED (stored with a note); any other 4xx → OK
 (the tiny request was the problem, not the key). Every failed verdict carries the key-free diagnostic (GE §12.6).
 
-Model fallback in the chat (GE §12.5): a model refused before the stream (404, a 400/403 about the model, a quota of 0)
+Model fallback in the chat (GE §12.5): a model refused before the stream (404, a 400 in Google's words about the model id, a
+403 denying access to the model, a quota of 0; never another 400 that merely mentions the model)
 → `gemini-3.8-flash` → `gemini-3.7-flash` → `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite`, each once;
 `ChatTurnResult.fallbackModel` → `AiProviderAccess.modelFallback` stores it for the key as chosen model
 (`Resolution.Ready.selectedModel`) → working one, also when the request already ran with a fallback (dropped when a key, the
@@ -892,10 +893,10 @@ test („Speichern & testen“) that ends in `INVALID` (or AUTH_KEY_REJECTED / K
 
 | Status / signal | Anthropic | OpenAI | xAI | Perplexity | Gemini | OpenRouter | Mistral | DeepSeek | Custom |
 |---|---|---|---|---|---|---|---|---|---|
-| 400 | workspace msgs → Workspace*; credit → NoCredit; else Unknown | `model` + „does not exist“ → ModelUnavailable; else Unknown | message names the API key („Incorrect API key provided“, OC §4.8) → InvalidKey; else Unknown | Unknown | `API_KEY_INVALID` → InvalidKey; `FAILED_PRECONDITION` → GeminiAccess(FREE_TIER_UNAVAILABLE); message about the model → ModelUnavailable (fallback, GE §12.5); else Unknown | Unknown | Unknown | Unknown (`reasoning_content` 400 can't happen: thinking off) | Unknown |
+| 400 | workspace msgs → Workspace*; credit → NoCredit; else Unknown | `model` + „does not exist“ → ModelUnavailable; else Unknown | message names the API key („Incorrect API key provided“, OC §4.8) → InvalidKey; else Unknown | Unknown | `API_KEY_INVALID` → InvalidKey; `FAILED_PRECONDITION` → GeminiAccess(FREE_TIER_UNAVAILABLE); „is not found for API version“ / „is not supported for generateContent“ / „unexpected model name format“ → ModelUnavailable (fallback, GE §12.5); else Unknown (also a request error that mentions the model) | Unknown | Unknown | Unknown (`reasoning_content` 400 can't happen: thinking off) | Unknown |
 | 401 | InvalidKey | InvalidKey | InvalidKey | InvalidKey (text: or no credit) | `ACCESS_TOKEN_TYPE_UNSUPPORTED` → GeminiAccess(AUTH_KEY_REJECTED); `API_KEY_SERVICE_BLOCKED` → GeminiAccess(API_BLOCKED); else InvalidKey | InvalidKey | InvalidKey | InvalidKey | InvalidKey |
 | 402 | NoCredit | – | – | – | NoCredit | with `Retry-After` → RateLimited (retry); else NoCredit | NoCredit (no payment method, OC §3.8) | NoCredit | – |
-| 403 | Unknown(„kein Zugriff auf dieses Modell“) | Unknown(„OpenAI ist in deiner Region nicht verfügbar.“) | Unknown(„Kein Zugriff – Team gesperrt oder Guthaben leer? Schau in console.x.ai nach.“) | Unknown | „reported as leaked“ → GeminiAccess(KEY_LEAKED); `API_KEY_SERVICE_BLOCKED`/`SERVICE_DISABLED` → GeminiAccess(API_BLOCKED); `API_KEY_*_BLOCKED` → GeminiAccess(KEY_RESTRICTED); message about the model → ModelUnavailable (fallback); else Unknown(„Der Key darf die Gemini API nicht nutzen.“) | Unknown(„OpenRouter hat die Anfrage abgelehnt (Moderation oder Rechte).“) | Unknown | – | InvalidKey |
+| 403 | Unknown(„kein Zugriff auf dieses Modell“) | Unknown(„OpenAI ist in deiner Region nicht verfügbar.“) | Unknown(„Kein Zugriff – Team gesperrt oder Guthaben leer? Schau in console.x.ai nach.“) | Unknown | „reported as leaked“ → GeminiAccess(KEY_LEAKED); `API_KEY_SERVICE_BLOCKED`/`SERVICE_DISABLED` → GeminiAccess(API_BLOCKED); `API_KEY_*_BLOCKED` → GeminiAccess(KEY_RESTRICTED); message denying access to the model („does not have access to model …“) → ModelUnavailable (fallback); else Unknown(„Der Key darf die Gemini API nicht nutzen.“) | Unknown(„OpenRouter hat die Anfrage abgelehnt (Moderation oder Rechte).“) | Unknown | – | InvalidKey |
 | 404 | `Workspace … not found` → WorkspaceNotFound; else ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable (fallback first, GE §12.5) | ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable |
 | 408 | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) |
 | 422 | – | – | Unknown | – | – | – | Unknown | Unknown | Unknown |

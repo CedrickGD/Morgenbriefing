@@ -139,8 +139,9 @@ internal class GeminiStreamer(
 
         /**
          * Gemini refused [model] for this key, not the key or the request (GE §12.5): the same
-         * line as the error mapping's [AiError.ModelUnavailable] — 404, a 400/403 about the model,
-         * a quota of 0 that is not the search's.
+         * line as the error mapping's [AiError.ModelUnavailable] — 404, a 400 in Google's words
+         * about the model id, a 403 that denies access to the model, a quota of 0 that is not the
+         * search's. Another 400 that merely mentions the model is the request's problem.
          */
         fun isModelUnavailable(failure: HttpFailure, model: String, freeTier: Boolean): Boolean =
             ProviderErrors.http(AiProviderId.GEMINI, failure.code, failure.body, failure.retryAfter, model, freeTier).error is AiError.ModelUnavailable

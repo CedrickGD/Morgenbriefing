@@ -206,8 +206,8 @@ internal class GeminiSearchMemo {
  * 2. `POST {base}/models/{model}:generateContent` with "Antworte nur: OK" (thinking `low`, at most
  *    [GeminiRequests.KEY_TEST_MAX_OUTPUT_TOKENS] tokens, no search; a few tokens, recorded like a
  *    request): 200 → OK. When Gemini refuses the model for this key ([AiError.ModelUnavailable]:
- *    404, a 400/403 about the model, a quota of 0), the next model of [GeminiModels.CHAIN] that the
- *    list shows is tried once each; the one that answers is reported as
+ *    404, a 400 about the model id, a 403 denying the model, a quota of 0), the next model of
+ *    [GeminiModels.CHAIN] that the list shows is tried once each; the one that answers is reported as
  *    [KeyCheckOutcome.fallback], none → MODEL_UNAVAILABLE. Otherwise 400 `FAILED_PRECONDITION` →
  *    FREE_TIER_UNAVAILABLE, the refusals of step 1 likewise, 429 → OK_QUOTA_EXHAUSTED (the key
  *    works), any other 4xx → OK (the key got through, the tiny request was the problem).
