@@ -295,6 +295,13 @@ class AiLogicTest {
         val free = capabilities(ProviderCatalog.GEMINI, gemini(GeminiTier.FREE))
         assertFalse(free[1].available)
         assertEquals("Websuche nur mit Abrechnung", free[1].label)
+        // TalkBack hears the same as the pill shows: billing turns the search on.
+        assertEquals("Websuche nur mit Abrechnung", free[1].spoken)
+        assertEquals(
+            "Chat verfügbar, Websuche nur mit Abrechnung, Live nicht verfügbar, läuft auf Android 7",
+            capabilitySemantics(free),
+        )
+        assertEquals("Websuche nicht verfügbar", capabilities(ProviderCatalog.MISTRAL)[1].spoken)
         assertEquals("ab Android 8", capabilities(claude)[3].label)
         assertEquals(
             "Chat verfügbar, Websuche verfügbar, Live verfügbar, braucht Android 8",

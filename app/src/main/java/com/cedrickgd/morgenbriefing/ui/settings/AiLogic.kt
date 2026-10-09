@@ -270,7 +270,16 @@ internal fun capabilities(spec: ProviderSpec, ai: AiSettings? = null): List<Capa
     val android7 = !spec.needsSdk
     return listOf(
         Capability("Chat", available = true, spoken = "Chat verfügbar"),
-        Capability(searchLabel, available = search, spoken = if (search) "Websuche verfügbar" else "Websuche nicht verfügbar"),
+        Capability(
+            searchLabel,
+            available = search,
+            // TalkBack hears what the pill shows: a free Gemini key gets search with billing.
+            spoken = when {
+                search -> "Websuche verfügbar"
+                geminiFree -> "Websuche nur mit Abrechnung"
+                else -> "Websuche nicht verfügbar"
+            },
+        ),
         Capability("Live", available = live, spoken = if (live) "Live verfügbar" else "Live nicht verfügbar"),
         Capability(
             if (android7) "Android 7" else "ab Android 8",
