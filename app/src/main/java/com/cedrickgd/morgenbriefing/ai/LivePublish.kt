@@ -17,8 +17,9 @@ import kotlin.math.roundToInt
 
 /**
  * The client tool `publish_articles` of a live run: its JSON schema (strict, schema-2 fields
- * plus `topicId`, images always null) and the validation of what the model sends. Pure, so it
- * is unit-tested without the SDK.
+ * plus `topicId`, images always null; one dialect per provider family) and the validation of what
+ * the model sends. The tool keeps its name for every provider. Pure, so it is unit-tested without
+ * any SDK.
  */
 internal object LivePublish {
     const val TOOL_NAME = "publish_articles"
@@ -29,9 +30,18 @@ internal object LivePublish {
             "leeren Liste, wenn es nichts Neues und Belastbares gibt. Meldet es Fehler, korrigiere sie und " +
             "rufe es erneut mit allen Artikeln auf."
 
+    /**
+     * How strict JSON schema keywords the provider understands. [FULL] (Claude) is the v1.2 schema
+     * byte for byte, so Claude's cached prompt prefix stays the same. [PORTABLE] (Responses
+     * family, OpenRouter) drops `format: "uri"` and the always-null `image` field, which not every
+     * strict-mode implementation accepts; URLs are still checked by [validate].
+     */
+    enum class SchemaDialect { FULL, PORTABLE }
+
     /** JSON schema of one article (`additionalProperties: false` everywhere, all fields required). */
-    fun articleSchema(topicIds: List<String>): Map<String, Any> {
+    fun articleSchema(topicIds: List<String>, dialect: SchemaDialect = SchemaDialect.FULL): Map<String, Any> {
         val string = mapOf("type" to "string")
+        val url: Map<String, Any> = if (dialect == SchemaDialect.FULL) mapOf("type" to "string", "format" to "uri") else string
         val properties = linkedMapOf<String, Any>(
             "topicId" to mapOf("type" to "string", "enum" to topicIds, "description" to "Rubrik-id"),
             "id" to mapOf("type" to "string", "description" to "Slug: Rubrik-id + \"-live-\" + kurzer Slug, nur a-z, 0-9 und -"),
@@ -40,12 +50,12 @@ internal object LivePublish {
             "summary" to mapOf("type" to "string", "description" to "Vorspann, 1–2 Sätze, höchstens 300 Zeichen"),
             "body" to mapOf("type" to "string", "description" to "Vollständiger Artikel, 150–400 Wörter, Absätze durch Leerzeile getrennt"),
             "source" to string,
-            "url" to mapOf("type" to "string", "format" to "uri"),
+            "url" to url,
             "sources" to mapOf(
                 "type" to "array",
                 "items" to mapOf(
                     "type" to "object",
-                    "properties" to linkedMapOf("name" to string, "url" to mapOf("type" to "string", "format" to "uri")),
+                    "properties" to linkedMapOf("name" to string, "url" to url),
                     "required" to listOf("name", "url"),
                     "additionalProperties" to false,
                 ),
@@ -53,8 +63,8 @@ internal object LivePublish {
             "publishedAt" to mapOf("type" to "string", "format" to "date-time", "description" to "ISO-8601 mit Berliner Offset"),
             "importance" to mapOf("type" to "integer", "description" to "1–10"),
             "readingMinutes" to mapOf("type" to "integer"),
-            "image" to mapOf("type" to "null"),
         )
+        if (dialect == SchemaDialect.FULL) properties["image"] = mapOf("type" to "null")
         return linkedMapOf(
             "type" to "object",
             "properties" to properties,
@@ -64,8 +74,19 @@ internal object LivePublish {
     }
 
     /** The tool input's top-level `articles` property. */
-    fun articlesProperty(topicIds: List<String>): Map<String, Any> =
-        linkedMapOf("type" to "array", "items" to articleSchema(topicIds), "description" to "Alle fertigen Artikel, wichtigste zuerst")
+    fun articlesProperty(topicIds: List<String>, dialect: SchemaDialect = SchemaDialect.FULL): Map<String, Any> =
+        linkedMapOf("type" to "array", "items" to articleSchema(topicIds, dialect), "description" to "Alle fertigen Artikel, wichtigste zuerst")
+
+    /**
+     * The whole parameters object of `publish_articles` for function-calling APIs:
+     * `{type: object, properties: {articles}, required: [articles], additionalProperties: false}`.
+     */
+    fun parametersSchema(topicIds: List<String>, dialect: SchemaDialect): Map<String, Any> = linkedMapOf(
+        "type" to "object",
+        "properties" to linkedMapOf("articles" to articlesProperty(topicIds, dialect)),
+        "required" to listOf("articles"),
+        "additionalProperties" to false,
+    )
 
     @Serializable
     internal data class Payload(val articles: List<PayloadArticle> = emptyList())

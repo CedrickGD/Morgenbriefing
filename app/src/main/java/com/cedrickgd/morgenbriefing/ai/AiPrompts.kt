@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ai
 
+import com.cedrickgd.morgenbriefing.ai.provider.LiveToolNote
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
@@ -24,7 +25,8 @@ internal object AiPrompts {
     // Chat ("Frag nach")
     // -------------------------------------------------------------------------------------
 
-    val CHAT_SYSTEM: String = """
+    /** The chat prompt with web search, as in v1.2 (the provider-neutral wording came first). */
+    private val CHAT_SYSTEM_WEB: String = """
         Du bist der Nachrichten-Erklärer im „Morgenbriefing“, einer persönlichen News-App. Dein Gegenüber wohnt in Bad Düben (Nordsachsen) und arbeitet in Leipzig. Ihr duzt euch.
 
         Deine Aufgabe: Fragen zu einem Artikel oder zum ganzen Briefing des Tages beantworten – freundlich, präzise und auf Deutsch. Den Artikel bzw. das Briefing findest du im folgenden Abschnitt „Kontext“.
@@ -43,6 +45,27 @@ internal object AiPrompts {
         - Nur leichtes Markdown: Absätze durch eine Leerzeile getrennt, **fett** für wenige Schlüsselbegriffe, Listen mit „- “ am Zeilenanfang. Keine Überschriften mit #, keine Tabellen, keine Links, keine Emojis.
         - Steig direkt mit der Antwort ein, ohne Floskeln wie „Gute Frage!“.
     """.trimIndent()
+
+    /** The chat bullet about the context's date, with web search … */
+    private const val CONTEXT_DATE_WEB =
+        "- Der Kontext hat einen Stand (Datum am Anfang). Geht es um etwas, das danach passiert sein kann – neue Entwicklungen, " +
+            "aktuelle Zahlen, Reaktionen –, nutze die Websuche und lies bei Bedarf die wichtigsten Seiten. Nenne dann im Text, " +
+            "woher die Information stammt („laut tagesschau.de“). Die Links zu deinen Quellen zeigt die App automatisch unter der " +
+            "Antwort an; schreib selbst keine URLs."
+
+    /** … and without (a provider without search, a free Gemini key). */
+    private const val CONTEXT_DATE_OFFLINE =
+        "- Der Kontext hat einen Stand (Datum am Anfang). Du hast hier keinen Internetzugang: Geht es um etwas, das danach " +
+            "passiert sein kann, sag offen, dass du dazu nichts Aktuelles weißt, und nenn den Stand des Kontexts. Erfinde keine Quellen."
+
+    private val CHAT_SYSTEM_OFFLINE: String = CHAT_SYSTEM_WEB.replace(CONTEXT_DATE_WEB, CONTEXT_DATE_OFFLINE)
+
+    /**
+     * The chat's system prompt. [webSearch] true is the v1.2 prompt byte for byte; without web
+     * search the model is told to say openly when the context is too old instead of searching.
+     * Both are constants, so the cached prompt prefix stays stable.
+     */
+    fun chatSystem(webSearch: Boolean): String = if (webSearch) CHAT_SYSTEM_WEB else CHAT_SYSTEM_OFFLINE
 
     val ARTICLE_SUGGESTIONS = listOf(
         "Erklär mir den Hintergrund",
@@ -151,7 +174,8 @@ internal object AiPrompts {
         "entertainment" to "Games, Film und Serien, Musik, Popkultur, große Events in Leipzig – keine Gerüchte als Tatsachen",
     )
 
-    val LIVE_SYSTEM: String = buildString {
+    /** The Live prompt of v1.2 (Claude: web_search and web_fetch). */
+    private val LIVE_SYSTEM_SEARCH_AND_FETCH: String = buildString {
         append(
             """
             Du bist die Live-Redaktion des „Morgenbriefings“, einer persönlichen News-App. Der Leser wohnt in Bad Düben (Nordsachsen) und arbeitet in Leipzig. Am Morgen hat er sein Briefing bekommen; jetzt möchte er nur das, was SEITDEM passiert ist – brandaktuell, geprüft und als vollständige Artikel, die er direkt in der App liest.
@@ -192,6 +216,30 @@ internal object AiPrompts {
             append("- ").append(topic.id).append(" (").append(topic.title).append("): ").append(FOCUS[topic.id].orEmpty()).append('\n')
         }
     }.trimEnd()
+
+    /** Lines of the Claude prompt that name its tools, and their wording for one search tool. */
+    private val SEARCH_ONLY_WORDING: List<Pair<String, String>> = listOf(
+        "Öffne die Quellen mit web_fetch und lies sie." to
+            "Lies die Quellen, die dir die Websuche liefert, und verlass dich nicht auf Überschriften allein.",
+        "1. Recherchiere mit web_search (deutsch und englisch)" to "1. Recherchiere mit der Websuche (deutsch und englisch)",
+        "2. Prüfe jede Geschichte mit web_fetch an ihren Quellen." to "2. Prüfe jede Geschichte an mindestens zwei Quellen aus der Websuche.",
+        // Text right before a function call can break it (Gemini MALFORMED_FUNCTION_CALL, OpenAI phases).
+        "Die Artikel stehen nur dort, nicht in deiner Antwort." to
+            "Die Artikel stehen nur dort, nicht in deiner Antwort. Schreib vor dem Aufruf keinen Text.",
+    )
+
+    private val LIVE_SYSTEM_SEARCH_ONLY: String =
+        SEARCH_ONLY_WORDING.fold(LIVE_SYSTEM_SEARCH_AND_FETCH) { prompt, (claude, other) -> prompt.replace(claude, other) }
+
+    /**
+     * The Live system prompt for the tools of the provider ([LiveToolNote]): Claude's
+     * (`web_search` + `web_fetch`) is the v1.2 prompt byte for byte; every other provider gets the
+     * same rules without tool names. `publish_articles` keeps its name everywhere.
+     */
+    fun liveSystem(note: LiveToolNote): String = when (note) {
+        LiveToolNote.SEARCH_AND_FETCH -> LIVE_SYSTEM_SEARCH_AND_FETCH
+        LiveToolNote.SEARCH_ONLY -> LIVE_SYSTEM_SEARCH_ONLY
+    }
 
     /** Reminder when the model ended its turn without calling `publish_articles`. */
     const val LIVE_NUDGE =

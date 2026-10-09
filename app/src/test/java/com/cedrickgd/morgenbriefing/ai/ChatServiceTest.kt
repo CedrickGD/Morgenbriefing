@@ -111,7 +111,7 @@ class ChatServiceTest {
 
         val request = engine.requests.single()
         assertEquals("Kontext: Artikel region-buslinie", request.context)
-        assertEquals(AiPrompts.CHAT_SYSTEM, request.systemPrompt)
+        assertEquals(AiPrompts.chatSystem(webSearch = true), request.systemPrompt)
         assertEquals("claude-sonnet-5-5", request.model)
         assertEquals(1, request.history.size)
         assertTrue(request.history.single().text.startsWith("Worum geht es?\n\n(Heute ist Montag, 5. Oktober 2026, es ist 14:20 Uhr.)"))
@@ -379,6 +379,7 @@ class ChatServiceTest {
         assertEquals(ChatMessage.Status.DONE, answer.status)
         val request = gemini.requests.single()
         assertFalse(request.webSearch)
+        assertEquals(AiPrompts.chatSystem(webSearch = false), request.systemPrompt)
         assertTrue(request.auth.freeTier)
         assertEquals("gemini-3.8-flash", request.model)
         // Counted as a request, priced at 0 $.

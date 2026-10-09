@@ -247,7 +247,7 @@ internal class ChatServiceImpl(
                 val request = ChatTurnRequest(
                     auth = resolved.auth,
                     model = resolved.model,
-                    systemPrompt = AiPrompts.CHAT_SYSTEM,
+                    systemPrompt = AiPrompts.chatSystem(resolved.webSearch),
                     context = ctx.text,
                     history = history + ApiMessage(fromUser = true, text = apiText),
                     webSearch = resolved.webSearch,

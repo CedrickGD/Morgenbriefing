@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ai
 
+import com.cedrickgd.morgenbriefing.ai.provider.LiveToolNote
 import com.cedrickgd.morgenbriefing.data.AppJson
 import com.cedrickgd.morgenbriefing.data.withAiKey
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
@@ -124,7 +125,7 @@ class LiveNewsServiceTest {
         assertTrue(folder.root.resolve("live/2026-10-05-1430.json").isFile)
 
         val request = engine.requests.single()
-        assertEquals(AiPrompts.LIVE_SYSTEM, request.systemPrompt)
+        assertEquals(AiPrompts.liveSystem(LiveToolNote.SEARCH_AND_FETCH), request.systemPrompt)
         assertTrue(request.userPrompt.contains("- region (Leipzig & Region)"))
         assertTrue(request.userPrompt.contains("[region] Alte Meldung"))
         // News since the morning brief.
@@ -263,6 +264,8 @@ class LiveNewsServiceTest {
         val request = engine.requests.single()
         assertEquals(AiProviderId.OPENAI, request.auth.provider)
         assertEquals("gpt-6-luna", request.model)
+        // No Claude tool names for other providers.
+        assertEquals(AiPrompts.liveSystem(LiveToolNote.SEARCH_ONLY), request.systemPrompt)
         val stored = AppJson.decodeFromString(StoredLiveRun.serializer(), folder.root.resolve("live/2026-10-05-1430.json").readText())
         assertEquals("openai", stored.provider)
         assertEquals("gpt-6-luna", stored.model)

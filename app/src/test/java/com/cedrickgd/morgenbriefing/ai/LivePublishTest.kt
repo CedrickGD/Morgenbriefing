@@ -1,16 +1,25 @@
 package com.cedrickgd.morgenbriefing.ai
 
+import com.cedrickgd.morgenbriefing.ai.http.toJsonElement
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
+import com.cedrickgd.morgenbriefing.data.model.Topics
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
+import java.security.MessageDigest
 import java.time.Instant
 
 internal object LiveFixtures {
@@ -148,5 +157,52 @@ class LivePublishTest {
         @Suppress("UNCHECKED_CAST")
         val sourceItem = (properties["sources"] as Map<String, Any>)["items"] as Map<String, Any>
         assertEquals(false, sourceItem["additionalProperties"])
+    }
+
+    @Test
+    fun `the Claude schema is the v1_2 schema byte for byte`() {
+        val json = Json.encodeToString(JsonElement.serializer(), LivePublish.articlesProperty(Topics.ALL.map { it.id }).toJsonElement())
+        assertEquals(1328, json.length)
+        val sha = MessageDigest.getInstance("SHA-256").digest(json.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
+        assertEquals("20d5589245a29c4f16f9b8450fb7fe5ce3e39948d8ad3c529f37b39bcd236a6c", sha)
+        assertTrue(json.contains("\"format\":\"uri\""))
+        assertTrue(json.contains("\"image\""))
+    }
+
+    @Test
+    fun `the portable schema leaves out uri formats and the image field`() {
+        val ids = Topics.ALL.map { it.id }
+        val portable = LivePublish.articleSchema(ids, LivePublish.SchemaDialect.PORTABLE)
+        @Suppress("UNCHECKED_CAST")
+        val properties = portable["properties"] as Map<String, Any>
+        assertTrue("image" !in properties)
+        assertEquals(properties.keys.toList(), portable["required"])
+        assertEquals(false, portable["additionalProperties"])
+        val json = Json.encodeToString(JsonElement.serializer(), LivePublish.parametersSchema(ids, LivePublish.SchemaDialect.PORTABLE).toJsonElement())
+        assertFalse(json.contains("\"uri\""))
+        assertFalse(json.contains("\"image\""))
+        // OpenAI strict mode supports date-time.
+        assertTrue(json.contains("\"date-time\""))
+
+        val parameters = Json.parseToJsonElement(json).jsonObject
+        assertEquals("object", parameters["type"]!!.jsonPrimitive.content)
+        assertEquals(listOf("articles"), parameters["required"]!!.jsonArray.map { it.jsonPrimitive.content })
+        assertEquals(false, parameters["additionalProperties"]!!.jsonPrimitive.boolean)
+        assertEquals("array", parameters["properties"]!!.jsonObject["articles"]!!.jsonObject["type"]!!.jsonPrimitive.content)
+        // The validator does not care which dialect produced the call.
+        val outcome = LivePublish.validate(LiveFixtures.payload(LiveFixtures.article()), setOf("region"), emptySet(), LiveFixtures.NOW)
+        assertTrue(outcome.problems.isEmpty())
+    }
+
+    @Test
+    fun `plain values become JSON trees`() {
+        val tree = linkedMapOf("a" to listOf(1, 2.5, true, null), "b" to arrayOf("x"), "c" to JsonPrimitive("raw")).toJsonElement()
+        assertEquals("""{"a":[1,2.5,true,null],"b":["x"],"c":"raw"}""", tree.toString())
+        try {
+            Any().toJsonElement()
+            fail("expected IllegalArgumentException")
+        } catch (_: IllegalArgumentException) {
+            // expected
+        }
     }
 }

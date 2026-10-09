@@ -2,6 +2,7 @@ package com.cedrickgd.morgenbriefing.ai
 
 import com.cedrickgd.morgenbriefing.ai.claude.ClaudeBackend
 import com.cedrickgd.morgenbriefing.ai.claude.ClaudeClients
+import com.cedrickgd.morgenbriefing.ai.provider.LiveToolNote
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -40,7 +41,7 @@ class ClaudeLiveEngineTest {
     private val request = LiveResearchRequest(
         auth = ProviderAuth(AiProviderId.ANTHROPIC, Sse.TEST_KEY),
         model = "claude-sonnet-5-5",
-        systemPrompt = AiPrompts.LIVE_SYSTEM,
+        systemPrompt = AiPrompts.liveSystem(LiveToolNote.SEARCH_AND_FETCH),
         userPrompt = "Recherchiere brandaktuelle Meldungen.",
     )
 

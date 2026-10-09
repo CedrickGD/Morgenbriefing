@@ -180,7 +180,7 @@ internal class LiveNewsServiceImpl(
                 LiveResearchRequest(
                     auth = resolved.auth,
                     model = model,
-                    systemPrompt = AiPrompts.LIVE_SYSTEM,
+                    systemPrompt = AiPrompts.liveSystem(resolved.spec.liveToolNote),
                     userPrompt = AiPrompts.liveRequest(now, since, topics, known),
                 ),
                 listener,

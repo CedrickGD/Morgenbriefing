@@ -15,8 +15,9 @@ beide Funktionen sichtbar, erklären sich aber freundlich und verweisen auf die 
 
 | Einstellung | Modell-ID | Preis (Input / Output pro Mio. Tokens) | Cache-Read |
 |---|---|---|---|
-| **Standard** | `claude-sonnet-5-5` | 2 $ / 10 $ | 0,20 $ |
+| **Standard** | `claude-sonnet-5-5` | 2 $ / 10 $ | 0,10 $ |
 | Wählbar | `claude-opus-5-5` | 4 $ / 20 $ | 0,20 $ |
+| Wählbar | `claude-haiku-5-5` | 0,10 $ / 0,50 $ (über 100.000 Tokens Eingabe: 0,50 $ / 2,50 $) | 0,01 $ |
 
 * Websuche (`web_search_20260209`): **10 $ pro 1.000 Suchen** + Tokens der Ergebnisse.
   Web-Fetch (`web_fetch_20260209`): keine Zusatzkosten, nur Tokens.

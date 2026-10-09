@@ -49,7 +49,7 @@ class ClaudeChatEngineTest {
         ChatTurnRequest(
             auth = ProviderAuth(AiProviderId.ANTHROPIC, Sse.TEST_KEY),
             model = "claude-sonnet-5-5",
-            systemPrompt = AiPrompts.CHAT_SYSTEM,
+            systemPrompt = AiPrompts.chatSystem(webSearch = true),
             context = "Kontext: ein Artikel aus dem Morgenbriefing vom Montag, 5. Oktober 2026.",
             history = history,
         )

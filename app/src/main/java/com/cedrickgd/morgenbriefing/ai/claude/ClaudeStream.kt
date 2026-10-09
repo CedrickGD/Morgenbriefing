@@ -113,7 +113,7 @@ internal object ClaudeStreamer {
                 if (tracker.started) record(tracker, requestModel, usage)
             }
             if (cancelled) throw (e as? CancellationException ?: CancellationException("Abgebrochen").apply { initCause(e) })
-            throw ClaudeErrors.map(e)
+            throw ClaudeErrors.map(e, requestModel)
         }
         record(tracker, requestModel, usage)
         if (!tracker.complete) throw AiException(AiError.Network)

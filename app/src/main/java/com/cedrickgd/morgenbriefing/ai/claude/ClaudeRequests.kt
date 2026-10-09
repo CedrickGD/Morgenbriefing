@@ -12,7 +12,9 @@ import com.anthropic.models.messages.TextBlockParam
 import com.anthropic.models.messages.Tool
 import com.anthropic.models.messages.ToolResultBlockParam
 import com.anthropic.models.messages.UserLocation
+import com.anthropic.models.messages.WebFetchTool20250910
 import com.anthropic.models.messages.WebFetchTool20260209
+import com.anthropic.models.messages.WebSearchTool20250305
 import com.anthropic.models.messages.WebSearchTool20260209
 import com.cedrickgd.morgenbriefing.ai.ApiMessage
 import com.cedrickgd.morgenbriefing.ai.LivePublish
@@ -22,7 +24,8 @@ import com.cedrickgd.morgenbriefing.ai.LivePublish
  * - no `thinking` field (Sonnet 5.5 / Opus 5.5 think adaptively; disabling is a 400) — depth
  *   via `output_config.effort`: chat LOW, live research MEDIUM;
  * - no prefill and no forced `tool_choice` (auto + clear instructions);
- * - web search/fetch `_20260209` (dynamic filtering built in, no separate code execution);
+ * - web search/fetch `_20260209` (dynamic filtering built in, no separate code execution); Haiku
+ *   only takes the basic `web_search_20250305` / `web_fetch_20250910` and no fallbacks;
  * - stable prefix (tools → system → context) with an explicit cache breakpoint on the last
  *   system block, plus automatic caching for the growing conversation tail;
  * - server-side refusal fallback opted in by default (`fallbacks: "default"` + beta header).
@@ -38,23 +41,32 @@ internal object ClaudeRequests {
     fun supportsDefaultFallback(model: String): Boolean =
         model.startsWith("claude-sonnet-5-5") || model.startsWith("claude-opus-5-5")
 
-    /** Chat ("Frag nach"): stable system prompt + context, web search (3) and fetch (4). */
-    fun chat(model: String, systemPrompt: String, context: String): MessageCreateParams.Builder =
-        base(model, CHAT_MAX_TOKENS, OutputConfig.Effort.LOW)
-            .addTool(webSearch(maxUses = 3))
-            .addTool(webFetch(maxUses = 4, maxContentTokens = 6_000))
-            .systemOfTextBlockParams(
-                listOf(
-                    TextBlockParam.builder().text(systemPrompt).build(),
-                    TextBlockParam.builder().text(context).cacheControl(ephemeral()).build(),
-                ),
-            )
+    /**
+     * Models that only take the basic server tools `web_search_20250305` / `web_fetch_20250910`:
+     * the `_20260209` variants (dynamic filtering) need Opus 4.6+ / Sonnet 4.6+, and Haiku is
+     * neither (D14).
+     */
+    fun usesBasicServerTools(model: String): Boolean = model.startsWith("claude-haiku")
+
+    /**
+     * Chat ("Frag nach"): stable system prompt + context, web search (3) and fetch (4) unless
+     * [webSearch] is off.
+     */
+    fun chat(model: String, systemPrompt: String, context: String, webSearch: Boolean = true): MessageCreateParams.Builder {
+        val builder = base(model, CHAT_MAX_TOKENS, OutputConfig.Effort.LOW)
+        if (webSearch) builder.addWebTools(model, searchUses = 3, fetchUses = 4, fetchContentTokens = 6_000)
+        return builder.systemOfTextBlockParams(
+            listOf(
+                TextBlockParam.builder().text(systemPrompt).build(),
+                TextBlockParam.builder().text(context).cacheControl(ephemeral()).build(),
+            ),
+        )
+    }
 
     /** Live research: web search (10), web fetch (8) and the strict client tool `publish_articles`. */
     fun live(model: String, systemPrompt: String, topicIds: List<String>): MessageCreateParams.Builder =
         base(model, LIVE_MAX_TOKENS, OutputConfig.Effort.MEDIUM)
-            .addTool(webSearch(maxUses = 10))
-            .addTool(webFetch(maxUses = 8, maxContentTokens = 5_000))
+            .addWebTools(model, searchUses = 10, fetchUses = 8, fetchContentTokens = 5_000)
             .addTool(publishTool(topicIds))
             .systemOfTextBlockParams(listOf(TextBlockParam.builder().text(systemPrompt).cacheControl(ephemeral()).build()))
 
@@ -145,24 +157,27 @@ internal object ClaudeRequests {
 
     private fun ephemeral(): CacheControlEphemeral = CacheControlEphemeral.builder().build()
 
-    private fun webSearch(maxUses: Long): WebSearchTool20260209 =
-        WebSearchTool20260209.builder()
-            .maxUses(maxUses)
-            .userLocation(
-                UserLocation.builder()
-                    .type(JsonValue.from("approximate"))
-                    .city("Leipzig")
-                    .region("Sachsen")
-                    .country("DE")
-                    .timezone("Europe/Berlin")
-                    .build(),
-            )
-            .build()
+    /** Web search and fetch in the variant [model] takes ([usesBasicServerTools]). */
+    private fun MessageCreateParams.Builder.addWebTools(
+        model: String,
+        searchUses: Long,
+        fetchUses: Long,
+        fetchContentTokens: Long,
+    ): MessageCreateParams.Builder = if (usesBasicServerTools(model)) {
+        addTool(WebSearchTool20250305.builder().maxUses(searchUses).userLocation(leipzig()).build())
+            .addTool(WebFetchTool20250910.builder().maxUses(fetchUses).maxContentTokens(fetchContentTokens).build())
+    } else {
+        addTool(WebSearchTool20260209.builder().maxUses(searchUses).userLocation(leipzig()).build())
+            .addTool(WebFetchTool20260209.builder().maxUses(fetchUses).maxContentTokens(fetchContentTokens).build())
+    }
 
-    private fun webFetch(maxUses: Long, maxContentTokens: Long): WebFetchTool20260209 =
-        WebFetchTool20260209.builder()
-            .maxUses(maxUses)
-            .maxContentTokens(maxContentTokens)
+    private fun leipzig(): UserLocation =
+        UserLocation.builder()
+            .type(JsonValue.from("approximate"))
+            .city("Leipzig")
+            .region("Sachsen")
+            .country("DE")
+            .timezone("Europe/Berlin")
             .build()
 
     /**

@@ -45,8 +45,8 @@ import java.io.IOException
 internal class ClaudeChatEngine(private val clients: ClaudeClients) : ChatEngine {
 
     override suspend fun answer(request: ChatTurnRequest, listener: ChatTurnListener, usage: UsageSink): ChatTurnResult {
-        val client = clients.forKey(requireNotNull(request.auth.apiKey) { "Claude needs a key" })
-        val params = ClaudeRequests.chat(request.model, request.systemPrompt, request.context)
+        val client = clients.forAuth(request.auth)
+        val params = ClaudeRequests.chat(request.model, request.systemPrompt, request.context, webSearch = request.webSearch)
         val messages = ClaudeRequests.toParams(request.history).toMutableList()
         val sources = SourceCollector()
         val text = AnswerText()
@@ -94,7 +94,7 @@ internal class ClaudeChatEngine(private val clients: ClaudeClients) : ChatEngine
 internal class ClaudeLiveEngine(private val clients: ClaudeClients) : LiveEngine {
 
     override suspend fun research(request: LiveResearchRequest, listener: LiveResearchListener, usage: UsageSink): LiveResearchResult {
-        val client = clients.forKey(requireNotNull(request.auth.apiKey) { "Claude needs a key" })
+        val client = clients.forAuth(request.auth)
         val params = ClaudeRequests.live(request.model, request.systemPrompt, Topics.ALL.map { it.id })
         val messages = mutableListOf<MessageParam>(ClaudeRequests.userText(request.userPrompt))
         val callbacks = object : StreamCallbacks {
@@ -159,15 +159,20 @@ internal class ClaudeLiveEngine(private val clients: ClaudeClients) : LiveEngine
     }
 }
 
-/** One tiny request with the given key: 401/403 → INVALID, no connection → NETWORK. */
+/**
+ * One tiny request with the given key (and workspace id) against the chosen model: 401/403 →
+ * INVALID, a workspace problem → WORKSPACE_REQUIRED / WORKSPACE_INVALID, an empty balance →
+ * OK_NO_CREDIT, no connection → NETWORK. Any other 4xx (e.g. an unknown model) still proves
+ * the key authenticated.
+ */
 internal class ClaudeKeyChecker(private val clients: ClaudeClients) : KeyChecker {
 
     override suspend fun check(auth: ProviderAuth, model: String, usage: UsageSink): KeyCheckOutcome =
         KeyCheckOutcome(checkKey(auth, model, usage))
 
     private suspend fun checkKey(auth: ProviderAuth, model: String, usage: UsageSink): AiKeyCheck {
-        val key = auth.apiKey ?: return AiKeyCheck.INVALID
-        val client = clients.create(key)
+        if (auth.apiKey.isNullOrBlank()) return AiKeyCheck.INVALID
+        val client = clients.create(auth)
         return try {
             val message = runInterruptible(Dispatchers.IO) { client.messages().create(ClaudeRequests.keyCheck(model)) }
             runCatching {
@@ -194,8 +199,14 @@ internal class ClaudeKeyChecker(private val clients: ClaudeClients) : KeyChecker
             // Authenticated, just busy: the key works.
             AiKeyCheck.OK
         } catch (e: AnthropicServiceException) {
-            // 400/402 mean the key was accepted (e.g. no credit left); 5xx says nothing about it.
-            if (e.statusCode() in 500..599) AiKeyCheck.NETWORK else AiKeyCheck.OK
+            when (ClaudeErrors.keyVerdict(e)) {
+                // Bug fix: a 400 about the workspace is no proof that the key works.
+                ClaudeErrors.KeyVerdict.WORKSPACE_REQUIRED -> AiKeyCheck.WORKSPACE_REQUIRED
+                ClaudeErrors.KeyVerdict.WORKSPACE_INVALID -> AiKeyCheck.WORKSPACE_INVALID
+                ClaudeErrors.KeyVerdict.NO_CREDIT -> AiKeyCheck.OK_NO_CREDIT
+                // Other 4xx mean the key was accepted; 5xx says nothing about it.
+                ClaudeErrors.KeyVerdict.OTHER -> if (e.statusCode() in 500..599) AiKeyCheck.NETWORK else AiKeyCheck.OK
+            }
         } catch (e: AnthropicIoException) {
             AiKeyCheck.NETWORK
         } catch (e: AnthropicRetryableException) {
