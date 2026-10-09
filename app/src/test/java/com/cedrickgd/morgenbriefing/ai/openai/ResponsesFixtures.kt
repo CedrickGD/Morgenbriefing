@@ -24,6 +24,10 @@ internal object ResponsesSse {
     const val XAI_KEY = "xai-test-invalid"
     const val PPLX_KEY = "pplx-test-invalid"
 
+    /** xAI's real answer (HTTP 400) to a wrong key, on `/api-key` and `/responses` alike (observed 2026-10-09, OC §4.8). */
+    const val XAI_INCORRECT_KEY =
+        """{"code":"invalid-argument","error":"Incorrect API key provided. You can obtain an API key from https://console.x.ai."}"""
+
     private var sequence = 0
 
     fun response(vararg events: String): MockResponse = MockResponse()

@@ -671,7 +671,9 @@ Perplexity: `cost.total_cost` → `reportedCostUsd`, `tool_calls_details.web_sea
 Key checks (no tokens where possible):
 * OpenAI: `GET /v1/models` → 200 OK, 401/403 INVALID, 429 OK, 5xx/IO NETWORK (OA §10).
 * xAI: `GET /v1/api-key` → 200: `api_key_blocked || api_key_disabled` → INVALID, `team_blocked` →
-  OK_NO_CREDIT, else OK; 401 INVALID (OC §4.8).
+  OK_NO_CREDIT, else OK; 401 INVALID; a wrong key is a **400** "Incorrect API key provided" (observed,
+  OC §4.8) → INVALID, like every other 4xx of `/api-key`. All three: a 400 naming the API key →
+  INVALID, another 4xx → OK (the key got through), 5xx/IO → NETWORK.
 * Perplexity: `POST /v1/agent {"model":"openai/gpt-6-luna","input":"ping","max_output_tokens":16}` (no
   tools, not streamed) → 200 OK (record usage), 401 INVALID (OC §6.8).
 
@@ -864,7 +866,7 @@ UI texts (`AiTexts.error(error, spec)`; `brand` = `spec.brand`):
 
 | Status / signal | Anthropic | OpenAI | xAI | Perplexity | Gemini | OpenRouter | Mistral | DeepSeek | Custom |
 |---|---|---|---|---|---|---|---|---|---|
-| 400 | workspace msgs → Workspace*; credit → NoCredit; else Unknown | `model` + „does not exist“ → ModelUnavailable; else Unknown | Unknown | Unknown | `API_KEY_INVALID` → InvalidKey; `FAILED_PRECONDITION` → Unknown(„Gemini braucht für dich eine aktive Abrechnung in AI Studio.“); else Unknown | Unknown | Unknown | Unknown (`reasoning_content` 400 can't happen: thinking off) | Unknown |
+| 400 | workspace msgs → Workspace*; credit → NoCredit; else Unknown | `model` + „does not exist“ → ModelUnavailable; else Unknown | message names the API key („Incorrect API key provided“, OC §4.8) → InvalidKey; else Unknown | Unknown | `API_KEY_INVALID` → InvalidKey; `FAILED_PRECONDITION` → Unknown(„Gemini braucht für dich eine aktive Abrechnung in AI Studio.“); else Unknown | Unknown | Unknown | Unknown (`reasoning_content` 400 can't happen: thinking off) | Unknown |
 | 401 | InvalidKey | InvalidKey | InvalidKey | InvalidKey (text: or no credit) | InvalidKey | InvalidKey | InvalidKey | InvalidKey | InvalidKey |
 | 402 | NoCredit | – | – | – | NoCredit | with `Retry-After` → RateLimited (retry); else NoCredit | NoCredit (no payment method, OC §3.8) | NoCredit | – |
 | 403 | Unknown(„kein Zugriff auf dieses Modell“) | Unknown(„OpenAI ist in deiner Region nicht verfügbar.“) | Unknown(„Kein Zugriff – Team gesperrt oder Guthaben leer? Schau in console.x.ai nach.“) | Unknown | Unknown(„Der Key darf die Gemini API nicht nutzen.“) | Unknown(„OpenRouter hat die Anfrage abgelehnt (Moderation oder Rechte).“) | Unknown | – | InvalidKey |
@@ -1284,8 +1286,8 @@ Set them per request with a path prefix that also works in the app's base URL
 environment variables `MOCK_ERROR` / `MOCK_MODE`, or at runtime with
 `curl -X POST "http://127.0.0.1:8787/__mock?set=free-tier-search"` (`/__mock/reset` clears,
 `GET /__mock` shows the state). Any non-empty key works; a key containing `reject` gets the
-provider's 401. Use fake values like `AIza-test-invalid`, `AQ.test-invalid`, `sk-test-invalid` —
-never real keys.
+provider's refusal (401; xAI a 400 like the real API, OC §4.8). Use fake values like
+`AIza-test-invalid`, `AQ.test-invalid`, `sk-test-invalid` — never real keys.
 
 The log line of every request names the family, model, search/Live and a masked key, and warns
 when the app breaks a documented rule (Gemini key as `?key=`, `temperature`/`thinkingBudget` on

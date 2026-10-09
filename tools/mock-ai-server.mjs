@@ -23,7 +23,8 @@
 //                or query ?mock=<switches> (curl)
 //   globally     env MOCK_ERROR / MOCK_MODE, or at runtime: curl -X POST "http://localhost:8787/__mock?set=429,slow"
 //                (curl -X POST http://localhost:8787/__mock/reset clears; GET /__mock shows the state)
-// Any non-empty key works; a key containing "reject" gets the provider's 401. Keys are never printed in full.
+// Any non-empty key works; a key containing "reject" gets the provider's refusal (401; xAI answers 400 like the real
+// API, OC §4.8). Keys are never printed in full.
 //
 // Usage: node tools/mock-ai-server.mjs [--port 8787] [--host 127.0.0.1] [--delay 35]
 
@@ -311,6 +312,7 @@ async function responses(ctx, dialect) {
   log(dialect, `POST ${ctx.path} model=${model} stream=${!!body?.stream} search=${search} live=${!!publish} key=${mask(key)}`);
   lintResponses(dialect, body);
   const error = authError(key) ?? errorSwitch(switches);
+  if (dialect === 'xai' && error === '401' && key) return xaiIncorrectKey(ctx);
   if (error) return responsesError(ctx, error, model);
 
   if (!body?.stream) {
@@ -734,6 +736,7 @@ function keyInfo(ctx, provider) {
   // "402" is no error here: the key works, the account has no credit (the check's OK_NO_CREDIT).
   const noCredit = ctx.switches.has('402');
   const error = authError(key) ?? (noCredit ? null : errorSwitch(ctx.switches));
+  if (provider === 'xai' && error === '401' && key) return xaiIncorrectKey(ctx);
   if (error) return responsesError(ctx, error, '');
   if (provider === 'xai') {
     return json(ctx.res, 200, { redacted_api_key: `${key.slice(0, 4)}****`, name: 'mock', api_key_id: 'mock', team_id: 'mock',
@@ -749,6 +752,15 @@ function keyInfo(ctx, provider) {
 function authError(key) {
   if (!key || key.includes('reject')) return '401';
   return null;
+}
+
+/**
+ * xAI's real answer to a wrong key on /v1/api-key and /v1/responses: HTTP 400 with a flat body,
+ * not 401 (observed 2026-10-09 with a fake key, OC §4.8); only a missing key gets 401.
+ */
+function xaiIncorrectKey(ctx) {
+  log('->', '400 incorrect API key (xAI)');
+  return json(ctx.res, 400, { code: 'invalid-argument', error: 'Incorrect API key provided. You can obtain an API key from https://console.x.ai.' });
 }
 
 function warn(message) {

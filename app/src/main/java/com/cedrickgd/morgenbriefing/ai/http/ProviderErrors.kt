@@ -100,8 +100,11 @@ internal object ProviderErrors {
                 MappedError(AiError.Unknown("Das Ausgabenlimit deines OpenAI-Projekts ist erreicht."))
             else -> null
         }
-        AiProviderId.XAI -> when (code) {
-            403 -> MappedError(AiError.Unknown("Kein Zugriff – Team gesperrt oder Guthaben leer? Schau in console.x.ai nach."))
+        AiProviderId.XAI -> when {
+            // A wrong key is a 400 {"code":"invalid-argument","error":"Incorrect API key provided. …"}
+            // at xAI; only a missing key gets 401 (observed 2026-10-09, OC §4.8).
+            code == 400 && e.namesApiKey() -> MappedError(AiError.InvalidKey)
+            code == 403 -> MappedError(AiError.Unknown("Kein Zugriff – Team gesperrt oder Guthaben leer? Schau in console.x.ai nach."))
             else -> null
         }
         AiProviderId.GEMINI -> when {
@@ -251,6 +254,9 @@ internal class ApiErrorBody(
     fun isGeminiKeyInvalid(): Boolean =
         "API_KEY_INVALID" in reasons || message.orEmpty().contains("API key not valid", ignoreCase = true)
 
+    /** The message is about the API key, e.g. xAI's 400 "Incorrect API key provided. …". */
+    fun namesApiKey(): Boolean = message.orEmpty().contains("API key", ignoreCase = true)
+
     companion object {
         private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
@@ -264,7 +270,8 @@ internal class ApiErrorBody(
             val top = (if (root is JsonArray) root.firstOrNull() else root) as? JsonObject ?: return ApiErrorBody()
             return when (val error = top["error"]) {
                 is JsonObject -> of(error)
-                is JsonPrimitive -> ApiErrorBody(message = error.text())
+                // xAI: {"code": "invalid-argument", "error": "Incorrect API key provided. …"}
+                is JsonPrimitive -> ApiErrorBody(message = error.text(), code = top["code"].text())
                 else -> of(top)
             }
         }

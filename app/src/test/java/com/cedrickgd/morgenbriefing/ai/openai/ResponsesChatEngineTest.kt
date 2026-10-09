@@ -18,6 +18,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.OkHttpClient
+import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -245,7 +246,12 @@ class ResponsesChatEngineTest {
         assertError(AiError.InvalidKey) { backend(ResponsesDialect.OPENAI).chat.answer(request(), ChatRecorder(), usage) }
         server.enqueue(ResponsesSse.httpError(429, "credit_balance_exhausted", type = "insufficient_quota"))
         assertError(AiError.NoCredit) { backend(ResponsesDialect.OPENAI).chat.answer(request(), ChatRecorder(), usage) }
-        assertEquals(2, server.requestCount)
+        // xAI refuses a wrong key with 400 (OC §4.8): "Key ändern", not "Nochmal versuchen".
+        server.enqueue(MockResponse().setResponseCode(400).setHeader("Content-Type", "application/json").setBody(ResponsesSse.XAI_INCORRECT_KEY))
+        assertError(AiError.InvalidKey) {
+            backend(ResponsesDialect.XAI).chat.answer(request(AiProviderId.XAI, ResponsesSse.XAI_KEY, "grok-4.3"), ChatRecorder(), usage)
+        }
+        assertEquals(3, server.requestCount)
         assertTrue(slept.isEmpty())
         assertTrue(usage.records.isEmpty())
     }

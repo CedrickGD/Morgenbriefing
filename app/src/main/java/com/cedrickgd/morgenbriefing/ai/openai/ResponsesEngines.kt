@@ -22,6 +22,7 @@ import com.cedrickgd.morgenbriefing.ai.SourceCollector
 import com.cedrickgd.morgenbriefing.ai.TurnEnd
 import com.cedrickgd.morgenbriefing.ai.UsageSink
 import com.cedrickgd.morgenbriefing.ai.http.AiHttp
+import com.cedrickgd.morgenbriefing.ai.http.ApiErrorBody
 import com.cedrickgd.morgenbriefing.ai.http.RetryPolicy
 import com.cedrickgd.morgenbriefing.ai.http.bool
 import com.cedrickgd.morgenbriefing.ai.http.fetch
@@ -151,10 +152,10 @@ internal class ResponsesKeyChecker(
         val headers = ResponsesRequests.headers(auth)
         return try {
             when (dialect) {
-                ResponsesDialect.OPENAI -> verdict(http.fetch(http.get("$base/models", headers)).code)
+                ResponsesDialect.OPENAI -> http.fetch(http.get("$base/models", headers)).let { verdict(it.code, it.body) }
                 ResponsesDialect.XAI -> {
                     val reply = http.fetch(http.get("$base/api-key", headers))
-                    if (reply.code !in 200..299) return verdict(reply.code)
+                    if (reply.code !in 200..299) return verdict(reply.code, reply.body)
                     val key = parse(reply.body)
                     when {
                         key?.bool("api_key_blocked") == true || key?.bool("api_key_disabled") == true -> AiKeyCheck.INVALID
@@ -165,7 +166,7 @@ internal class ResponsesKeyChecker(
                 ResponsesDialect.PERPLEXITY -> {
                     val reply = http.fetch(http.post("$base${dialect.path}", ResponsesRequests.perplexityKeyCheck(), headers))
                     if (reply.code in 200..299) recordCheck(parse(reply.body), usage)
-                    verdict(reply.code)
+                    verdict(reply.code, reply.body)
                 }
             }
         } catch (e: CancellationException) {
@@ -178,11 +179,21 @@ internal class ResponsesKeyChecker(
         }
     }
 
-    /** 2xx and 429 (authenticated, just busy) prove the key; 401/403 refuse it; 402 means no credit. */
-    private fun verdict(code: Int): AiKeyCheck = when (code) {
-        in 200..299, 429 -> AiKeyCheck.OK
-        401, 403 -> AiKeyCheck.INVALID
-        402 -> AiKeyCheck.OK_NO_CREDIT
+    /**
+     * What a non-network answer says about the key: 2xx and 429 (authenticated, just busy) prove
+     * it; 401/403 refuse it; 402 means no credit. xAI refuses a wrong key with **400** and
+     * "Incorrect API key provided" (only a missing key gets 401, observed 2026-10-09, OC §4.8):
+     * a 400 that names the API key refuses it everywhere, and on xAI's `/api-key` — which judges
+     * nothing but the key — every other 4xx does too. Any other 4xx answered, so the key got
+     * through and the small request itself was the problem (OK, like the Claude check); only
+     * 5xx (the provider is down) is NETWORK, which offers "Ohne Test speichern".
+     */
+    private fun verdict(code: Int, body: String): AiKeyCheck = when {
+        code in 200..299 || code == 429 -> AiKeyCheck.OK
+        code == 401 || code == 403 -> AiKeyCheck.INVALID
+        code == 402 -> AiKeyCheck.OK_NO_CREDIT
+        code == 400 && ApiErrorBody.parse(body).namesApiKey() -> AiKeyCheck.INVALID
+        code in 400..499 -> if (dialect == ResponsesDialect.XAI) AiKeyCheck.INVALID else AiKeyCheck.OK
         else -> AiKeyCheck.NETWORK
     }
 

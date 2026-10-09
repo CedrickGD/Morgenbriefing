@@ -87,6 +87,28 @@ class ResponsesKeyCheckerTest {
     }
 
     @Test
+    fun `xAI refuses a wrong key with 400, which is no connection problem`() = runBlocking<Unit> {
+        val xai = checker(ResponsesDialect.XAI)
+        // The real API's answer to a wrong key (observed 2026-10-09; only a missing key gets 401).
+        server.enqueue(json(400, ResponsesSse.XAI_INCORRECT_KEY))
+        assertEquals(AiKeyCheck.INVALID, xai.check(auth(AiProviderId.XAI, "xai-test-invalid-0000000000000000000000"), "grok-4.3", usage).check)
+        // /api-key judges nothing but the key: any other 4xx refuses it too.
+        server.enqueue(json(422, """{"code":"invalid-argument","error":"Malformed authorization header"}"""))
+        assertEquals(AiKeyCheck.INVALID, xai.check(auth(AiProviderId.XAI, ResponsesSse.XAI_KEY), "grok-4.3", usage).check)
+        // The provider is down: "Ohne Test speichern" stays possible.
+        server.enqueue(json(503))
+        assertEquals(AiKeyCheck.NETWORK, xai.check(auth(AiProviderId.XAI, ResponsesSse.XAI_KEY), "grok-4.3", usage).check)
+
+        // OpenAI and Perplexity: a 400 that names the key refuses it; another 4xx got through the key.
+        val openai = checker(ResponsesDialect.OPENAI)
+        server.enqueue(json(400, """{"error":{"message":"Incorrect API key provided: sk-test***.","type":"invalid_request_error","code":null}}"""))
+        assertEquals(AiKeyCheck.INVALID, openai.check(auth(AiProviderId.OPENAI, ResponsesSse.OPENAI_KEY), "gpt-6.1-sol", usage).check)
+        val pplx = checker(ResponsesDialect.PERPLEXITY)
+        server.enqueue(json(400, """{"error":{"message":"Model openai/gpt-6-luna is not available","type":"invalid_model","code":400}}"""))
+        assertEquals(AiKeyCheck.OK, pplx.check(auth(AiProviderId.PERPLEXITY, ResponsesSse.PPLX_KEY), "google/gemini-3.8-flash", usage).check)
+    }
+
+    @Test
     fun `Perplexity answers one tiny request and its cost is recorded`() = runBlocking<Unit> {
         val pplx = checker(ResponsesDialect.PERPLEXITY)
         server.enqueue(

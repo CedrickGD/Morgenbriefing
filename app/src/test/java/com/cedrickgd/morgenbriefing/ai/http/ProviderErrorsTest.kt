@@ -178,6 +178,16 @@ class ProviderErrorsTest {
     }
 
     @Test
+    fun `xAI refuses a wrong key with 400`() {
+        // Observed 2026-10-09 with a fake key on /v1/api-key and /v1/responses (OC §4.8).
+        val incorrect = """{"code":"invalid-argument","error":"Incorrect API key provided. You can obtain an API key from https://console.x.ai."}"""
+        assertEquals(MappedError(AiError.InvalidKey), http(XAI, 400, incorrect))
+        assertEquals("invalid-argument", ApiErrorBody.parse(incorrect).code)
+        // Another 400 stays a refused request.
+        assertEquals(AiError.Unknown("Grok hat die Anfrage abgelehnt (HTTP 400)."), http(XAI, 400, """{"code":"invalid-argument","error":"max_turns must be positive"}""").error)
+    }
+
+    @Test
     fun `other statuses name the provider`() {
         assertEquals(AiError.Unknown("Grok hat die Anfrage abgelehnt (HTTP 422)."), http(XAI, 422).error)
         assertEquals(AiError.Unknown("Die Anfrage war zu groß für DeepSeek."), http(DEEPSEEK, 413).error)
