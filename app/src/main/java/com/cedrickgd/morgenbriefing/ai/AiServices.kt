@@ -7,6 +7,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.ai.claude.ClaudeBackend
+import com.cedrickgd.morgenbriefing.ai.compat.CompatBackend
+import com.cedrickgd.morgenbriefing.ai.compat.CompatDialect
+import com.cedrickgd.morgenbriefing.ai.compat.CompatModels
+import com.cedrickgd.morgenbriefing.ai.gemini.GeminiBackend
 import com.cedrickgd.morgenbriefing.ai.http.AiHttp
 import com.cedrickgd.morgenbriefing.ai.openai.ResponsesBackend
 import com.cedrickgd.morgenbriefing.ai.openai.ResponsesDialect
@@ -64,21 +68,19 @@ class AiServices(private val context: Context, private val container: AppContain
     private val backends = ConcurrentHashMap<AiProviderId, AiBackend>()
 
     /**
-     * The backend of the engine family of [id], or null where it cannot run (Claude below
-     * Android 8) or is not built yet. The Gemini and Chat Completions families register here
-     * (docs/AI-PROVIDERS.md T7, T8); until then they have no backend.
+     * The backend of the engine family of [id] (docs/AI-PROVIDERS.md §4.2), or null where it
+     * cannot run (Claude below Android 8). Every family without an SDK is plain OkHttp + SSE and
+     * exists on every API level.
      */
     internal fun backendFor(id: AiProviderId): AiBackend? = when (ProviderCatalog.spec(id).engine) {
         EngineKind.CLAUDE_SDK -> claude
-        EngineKind.RESPONSES -> backends.getOrPut(id) { ResponsesBackend(http, ResponsesDialect.of(id)) }
-        EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> null
+        EngineKind.RESPONSES, EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> backends.getOrPut(id) { httpBackend(id, http) }
     }
 
-    /** Whether [id] has a backend in this build, without creating it (no SDK class loading). */
+    /** Whether [id] has a backend on this device, without creating it (no SDK class loading). */
     private fun isWired(id: AiProviderId): Boolean = when (ProviderCatalog.spec(id).engine) {
         EngineKind.CLAUDE_SDK -> AiSupport.sdkAvailable
-        EngineKind.RESPONSES -> true
-        EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> false
+        EngineKind.RESPONSES, EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> true
     }
 
     private val usageStore: UsageStore by lazy {
@@ -170,6 +172,15 @@ class AiServices(private val context: Context, private val container: AppContain
         // Priced like a request, but it does not confirm the stored key: the candidate may be another one.
         val usage = ProviderUsageSink(usageStore, free = tested.costsNothing(provider))
         return backend.keys.check(authFor(tested, provider, candidate), ProviderCatalog.effectiveModel(tested, provider), usage)
+    }
+
+    /**
+     * The model ids of the own server at [baseUrl] ("Vom Server laden" in the model picker);
+     * [key] null = the stored key. Empty when the server cannot be reached or lists nothing.
+     */
+    suspend fun listServerModels(baseUrl: String, key: String? = null): List<String> {
+        val candidate = key?.trim()?.takeIf { it.isNotEmpty() } ?: keyOrNull(AiProviderId.CUSTOM)
+        return CompatModels.list(http, baseUrl, candidate)
     }
 
     /**
@@ -294,6 +305,18 @@ class AiServices(private val context: Context, private val container: AppContain
     private companion object {
         const val TAG = "AiServices"
     }
+}
+
+/**
+ * The backend of [id] for every engine family without an SDK (docs/AI-PROVIDERS.md §4.2): the
+ * Responses dialects, Gemini and the Chat Completions dialects, all over [http].
+ * @throws IllegalArgumentException for Claude, which needs the SDK ([AiServices] creates it).
+ */
+internal fun httpBackend(id: AiProviderId, http: AiHttp): AiBackend = when (ProviderCatalog.spec(id).engine) {
+    EngineKind.RESPONSES -> ResponsesBackend(http, ResponsesDialect.of(id))
+    EngineKind.GEMINI -> GeminiBackend(http)
+    EngineKind.CHAT_COMPLETIONS -> CompatBackend(http, CompatDialect.of(id))
+    EngineKind.CLAUDE_SDK -> throw IllegalArgumentException("${id.key} needs the Anthropic SDK")
 }
 
 /**
