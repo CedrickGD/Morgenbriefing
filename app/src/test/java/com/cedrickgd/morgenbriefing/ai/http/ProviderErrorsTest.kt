@@ -178,6 +178,8 @@ class ProviderErrorsTest {
     fun `other statuses name the provider`() {
         assertEquals(AiError.Unknown("Grok hat die Anfrage abgelehnt (HTTP 422)."), http(XAI, 422).error)
         assertEquals(AiError.Unknown("Die Anfrage war zu groß für DeepSeek."), http(DEEPSEEK, 413).error)
+        // A reverse proxy's body limit in front of the own server: proper German for "dein Server".
+        assertEquals(AiError.Unknown("Die Anfrage war zu groß für deinen Server."), http(CUSTOM, 413).error)
     }
 
     @Test

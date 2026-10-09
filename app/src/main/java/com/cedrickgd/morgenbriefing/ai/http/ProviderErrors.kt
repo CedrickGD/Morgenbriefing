@@ -124,6 +124,8 @@ internal object ProviderErrors {
         AiProviderId.CUSTOM -> when (code) {
             402 -> MappedError(AiError.Unknown("Dein Server hat die Anfrage abgelehnt (HTTP 402)."))
             403 -> MappedError(AiError.InvalidKey)
+            // The brand "dein Server" needs the accusative here ("für deinen Server").
+            413 -> MappedError(AiError.Unknown("Die Anfrage war zu groß für deinen Server."))
             else -> null
         }
         AiProviderId.ANTHROPIC, AiProviderId.PERPLEXITY, AiProviderId.MISTRAL, AiProviderId.DEEPSEEK -> null
