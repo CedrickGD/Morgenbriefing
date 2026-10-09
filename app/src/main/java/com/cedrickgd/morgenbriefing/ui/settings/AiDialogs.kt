@@ -53,10 +53,15 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.ai.KeyExtras
 import com.cedrickgd.morgenbriefing.ai.compat.CustomServer
@@ -73,6 +78,16 @@ import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
 
 /** Where Anthropic lists the workspaces and their ids. */
 private const val ANTHROPIC_WORKSPACES_URL = "https://platform.claude.com/settings/workspaces"
+
+/** The two Gemini key shapes, the prefixes in monospace: "AIza" never reads as "Alza". */
+private val GEMINI_KEY_SHAPES: AnnotatedString = buildAnnotatedString {
+    val code = SpanStyle(fontFamily = FontFamily.Monospace)
+    append("Neue Keys beginnen mit „")
+    withStyle(code) { append("AQ.") }
+    append("“, ältere mit „")
+    withStyle(code) { append("AIza") }
+    append("“ – beide gehen.")
+}
 
 /**
  * The key dialog of one provider (docs/AI-PROVIDERS.md §10.3): whose account the requests run on,
@@ -287,7 +302,7 @@ private fun KeyGuide(spec: ProviderSpec, onOpenLink: (String) -> Unit) {
         )
         Spacer(Modifier.height(6.dp))
         Text(
-            "Neue Keys beginnen mit „AQ.“, ältere mit „AIza“ – beide gehen.",
+            GEMINI_KEY_SHAPES,
             style = MaterialTheme.typography.bodySmall,
             color = colors.onSurfaceVariant,
         )
