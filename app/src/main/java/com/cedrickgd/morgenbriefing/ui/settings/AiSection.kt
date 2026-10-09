@@ -413,6 +413,11 @@ private fun ModelPicker(ai: AiSettings, provider: AiProviderId, today: LocalDate
             onSelect = actions.onCustomModel,
         )
     }
+    // The chosen model is not open to the stored key: say which one runs instead (GE §12.5).
+    modelFallbackNote(ai, provider)?.let { note ->
+        Spacer(Modifier.height(8.dp))
+        Text(note, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
 }
 
 /**

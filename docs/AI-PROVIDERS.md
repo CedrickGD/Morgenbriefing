@@ -718,9 +718,22 @@ once without `tools` and with `chatSystem(false)` (no prompt that asks to search
 Gemini key is saved (`GeminiSearchMemo.forget`, then the search is tried again). The chat shows the note „Ohne Websuche beantwortet – für die Websuche braucht
 Gemini ein Projekt mit Abrechnung.“
 
-Key check: `GET {base}/models/{model}` → 200 OK; 400 `API_KEY_INVALID`, 401, 403 → INVALID; 404 → OK
-(key fine, model unknown); 400 `FAILED_PRECONDITION`, 402 → OK_NO_CREDIT (GE §13); any other 400 → OK
-like 404 (the model id is the problem, not the key — the same line as the chat's mapping in §8.1).
+Key check (v1.3.1, GE §13): (1) `GET {base}/models?pageSize=1000` without tokens — a refusal of the key or
+project ends the test with its cause: 400 `API_KEY_INVALID`, other 401/403 → INVALID; `ACCESS_TOKEN_TYPE_UNSUPPORTED`
+→ AUTH_KEY_REJECTED; "reported as leaked" → KEY_LEAKED; `API_KEY_SERVICE_BLOCKED`/`SERVICE_DISABLED` → API_BLOCKED;
+`API_KEY_*_BLOCKED` → KEY_RESTRICTED; 402 → OK_NO_CREDIT; 5xx → NETWORK. (2) `POST {base}/models/{model}:generateContent`
+„Antworte nur: OK“ (thinking `low`, `maxOutputTokens` 32, no tools): 200 → OK; a refused model → the next listed model
+of the fallback chain (GE §12.5), reported as `KeyCheckOutcome.fallback` and stored for the key; no model → MODEL_UNAVAILABLE;
+400 `FAILED_PRECONDITION` → FREE_TIER_UNAVAILABLE; 429 → OK_QUOTA_EXHAUSTED (stored with a note); any other 4xx → OK
+(the tiny request was the problem, not the key). Every failed verdict carries the key-free diagnostic (GE §12.6).
+
+Model fallback in the chat (GE §12.5): a model refused before the stream (404, a 400 in Google's words about the model id, a
+403 denying access to the model, a quota of 0; never another 400 that merely mentions the model)
+→ `gemini-3.8-flash` → `gemini-3.7-flash` → `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite`, each once;
+`ChatTurnResult.fallbackModel` → `AiProviderAccess.modelFallback` stores it for the key as chosen model
+(`Resolution.Ready.selectedModel`) → working one, also when the request already ran with a fallback (dropped when a key, the
+tariff or another model is saved), and the answer gets the note „<chosen> ist für deinen Key nicht freigeschaltet – die App
+nutzt jetzt …“. A `ModelUnavailable` of the fallback that ran names the chosen model.
 
 ### 7.3 Chat Completions family (`ai/compat/`)
 
@@ -863,25 +876,31 @@ UI texts (`AiTexts.error(error, spec)`; `brand` = `spec.brand`):
 | WorkspaceRequired | „Dein Claude-Key gehört zu keinem Workspace. Trag in den Einstellungen unter „Erweitert“ die Workspace-ID ein – oder erstell einen Key für den „Default Workspace“.“ | no |
 | WorkspaceNotFound | „Diesen Workspace findet Anthropic nicht. Prüf die Workspace-ID in den Einstellungen.“ | no |
 | ModelUnavailable(m) | „Das Modell „$m“ gibt es bei $brand nicht (mehr), oder dein Key darf es nicht nutzen. Wähl in den Einstellungen ein anderes.“ | no |
+| GeminiAccess(problem) | `AiTexts.gemini(problem)` (GE §12.4): AUTH_KEY_REJECTED, KEY_LEAKED („Key ändern“), API_BLOCKED, KEY_RESTRICTED, FREE_TIER_UNAVAILABLE — each with its link (`AiTexts.errorLink`: AI Studio keys/projects, Cloud Console library/credentials) | no |
 | Refusal / Truncated / Unknown | as today, provider-neutral | as today |
 
+Every failed answer keeps `ChatMessage.errorDetail` (stored with the history): the key-free diagnostic line of
+`ErrorDiagnostics` (GE §12.6), shown collapsed under „Details“ in the error card, selectable and with „Kopieren“. The key
+dialog shows the same for a failed test (`AiKeyState.Failed.diagnostic`) plus the link that fixes it (`aiKeyFixLink`).
+
 `liveErrorText` in `ui/today/LiveModels.kt` follows the same table (Live wording, brand instead of „Claude“).
-`AiError.InvalidKey` from any request → `keyRejected(provider, key)` (as today, now per provider). A key
-test („Speichern & testen“) that ends in `INVALID` for the stored setup marks the stored key the same way
+`AiError.InvalidKey` from any request — and a Gemini auth key Google does not take or blocked as leaked
+(`AiError.rejectsKey`) — → `keyRejected(provider, key)` (as today, now per provider). A key
+test („Speichern & testen“) that ends in `INVALID` (or AUTH_KEY_REJECTED / KEY_LEAKED) for the stored setup marks the stored key the same way
 (`keyTestRejectsStoredKey`; `markAiKeyRejected` only acts when the tested key is the stored one).
 
 ### 8.1 HTTP status → AiError
 
 | Status / signal | Anthropic | OpenAI | xAI | Perplexity | Gemini | OpenRouter | Mistral | DeepSeek | Custom |
 |---|---|---|---|---|---|---|---|---|---|
-| 400 | workspace msgs → Workspace*; credit → NoCredit; else Unknown | `model` + „does not exist“ → ModelUnavailable; else Unknown | message names the API key („Incorrect API key provided“, OC §4.8) → InvalidKey; else Unknown | Unknown | `API_KEY_INVALID` → InvalidKey; `FAILED_PRECONDITION` → Unknown(„Gemini braucht für dich eine aktive Abrechnung in AI Studio.“); else Unknown | Unknown | Unknown | Unknown (`reasoning_content` 400 can't happen: thinking off) | Unknown |
-| 401 | InvalidKey | InvalidKey | InvalidKey | InvalidKey (text: or no credit) | InvalidKey | InvalidKey | InvalidKey | InvalidKey | InvalidKey |
+| 400 | workspace msgs → Workspace*; credit → NoCredit; else Unknown | `model` + „does not exist“ → ModelUnavailable; else Unknown | message names the API key („Incorrect API key provided“, OC §4.8) → InvalidKey; else Unknown | Unknown | `API_KEY_INVALID` → InvalidKey; `FAILED_PRECONDITION` → GeminiAccess(FREE_TIER_UNAVAILABLE); „is not found for API version“ / „is not supported for generateContent“ / „unexpected model name format“ → ModelUnavailable (fallback, GE §12.5); else Unknown (also a request error that mentions the model) | Unknown | Unknown | Unknown (`reasoning_content` 400 can't happen: thinking off) | Unknown |
+| 401 | InvalidKey | InvalidKey | InvalidKey | InvalidKey (text: or no credit) | `ACCESS_TOKEN_TYPE_UNSUPPORTED` → GeminiAccess(AUTH_KEY_REJECTED); `API_KEY_SERVICE_BLOCKED` → GeminiAccess(API_BLOCKED); else InvalidKey | InvalidKey | InvalidKey | InvalidKey | InvalidKey |
 | 402 | NoCredit | – | – | – | NoCredit | with `Retry-After` → RateLimited (retry); else NoCredit | NoCredit (no payment method, OC §3.8) | NoCredit | – |
-| 403 | Unknown(„kein Zugriff auf dieses Modell“) | Unknown(„OpenAI ist in deiner Region nicht verfügbar.“) | Unknown(„Kein Zugriff – Team gesperrt oder Guthaben leer? Schau in console.x.ai nach.“) | Unknown | Unknown(„Der Key darf die Gemini API nicht nutzen.“) | Unknown(„OpenRouter hat die Anfrage abgelehnt (Moderation oder Rechte).“) | Unknown | – | InvalidKey |
-| 404 | `Workspace … not found` → WorkspaceNotFound; else ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable |
+| 403 | Unknown(„kein Zugriff auf dieses Modell“) | Unknown(„OpenAI ist in deiner Region nicht verfügbar.“) | Unknown(„Kein Zugriff – Team gesperrt oder Guthaben leer? Schau in console.x.ai nach.“) | Unknown | „reported as leaked“ → GeminiAccess(KEY_LEAKED); `API_KEY_SERVICE_BLOCKED`/`SERVICE_DISABLED` → GeminiAccess(API_BLOCKED); `API_KEY_*_BLOCKED` → GeminiAccess(KEY_RESTRICTED); message denying access to the model („does not have access to model …“) → ModelUnavailable (fallback); else Unknown(„Der Key darf die Gemini API nicht nutzen.“) | Unknown(„OpenRouter hat die Anfrage abgelehnt (Moderation oder Rechte).“) | Unknown | – | InvalidKey |
+| 404 | `Workspace … not found` → WorkspaceNotFound; else ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable (fallback first, GE §12.5) | ModelUnavailable | ModelUnavailable | ModelUnavailable | ModelUnavailable |
 | 408 | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) |
 | 422 | – | – | Unknown | – | – | – | Unknown | Unknown | Unknown |
-| 429 | RateLimited (r) | code `credit_balance_exhausted`/`insufficient_quota` → NoCredit; `*_spend_limit_exceeded`/`organization_usage_limit_exceeded` → Unknown(„Das Ausgabenlimit deines OpenAI-Projekts ist erreicht.“); else RateLimited (r) | RateLimited (r) | RateLimited (r) | RateLimited (r) | RateLimited (r) | RateLimited (r) | RateLimited (r) | RateLimited (r) |
+| 429 | RateLimited (r) | code `credit_balance_exhausted`/`insufficient_quota` → NoCredit; `*_spend_limit_exceeded`/`organization_usage_limit_exceeded` → Unknown(„Das Ausgabenlimit deines OpenAI-Projekts ist erreicht.“); else RateLimited (r) | RateLimited (r) | RateLimited (r) | quota of 0 → ModelUnavailable (fallback, GE §12.5); free tier → QuotaExhausted (r only for RetryInfo ≤ 20 s); else RateLimited (r) | RateLimited (r) | RateLimited (r) | RateLimited (r) | RateLimited (r) |
 | 5xx, 529 | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) | Overloaded (r) |
 | IO before response | Network (r) | Network (r) | Network (r) | Network (r) | Network (r) | Network (r) | Network (r) | Network (r) | ServerUnreachable (r) |
 
@@ -1089,6 +1108,13 @@ provider supports Live; selecting one without key opens its key dialog.
   | CLEARTEXT_BLOCKED | „✗ http:// geht nur mit Namen wie nas.fritz.box oder nas.local – nicht mit einer IP-Adresse. Nimm den Namen oder https://.“ |
   | NOT_AN_AI_SERVER | „✗ Unter dieser Adresse läuft kein OpenAI-kompatibler Server. Endet sie auf /v1?“ |
   | UNSUPPORTED | „✗ ${spec.name} läuft erst ab Android 8.“ |
+  | AUTH_KEY_REJECTED, KEY_LEAKED, API_BLOCKED, KEY_RESTRICTED, FREE_TIER_UNAVAILABLE (Gemini, v1.3.1) | „✗ “ + `AiTexts.gemini(problem)` (GE §12.4), a pill with the page that fixes it (`aiKeyFixLink`) and „Details“ with the diagnostic; API_BLOCKED and FREE_TIER_UNAVAILABLE also offer „Ohne Test speichern“ (the key works once the project is fixed) |
+  | MODEL_UNAVAILABLE | „✗ Der Key funktioniert, aber keines der Gemini-Modelle der App ist für ihn freigeschaltet. …“ (+ „Ohne Test speichern“) |
+  | SavedWithFallback | „✓ Der Key funktioniert und ist gespeichert. Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.7 Flash.“ |
+  | SavedQuotaExhausted | „Gespeichert ✓ – aber das Kontingent deines Keys ist gerade aufgebraucht. In ein paar Minuten bzw. morgen geht's weiter.“ (+ „Details“) |
+
+* A pasted key is cleaned before it is tested or stored (`cleanApiKey`): spaces, line breaks and quotes around it and
+  invisible characters anywhere are dropped; Gemini keys are accepted as `AIza…` and `AQ.…` without a length check.
 
 * `AiKeyEditor.saveAndTest(provider, rawKey: String?, extras: KeyExtras, skipTest)`: test with the
   candidate config, then `setAiKey(provider, …)`, `setAnthropicWorkspaceId`/`setCustomBaseUrl`;
@@ -1268,7 +1294,7 @@ node tools/mock-ai-server.mjs --port 9000 --delay 0 --host 0.0.0.0
 | `POST …/models/{m}:streamGenerateContent?alt=sse` | Gemini | One `GenerateContentResponse` per `data:` line, no event names, no `[DONE]`: a thought part (hidden by the app), text in several chunks, `groundingMetadata` (`webSearchQueries`, redirect `groundingChunks` with domain titles, `searchEntryPoint.renderedContent` with light/dark CSS and chip links to Google), `finishReason: STOP`, `usageMetadata`. Grounding only when the request has `googleSearch`. |
 | `POST …/chat/completions` | Chat Completions | OpenRouter (a model with `/` or the `openrouter:web_search` tool): `: OPENROUTER PROCESSING` comment, text, `url_citation` annotations, the extra accounting chunk with `usage.cost` and `server_tool_use_details`. Mistral: a `thinking` content part first. DeepSeek: usage in a last chunk with `choices: []` when `stream_options.include_usage`. Anything else = own server (no key needed). Live: `tool_calls` fragments by index, `finish_reason: tool_calls`. |
 | `POST /v1/messages` | Anthropic (Claude SDK) | `message_start` → `server_tool_use` (`web_search`) + `web_search_tool_result` → text with a `citations_delta` → `message_delta` (`server_tool_use.web_search_requests`) → `message_stop`. Live: a `tool_use` block streamed as `input_json_delta`, `stop_reason: tool_use`. Non-streamed → the key check's `Message`. |
-| `GET …/models`, `…/v1beta/models/{m}`, `…/api-key`, `…/key`, `…/user/balance` | key and connection checks | OpenAI/Mistral/own-server model list, Gemini model info, xAI key status, OpenRouter key info, DeepSeek balance. |
+| `GET …/models`, `…/v1beta/models`, `…/v1beta/models/{m}`, `…/api-key`, `…/key`, `…/user/balance` | key and connection checks | OpenAI/Mistral/own-server model list, Gemini model list (with `supportedGenerationMethods`, the key test's first step) and model info, xAI key status, OpenRouter key info, DeepSeek balance. `POST …/models/{m}:generateContent` answers the Gemini key test's „Antworte nur: OK“. |
 
 **Live:** when a request offers `publish_articles`, the mock first "searches", then calls it once
 with one valid article per topic (at most two, topic ids from the schema's `topicId` enum,
@@ -1297,6 +1323,9 @@ and the row and its dialog only exist when `BuildConfig.DEBUG`.
 | `400-workspace` | Anthropic: „anthropic-workspace-id is required …“ (key check → WORKSPACE_REQUIRED). |
 | `400-model`, `429-quota`, `429-short` | Unknown model; OpenAI `insufficient_quota`; a 429 with a 3 s wait (a free Gemini key retries once). |
 | `free-tier-search`, `free-tier-search-400` | Gemini rejects `googleSearch` (429 grounding quota with limit 0, or 400 `FAILED_PRECONDITION`); requests without search work. Tests the safety net of a key set to „Mit Abrechnung“ that is a free one. |
+| `401-auth-key`, `403-blocked`, `403-disabled`, `403-restricted`, `400-region` | Gemini's refusals of GE §12.4 on every Gemini route, the model list included: `ACCESS_TOKEN_TYPE_UNSUPPORTED`, `API_KEY_SERVICE_BLOCKED`, `SERVICE_DISABLED` (with Help link), `API_KEY_ANDROID_APP_BLOCKED`, `FAILED_PRECONDITION` (free tier not in your country). Other families answer them with the base status (`403-blocked` → their `403`). |
+| `400-key-echo` | Gemini: 400 for an invalid key whose body echoes the key it got into every field (code, type, `ErrorInfo.reason` and metadata, quota id, message, Help link) — the Details must stay key-free (GE §12.6). Other families: their `400`. |
+| `model-gone`, `model-no-quota` | Gemini: `gemini-3.8-flash` answers 404 `NOT_FOUND` (and is missing from the model list), or 429 with a free-tier quota of 0; every other model works. The chat and the key test fall back to `gemini-3.7-flash` (GE §12.5). |
 | `no-search` | Never search, even when asked. |
 | `refusal`, `truncated`, `midstream-error` | A refusal, a cut-off answer, an error after the first words. |
 | `live-reject`, `live-empty` | Live: the first `publish_articles` call is invalid (body too short); an empty list. |
@@ -1357,3 +1386,6 @@ and every check with real keys (§11).
 | `https://console.mistral.ai/api-keys` | 307 to the Mistral login (the page exists) |
 | `https://platform.openai.com/api-keys`, `https://www.perplexity.ai/account/api/keys` | 403: bot challenge for scripted clients. **Open once in a browser before the release.** |
 | `https://platform.deepseek.com/api_keys` | 202: WAF interstitial. **Check in a browser.** |
+| `https://aistudio.google.com/projects` (v1.3.1, billing) | 200 after the Google sign-in redirect (`continue=…/projects`) |
+| `https://console.cloud.google.com/apis/credentials` (v1.3.1, key restrictions) | 200 after the Google sign-in redirect (`continue=…/apis/credentials`) |
+| `https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com` (v1.3.1, enable the API) | 302 loop without cookies (scripted client); **open once in a browser before the release.** |

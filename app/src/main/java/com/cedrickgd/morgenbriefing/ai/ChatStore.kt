@@ -43,6 +43,8 @@ internal data class StoredChatMessage(
     val note: String? = null,
     /** Answers: [com.cedrickgd.morgenbriefing.data.model.AiProviderId.key] of the provider that wrote it; null before v1.3.0. */
     val provider: String? = null,
+    /** Failed answers: the key-free technical line under "Details" ([ChatMessage.errorDetail]). */
+    val errorDetail: String? = null,
 ) {
     companion object {
         const val ROLE_USER = "user"
@@ -67,6 +69,7 @@ internal data class StoredAiError(val kind: String, val detail: String? = null) 
         "model_unavailable" -> AiError.ModelUnavailable(detail)
         "server_unreachable" -> AiError.ServerUnreachable
         "quota_exhausted" -> AiError.QuotaExhausted
+        "gemini_access" -> GeminiProblem.entries.firstOrNull { it.name == detail }?.let(AiError::GeminiAccess) ?: AiError.Unknown(null)
         // Unknown kinds (a newer app version wrote them) stay readable.
         else -> AiError.Unknown(detail)
     }
@@ -86,6 +89,7 @@ internal data class StoredAiError(val kind: String, val detail: String? = null) 
             is AiError.ModelUnavailable -> StoredAiError("model_unavailable", error.model)
             AiError.ServerUnreachable -> StoredAiError("server_unreachable")
             AiError.QuotaExhausted -> StoredAiError("quota_exhausted")
+            is AiError.GeminiAccess -> StoredAiError("gemini_access", error.problem.name)
         }
     }
 }

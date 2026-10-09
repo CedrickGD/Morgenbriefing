@@ -9,6 +9,7 @@ import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.ApiMessage
 import com.cedrickgd.morgenbriefing.ai.ChatTurnListener
 import com.cedrickgd.morgenbriefing.ai.ChatTurnRequest
+import com.cedrickgd.morgenbriefing.ai.GeminiProblem
 import com.cedrickgd.morgenbriefing.ai.ProviderAuth
 import com.cedrickgd.morgenbriefing.ai.RecordingUsage
 import com.cedrickgd.morgenbriefing.ai.TurnEnd
@@ -17,6 +18,7 @@ import com.cedrickgd.morgenbriefing.ai.http.RetryPolicy
 import com.cedrickgd.morgenbriefing.ai.openai.ChatRecorder
 import com.cedrickgd.morgenbriefing.ai.openai.string
 import com.cedrickgd.morgenbriefing.ai.openai.takeJson
+import com.cedrickgd.morgenbriefing.ai.provider.GeminiModels
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
@@ -415,20 +417,166 @@ class GeminiChatEngineTest {
                 eventStream = false,
             ),
         )
-        assertError(AiError.InvalidKey) { backend.chat.answer(request(auth = auth(key = GeminiSse.AQ_KEY), webSearch = false), ChatRecorder(), usage) }
+        assertError(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED)) {
+            backend.chat.answer(request(auth = auth(key = GeminiSse.AQ_KEY), webSearch = false), ChatRecorder(), usage)
+        }
         // The error body may be wrapped in an array.
         server.enqueue(GeminiSse.httpError(400, GeminiSse.rpc(400, "INVALID_ARGUMENT", "API key not valid.", reason = "API_KEY_INVALID", array = true)))
         assertError(AiError.InvalidKey) { backend.chat.answer(request(webSearch = false), ChatRecorder(), usage) }
         server.enqueue(GeminiSse.httpError(403, GeminiSse.rpc(403, "PERMISSION_DENIED", "Method doesn't allow unregistered callers.")))
         assertError(AiError.Unknown("Der Key darf die Gemini API nicht nutzen.")) { backend.chat.answer(request(webSearch = false), ChatRecorder(), usage) }
-        server.enqueue(GeminiSse.httpError(404, GeminiSse.rpc(404, "NOT_FOUND", "models/gemini-9 is not found.")))
+        // An unknown model: every model of the fallback chain is tried once, then the requested one is named.
+        repeat(1 + GeminiModels.CHAIN.size) { server.enqueue(GeminiSse.httpError(404, GeminiSse.rpc(404, "NOT_FOUND", "models/gemini-9 is not found."))) }
         assertError(AiError.ModelUnavailable("gemini-9")) { backend.chat.answer(request(model = "gemini-9", webSearch = false), ChatRecorder(), usage) }
         server.enqueue(GeminiSse.httpError(402, GeminiSse.rpc(402, "RESOURCE_EXHAUSTED", "Prepay credit balance depleted.")))
         assertError(AiError.NoCredit) { backend.chat.answer(request(webSearch = false), ChatRecorder(), usage) }
 
-        assertEquals(6, server.requestCount)
+        assertEquals(10, server.requestCount)
         assertTrue(slept.isEmpty())
         assertTrue(usage.records.isEmpty())
+    }
+
+    @Test
+    fun `a model the key may not use falls back to the next one of the chain`() = runBlocking<Unit> {
+        // 3.8 is not open to this project (404), 3.7 answers – with Google Search, as asked.
+        server.enqueue(GeminiSse.httpError(404, GeminiErrors.modelNotFound("gemini-3.8-flash")))
+        server.enqueue(ok("Von 3.7."))
+
+        val result = backend.chat.answer(request(), ChatRecorder(), usage)
+
+        assertEquals("Von 3.7.", result.text)
+        assertEquals("gemini-3.7-flash", result.fallbackModel)
+        assertFalse(result.withoutWebSearch)
+        val (first, firstBody) = server.takeJson()
+        assertEquals("/v1beta/models/gemini-3.8-flash:streamGenerateContent", first.requestUrl!!.encodedPath)
+        val (second, secondBody) = server.takeJson()
+        assertEquals("/v1beta/models/gemini-3.7-flash:streamGenerateContent", second.requestUrl!!.encodedPath)
+        // The same question, only another model; never retried with a wait.
+        assertEquals(firstBody, secondBody)
+        assertTrue(slept.isEmpty())
+        // Only the answered request is billed; the limit is checked before both.
+        assertEquals(2, usage.checks)
+        assertEquals(1, usage.records.size)
+    }
+
+    @Test
+    fun `a zero quota or a forbidden model falls back too, also after the search was refused`() = runBlocking<Unit> {
+        val free = auth(freeTier = true)
+        // The free tier offers 3.8 no quota at all (limit 0): 3.7 answers.
+        server.enqueue(GeminiSse.httpError(429, GeminiErrors.zeroQuota("gemini-3.8-flash")))
+        server.enqueue(ok())
+        assertEquals("gemini-3.7-flash", backend.chat.answer(request(auth = free), ChatRecorder(), usage).fallbackModel)
+        assertTrue(slept.isEmpty())
+
+        // A Pro model the project may not use (403 about the model): the chain from its start.
+        server.enqueue(GeminiSse.httpError(403, GeminiErrors.modelForbidden("gemini-3.1-pro-preview")))
+        server.enqueue(ok())
+        val pro = backend.chat.answer(request(model = "gemini-3.1-pro-preview", webSearch = false), ChatRecorder(), usage)
+        assertEquals("gemini-3.8-flash", pro.fallbackModel)
+
+        // Search refused on the fallback model: answered there without search, the fallback kept.
+        server.enqueue(GeminiSse.httpError(404, GeminiErrors.modelNotFound("gemini-3.8-flash")))
+        server.enqueue(GeminiSse.httpError(400, GeminiSse.rpc(400, "FAILED_PRECONDITION", "Grounding with Google Search is not available. Please enable billing.")))
+        server.enqueue(ok())
+        val searched = backend.chat.answer(request(auth = auth(key = "AIza-other-test-invalid")), ChatRecorder(), usage)
+        assertEquals("gemini-3.7-flash", searched.fallbackModel)
+        assertTrue(searched.withoutWebSearch)
+        repeat(4) { server.takeJson() }
+        repeat(2) { server.takeJson() }
+        assertEquals("/v1beta/models/gemini-3.7-flash:streamGenerateContent", server.takeJson().first.requestUrl!!.encodedPath)
+    }
+
+    @Test
+    fun `a refused request that mentions the model is no model refusal and swaps nothing`() = runBlocking<Unit> {
+        // A typed older model that cannot take the app's thinkingLevel: the request is the problem, not the model.
+        server.enqueue(GeminiSse.httpError(400, GeminiSse.rpc(400, "INVALID_ARGUMENT", "thinking_level is not supported by this model.")))
+        try {
+            backend.chat.answer(request(model = "gemini-2.0-flash", webSearch = false), ChatRecorder(), usage)
+            fail("expected the refused request")
+        } catch (e: AiException) {
+            assertEquals(AiError.Unknown("Gemini hat die Anfrage abgelehnt (HTTP 400)."), e.error)
+            assertEquals("HTTP 400 · INVALID_ARGUMENT", e.diagnostic)
+        }
+        // One request: no model of the chain was tried, no fallback to keep.
+        assertEquals(1, server.requestCount)
+        assertEquals("/v1beta/models/gemini-2.0-flash:streamGenerateContent", server.takeRequest().requestUrl!!.encodedPath)
+        assertTrue(slept.isEmpty())
+    }
+
+    @Test
+    fun `when no model of the chain answers, the chosen one's refusal is reported with its details`() = runBlocking<Unit> {
+        server.enqueue(GeminiSse.httpError(404, GeminiErrors.modelNotFound("gemini-3.7-flash")))
+        server.enqueue(GeminiSse.httpError(429, GeminiErrors.zeroQuota("gemini-3.5-flash-lite")))
+        server.enqueue(GeminiSse.httpError(404, GeminiErrors.modelNotFound("gemini-3.1-flash-lite")))
+        try {
+            backend.chat.answer(request(model = "gemini-3.7-flash", webSearch = false), ChatRecorder(), usage)
+            fail("expected ModelUnavailable")
+        } catch (e: AiException) {
+            assertEquals(AiError.ModelUnavailable("gemini-3.7-flash"), e.error)
+            assertEquals("HTTP 404 · NOT_FOUND", e.diagnostic)
+        }
+        // 3.7 and what comes after it in the chain, each once.
+        assertEquals(3, server.requestCount)
+        assertTrue(usage.records.isEmpty())
+    }
+
+    @Test
+    fun `a blocked API or a rejected auth key is no model problem and carries its diagnostic`() = runBlocking<Unit> {
+        server.enqueue(GeminiSse.httpError(403, GeminiErrors.API_KEY_SERVICE_BLOCKED))
+        try {
+            backend.chat.answer(request(), ChatRecorder(), usage)
+            fail("expected the blocked API")
+        } catch (e: AiException) {
+            assertEquals(AiError.GeminiAccess(GeminiProblem.API_BLOCKED), e.error)
+            assertEquals("HTTP 403 · PERMISSION_DENIED · API_KEY_SERVICE_BLOCKED", e.diagnostic)
+        }
+        server.enqueue(GeminiSse.httpError(401, GeminiErrors.AUTH_KEY_REJECTED, eventStream = false))
+        try {
+            backend.chat.answer(request(auth = auth(key = GeminiSse.AQ_KEY)), ChatRecorder(), usage)
+            fail("expected the rejected auth key")
+        } catch (e: AiException) {
+            assertEquals(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED), e.error)
+            assertEquals("HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED", e.diagnostic)
+            assertFalse(e.diagnostic!!.contains(GeminiSse.AQ_KEY))
+        }
+        // One request each: no search fallback, no model fallback, no retry.
+        assertEquals(2, server.requestCount)
+        // A stream error chunk names itself, too.
+        server.enqueue(
+            GeminiSse.response(GeminiSse.text("Anfang"), GeminiSse.chunk("""{"error":{"code":503,"message":"overloaded","status":"UNAVAILABLE"}}""")),
+        )
+        try {
+            backend.chat.answer(request(webSearch = false), ChatRecorder(), usage)
+            fail("expected the stream error")
+        } catch (e: AiException) {
+            assertEquals("Stream · 503 · UNAVAILABLE", e.diagnostic)
+        }
+    }
+
+    @Test
+    fun `a key echoed into the error body stays out of the details, before and inside the stream`() = runBlocking<Unit> {
+        listOf(GeminiSse.ECHO_KEY, GeminiSse.ECHO_AQ_KEY).forEach { key ->
+            // Refused before the stream: the key is in the reason, the code, the quota id, the metadata, the links.
+            server.enqueue(GeminiSse.httpError(400, GeminiErrors.keyEcho(key)))
+            try {
+                backend.chat.answer(request(auth = auth(key = key)), ChatRecorder(), usage)
+                fail("expected the refused key")
+            } catch (e: AiException) {
+                assertEquals(AiError.InvalidKey, e.error)
+                assertEquals("HTTP 400 · INVALID_ARGUMENT", e.diagnostic)
+            }
+            // The same body as an error chunk inside a 200 stream.
+            server.enqueue(GeminiSse.response(GeminiSse.text("Anfang"), GeminiSse.chunk(GeminiErrors.keyEcho(key))))
+            try {
+                backend.chat.answer(request(auth = auth(key = key), webSearch = false), ChatRecorder(), usage)
+                fail("expected the stream error")
+            } catch (e: AiException) {
+                assertEquals(AiError.InvalidKey, e.error)
+                assertEquals("Stream · INVALID_ARGUMENT", e.diagnostic)
+            }
+        }
+        // One request each: an invalid key is neither retried nor sent to another model or without search.
+        assertEquals(4, server.requestCount)
     }
 
     @Test

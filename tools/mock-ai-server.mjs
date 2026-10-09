@@ -4,9 +4,11 @@
 // Serves realistic STREAMING answers in the wire formats of every engine family the app speaks:
 //   POST …/responses, …/agent                        OpenAI Responses (OpenAI, xAI by `grok-*` model, Perplexity via /agent)
 //   POST …/models/{m}:streamGenerateContent?alt=sse   Gemini (text, groundingMetadata, Search Suggestions)
+//   POST …/models/{m}:generateContent                 Gemini, one answer (the key test's "Antworte nur: OK")
 //   POST …/chat/completions                           Chat Completions (OpenRouter, Mistral, DeepSeek, own server)
 //   POST /v1/messages                                 Anthropic Messages SSE (Claude through the SDK)
 //   GET  …/models, …/models/{m}, …/api-key, …/key, …/user/balance   key and connection checks
+//        (Gemini: GET /v1beta/models is the key test's model list, with supportedGenerationMethods)
 //
 // Point the app at it in a debug build: Einstellungen → KI → "Entwickler: Basis-URL", e.g.
 //   Claude      http://10.0.2.2:8787           (the SDK adds /v1/messages)
@@ -16,8 +18,14 @@
 //
 // Switches (combine with commas):
 //   errors   400 401 402 403 404 429 500 503 529, and variants 400-workspace 400-model 429-quota 429-short
+//            Gemini (GE §12.4): 401-auth-key (ACCESS_TOKEN_TYPE_UNSUPPORTED), 403-blocked (API_KEY_SERVICE_BLOCKED),
+//            403-disabled (SERVICE_DISABLED), 403-restricted (API_KEY_ANDROID_APP_BLOCKED), 400-region
+//            (FAILED_PRECONDITION: free tier not in your country), 400-key-echo (an invalid key echoed into every
+//            field of the error body, GE §12.6); other families answer them with the base status
 //   modes    slow, no-search, free-tier-search, free-tier-search-400, refusal, truncated, midstream-error,
-//            live-reject, live-empty
+//            live-reject, live-empty,
+//            Gemini model fallback (GE §12.5): model-gone (gemini-3.8-flash: 404 NOT_FOUND, missing from the list),
+//            model-no-quota (gemini-3.8-flash: 429 with a free-tier quota of 0)
 // Set them
 //   per request  path prefix /mock/<switches>/ (works in the app's base URL: http://10.0.2.2:8787/mock/429/v1beta)
 //                or query ?mock=<switches> (curl)
@@ -36,9 +44,19 @@ const HOST = args.host ?? process.env.MOCK_HOST ?? '127.0.0.1';
 const DELAY_MS = Number(args.delay ?? process.env.MOCK_DELAY_MS ?? 35);
 
 const ERROR_SWITCHES = new Set(['400', '401', '402', '403', '404', '429', '500', '503', '529',
-  '400-workspace', '400-model', '429-quota', '429-short']);
+  '400-workspace', '400-model', '429-quota', '429-short',
+  '401-auth-key', '403-blocked', '403-disabled', '403-restricted', '400-region', '400-key-echo']);
 const MODE_SWITCHES = new Set(['slow', 'no-search', 'free-tier-search', 'free-tier-search-400', 'refusal', 'truncated',
-  'midstream-error', 'live-reject', 'live-empty']);
+  'midstream-error', 'live-reject', 'live-empty', 'model-gone', 'model-no-quota']);
+
+/** The Gemini model the model-gone / model-no-quota modes refuse (the app's default, GE §12.5). */
+const GONE_MODEL = 'gemini-3.8-flash';
+
+/** The Gemini models the mock's model list shows (GE §3), each able to generateContent. */
+const GEMINI_MODELS = ['gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.1-pro-preview'];
+
+/** Gemini-only error switches are answered by the other families with their base status ("403-blocked" → "403"). */
+const baseSwitch = (error) => error.slice(0, 3);
 
 const shared = { switches: splitSwitches([process.env.MOCK_ERROR, process.env.MOCK_MODE].filter(Boolean).join(',')) };
 
@@ -466,7 +484,7 @@ function responsesError(ctx, error, model) {
     '503': [503, body(503, 'server_error', 'service_unavailable', 'The engine is currently overloaded, please try again later.')],
     '529': [503, body(503, 'server_error', 'service_unavailable', 'The engine is currently overloaded, please try again later.')],
   };
-  const [status, payload, headers] = table[error];
+  const [status, payload, headers] = table[error] ?? table[baseSwitch(error)];
   log('->', `${status} ${error}`);
   return json(ctx.res, status, payload, headers);
 }
@@ -487,8 +505,9 @@ async function gemini(ctx, model, streamed) {
   const wantsSearch = (body?.tools ?? []).some((t) => 'googleSearch' in t || 'google_search' in t);
   log('gemini', `POST ${ctx.path} model=${model} sse=${streamed} search=${wantsSearch} key=${mask(key)}`);
   if (url.searchParams.has('key')) warn('Gemini key in the URL (?key=) – it belongs in x-goog-api-key only');
+  if (req.headers.authorization) warn('Gemini request with an Authorization header – API keys go in x-goog-api-key (GE §2)');
   lintGemini(body);
-  const error = (key ? null : '403') ?? authError(key) ?? errorSwitch(switches);
+  const error = (key ? null : '403') ?? authError(key) ?? errorSwitch(switches) ?? modelRefusal(switches, model);
   if (error) return geminiError(ctx, error, model, streamed);
   if (wantsSearch && (switches.has('free-tier-search') || switches.has('free-tier-search-400'))) {
     return geminiError(ctx, switches.has('free-tier-search-400') ? 'search-400' : 'search-429', model, streamed);
@@ -568,10 +587,19 @@ function escapeHtml(text) {
   return text.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 }
 
+/** model-gone / model-no-quota: the refusal of [model] when it is the one these modes take away; null otherwise. */
+function modelRefusal(switches, model) {
+  if (model.replace(/^models\//, '') !== GONE_MODEL) return null;
+  if (switches.has('model-gone')) return '404';
+  if (switches.has('model-no-quota')) return 'model-no-quota';
+  return null;
+}
+
 function geminiModel(ctx, model) {
   const key = ctx.req.headers['x-goog-api-key'] ?? '';
-  log('gemini', `GET ${ctx.path} key=${mask(key)} (key check)`);
-  const error = (key ? null : '403') ?? authError(key) ?? errorSwitch(ctx.switches);
+  log('gemini', `GET ${ctx.path} key=${mask(key)}`);
+  const gone = ctx.switches.has('model-gone') ? modelRefusal(ctx.switches, model) : null;
+  const error = (key ? null : '403') ?? authError(key) ?? errorSwitch(ctx.switches) ?? gone;
   if (error) return geminiError(ctx, error, model, false);
   const id = model.replace(/^models\//, '');
   return json(ctx.res, 200, {
@@ -581,13 +609,31 @@ function geminiModel(ctx, model) {
   });
 }
 
+/**
+ * models.list (the key test's first, token-free step, GE §13): the key and project errors apply, the
+ * model-specific ones (404, 400-model, the model modes) do not — model-gone leaves its model out instead.
+ */
 function geminiModelList(ctx) {
-  log('gemini', `GET ${ctx.path}`);
-  return json(ctx.res, 200, { models: ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-pro-preview'].map((id) => ({ name: `models/${id}`, displayName: id })) });
+  const key = ctx.req.headers['x-goog-api-key'] ?? '';
+  log('gemini', `GET ${ctx.path} key=${mask(key)} (key test: model list)`);
+  const switched = errorSwitch(ctx.switches);
+  const error = (key ? null : '403') ?? authError(key) ?? (['404', '400-model'].includes(switched) ? null : switched);
+  if (error) return geminiError(ctx, error, '', false);
+  const ids = GEMINI_MODELS.filter((id) => !(ctx.switches.has('model-gone') && id === GONE_MODEL));
+  return json(ctx.res, 200, {
+    models: ids.map((id) => ({
+      name: `models/${id}`, baseModelId: id, displayName: id, inputTokenLimit: 1048576, outputTokenLimit: 65536,
+      supportedGenerationMethods: ['generateContent', 'countTokens'], thinking: true,
+    })),
+  });
 }
 
 function geminiError(ctx, error, model, streamed) {
-  const info = (reason) => ({ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason, domain: 'googleapis.com', metadata: { service: 'generativelanguage.googleapis.com' } });
+  const key = ctx.req.headers['x-goog-api-key'] ?? '';
+  const info =(reason, metadata = {}) => ({ '@type': 'type.googleapis.com/google.rpc.ErrorInfo', reason, domain: 'googleapis.com', metadata: { service: 'generativelanguage.googleapis.com', ...metadata } });
+  const help = (url) => ({ '@type': 'type.googleapis.com/google.rpc.Help', links: [{ description: 'Google developers console API activation', url }] });
+  const project = '000000000000';
+  const activation = `https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=${project}`;
   const retry = (delay) => ({ '@type': 'type.googleapis.com/google.rpc.RetryInfo', retryDelay: delay });
   const quota = (metric, limit) => ({ '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaMetric: `generativelanguage.googleapis.com/${metric}`, quotaId: 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', quotaDimensions: { location: 'global', model }, quotaValue: String(limit) }] });
   const rpc = (code, status, message, details = []) => [code, { error: { code, message, status, details } }];
@@ -596,6 +642,20 @@ function geminiError(ctx, error, model, streamed) {
     '400-model': rpc(400, 'INVALID_ARGUMENT', `* GenerateContentRequest.model: unexpected model name format: ${model}`),
     '400-workspace': rpc(400, 'INVALID_ARGUMENT', 'Mock: invalid request.'),
     '401': rpc(401, 'UNAUTHENTICATED', 'Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.', [info('ACCESS_TOKEN_TYPE_UNSUPPORTED')]),
+    // GE §12.4: an AQ.… auth key Google does not take (forum reports since 2026-08, also for keys AI Studio shows as valid).
+    '401-auth-key': rpc(401, 'UNAUTHENTICATED', 'Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.', [info('ACCESS_TOKEN_TYPE_UNSUPPORTED', { method: 'google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent' })]),
+    '403-blocked': rpc(403, 'PERMISSION_DENIED', 'Requests to this API generativelanguage.googleapis.com method google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent are blocked.', [info('API_KEY_SERVICE_BLOCKED', { consumer: `projects/${project}`, apiName: 'generativelanguage.googleapis.com' })]),
+    '403-disabled': rpc(403, 'PERMISSION_DENIED', `Generative Language API has not been used in project ${project} before or it is disabled. Enable it by visiting ${activation} then retry.`, [info('SERVICE_DISABLED', { consumer: `projects/${project}`, activationUrl: activation }), help(activation)]),
+    '403-restricted': rpc(403, 'PERMISSION_DENIED', 'Requests from this Android client application <empty> are blocked.', [info('API_KEY_ANDROID_APP_BLOCKED', { consumer: `projects/${project}` })]),
+    '400-region': rpc(400, 'FAILED_PRECONDITION', 'Gemini API free tier is not available in your country. Please enable billing on your project in Google AI Studio.'),
+    // GE §12.6: the worst case for the app's "Details" – the key it sent comes back in every field the line could read
+    // (code, type, ErrorInfo.reason, the quota id) and in those it never reads (message, metadata, Help link).
+    '400-key-echo': [400, { error: {
+      code: key, type: key, message: `API key not valid. Please pass a valid API key. Received: ${key}`, status: 'INVALID_ARGUMENT',
+      details: [info(key, { key, consumer: `api_key:${key}` }), help(`https://aistudio.google.com/apikey?key=${encodeURIComponent(key)}`),
+        { '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaMetric: key, quotaId: key }] }],
+    } }],
+    'model-no-quota': rpc(429, 'RESOURCE_EXHAUSTED', `You exceeded your current quota, please check your plan and billing details. Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: ${model}`, [quota('generate_content_free_tier_requests', 0), retry('20s')]),
     '402': rpc(402, 'RESOURCE_EXHAUSTED', 'Your prepayment credits are depleted. Please go to AI Studio to manage your billing.'),
     '403': rpc(403, 'PERMISSION_DENIED', "Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API."),
     '404': rpc(404, 'NOT_FOUND', `models/${model} is not found for API version v1beta, or is not supported for generateContent.`),
@@ -610,7 +670,7 @@ function geminiError(ctx, error, model, streamed) {
     'search-429': rpc(429, 'RESOURCE_EXHAUSTED', 'Quota exceeded for metric: generativelanguage.googleapis.com/search_grounding_request_free_tier, limit: 0. Grounding with Google Search is not available on the free tier.', [quota('search_grounding_request_free_tier', 0)]),
     'search-400': rpc(400, 'FAILED_PRECONDITION', 'Grounding with Google Search is not available for this project. Please enable billing.'),
   };
-  const [status, payload] = table[error];
+  const [status, payload] = table[error] ?? table[baseSwitch(error)];
   log('->', `${status} ${error}`);
   // Observed: errors of the SSE endpoint are plain JSON labelled text/event-stream (GE §5.1).
   ctx.res.writeHead(status, { 'Content-Type': streamed ? 'text/event-stream' : 'application/json; charset=UTF-8' });
@@ -884,7 +944,7 @@ function anthropicError(ctx, error, model) {
     '503': [529, body('overloaded_error', 'Overloaded')],
     '529': [529, body('overloaded_error', 'Overloaded')],
   };
-  const [status, payload, headers] = table[error];
+  const [status, payload, headers] = table[error] ?? table[baseSwitch(error)];
   log('->', `${status} ${error}`);
   return json(ctx.res, status, payload, headers);
 }

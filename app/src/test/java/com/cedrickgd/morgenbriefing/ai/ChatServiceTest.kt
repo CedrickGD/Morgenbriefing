@@ -1,10 +1,12 @@
 package com.cedrickgd.morgenbriefing.ai
 
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
+import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.AppJson
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import com.cedrickgd.morgenbriefing.data.withAiKey
 import com.cedrickgd.morgenbriefing.data.withProvider
@@ -472,6 +474,107 @@ class ChatServiceTest {
         session.await { it.settled(2) }
         assertTrue(engine.requests.single().webSearch)
         assertFalse(engine.requests.single().auth.freeTier)
+    }
+
+    @Test
+    fun `a refused Gemini key or project keeps its details, and only a refused key is marked`() = runBlocking<Unit> {
+        settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true) }
+        val access = access(apiKey = "AQ.test-invalid")
+        engine.scripts += {
+            throw AiException(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED), diagnostic = "HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED")
+        }
+        engine.scripts += {
+            throw AiException(AiError.GeminiAccess(GeminiProblem.API_BLOCKED), diagnostic = "HTTP 403 · PERMISSION_DENIED · API_KEY_SERVICE_BLOCKED")
+        }
+        // A diagnostic can never hold the key; if it did, it would be dropped.
+        engine.scripts += { throw AiException(AiError.Unknown(null), diagnostic = "HTTP 400 · AQ.test-invalid") }
+        val session = service(access = access).session(article)
+        session.send("Erste")
+        val first = session.await { it.settled(2) }.messages.last()
+        assertEquals(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED), first.error)
+        assertEquals("HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED", first.errorDetail)
+        assertEquals(listOf(AiProviderId.GEMINI to "AQ.test-invalid"), access.rejected)
+
+        session.send("Zweite")
+        val second = session.await { it.settled(4) }.messages.last()
+        assertEquals("HTTP 403 · PERMISSION_DENIED · API_KEY_SERVICE_BLOCKED", second.errorDetail)
+        // A blocked API is the project's problem, not the key's.
+        assertEquals(1, access.rejected.size)
+
+        session.send("Dritte")
+        assertEquals(null, session.await { it.settled(6) }.messages.last().errorDetail)
+
+        // The details survive a restart with the history.
+        val restored = service(access = access).session(article).await { it.messages.size == 6 }
+        assertEquals(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED), restored.messages[1].error)
+        assertEquals("HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED", restored.messages[1].errorDetail)
+        assertEquals("HTTP 403 · PERMISSION_DENIED · API_KEY_SERVICE_BLOCKED", restored.messages[3].errorDetail)
+    }
+
+    @Test
+    fun `a model fallback is kept for the key and said under the answer`() = runBlocking<Unit> {
+        settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true, geminiTier = GeminiTier.PAID) }
+        val access = access(apiKey = "AIza-test-invalid")
+        engine.scripts += { l ->
+            l.onText("Von 3.7.")
+            ChatTurnResult("Von 3.7.", emptyList(), TurnEnd.COMPLETE, fallbackModel = "gemini-3.7-flash")
+        }
+        engine.scripts += { l ->
+            l.onText("Ohne Suche.")
+            ChatTurnResult("Ohne Suche.", emptyList(), TurnEnd.COMPLETE, withoutWebSearch = true, fallbackModel = "gemini-3.7-flash")
+        }
+        val session = service(access = access).session(article)
+        session.send("Erste")
+        val first = session.await { it.settled(2) }.messages.last()
+        val note = "Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.7 Flash."
+        assertEquals(note, first.note)
+        assertEquals(listOf(listOf(AiProviderId.GEMINI, "AIza-test-invalid", "gemini-3.8-flash", "gemini-3.7-flash")), access.fallbacks)
+
+        session.send("Zweite")
+        assertEquals("$note\n${AiTexts.WITHOUT_WEB_SEARCH_NOTE}", session.await { it.settled(4) }.messages.last().note)
+    }
+
+    @Test
+    fun `a fallback of an active fallback is kept and named for the chosen model`() = runBlocking<Unit> {
+        // The key already runs 3.7 instead of the chosen 3.8; now Google refuses 3.7 too and 3.5 Flash-Lite answers.
+        val gemini = AiProviderId.GEMINI
+        settings.value = AppSettings().withProvider(gemini) {
+            it.copy(hasKey = true, geminiTier = GeminiTier.PAID, modelFallback = ModelFallback("gemini-3.8-flash", "gemini-3.7-flash"))
+        }
+        val access = access(apiKey = "AIza-test-invalid")
+        engine.scripts += { l ->
+            l.onText("Von 3.5.")
+            ChatTurnResult("Von 3.5.", emptyList(), TurnEnd.COMPLETE, fallbackModel = "gemini-3.5-flash-lite")
+        }
+        val session = service(access = access).session(article)
+        session.send("Erste")
+        val first = session.await { it.settled(2) }.messages.last()
+        // Asked for the active fallback; the new one is stored and named for the chosen model.
+        assertEquals("gemini-3.7-flash", engine.requests.single().model)
+        assertEquals(listOf(listOf(gemini, "AIza-test-invalid", "gemini-3.8-flash", "gemini-3.5-flash-lite")), access.fallbacks)
+        assertEquals("Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.5 Flash-Lite.", first.note)
+
+        // Stored as AiServices does: the next question goes to 3.5 directly, and Settings keeps its note.
+        val (_, _, from, to) = access.fallbacks.single()
+        settings.value = settings.value.withProvider(gemini) { it.copy(modelFallback = ModelFallback(from as String, to as String)) }
+        assertEquals("gemini-3.5-flash-lite", ProviderCatalog.effectiveModel(settings.value.ai, gemini))
+        assertEquals("gemini-3.8-flash" to "gemini-3.5-flash-lite", ProviderCatalog.activeFallback(settings.value.ai, gemini))
+
+        // No model of the chain left: the error names the chosen model, not the fallback the user never picked.
+        engine.scripts += { throw AiException(AiError.ModelUnavailable("gemini-3.5-flash-lite"), diagnostic = "HTTP 404 · NOT_FOUND") }
+        session.send("Zweite")
+        val second = session.await { it.settled(4) }.messages.last()
+        assertEquals("gemini-3.5-flash-lite", engine.requests[1].model)
+        assertEquals(AiError.ModelUnavailable("gemini-3.8-flash"), second.error)
+        assertEquals("HTTP 404 · NOT_FOUND", second.errorDetail)
+        assertEquals(1, access.fallbacks.size)
+
+        // Without a fallback the refused model is the chosen one and keeps its name.
+        settings.value = settings.value.withProvider(gemini) { it.copy(modelFallback = null) }
+        engine.scripts += { throw AiException(AiError.ModelUnavailable("gemini-3.8-flash")) }
+        session.send("Dritte")
+        assertEquals(AiError.ModelUnavailable("gemini-3.8-flash"), session.await { it.settled(6) }.messages.last().error)
+        assertEquals("gemini-3.8-flash", engine.requests[2].model)
     }
 
     @Test

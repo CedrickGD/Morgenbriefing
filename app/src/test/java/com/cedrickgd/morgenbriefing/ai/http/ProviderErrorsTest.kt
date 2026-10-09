@@ -4,6 +4,7 @@ import com.cedrickgd.morgenbriefing.ai.AiBlock
 import com.cedrickgd.morgenbriefing.ai.AiBlockedException
 import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.AiException
+import com.cedrickgd.morgenbriefing.ai.GeminiProblem
 import com.cedrickgd.morgenbriefing.ai.ProviderAuth
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId.CUSTOM
@@ -107,7 +108,7 @@ class ProviderErrorsTest {
             http(GEMINI, 400, rpc(400, "INVALID_ARGUMENT", "API key not valid. Please pass a valid API key.", reason = "API_KEY_INVALID")),
         )
         assertEquals(
-            AiError.Unknown("Gemini braucht für dich eine aktive Abrechnung in AI Studio."),
+            AiError.GeminiAccess(GeminiProblem.FREE_TIER_UNAVAILABLE),
             http(GEMINI, 400, rpc(400, "FAILED_PRECONDITION", "Gemini API free tier is not available in your country.")).error,
         )
         assertEquals(AiError.Unknown("Gemini hat die Anfrage abgelehnt (HTTP 400)."), http(GEMINI, 400, rpc(400, "INVALID_ARGUMENT", "bad")).error)
@@ -117,7 +118,9 @@ class ProviderErrorsTest {
     @Test
     fun `Gemini error bodies are read as object or array`() {
         val body = rpc(401, "UNAUTHENTICATED", "Request had invalid authentication credentials.", reason = "ACCESS_TOKEN_TYPE_UNSUPPORTED")
-        assertEquals(MappedError(AiError.InvalidKey), http(GEMINI, 401, body))
+        assertEquals(MappedError(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED)), http(GEMINI, 401, body))
+        // A 401 without that reason is a plain refusal of the key.
+        assertEquals(MappedError(AiError.InvalidKey), http(GEMINI, 401, rpc(401, "UNAUTHENTICATED", "x")))
         val array = "[" + rpc(400, "INVALID_ARGUMENT", "API key not valid.", reason = "API_KEY_INVALID") + "]"
         assertEquals(MappedError(AiError.InvalidKey), http(GEMINI, 400, array))
         val parsed = ApiErrorBody.parse(array)

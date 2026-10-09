@@ -1,9 +1,15 @@
 package com.cedrickgd.morgenbriefing.ui.settings
 
 import androidx.compose.runtime.Immutable
+import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.AiKeyCheck
 import com.cedrickgd.morgenbriefing.ai.AiPricing
+import com.cedrickgd.morgenbriefing.ai.AiTexts
+import com.cedrickgd.morgenbriefing.ai.GeminiProblem
+import com.cedrickgd.morgenbriefing.ai.KeyCheckOutcome
 import com.cedrickgd.morgenbriefing.ai.provider.EngineKind
+import com.cedrickgd.morgenbriefing.ai.provider.GeminiLinks
+import com.cedrickgd.morgenbriefing.ai.provider.GeminiModels
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
 import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
@@ -11,6 +17,7 @@ import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.cleanApiKey
 import java.net.URI
 import java.net.URISyntaxException
 import java.time.LocalDate
@@ -36,6 +43,24 @@ enum class AiKeyProblem {
     SERVER_CERTIFICATE,
     CLEARTEXT_BLOCKED,
     NOT_AN_AI_SERVER,
+
+    /** Gemini: Google does not take the key (a new `AQ.…` auth key, GE §12.4). */
+    AUTH_KEY_REJECTED,
+
+    /** Gemini: Google blocked the key as leaked. */
+    KEY_LEAKED,
+
+    /** Gemini: the Gemini API is blocked or not enabled in the key's Google project. */
+    API_BLOCKED,
+
+    /** Gemini: the key is restricted to other apps, websites or IP addresses. */
+    KEY_RESTRICTED,
+
+    /** Gemini: the free tier is not available for the country or project. */
+    FREE_TIER_UNAVAILABLE,
+
+    /** The key works, but none of the app's models may generate with it. */
+    MODEL_UNAVAILABLE,
 }
 
 /** State of the API key dialog. */
@@ -53,15 +78,37 @@ sealed interface AiKeyState {
     /** Tested and stored, but the account has no credit left: requests fail until it is topped up. */
     data object SavedNoCredit : AiKeyState
 
+    /**
+     * Tested and stored, but the chosen model [from] is not open to the key: [to] passed the test
+     * and runs instead (Gemini, GE §12.5).
+     */
+    data class SavedWithFallback(val from: String, val to: String) : AiKeyState
+
+    /** Tested and stored, but the key's quota is used up right now (Gemini 429); [diagnostic] under "Details". */
+    data class SavedQuotaExhausted(val diagnostic: String? = null) : AiKeyState
+
     /** The own server answered the connection test with [models] model ids; address (and key) stored. */
     data class ServerConnected(val models: Int) : AiKeyState
-    data class Failed(val problem: AiKeyProblem) : AiKeyState
+
+    /** Not stored because of [problem]; [diagnostic] is what the provider answered (under "Details"). */
+    data class Failed(val problem: AiKeyProblem, val diagnostic: String? = null) : AiKeyState
 }
 
 /** The dialog's work is done: it offers "Fertig" instead of another test. */
 internal val AiKeyState.isSaved: Boolean
-    get() = this == AiKeyState.Saved || this == AiKeyState.SavedUntested ||
-        this == AiKeyState.SavedNoCredit || this is AiKeyState.ServerConnected
+    get() = this == AiKeyState.Saved || this == AiKeyState.SavedUntested || this == AiKeyState.SavedNoCredit ||
+        this is AiKeyState.SavedWithFallback || this is AiKeyState.SavedQuotaExhausted || this is AiKeyState.ServerConnected
+
+/** The technical line under "Details" of [this] state, if any. */
+internal val AiKeyState.diagnostic: String?
+    get() = when (this) {
+        is AiKeyState.Failed -> diagnostic
+        is AiKeyState.SavedQuotaExhausted -> diagnostic
+        else -> null
+    }
+
+/** [this] failed because of [problem]. */
+internal fun AiKeyState.failedWith(problem: AiKeyProblem): Boolean = this is AiKeyState.Failed && this.problem == problem
 
 /**
  * What the dialog says once the key is stored: [tested] only after a passed "Speichern & testen";
@@ -73,9 +120,30 @@ internal fun savedKeyState(tested: Boolean, noCredit: Boolean = false): AiKeySta
     else -> AiKeyState.Saved
 }
 
-/** Maps the facade's check result; null = the key works (store it, also without credit). */
+/**
+ * What the dialog says once the key is stored after [outcome] (null: stored without a test): no
+ * credit, a quota used up right now, or a model fallback (Gemini) are said; else a plain "works".
+ */
+internal fun savedKeyState(outcome: KeyCheckOutcome?): AiKeyState {
+    val fallback = outcome?.fallback
+    return when {
+        outcome == null -> AiKeyState.SavedUntested
+        outcome.check == AiKeyCheck.OK_NO_CREDIT -> AiKeyState.SavedNoCredit
+        outcome.check == AiKeyCheck.OK_QUOTA_EXHAUSTED -> AiKeyState.SavedQuotaExhausted(outcome.diagnostic)
+        fallback != null -> AiKeyState.SavedWithFallback(fallback.from, fallback.to)
+        else -> AiKeyState.Saved
+    }
+}
+
+/** Maps the facade's check result; null = the key works (store it, also without credit or quota). */
 internal fun AiKeyCheck.toProblem(): AiKeyProblem? = when (this) {
-    AiKeyCheck.OK, AiKeyCheck.OK_NO_CREDIT -> null
+    AiKeyCheck.OK, AiKeyCheck.OK_NO_CREDIT, AiKeyCheck.OK_QUOTA_EXHAUSTED -> null
+    AiKeyCheck.AUTH_KEY_REJECTED -> AiKeyProblem.AUTH_KEY_REJECTED
+    AiKeyCheck.KEY_LEAKED -> AiKeyProblem.KEY_LEAKED
+    AiKeyCheck.API_BLOCKED -> AiKeyProblem.API_BLOCKED
+    AiKeyCheck.KEY_RESTRICTED -> AiKeyProblem.KEY_RESTRICTED
+    AiKeyCheck.FREE_TIER_UNAVAILABLE -> AiKeyProblem.FREE_TIER_UNAVAILABLE
+    AiKeyCheck.MODEL_UNAVAILABLE -> AiKeyProblem.MODEL_UNAVAILABLE
     AiKeyCheck.INVALID -> AiKeyProblem.INVALID
     AiKeyCheck.NETWORK -> AiKeyProblem.NETWORK
     AiKeyCheck.UNSUPPORTED -> AiKeyProblem.UNSUPPORTED
@@ -139,10 +207,13 @@ internal fun aiKeyMessage(state: AiKeyState, spec: ProviderSpec): String? {
         AiKeyState.Saved -> "✓ Der Key funktioniert und ist gespeichert."
         AiKeyState.SavedUntested -> "Gespeichert – noch nicht getestet. Die erste Anfrage zeigt, ob er funktioniert."
         AiKeyState.SavedNoCredit -> if (spec.id == AiProviderId.GEMINI) {
-            "Gespeichert ✓ – aber Google verlangt für diesen Key eine aktive Abrechnung (oder das Guthaben ist leer)."
+            "Gespeichert ✓ – aber das Prepay-Guthaben deines Google-Projekts ist aufgebraucht. Lade es in AI Studio auf, sonst schlagen Anfragen fehl."
         } else {
             "Gespeichert ✓ – aber dein Guthaben ist leer. Lade es auf, sonst schlagen Anfragen fehl."
         }
+        is AiKeyState.SavedWithFallback -> "✓ Der Key funktioniert und ist gespeichert. ${GeminiModels.fallbackNote(state.from, state.to)}"
+        is AiKeyState.SavedQuotaExhausted ->
+            "Gespeichert ✓ – aber das Kontingent deines Keys ist gerade aufgebraucht. In ein paar Minuten bzw. morgen geht's weiter."
         is AiKeyState.ServerConnected -> when (state.models) {
             0 -> "✓ Verbunden – der Server meldet noch keine Modelle."
             1 -> "✓ Verbunden – 1 Modell gefunden."
@@ -166,13 +237,55 @@ internal fun aiKeyMessage(state: AiKeyState, spec: ProviderSpec): String? {
             AiKeyProblem.CLEARTEXT_BLOCKED ->
                 "✗ http:// geht nur mit Namen wie nas.fritz.box oder nas.local – nicht mit einer IP-Adresse. Nimm den Namen oder https://."
             AiKeyProblem.NOT_AN_AI_SERVER -> "✗ Unter dieser Adresse läuft kein OpenAI-kompatibler Server. Endet sie auf /v1?"
+            AiKeyProblem.AUTH_KEY_REJECTED -> "✗ ${AiTexts.gemini(GeminiProblem.AUTH_KEY_REJECTED)}"
+            AiKeyProblem.KEY_LEAKED -> "✗ ${AiTexts.gemini(GeminiProblem.KEY_LEAKED)}"
+            AiKeyProblem.API_BLOCKED -> "✗ ${AiTexts.gemini(GeminiProblem.API_BLOCKED)}"
+            AiKeyProblem.KEY_RESTRICTED -> "✗ ${AiTexts.gemini(GeminiProblem.KEY_RESTRICTED)}"
+            AiKeyProblem.FREE_TIER_UNAVAILABLE -> "✗ ${AiTexts.gemini(GeminiProblem.FREE_TIER_UNAVAILABLE)}"
+            AiKeyProblem.MODEL_UNAVAILABLE ->
+                "✗ Der Key funktioniert, aber keines der ${spec.brand}-Modelle der App ist für ihn freigeschaltet. " +
+                    "Erstell den Key in einem anderen Projekt – oder trag unter „Modell“ ein eigenes ein."
         }
     }
 }
 
-/** "Ohne Test speichern" helps when the test could not reach the provider (offline, server asleep). */
+/**
+ * "Ohne Test speichern" helps when the test could not reach the provider (offline, server
+ * asleep), or when the key is fine but its project needs a change first (the Gemini API enabled,
+ * billing set up, another model): then the key works later without being entered again.
+ */
 internal fun canSaveUntested(state: AiKeyState): Boolean =
-    state == AiKeyState.Failed(AiKeyProblem.NETWORK) || state == AiKeyState.Failed(AiKeyProblem.SERVER_UNREACHABLE)
+    state is AiKeyState.Failed && state.problem in UNTESTED_SAVE_PROBLEMS
+
+private val UNTESTED_SAVE_PROBLEMS = setOf(
+    AiKeyProblem.NETWORK,
+    AiKeyProblem.SERVER_UNREACHABLE,
+    AiKeyProblem.API_BLOCKED,
+    AiKeyProblem.FREE_TIER_UNAVAILABLE,
+    AiKeyProblem.MODEL_UNAVAILABLE,
+)
+
+/** A page that fixes a failed key test, as the pill under the message shows it. */
+@Immutable
+internal data class KeyFixLink(val label: String, val url: String)
+
+/**
+ * The page that fixes [state] (Gemini: a new key in AI Studio, the API in the Cloud Console, the
+ * key's restrictions, billing); null when there is none to offer.
+ */
+internal fun aiKeyFixLink(state: AiKeyState): KeyFixLink? {
+    val problem = (state as? AiKeyState.Failed)?.problem ?: return null
+    val gemini = when (problem) {
+        AiKeyProblem.AUTH_KEY_REJECTED -> GeminiProblem.AUTH_KEY_REJECTED
+        AiKeyProblem.KEY_LEAKED -> GeminiProblem.KEY_LEAKED
+        AiKeyProblem.API_BLOCKED -> GeminiProblem.API_BLOCKED
+        AiKeyProblem.KEY_RESTRICTED -> GeminiProblem.KEY_RESTRICTED
+        AiKeyProblem.FREE_TIER_UNAVAILABLE -> GeminiProblem.FREE_TIER_UNAVAILABLE
+        AiKeyProblem.MODEL_UNAVAILABLE -> return KeyFixLink("Neuen Key in AI Studio", GeminiLinks.API_KEYS)
+        else -> return null
+    }
+    return AiTexts.errorLink(AiError.GeminiAccess(gemini))?.let { (label, url) -> KeyFixLink(label, url) }
+}
 
 /**
  * Second line of the key row in Settings → KI. [rejected]: the provider refused the last chat or
@@ -203,17 +316,18 @@ internal fun serverLabel(baseUrl: String?): String {
 enum class AiKeyFormatIssue { WRONG_PREFIX, TOO_SHORT, WHITESPACE, ODD_CHARACTER }
 
 /**
- * What is wrong with [raw] as a key of [spec], or null when it looks right. Spaces and line
- * breaks around it do not count (they are dropped when saving); inside it they always do. Keys
- * are plain ASCII: an invisible character a copy brought along (a zero-width space, a BOM) or
- * an umlaut is [AiKeyFormatIssue.ODD_CHARACTER] — such a key cannot be sent at all. The prefix
- * and length are only checked where the provider documents a key format
+ * What is wrong with [raw] as a key of [spec], or null when it looks right. What [cleanApiKey]
+ * drops when saving does not count: spaces, line breaks and quotes around the key, invisible
+ * characters a copy brought along (a zero-width space, a BOM). Spaces inside it always do. Keys
+ * are plain ASCII: an umlaut is [AiKeyFormatIssue.ODD_CHARACTER] — such a key cannot be sent at
+ * all. The prefix and length are only checked where the provider documents a key format
  * ([ProviderSpec.keyPrefixes]); Gemini keys come as `AIza…` and `AQ.…` and are never judged by
- * their shape. A key that only starts right once its inner spaces or odd characters are gone is
- * a [AiKeyFormatIssue.WHITESPACE] / [AiKeyFormatIssue.ODD_CHARACTER] problem, not a wrong prefix.
+ * their shape or length. A key that only starts right once its inner spaces or odd characters are
+ * gone is a [AiKeyFormatIssue.WHITESPACE] / [AiKeyFormatIssue.ODD_CHARACTER] problem, not a
+ * wrong prefix.
  */
 internal fun aiKeyFormatIssue(raw: String, spec: ProviderSpec): AiKeyFormatIssue? {
-    val key = raw.trim()
+    val key = cleanApiKey(raw)
     val prefixes = spec.keyPrefixes
     val compact = key.filter { it in '!'..'~' }
     return when {
@@ -368,13 +482,14 @@ internal data class ModelChoice(
 
 /**
  * The curated models of [id] for the picker, with their price per million tokens (as of [on]).
- * The selected one is the model requests use ([ProviderCatalog.effectiveModel]). With a free
- * Gemini key every selectable model is "kostenlos" (without a note on future prices), and a
- * model without free tier is marked "nur mit Abrechnung" and cannot be picked.
+ * The selected one is the chosen model ([ProviderCatalog.selectedModel]; a fallback for the key
+ * is said by [modelFallbackNote]). With a free Gemini key every selectable model is "kostenlos"
+ * (without a note on future prices), and a model without free tier is marked "nur mit
+ * Abrechnung" and cannot be picked.
  */
 internal fun modelChoices(ai: AiSettings, id: AiProviderId, on: LocalDate): List<ModelChoice> {
     val spec = ProviderCatalog.spec(id)
-    val effective = ProviderCatalog.effectiveModel(ai, id)
+    val effective = ProviderCatalog.selectedModel(ai, id)
     return spec.models.map { model ->
         val selectable = ProviderCatalog.isModelSelectable(ai, id, model.id)
         val price = if (selectable) priceLine(ai, id, model.id, on) else GeminiTiers.BILLING_ONLY
@@ -389,6 +504,13 @@ internal fun modelChoices(ai: AiSettings, id: AiProviderId, on: LocalDate): List
         )
     }
 }
+
+/**
+ * Under the model picker when the chosen model is not open to the stored key and another one runs
+ * instead (Gemini, GE §12.5); null when the chosen model runs.
+ */
+internal fun modelFallbackNote(ai: AiSettings, id: AiProviderId): String? =
+    ProviderCatalog.activeFallback(ai, id)?.let { (from, to) -> GeminiModels.fallbackNote(from, to) }
 
 /** The stored model of [id] when it is none of the curated ones ("Eigenes Modell …"), else null. */
 internal fun customModelOf(ai: AiSettings, id: AiProviderId): String? {

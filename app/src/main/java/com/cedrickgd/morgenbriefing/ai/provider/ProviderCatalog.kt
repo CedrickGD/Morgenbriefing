@@ -306,14 +306,36 @@ object ProviderCatalog {
     fun spec(id: AiProviderId): ProviderSpec = byId.getValue(id)
 
     /**
-     * The model requests of [id] use: the stored one, else the catalog default. A free Gemini key
+     * The model chosen for [id]: the stored one, else the catalog default. A free Gemini key
      * never runs a model that needs billing (the tier may have been switched back) — it falls
-     * back to the default instead of failing.
+     * back to the default instead of failing. The model picker marks this one; a key test tries
+     * it first.
      */
-    fun effectiveModel(ai: AiSettings, id: AiProviderId): String {
+    fun selectedModel(ai: AiSettings, id: AiProviderId): String {
         val spec = spec(id)
         val stored = ai.of(id).model?.trim()?.takeIf { it.isNotEmpty() } ?: return spec.defaultModel
         return if (isModelSelectable(ai, id, stored)) stored else spec.defaultModel
+    }
+
+    /**
+     * The model requests of [id] use: [selectedModel], unless the provider refused it for the
+     * stored key and another one answered instead ([com.cedrickgd.morgenbriefing.data.model.ModelFallback],
+     * Gemini, GE §12.5) — then that one, as long as the tariff allows it.
+     */
+    fun effectiveModel(ai: AiSettings, id: AiProviderId): String {
+        val selected = selectedModel(ai, id)
+        val fallback = ai.of(id).modelFallback ?: return selected
+        return if (fallback.from == selected && isModelSelectable(ai, id, fallback.to)) fallback.to else selected
+    }
+
+    /**
+     * The fallback in use for [id]: the chosen model and the one that runs instead, or null when
+     * the chosen model runs.
+     */
+    fun activeFallback(ai: AiSettings, id: AiProviderId): Pair<String, String>? {
+        val selected = selectedModel(ai, id)
+        val effective = effectiveModel(ai, id)
+        return if (effective != selected) selected to effective else null
     }
 
     /** False only for a model that needs billing ([requiresBilling]) while the Gemini key is on the free tier. */
@@ -338,6 +360,64 @@ object ProviderCatalog {
      * key is not on the free tier (free keys get no Google Search on Gemini 3.x).
      */
     fun chatWebSearch(ai: AiSettings, id: AiProviderId): Boolean = spec(id).chatWebSearch && !ai.isGeminiFree(id)
+}
+
+/**
+ * Gemini's model fallback (docs/providers/gemini.md §12.5): when Google refuses the chosen model
+ * for a key (404 `NOT_FOUND`, a 400 about the model id, a 403 denying the model, a free-tier
+ * quota of 0 — new projects do not get every model, preview models are restricted), the chat and
+ * the key test try the next model of [CHAIN] once each, and the app keeps the one that answered
+ * for this key.
+ */
+object GeminiModels {
+    /** From the newest Flash down to the cheapest Flash-Lite; none of them needs billing. */
+    val CHAIN: List<String> = listOf("gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite")
+
+    /** Names of the chain's models the curated list does not show. */
+    private val LABELS = mapOf(
+        "gemini-3.7-flash" to "Gemini 3.7 Flash",
+        "gemini-3.1-flash-lite" to "Gemini 3.1 Flash-Lite",
+    )
+
+    /**
+     * The models to try, in order, when [model] was refused: the ones after it in [CHAIN], or the
+     * whole chain for a model outside it (a Pro model, a typed id). [freeTier]: only models
+     * without billing (the chain has none that need it, the check stays for future entries).
+     */
+    fun fallbacksAfter(model: String, freeTier: Boolean): List<String> {
+        val id = normalize(model)
+        val index = CHAIN.indexOf(id)
+        val rest = if (index >= 0) CHAIN.drop(index + 1) else CHAIN.filter { it != id }
+        return rest.filter { !freeTier || !ProviderCatalog.requiresBilling(AiProviderId.GEMINI, it) }
+    }
+
+    /** "Gemini 3.7 Flash" for a known id, else the id itself. */
+    fun label(model: String): String {
+        val id = normalize(model)
+        return ProviderCatalog.GEMINI.model(id)?.label ?: LABELS[id] ?: id
+    }
+
+    /** The calm note when [to] answers instead of [from] (chat answer, settings, key dialog). */
+    fun fallbackNote(from: String, to: String): String =
+        "${label(from)} ist für deinen Key nicht freigeschaltet – die App nutzt jetzt ${label(to)}."
+
+    /** A model id as Gemini names it in a URL: without a pasted `models/` prefix. */
+    fun normalize(model: String): String = model.trim().removePrefix("models/")
+}
+
+/** Where a Gemini key, its project and its billing are fixed (link-checked with the console URLs, T11). */
+object GeminiLinks {
+    /** AI Studio's key list: create a new key (also [ProviderCatalog.GEMINI]'s console URL). */
+    const val API_KEYS = "https://aistudio.google.com/apikey"
+
+    /** AI Studio's projects with their "Billing Tier" column and "Set up billing" (ai.google.dev billing docs). */
+    const val PROJECTS = "https://aistudio.google.com/projects"
+
+    /** The Generative Language API in the Cloud Console: enable it for the key's project. */
+    const val API_LIBRARY = "https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com"
+
+    /** The Cloud Console's keys with their application and API restrictions. */
+    const val CREDENTIALS = "https://console.cloud.google.com/apis/credentials"
 }
 
 /**

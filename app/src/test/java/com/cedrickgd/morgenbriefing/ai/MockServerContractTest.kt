@@ -5,11 +5,13 @@ import com.cedrickgd.morgenbriefing.ai.claude.ClaudeClients
 import com.cedrickgd.morgenbriefing.ai.compat.CompatBackend
 import com.cedrickgd.morgenbriefing.ai.compat.CompatDialect
 import com.cedrickgd.morgenbriefing.ai.gemini.GeminiBackend
+import com.cedrickgd.morgenbriefing.ai.gemini.GeminiSse
 import com.cedrickgd.morgenbriefing.ai.http.AiHttp
 import com.cedrickgd.morgenbriefing.ai.http.RetryPolicy
 import com.cedrickgd.morgenbriefing.ai.openai.ResponsesBackend
 import com.cedrickgd.morgenbriefing.ai.openai.ResponsesDialect
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import com.cedrickgd.morgenbriefing.data.model.Topics
 import kotlinx.coroutines.runBlocking
@@ -137,6 +139,63 @@ class MockServerContractTest {
             chat(GeminiBackend(http, retry), ProviderAuth(AiProviderId.GEMINI, "AIza-test-invalid", "$base/mock/400/v1beta"), model)
         }
         assertEquals(AiKeyCheck.OK, check(GeminiBackend(http, retry), free, model))
+    }
+
+    @Test
+    fun `gemini - refused keys and projects, model fallback in chat and key test`() {
+        val model = "gemini-3.8-flash"
+        fun auth(mode: String, freeTier: Boolean = true) = ProviderAuth(AiProviderId.GEMINI, "AQ.test-$mode", "$base/mock/$mode/v1beta", freeTier = freeTier)
+
+        // Every cause of GE §12.4 comes back as itself, in the key test and in the chat — with a key-free diagnostic.
+        val causes = mapOf(
+            "401-auth-key" to (AiKeyCheck.AUTH_KEY_REJECTED to AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED)),
+            "403-blocked" to (AiKeyCheck.API_BLOCKED to AiError.GeminiAccess(GeminiProblem.API_BLOCKED)),
+            "403-disabled" to (AiKeyCheck.API_BLOCKED to AiError.GeminiAccess(GeminiProblem.API_BLOCKED)),
+            "403-restricted" to (AiKeyCheck.KEY_RESTRICTED to AiError.GeminiAccess(GeminiProblem.KEY_RESTRICTED)),
+            "400-region" to (AiKeyCheck.FREE_TIER_UNAVAILABLE to AiError.GeminiAccess(GeminiProblem.FREE_TIER_UNAVAILABLE)),
+        )
+        causes.forEach { (mode, expected) ->
+            val outcome = runBlocking { GeminiBackend(http, retry).keys.check(auth(mode), model, RecordingUsage()) }
+            assertEquals(mode, expected.first, outcome.check)
+            assertTrue(mode, outcome.diagnostic!!.startsWith("HTTP "))
+            assertFalse(mode, outcome.diagnostic!!.contains("AQ.test"))
+            try {
+                chat(GeminiBackend(http, retry), auth(mode), model, search = false)
+                fail("$mode: expected an error")
+            } catch (e: AiException) {
+                assertEquals(mode, expected.second, e.error)
+                assertTrue(mode, e.diagnostic!!.startsWith("HTTP "))
+            }
+        }
+
+        // A server that echoes the key it got into every field of the error body: the Details still hold no key.
+        for (key in listOf(GeminiSse.ECHO_KEY, GeminiSse.ECHO_AQ_KEY)) {
+            val echo = ProviderAuth(AiProviderId.GEMINI, key, "$base/mock/400-key-echo/v1beta", freeTier = true)
+            val outcome = runBlocking { GeminiBackend(http, retry).keys.check(echo, model, RecordingUsage()) }
+            assertEquals(AiKeyCheck.INVALID, outcome.check)
+            assertEquals("HTTP 400 · INVALID_ARGUMENT", outcome.diagnostic)
+            try {
+                chat(GeminiBackend(http, retry), echo, model, search = false)
+                fail("400-key-echo: expected an error")
+            } catch (e: AiException) {
+                assertEquals(AiError.InvalidKey, e.error)
+                assertEquals("HTTP 400 · INVALID_ARGUMENT", e.diagnostic)
+            }
+        }
+
+        // 3.8 gone for this project (404) or without free quota (limit 0): 3.7 answers, the key test says so.
+        for (mode in listOf("model-gone", "model-no-quota")) {
+            val (answer, _) = chat(GeminiBackend(http, retry), auth(mode), model, search = false)
+            assertEquals(mode, "gemini-3.7-flash", answer.fallbackModel)
+            assertEquals(mode, TurnEnd.COMPLETE, answer.end)
+            val outcome = runBlocking { GeminiBackend(http, retry).keys.check(auth(mode), model, RecordingUsage()) }
+            assertEquals(mode, AiKeyCheck.OK, outcome.check)
+            assertEquals(mode, ModelFallback(model, "gemini-3.7-flash"), outcome.fallback)
+        }
+        // With billing and search, too.
+        val (searched, _) = chat(GeminiBackend(http, retry), auth("model-gone", freeTier = false), model)
+        assertEquals("gemini-3.7-flash", searched.fallbackModel)
+        assertTrue(searched.searchSuggestionsHtml!!.contains("class=\"chip\""))
     }
 
     @Test

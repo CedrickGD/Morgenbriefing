@@ -72,7 +72,41 @@ data class ProviderSettings(
      * repository never reads it there.
      */
     val debugBaseUrl: String? = null,
+    /**
+     * Gemini: the chosen model ([ModelFallback.from]) could not generate with the stored key, and
+     * requests use [ModelFallback.to] instead. Belongs to the stored key: saving a key, a tariff or
+     * another model drops it.
+     */
+    val modelFallback: ModelFallback? = null,
 )
+
+/** The model [to] that runs instead of the chosen [from], which the provider refused for the key. */
+data class ModelFallback(val from: String, val to: String)
+
+/**
+ * [raw] as a key can be stored and sent: without spaces and line breaks around it, without
+ * invisible characters anywhere (a zero-width space, a BOM, a soft hyphen or a direction mark
+ * that a copy brought along) and without quotes around it ("…", „…“, '…', `…`). Nothing else
+ * is changed — the format of a key is the provider's business (Gemini keys come as `AIza…` and
+ * `AQ.…`, of any length).
+ */
+fun cleanApiKey(raw: String?): String {
+    var key = raw.orEmpty().filterNot(::isInvisible).trim()
+    while (key.isNotEmpty()) {
+        val stripped = key.trimStart { it in KEY_QUOTES }.trimEnd { it in KEY_QUOTES }.trim()
+        if (stripped == key) break
+        key = stripped
+    }
+    return key
+}
+
+/** Format characters that never belong to a key but survive a copy invisibly. */
+private fun isInvisible(c: Char): Boolean =
+    c == '­' || c in '​'..'‏' || c in '‪'..'‮' || c in '⁠'..'⁤' ||
+        c in '⁦'..'⁩' || c == '﻿'
+
+/** Quotes a key may arrive in when it was copied from a note, a chat or a code sample. */
+private const val KEY_QUOTES = "\"'`„“”‚‘’«»‹›"
 
 data class AiSettings(
     /** The provider of "Frag nach" (and of Live unless [liveProvider] is set). */

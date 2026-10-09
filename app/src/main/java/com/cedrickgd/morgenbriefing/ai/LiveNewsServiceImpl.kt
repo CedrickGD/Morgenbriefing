@@ -227,7 +227,7 @@ internal class LiveNewsServiceImpl(
             _state.update { it.copy(running = false, blocked = e.block, newCount = newCount) }
         } catch (e: AiException) {
             // Settings → KI says so before the panel shows the error.
-            if (e.error == AiError.InvalidKey) access.keyRejected(provider, resolved.auth.apiKey)
+            if (e.error.rejectsKey) access.keyRejected(provider, resolved.auth.apiKey)
             _state.update { it.copy(running = false, error = e.error, newCount = newCount) }
         }
     }

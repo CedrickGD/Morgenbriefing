@@ -39,6 +39,7 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.ContentCopy
@@ -111,6 +112,7 @@ import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
+import com.cedrickgd.morgenbriefing.ui.components.ErrorDetails
 import com.cedrickgd.morgenbriefing.ui.components.motionDisabled
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
 import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
@@ -499,9 +501,11 @@ internal fun TruncatedNote(modifier: Modifier = Modifier) {
 }
 
 /**
- * A failed answer as a small glass card: what happened and, where it helps, "Nochmal" or the
- * way to the settings (rejected key).
+ * A failed answer as a small glass card: what happened and, where it helps, "Nochmal", the way
+ * to the settings (rejected key) or the page that fixes it (Gemini: AI Studio, Cloud Console).
+ * [detail] — the provider's answer in one technical line — sits under "Details", copyable.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ErrorCard(
     error: AiError,
@@ -510,8 +514,12 @@ internal fun ErrorCard(
     onRetry: () -> Unit,
     onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    detail: String? = null,
+    onOpenLink: (String) -> Unit = {},
 ) {
     val refusal = error is AiError.Refusal
+    val textColor = if (refusal) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onErrorContainer
+    val link = AiTexts.errorLink(error)
     GlassCard(
         modifier = modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
         level = GlassLevel.Regular,
@@ -535,16 +543,27 @@ internal fun ErrorCard(
             Text(
                 AiTexts.error(error, spec),
                 style = MaterialTheme.typography.bodyMedium,
-                color = if (refusal) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onErrorContainer,
+                color = textColor,
                 modifier = Modifier.weight(1f),
             )
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+        if (detail != null) {
+            ErrorDetails(detail, modifier = Modifier.padding(start = 32.dp, end = 8.dp), color = textColor)
+        }
+        // Wraps on narrow screens: a link, "Key ändern" and "Nochmal" may all be there.
+        FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            link?.let { (label, url) ->
+                TextButton(onClick = { onOpenLink(url) }) {
+                    Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text(label)
+                }
+            }
             if (AiTexts.needsKeyChange(error)) {
                 TextButton(onClick = onOpenSettings) { Text("Key ändern") }
             } else if (canRetry && AiTexts.isRetryable(error)) {
                 TextButton(onClick = onRetry) { Text("Nochmal versuchen") }
-            } else {
+            } else if (link == null) {
                 Spacer(Modifier.height(8.dp))
             }
         }

@@ -5,7 +5,9 @@ import androidx.datastore.preferences.core.preferencesOf
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
+import com.cedrickgd.morgenbriefing.data.model.cleanApiKey
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -139,6 +141,61 @@ class AiSettingsPrefsTest {
 
         val withLive = after.toMutablePreferences().apply { writeAiSettings(read.copy(liveProvider = AiProviderId.XAI)) }
         assertEquals("xai", withLive[AiPrefKeys.LIVE_PROVIDER])
+    }
+
+    @Test
+    fun `a model fallback belongs to the stored key and goes with a new model choice`() {
+        val gemini = AiProviderId.GEMINI
+        val prefs = preferencesOf(
+            AiPrefKeys.keyEnc(gemini) to "CT==",
+            AiPrefKeys.fallbackFrom(gemini) to " gemini-3.8-flash ",
+            AiPrefKeys.fallbackTo(gemini) to "gemini-3.7-flash",
+            // Half a fallback, or one without a key, is none.
+            AiPrefKeys.fallbackFrom(AiProviderId.OPENAI) to "gpt-6.1-sol",
+            AiPrefKeys.fallbackFrom(AiProviderId.XAI) to "grok-4.3",
+            AiPrefKeys.fallbackTo(AiProviderId.XAI) to "grok-4.7",
+        )
+        val read = readAiSettings(prefs, false)
+        assertEquals(ModelFallback("gemini-3.8-flash", "gemini-3.7-flash"), read.of(gemini).modelFallback)
+        assertNull(read.of(AiProviderId.OPENAI).modelFallback)
+        assertNull(read.of(AiProviderId.XAI).modelFallback)
+
+        // Writing the same model keeps it; another model drops it (the new choice is tried again).
+        val same = prefs.toMutablePreferences().apply { writeAiSettings(read) }.toPreferences()
+        assertEquals(ModelFallback("gemini-3.8-flash", "gemini-3.7-flash"), readAiSettings(same, false).of(gemini).modelFallback)
+        val other = prefs.toMutablePreferences().apply { writeAiSettings(read.withModel(gemini, "gemini-3.5-flash-lite")) }.toPreferences()
+        assertNull(readAiSettings(other, false).of(gemini).modelFallback)
+        assertNull(other[AiPrefKeys.fallbackTo(gemini)])
+
+        // The dedicated writer: set, and null or a "fallback" to the same model removes it.
+        val written = emptyPreferences().toMutablePreferences().apply {
+            writeModelFallback(gemini, ModelFallback("gemini-3.8-flash", "gemini-3.5-flash-lite"))
+        }
+        assertEquals("gemini-3.5-flash-lite", written[AiPrefKeys.fallbackTo(gemini)])
+        written.writeModelFallback(gemini, ModelFallback("gemini-3.8-flash", "gemini-3.8-flash"))
+        assertNull(written[AiPrefKeys.fallbackFrom(gemini)])
+    }
+
+    @Test
+    fun `a pasted key loses spaces, quotes and invisible characters around it, nothing else`() {
+        val aq = "AQ.Ab1-fake_test.key-0000"
+        assertEquals(aq, cleanApiKey("  $aq \n"))
+        assertEquals(aq, cleanApiKey("\"$aq\""))
+        assertEquals(aq, cleanApiKey("„$aq“"))
+        assertEquals(aq, cleanApiKey("'$aq'"))
+        assertEquals(aq, cleanApiKey("`$aq`"))
+        assertEquals(aq, cleanApiKey(" « \"$aq\" » "))
+        assertEquals(aq, cleanApiKey("﻿$aq​"))
+        assertEquals(aq, cleanApiKey("AQ.Ab1-‍fake_test.key­-0000"))
+        assertEquals(aq, cleanApiKey(" $aq "))
+        // Both Gemini shapes, any length: no format is imposed.
+        assertEquals("AIza-test-invalid", cleanApiKey("AIza-test-invalid"))
+        assertEquals("AQ.x", cleanApiKey("AQ.x"))
+        // Inner spaces and umlauts stay (the dialog says so; such a key is never sent).
+        assertEquals("AIza test", cleanApiKey(" AIza test "))
+        assertEquals("AIza-ä", cleanApiKey("AIza-ä"))
+        assertEquals("", cleanApiKey(null))
+        assertEquals("", cleanApiKey(" \"\" "))
     }
 
     @Test

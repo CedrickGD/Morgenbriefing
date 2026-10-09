@@ -74,6 +74,7 @@ import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import com.cedrickgd.morgenbriefing.data.normalizeBaseUrl
+import com.cedrickgd.morgenbriefing.ui.components.ErrorDetails
 import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
 
 /** Where Anthropic lists the workspaces and their ids. */
@@ -120,7 +121,7 @@ internal fun AiKeyDialog(
     var tier by rememberSaveable { mutableStateOf(stored.geminiTier) }
     var advanced by rememberSaveable { mutableStateOf(!stored.workspaceId.isNullOrBlank()) }
     LaunchedEffect(state) {
-        if (state == AiKeyState.Failed(AiKeyProblem.WORKSPACE_REQUIRED) || state == AiKeyState.Failed(AiKeyProblem.WORKSPACE_INVALID)) {
+        if (state.failedWith(AiKeyProblem.WORKSPACE_REQUIRED) || state.failedWith(AiKeyProblem.WORKSPACE_INVALID)) {
             advanced = true
         }
     }
@@ -260,13 +261,19 @@ internal fun AiKeyDialog(
                     text = message,
                     style = MaterialTheme.typography.bodyMedium,
                     color = when (state) {
-                        AiKeyState.Saved, is AiKeyState.ServerConnected -> StatusPalette.ok()
-                        AiKeyState.SavedNoCredit -> StatusPalette.attention()
+                        AiKeyState.Saved, is AiKeyState.ServerConnected, is AiKeyState.SavedWithFallback -> StatusPalette.ok()
+                        AiKeyState.SavedNoCredit, is AiKeyState.SavedQuotaExhausted -> StatusPalette.attention()
                         AiKeyState.Checking, AiKeyState.SavedUntested -> colors.onSurfaceVariant
                         else -> colors.error
                     },
                 )
             }
+        }
+        // What Google answered, copyable, and the page that fixes it (GE §12.4, §12.6).
+        state.diagnostic?.let { detail -> ErrorDetails(detail) }
+        aiKeyFixLink(state)?.let { fix ->
+            Spacer(Modifier.height(4.dp))
+            GlassPillButton(text = fix.label, onClick = { onOpenLink(fix.url) }, icon = Icons.AutoMirrored.Rounded.OpenInNew, style = PillStyle.Quiet)
         }
         if (canSaveUntested(state) && (key.isNotBlank() || custom)) {
             Spacer(Modifier.height(8.dp))

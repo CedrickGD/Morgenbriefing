@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ai
 
+import com.cedrickgd.morgenbriefing.ai.provider.GeminiLinks
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
 import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
@@ -84,7 +85,38 @@ object AiTexts {
             AiError.Truncated -> "Die Antwort war zu lang und wurde gekürzt."
             is AiError.Unknown -> error.message?.takeIf { it.isNotBlank() }
                 ?: "Da ist etwas schiefgelaufen. Versuch es bitte noch einmal."
+            is AiError.GeminiAccess -> gemini(error.problem)
         }
+    }
+
+    /** Why Google refused a Gemini request, and what fixes it (docs/providers/gemini.md §12.4). */
+    fun gemini(problem: GeminiProblem): String = when (problem) {
+        GeminiProblem.AUTH_KEY_REJECTED ->
+            "Google nimmt deinen Key gerade nicht an. Das passiert derzeit bei manchen neuen Keys („AQ.…“), auch wenn " +
+                "AI Studio sie als gültig zeigt: Erstell in AI Studio einen neuen Key und prüf, dass sein Projekt die Gemini API nutzen darf."
+        GeminiProblem.KEY_LEAKED ->
+            "Google hat deinen Key gesperrt, weil er öffentlich aufgetaucht ist. Erstell in AI Studio einen neuen Key – und gib ihn nicht weiter."
+        GeminiProblem.API_BLOCKED ->
+            "Die Gemini API ist für dein Google-Projekt gesperrt oder nicht aktiviert. Aktivier sie in der Google Cloud Console – " +
+                "oder erstell in AI Studio einen Key in einem anderen Projekt."
+        GeminiProblem.KEY_RESTRICTED ->
+            "Dein Key ist auf bestimmte Apps, Websites oder IP-Adressen beschränkt. Heb die Beschränkung in der Google Cloud Console auf – " +
+                "oder erstell in AI Studio einen neuen Key."
+        GeminiProblem.FREE_TIER_UNAVAILABLE ->
+            "Der kostenlose Gemini-Tarif ist für dein Land/Projekt nicht freigeschaltet – aktivier die Abrechnung in AI Studio " +
+                "oder wähl einen anderen Anbieter."
+    }
+
+    /**
+     * The page that fixes [error], as (button label, URL) — AI Studio for a new key or billing,
+     * the Cloud Console for a blocked API or a restricted key; null when there is none.
+     */
+    fun errorLink(error: AiError): Pair<String, String>? = when ((error as? AiError.GeminiAccess)?.problem) {
+        GeminiProblem.AUTH_KEY_REJECTED, GeminiProblem.KEY_LEAKED -> "Neuen Key in AI Studio" to GeminiLinks.API_KEYS
+        GeminiProblem.API_BLOCKED -> "Gemini API aktivieren" to GeminiLinks.API_LIBRARY
+        GeminiProblem.KEY_RESTRICTED -> "Key-Beschränkung prüfen" to GeminiLinks.CREDENTIALS
+        GeminiProblem.FREE_TIER_UNAVAILABLE -> "Abrechnung in AI Studio" to GeminiLinks.PROJECTS
+        null -> null
     }
 
     /** True when trying the same request again (by hand) can help. */
@@ -92,12 +124,12 @@ object AiTexts {
         AiError.RateLimited, AiError.Overloaded, AiError.Network, AiError.ServerUnreachable,
         AiError.QuotaExhausted, is AiError.Unknown -> true
         AiError.InvalidKey, AiError.NoCredit, AiError.WorkspaceRequired, AiError.WorkspaceNotFound,
-        is AiError.ModelUnavailable, is AiError.Refusal, AiError.Truncated -> false
+        is AiError.ModelUnavailable, is AiError.Refusal, AiError.Truncated, is AiError.GeminiAccess -> false
     }
 
     /** The fix for [error] is in the key dialog (a new key, a workspace id). */
     fun needsKeyChange(error: AiError): Boolean =
-        error == AiError.InvalidKey || error == AiError.WorkspaceRequired || error == AiError.WorkspaceNotFound
+        error.rejectsKey || error == AiError.WorkspaceRequired || error == AiError.WorkspaceNotFound
 
     /** Friendly explanation of a refusal; [category] comes from `stop_details` or a block reason. */
     fun refusal(category: String?): String = when (category?.lowercase()) {

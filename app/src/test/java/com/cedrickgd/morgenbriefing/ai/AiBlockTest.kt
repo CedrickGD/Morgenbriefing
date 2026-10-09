@@ -146,8 +146,12 @@ class AiBlockTest {
         val same = keyTestSettings(stored, gemini, KeyExtras())
         // An outright refusal of the stored setup: marked (the key store then checks it is the stored key).
         assertTrue(keyTestRejectsStoredKey(AiKeyCheck.INVALID, stored, same, gemini))
-        // Anything but a refusal leaves the key as it is.
-        AiKeyCheck.entries.filter { it != AiKeyCheck.INVALID }.forEach {
+        // A Gemini key Google does not take, or blocked as leaked, is refused as well (GE §12.4).
+        assertTrue(keyTestRejectsStoredKey(AiKeyCheck.AUTH_KEY_REJECTED, stored, same, gemini))
+        assertTrue(keyTestRejectsStoredKey(AiKeyCheck.KEY_LEAKED, stored, same, gemini))
+        // Anything but a refusal of the key leaves it as it is — a blocked API or billing is the project's.
+        val refusals = setOf(AiKeyCheck.INVALID, AiKeyCheck.AUTH_KEY_REJECTED, AiKeyCheck.KEY_LEAKED)
+        AiKeyCheck.entries.filter { it !in refusals }.forEach {
             assertFalse(it.name, keyTestRejectsStoredKey(it, stored, same, gemini))
         }
         // No key stored: nothing to mark.

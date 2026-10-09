@@ -14,7 +14,6 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
-import com.cedrickgd.morgenbriefing.ai.AiKeyCheck
 import com.cedrickgd.morgenbriefing.ai.AiServices
 import com.cedrickgd.morgenbriefing.ai.KeyCheckOutcome
 import com.cedrickgd.morgenbriefing.ai.KeyExtras
@@ -23,6 +22,7 @@ import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.cleanApiKey
 import com.cedrickgd.morgenbriefing.util.attempt
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import kotlinx.coroutines.CancellationException
@@ -84,7 +84,8 @@ internal class AiKeyEditor(
      * gets the first model it lists, so the chat can start right away.
      */
     fun saveAndTest(provider: AiProviderId, submission: KeySubmission) {
-        val key = submission.key.trim()
+        // Spaces, quotes and invisible characters a copy brought along are not part of the key.
+        val key = cleanApiKey(submission.key)
         job?.cancel()
         job = scope.launch {
             val stored = attempt { container.settings.current().ai }.getOrNull() ?: AiSettings()
@@ -105,12 +106,12 @@ internal class AiKeyEditor(
                 ensureActive()
                 val problem = outcome?.check?.toProblem() ?: if (outcome == null) AiKeyProblem.UNKNOWN else null
                 if (problem != null) {
-                    _state.value = AiKeyState.Failed(problem)
+                    _state.value = AiKeyState.Failed(problem, outcome?.diagnostic)
                     return@launch
                 }
             }
             val models = outcome?.serverModels.orEmpty()
-            val saved = attempt { store(provider, key, submission, stored, models) }
+            val saved = attempt { store(provider, key, submission, stored, models, outcome) }
             // Also after a partial write: a new tariff or key must not keep what the old one taught.
             ai().providerSetupSaved(provider)
             if (saved.isFailure) {
@@ -121,12 +122,19 @@ internal class AiKeyEditor(
             if (provider == AiProviderId.CUSTOM && outcome != null) onServerModels(models)
             _state.value = when {
                 provider == AiProviderId.CUSTOM && outcome != null -> AiKeyState.ServerConnected(models.size)
-                else -> savedKeyState(tested = !submission.skipTest, noCredit = outcome?.check == AiKeyCheck.OK_NO_CREDIT)
+                else -> savedKeyState(outcome)
             }
         }
     }
 
-    private suspend fun store(provider: AiProviderId, key: String, submission: KeySubmission, stored: AiSettings, models: List<String>) {
+    private suspend fun store(
+        provider: AiProviderId,
+        key: String,
+        submission: KeySubmission,
+        stored: AiSettings,
+        models: List<String>,
+        outcome: KeyCheckOutcome?,
+    ) {
         val settings = container.settings
         if (provider == AiProviderId.ANTHROPIC) submission.extras.workspaceId?.let { settings.setAnthropicWorkspaceId(it) }
         if (provider == AiProviderId.CUSTOM) {
@@ -137,6 +145,11 @@ internal class AiKeyEditor(
             key.isNotEmpty() -> settings.setAiKey(provider, key, tested = !submission.skipTest)
             // The stored key passed again (with a new workspace id or tariff).
             !submission.skipTest && stored.of(provider).hasKey -> settings.markAiKeyWorks(provider)
+        }
+        // A passed Gemini test decides the model for this key: the chosen one, or the fallback
+        // that answered instead (GE §12.5). Saving the key above dropped the previous one.
+        if (provider == AiProviderId.GEMINI && outcome != null && outcome.check.toProblem() == null) {
+            settings.setModelFallback(provider, outcome.fallback)
         }
         val first = models.firstOrNull()
         if (provider == AiProviderId.CUSTOM && first != null && stored.of(provider).model.isNullOrBlank()) {

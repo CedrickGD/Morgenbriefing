@@ -89,27 +89,31 @@ internal fun keyTestSettings(ai: AiSettings, provider: AiProviderId, extras: Key
 
 /**
  * A key test of [provider] that ended in [check] marks the stored key as rejected, like a refused
- * chat request: only for an outright refusal ([AiKeyCheck.INVALID]), only with a key stored, and
- * only when the test ran with the stored setup ([tested] is [stored] for [provider]) — a new
- * workspace id or server address may be what failed. Whether the tested key is the stored one
- * is left to the key store, which compares them (a different, unsaved key is never marked).
+ * chat request: only for an outright refusal of the key ([AiKeyCheck.rejectsKey]), only with a key
+ * stored, and only when the test ran with the stored setup ([tested] is [stored] for [provider]) —
+ * a new workspace id or server address may be what failed. Whether the tested key is the stored
+ * one is left to the key store, which compares them (a different, unsaved key is never marked).
  */
 internal fun keyTestRejectsStoredKey(check: AiKeyCheck, stored: AiSettings, tested: AiSettings, provider: AiProviderId): Boolean =
-    check == AiKeyCheck.INVALID && stored.of(provider).hasKey && tested.of(provider) == stored.of(provider)
+    check.rejectsKey() && stored.of(provider).hasKey && tested.of(provider) == stored.of(provider)
 
 /** The outcome of resolving a provider for one chat turn or Live run. */
 internal sealed interface Resolution {
     val spec: ProviderSpec
 
     /**
-     * Everything a request needs. [usage] is this provider's sink: it skips the monthly limit
-     * and prices at 0 $ for free providers, and confirms the key once a request went through.
-     * [webSearch]: offer web search in the chat (false for a free Gemini key).
+     * Everything a request needs. [model] is the one requests use ([ProviderCatalog.effectiveModel]:
+     * a Gemini model fallback of the key, if any); [selectedModel] is the one the user chose
+     * ([ProviderCatalog.selectedModel]) — a new fallback is stored for it and named after it.
+     * [usage] is this provider's sink: it skips the monthly limit and prices at 0 $ for free
+     * providers, and confirms the key once a request went through. [webSearch]: offer web search
+     * in the chat (false for a free Gemini key).
      */
     data class Ready(
         override val spec: ProviderSpec,
         val auth: ProviderAuth,
         val model: String,
+        val selectedModel: String,
         val backend: AiBackend,
         val webSearch: Boolean,
         val usage: UsageSink,
@@ -126,9 +130,23 @@ internal interface AiProviderAccess {
     /** The provider of [purpose] and its block, live over the settings and this month's usage. */
     fun status(purpose: AiPurpose): Flow<AiStatus>
 
-    /** A request with [key] ended in [AiError.InvalidKey]: Settings → KI says so. Must not throw. */
+    /** A request with [key] ended in an error that [rejectsKey]: Settings → KI says so. Must not throw. */
     suspend fun keyRejected(provider: AiProviderId, key: String?)
+
+    /**
+     * [provider] refused [from] for [key] and [to] answered instead (Gemini, GE §12.5): requests
+     * with this key use [to] from now on. Must not throw.
+     */
+    suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String) {}
 }
+
+/**
+ * A key or connection test of [provider] that ended in [check] marks the stored key as rejected
+ * when the provider refused the key itself: [AiKeyCheck.INVALID], or a Gemini key Google does not
+ * take ([AiKeyCheck.AUTH_KEY_REJECTED]) or blocked as leaked ([AiKeyCheck.KEY_LEAKED]).
+ */
+internal fun AiKeyCheck.rejectsKey(): Boolean =
+    this == AiKeyCheck.INVALID || this == AiKeyCheck.AUTH_KEY_REJECTED || this == AiKeyCheck.KEY_LEAKED
 
 /**
  * The usage sink of one provider over the shared monthly [store]. A [free] provider (own

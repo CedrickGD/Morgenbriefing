@@ -96,7 +96,7 @@ internal fun liveErrorText(error: AiError, spec: ProviderSpec): String {
         AiError.Truncated -> "Die Recherche wurde gekürzt – vielleicht fehlen ein paar Meldungen."
         // The chat's sentences fit Live as well.
         AiError.NoCredit, AiError.QuotaExhausted, AiError.ServerUnreachable, AiError.WorkspaceRequired,
-        AiError.WorkspaceNotFound, is AiError.ModelUnavailable -> AiTexts.error(error, spec)
+        AiError.WorkspaceNotFound, is AiError.ModelUnavailable, is AiError.GeminiAccess -> AiTexts.error(error, spec)
         // Unknown errors carry a user-facing German sentence when the cause is known.
         is AiError.Unknown -> error.message?.takeIf { it.isNotBlank() } ?: "Da ist etwas schiefgelaufen. Versuch's gleich nochmal."
     }

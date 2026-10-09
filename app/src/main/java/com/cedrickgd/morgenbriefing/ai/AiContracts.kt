@@ -3,6 +3,7 @@ package com.cedrickgd.morgenbriefing.ai
 import android.os.Build
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import kotlinx.coroutines.flow.Flow
@@ -69,6 +70,38 @@ sealed interface AiError {
 
     /** A free tier's quota is used up for now (a free Gemini key, HTTP 429): later it works again. */
     data object QuotaExhausted : AiError
+
+    /**
+     * Gemini: Google refused the request for a reason that lies in the key's Google project or
+     * tariff rather than in a mistyped key (docs/providers/gemini.md §12.4). [problem] picks the
+     * explanation and the link that fixes it.
+     */
+    data class GeminiAccess(val problem: GeminiProblem) : AiError
+}
+
+/** Why Google refused a Gemini key or request ([AiError.GeminiAccess], GE §12.4). */
+enum class GeminiProblem {
+    /**
+     * 401 `UNAUTHENTICATED` with reason `ACCESS_TOKEN_TYPE_UNSUPPORTED`: Google does not take the
+     * key. Seen for mistyped `AQ.…` keys, but also for new AI Studio auth keys that AI Studio shows
+     * as valid (forum reports since 2026-08, no official fix).
+     */
+    AUTH_KEY_REJECTED,
+
+    /**
+     * "Your API key was reported as leaked": Google blocked the key because it showed up in public
+     * (ai.google.dev troubleshooting); only a new key helps.
+     */
+    KEY_LEAKED,
+
+    /** `API_KEY_SERVICE_BLOCKED` / `SERVICE_DISABLED`: the Gemini API is blocked or off in the key's project. */
+    API_BLOCKED,
+
+    /** `API_KEY_ANDROID_APP_BLOCKED`, `…_IP_ADDRESS_BLOCKED`, …: the key is restricted to other apps, sites or addresses. */
+    KEY_RESTRICTED,
+
+    /** 400 `FAILED_PRECONDITION`: the free tier is not available for the country or project; billing is needed. */
+    FREE_TIER_UNAVAILABLE,
 }
 
 data class ChatMessage(
@@ -93,6 +126,12 @@ data class ChatMessage(
      * answers saved before v1.3.0 — those are shown under the chat's current provider.
      */
     val provider: AiProviderId? = null,
+    /**
+     * Failed answers: a short, key-free technical summary of what the provider answered, e.g.
+     * "HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED" — shown under "Details" so it
+     * can be copied and sent along with a question. Null when there is nothing to add.
+     */
+    val errorDetail: String? = null,
 ) {
     enum class Role { USER, ASSISTANT }
     enum class Status { STREAMING, DONE, FAILED }
@@ -210,10 +249,44 @@ enum class AiKeyCheck {
 
     /** Own server: something answers, but not an OpenAI-compatible API. */
     NOT_AN_AI_SERVER,
+
+    /** Gemini: Google does not take this key ([GeminiProblem.AUTH_KEY_REJECTED]). */
+    AUTH_KEY_REJECTED,
+
+    /** Gemini: Google blocked the key as leaked ([GeminiProblem.KEY_LEAKED]). */
+    KEY_LEAKED,
+
+    /** Gemini: the Gemini API is blocked or not enabled in the key's project ([GeminiProblem.API_BLOCKED]). */
+    API_BLOCKED,
+
+    /** Gemini: the key is restricted to other apps, sites or addresses ([GeminiProblem.KEY_RESTRICTED]). */
+    KEY_RESTRICTED,
+
+    /** Gemini: the free tier is not available for the country or project ([GeminiProblem.FREE_TIER_UNAVAILABLE]). */
+    FREE_TIER_UNAVAILABLE,
+
+    /** The key works, but none of the app's models may generate with it. */
+    MODEL_UNAVAILABLE,
+
+    /** The key works, but its quota is used up right now (Gemini 429): stored, with a note. */
+    OK_QUOTA_EXHAUSTED,
 }
 
-/** Result of a key or connection test; [serverModels] = the own server's model ids. */
-data class KeyCheckOutcome(val check: AiKeyCheck, val serverModels: List<String> = emptyList())
+/**
+ * Result of a key or connection test.
+ *
+ * @property serverModels the own server's model ids.
+ * @property diagnostic a key-free technical summary of the answer that decided a failed test
+ *   (e.g. "HTTP 403 · PERMISSION_DENIED · API_KEY_SERVICE_BLOCKED"), shown under "Details".
+ * @property fallback Gemini: the chosen model could not generate with this key, [ModelFallback.to]
+ *   could — the app uses that one for this key from now on.
+ */
+data class KeyCheckOutcome(
+    val check: AiKeyCheck,
+    val serverModels: List<String> = emptyList(),
+    val diagnostic: String? = null,
+    val fallback: ModelFallback? = null,
+)
 
 /** What a key test needs besides the key: the Anthropic workspace id, the own server's address. */
 data class KeyExtras(val workspaceId: String? = null, val baseUrl: String? = null)
