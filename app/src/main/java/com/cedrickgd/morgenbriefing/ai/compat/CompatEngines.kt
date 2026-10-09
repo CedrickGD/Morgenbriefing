@@ -185,8 +185,9 @@ internal class CompatKeyChecker(
             throw e
         } catch (_: IOException) {
             KeyCheckOutcome(AiKeyCheck.NETWORK)
-        } catch (_: AiException) {
-            KeyCheckOutcome(AiKeyCheck.NETWORK)
+        } catch (e: AiException) {
+            // Nothing was asked: a key that cannot travel in a header, or an unusable base URL.
+            KeyCheckOutcome(if (e.error == AiError.InvalidKey) AiKeyCheck.INVALID else AiKeyCheck.NETWORK)
         }
     }
 
@@ -228,6 +229,9 @@ internal class CompatKeyChecker(
         } catch (_: IOException) {
             // Refused, unknown name, timeout: the server cannot be reached as typed.
             KeyCheckOutcome(AiKeyCheck.SERVER_UNREACHABLE)
+        } catch (e: AiException) {
+            // A key that cannot travel in a header (nothing was sent), or an unusable address.
+            KeyCheckOutcome(if (e.error == AiError.InvalidKey) AiKeyCheck.INVALID else AiKeyCheck.SERVER_UNREACHABLE)
         }
     }
 

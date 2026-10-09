@@ -1,6 +1,8 @@
 package com.cedrickgd.morgenbriefing.ai.openai
 
 import com.cedrickgd.morgenbriefing.ai.AiBackend
+import com.cedrickgd.morgenbriefing.ai.AiError
+import com.cedrickgd.morgenbriefing.ai.AiException
 import com.cedrickgd.morgenbriefing.ai.AiKeyCheck
 import com.cedrickgd.morgenbriefing.ai.AiPrompts
 import com.cedrickgd.morgenbriefing.ai.AnswerText
@@ -170,6 +172,9 @@ internal class ResponsesKeyChecker(
             throw e
         } catch (e: IOException) {
             AiKeyCheck.NETWORK
+        } catch (e: AiException) {
+            // Nothing was asked: a key that cannot travel in a header, or an unusable base URL.
+            if (e.error == AiError.InvalidKey) AiKeyCheck.INVALID else AiKeyCheck.NETWORK
         }
     }
 

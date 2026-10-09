@@ -1,6 +1,8 @@
 package com.cedrickgd.morgenbriefing.ai.http
 
 import com.cedrickgd.morgenbriefing.BuildConfig
+import com.cedrickgd.morgenbriefing.ai.AiError
+import com.cedrickgd.morgenbriefing.ai.AiException
 import com.cedrickgd.morgenbriefing.data.remote.HttpText
 import com.cedrickgd.morgenbriefing.data.remote.USER_AGENT
 import com.cedrickgd.morgenbriefing.data.remote.fetchText
@@ -63,10 +65,25 @@ internal class AiHttp(
     /** A GET of [url] with [headers], e.g. a model list or a key check. */
     fun get(url: String, headers: Map<String, String> = emptyMap()): Request = builder(url, headers, stream = false).get().build()
 
+    /**
+     * The request skeleton. OkHttp refuses a header value with a character outside printable
+     * ASCII with an exception that quotes the value — and the value is a key here (Gemini's
+     * `x-goog-api-key` is no header OkHttp redacts). Such a value is refused first, without
+     * naming it: a pasted key with a zero-width space, a BOM or an umlaut is an
+     * [AiError.InvalidKey]. A URL OkHttp cannot parse is an [AiError.Unknown]. Nothing raw leaves.
+     */
     private fun builder(url: String, headers: Map<String, String>, stream: Boolean): Request.Builder {
-        val builder = Request.Builder().url(url).header("User-Agent", userAgent)
+        val builder = try {
+            Request.Builder().url(url)
+        } catch (_: IllegalArgumentException) {
+            throw AiException(AiError.Unknown("Die Adresse der KI-Schnittstelle ist ungültig."))
+        }
+        builder.header("User-Agent", userAgent)
         builder.header("Accept", if (stream) "text/event-stream" else "application/json")
-        headers.forEach { (name, value) -> builder.header(name, value) }
+        headers.forEach { (name, value) ->
+            if (!isHeaderValue(value)) throw AiException(AiError.InvalidKey)
+            builder.header(name, value)
+        }
         return builder
     }
 
@@ -75,6 +92,12 @@ internal class AiHttp(
 
         /** Error bodies are read up to this size (they only feed the error classification). */
         const val MAX_ERROR_BODY = 64L * 1024
+
+        /** What OkHttp accepts in a header value: tab and printable ASCII (0x20–0x7E). */
+        fun isHeaderValue(value: String): Boolean = value.all { it == '\t' || it in ' '..'~' }
+
+        /** A key that can travel in a header as it is: printable ASCII without spaces (0x21–0x7E). */
+        fun isPlainKey(key: String): Boolean = key.isNotEmpty() && key.all { it in '!'..'~' }
     }
 }
 

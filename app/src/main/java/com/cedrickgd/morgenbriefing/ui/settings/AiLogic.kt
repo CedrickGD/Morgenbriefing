@@ -200,23 +200,26 @@ internal fun serverLabel(baseUrl: String?): String {
 }
 
 /** Why a pasted key does not look like a key of the provider – most likely a copy mistake. */
-enum class AiKeyFormatIssue { WRONG_PREFIX, TOO_SHORT, WHITESPACE }
+enum class AiKeyFormatIssue { WRONG_PREFIX, TOO_SHORT, WHITESPACE, ODD_CHARACTER }
 
 /**
  * What is wrong with [raw] as a key of [spec], or null when it looks right. Spaces and line
- * breaks around it do not count (they are dropped when saving); inside it they always do. The
- * prefix and length are only checked where the provider documents a key format
+ * breaks around it do not count (they are dropped when saving); inside it they always do. Keys
+ * are plain ASCII: an invisible character a copy brought along (a zero-width space, a BOM) or
+ * an umlaut is [AiKeyFormatIssue.ODD_CHARACTER] — such a key cannot be sent at all. The prefix
+ * and length are only checked where the provider documents a key format
  * ([ProviderSpec.keyPrefixes]); Gemini keys come as `AIza…` and `AQ.…` and are never judged by
- * their shape. A key that only starts right once its inner spaces are gone is a
- * [AiKeyFormatIssue.WHITESPACE] problem, not a wrong prefix.
+ * their shape. A key that only starts right once its inner spaces or odd characters are gone is
+ * a [AiKeyFormatIssue.WHITESPACE] / [AiKeyFormatIssue.ODD_CHARACTER] problem, not a wrong prefix.
  */
 internal fun aiKeyFormatIssue(raw: String, spec: ProviderSpec): AiKeyFormatIssue? {
     val key = raw.trim()
     val prefixes = spec.keyPrefixes
-    val compact = key.filterNot { it.isWhitespace() }
+    val compact = key.filter { it in '!'..'~' }
     return when {
         prefixes.isNotEmpty() && prefixes.none { compact.startsWith(it) } -> AiKeyFormatIssue.WRONG_PREFIX
         key.any { it.isWhitespace() } -> AiKeyFormatIssue.WHITESPACE
+        key.any { it !in '!'..'~' } -> AiKeyFormatIssue.ODD_CHARACTER
         prefixes.isNotEmpty() && key.length < MIN_KEY_LENGTH -> AiKeyFormatIssue.TOO_SHORT
         else -> null
     }
@@ -228,6 +231,7 @@ internal fun aiKeyFormatHint(issue: AiKeyFormatIssue, spec: ProviderSpec): Strin
         "${keyName(spec)}-Keys beginnen mit ${spec.keyPrefixes.joinToString(" oder ") { "„$it“" }} – stimmt die Kopie?"
     AiKeyFormatIssue.TOO_SHORT -> "Der Key wirkt zu kurz – hast du ihn vollständig kopiert?"
     AiKeyFormatIssue.WHITESPACE -> "Der Key enthält Leerzeichen – kopier ihn ohne Zeilenumbruch."
+    AiKeyFormatIssue.ODD_CHARACTER -> "Der Key enthält ein unsichtbares oder ungewöhnliches Zeichen – kopier ihn bitte noch einmal."
 }
 
 private const val MIN_KEY_LENGTH = 20

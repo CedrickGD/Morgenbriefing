@@ -159,7 +159,9 @@ class AiServices(private val context: Context, private val container: AppContain
         val backend = backendFor(provider) ?: return KeyCheckOutcome(AiKeyCheck.UNSUPPORTED)
         val candidate = key?.trim()?.takeIf { it.isNotEmpty() } ?: keyOrNull(provider)
         if (candidate == null && !provider.keyOptional) return KeyCheckOutcome(AiKeyCheck.INVALID)
-        if (candidate != null && candidate.any { it.isWhitespace() }) return KeyCheckOutcome(AiKeyCheck.INVALID)
+        // Inner spaces, or an invisible / non-ASCII character from a copy (a zero-width space, a
+        // BOM, an umlaut): such a key cannot travel in a header, so it is refused before any request.
+        if (candidate != null && !AiHttp.isPlainKey(candidate)) return KeyCheckOutcome(AiKeyCheck.INVALID)
         val ai = settingsOrDefault().ai
         val stored = ai.of(provider)
         val tested = ai.with(

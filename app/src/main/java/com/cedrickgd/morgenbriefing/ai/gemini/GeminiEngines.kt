@@ -1,6 +1,7 @@
 package com.cedrickgd.morgenbriefing.ai.gemini
 
 import com.cedrickgd.morgenbriefing.ai.AiBackend
+import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.AiException
 import com.cedrickgd.morgenbriefing.ai.AiKeyCheck
 import com.cedrickgd.morgenbriefing.ai.AnswerText
@@ -110,9 +111,9 @@ internal class GeminiKeyChecker(private val http: AiHttp) : KeyChecker {
             throw e
         } catch (_: IOException) {
             AiKeyCheck.NETWORK
-        } catch (_: AiException) {
-            // An unusable base URL (debug override): nothing was asked.
-            AiKeyCheck.NETWORK
+        } catch (e: AiException) {
+            // Nothing was asked: a key that cannot travel in a header, or an unusable base URL (debug override).
+            if (e.error == AiError.InvalidKey) AiKeyCheck.INVALID else AiKeyCheck.NETWORK
         }
         return KeyCheckOutcome(verdict)
     }

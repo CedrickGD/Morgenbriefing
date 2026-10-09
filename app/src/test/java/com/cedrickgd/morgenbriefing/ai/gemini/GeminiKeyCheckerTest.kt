@@ -1,5 +1,7 @@
 package com.cedrickgd.morgenbriefing.ai.gemini
 
+import com.cedrickgd.morgenbriefing.ai.AiError
+import com.cedrickgd.morgenbriefing.ai.AiException
 import com.cedrickgd.morgenbriefing.ai.AiKeyCheck
 import com.cedrickgd.morgenbriefing.ai.ProviderAuth
 import com.cedrickgd.morgenbriefing.ai.RecordingUsage
@@ -11,6 +13,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -79,5 +82,21 @@ class GeminiKeyCheckerTest {
         // Port 1 on loopback: nothing listens there, the connection is refused.
         val gone = ProviderAuth(AiProviderId.GEMINI, GeminiSse.KEY, baseUrl = "http://127.0.0.1:1/v1beta")
         assertEquals(AiKeyCheck.NETWORK, checker.check(gone, "gemini-3.8-flash", usage).check)
+    }
+
+    @Test
+    fun `a key with an invisible or non-ASCII character is refused without sending or naming it`() = runBlocking<Unit> {
+        // A zero-width space, a BOM, an umlaut: OkHttp would refuse the header with the value in
+        // its exception message (and from there in a log).
+        listOf("${GeminiSse.KEY}​", "﻿${GeminiSse.KEY}", "AIza-test-invälid").forEach { key ->
+            assertEquals(key, AiKeyCheck.INVALID, checker.check(auth(key), "gemini-3.8-flash", usage).check)
+        }
+        assertEquals(0, server.requestCount)
+        val refused = runCatching { http.get(server.url("/v1beta/models/m").toString(), mapOf("x-goog-api-key" to "AIza-test​")) }
+            .exceptionOrNull()
+        assertEquals(AiError.InvalidKey, (refused as AiException).error)
+        assertFalse(refused.toString().contains("AIza-test"))
+        assertFalse(AiHttp.isPlainKey("AIza-test​"))
+        assertTrue(AiHttp.isPlainKey(GeminiSse.AQ_KEY))
     }
 }

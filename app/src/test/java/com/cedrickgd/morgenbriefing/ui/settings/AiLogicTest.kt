@@ -232,6 +232,21 @@ class AiLogicTest {
     }
 
     @Test
+    fun `an invisible or non-ASCII character in a key gets its own hint`() {
+        val gemini = ProviderCatalog.GEMINI
+        // trim() and isWhitespace() let a zero-width space and a BOM through.
+        assertEquals(AiKeyFormatIssue.ODD_CHARACTER, aiKeyFormatIssue("AIza-test-invalid​", gemini))
+        assertEquals(AiKeyFormatIssue.ODD_CHARACTER, aiKeyFormatIssue("﻿AQ.test-invalid", gemini))
+        assertEquals(AiKeyFormatIssue.ODD_CHARACTER, aiKeyFormatIssue("AIza-test-invälid", gemini))
+        // Not a wrong prefix: it starts right once the odd character is gone.
+        assertEquals(AiKeyFormatIssue.ODD_CHARACTER, aiKeyFormatIssue("​sk-ant-api03-abcdefghijklmnopqrstuvwxyz", claude))
+        assertEquals(
+            "Der Key enthält ein unsichtbares oder ungewöhnliches Zeichen – kopier ihn bitte noch einmal.",
+            aiKeyFormatHint(AiKeyFormatIssue.ODD_CHARACTER, gemini),
+        )
+    }
+
+    @Test
     fun `providers with a documented prefix get their own hint`() {
         val openRouter = ProviderCatalog.OPENROUTER
         assertEquals(AiKeyFormatIssue.WRONG_PREFIX, aiKeyFormatIssue("sk-test-invalid-but-long-enough", openRouter))
