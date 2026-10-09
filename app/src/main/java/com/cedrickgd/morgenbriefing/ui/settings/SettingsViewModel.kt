@@ -221,10 +221,14 @@ class SettingsViewModel(
     /** [modelId] for [provider] (curated or free text); null = the catalog default. */
     fun setAiModel(provider: AiProviderId, modelId: String?) = edit { it.copy(ai = it.ai.withModel(provider, modelId)) }
 
-    /** The "Tarif" of the Gemini key (G1); a free key never searches and costs nothing. */
+    /**
+     * The "Tarif" of the Gemini key (G1); a free key never searches and costs nothing. A key that
+     * could not search before is offered Google Search again with the new tariff.
+     */
     fun setGeminiTier(tier: GeminiTier) {
         viewModelScope.launch {
             val saved = attempt { container.settings.setGeminiTier(tier) }
+            ai().providerSetupSaved(AiProviderId.GEMINI)
             if (saved.isFailure) {
                 Log.w(TAG, "Gemini tier could not be stored", saved.exceptionOrNull())
                 _messages.send("Das konnte gerade nicht gespeichert werden.")

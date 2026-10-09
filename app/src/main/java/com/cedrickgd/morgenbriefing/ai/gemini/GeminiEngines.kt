@@ -24,8 +24,6 @@ import com.cedrickgd.morgenbriefing.ai.http.fetch
 import kotlinx.coroutines.CancellationException
 import java.io.IOException
 import java.security.MessageDigest
-import java.util.Collections
-import java.util.concurrent.ConcurrentHashMap
 
 /*
  * Google Gemini (docs/AI-PROVIDERS.md §7.2, docs/providers/gemini.md): chat with Google Search
@@ -33,12 +31,16 @@ import java.util.concurrent.ConcurrentHashMap
  * grounding terms forbid storing grounded results as articles (D4).
  */
 
-/** Chat and key checks of Gemini; [live] is null (D4). */
+/**
+ * Chat and key checks of Gemini; [live] is null (D4). [searchMemo]: the keys that turned out not
+ * to search, owned by the AI facade so that saving the tariff or a key can forget them.
+ */
 internal class GeminiBackend(
     http: AiHttp,
     retry: RetryPolicy = RetryPolicy(),
+    searchMemo: GeminiSearchMemo = GeminiSearchMemo(),
 ) : AiBackend {
-    override val chat: ChatEngine = GeminiChatEngine(GeminiStreamer(http, retry))
+    override val chat: ChatEngine = GeminiChatEngine(GeminiStreamer(http, retry), searchMemo)
     override val live: LiveEngine? = null
     override val keys: KeyChecker = GeminiKeyChecker(http)
 }
@@ -50,24 +52,27 @@ internal class GeminiBackend(
  *
  * Safety net for a key that is set to "Mit Abrechnung" but turns out to be a free one: when
  * Gemini refuses the search itself before streaming, the same question is sent once more
- * without it ([ChatTurnResult.withoutWebSearch], the chat explains it), and this key — kept
- * only as a hash, for the life of the process — is not offered the search again. Without the
- * search the model also gets the system prompt without it ([AiPrompts.chatSystem] `false`: no
- * web search to use, no sources to name), not the one that tells it to search and cite.
+ * without it ([ChatTurnResult.withoutWebSearch], the chat explains it), and [searchMemo] keeps
+ * this key from being offered the search again — until the tariff or a Gemini key is saved
+ * ([GeminiSearchMemo.forget]). Without the search the model also gets the system prompt without
+ * it ([AiPrompts.chatSystem] `false`: no web search to use, no sources to name), not the one
+ * that tells it to search and cite.
  */
-internal class GeminiChatEngine(private val streamer: GeminiStreamer) : ChatEngine {
-    /** SHA-256 of keys whose project cannot use Google Search. */
-    private val searchUnavailable: MutableSet<String> = Collections.newSetFromMap(ConcurrentHashMap())
+internal class GeminiChatEngine(
+    private val streamer: GeminiStreamer,
+    private val searchMemo: GeminiSearchMemo = GeminiSearchMemo(),
+) : ChatEngine {
 
     override suspend fun answer(request: ChatTurnRequest, listener: ChatTurnListener, usage: UsageSink): ChatTurnResult {
         val wanted = request.webSearch && !request.auth.freeTier
-        val keyHash = request.auth.apiKey?.let(::hash)
-        val known = keyHash != null && keyHash in searchUnavailable
-        if (wanted && !known) {
+        val key = request.auth.apiKey
+        // Taken before the request: a tariff or key saved while it runs is not undone by its outcome.
+        val generation = searchMemo.generation()
+        if (wanted && !searchMemo.cannotSearch(key)) {
             try {
                 return turn(request, search = true, listener, usage)
             } catch (_: GeminiSearchUnavailable) {
-                keyHash?.let(searchUnavailable::add)
+                searchMemo.remember(key, generation)
             }
         }
         // Sent without Google Search: then also without the prompt that asks to search and cite.
@@ -90,6 +95,44 @@ internal class GeminiChatEngine(private val streamer: GeminiStreamer) : ChatEngi
             end = turn.end,
             searchSuggestionsHtml = turn.searchSuggestionsHtml,
         )
+    }
+}
+
+/**
+ * The Gemini keys whose project refused Google Search (the safety net of [GeminiChatEngine]),
+ * kept only as SHA-256 and only in memory. [forget] runs when the tariff or a Gemini key is
+ * saved: a key switched to "Mit Abrechnung" again, or entered again after billing was enabled,
+ * is offered the search again. Thread-safe.
+ */
+internal class GeminiSearchMemo {
+    private val lock = Any()
+    private val unavailable = HashSet<String>()
+    private var generation = 0L
+
+    /** The current state; handed to [remember] by the request it was taken before. */
+    fun generation(): Long = synchronized(lock) { generation }
+
+    /** Google Search was refused for [key] since the last [forget]. */
+    fun cannotSearch(key: String?): Boolean {
+        val hash = key?.let(::hash) ?: return false
+        return synchronized(lock) { hash in unavailable }
+    }
+
+    /**
+     * Google Search was refused for [key] in a request started at [generation]; ignored when the
+     * tariff or a key was saved since (that request ran with the old settings).
+     */
+    fun remember(key: String?, generation: Long) {
+        val hash = key?.let(::hash) ?: return
+        synchronized(lock) { if (generation == this.generation) unavailable += hash }
+    }
+
+    /** The tariff or a Gemini key was saved: every key may try the search again. */
+    fun forget() {
+        synchronized(lock) {
+            unavailable.clear()
+            generation++
+        }
     }
 
     private fun hash(key: String): String =

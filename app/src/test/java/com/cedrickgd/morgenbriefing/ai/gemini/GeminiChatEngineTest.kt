@@ -259,6 +259,61 @@ class GeminiChatEngineTest {
     }
 
     @Test
+    fun `saving the tariff or a key lets a key that could not search try again`() = runBlocking<Unit> {
+        val memo = GeminiSearchMemo()
+        val engine = GeminiBackend(http, RetryPolicy(sleep = { slept += it }), memo).chat
+        val refused = GeminiSse.rpc(400, "FAILED_PRECONDITION", "User location is not supported for the API use without a billing account linked.")
+        server.enqueue(GeminiSse.httpError(400, refused))
+        server.enqueue(ok())
+        assertTrue(engine.answer(request(), ChatRecorder(), usage).withoutWebSearch)
+        server.takeJson()
+        server.takeJson()
+        assertTrue(memo.cannotSearch(GeminiSse.KEY))
+
+        // "Kostenlos" saved in between, then "Mit Abrechnung" again: the next answer asks for the search.
+        memo.forget()
+        server.enqueue(ok())
+        server.enqueue(ok("Mit Suche."))
+        engine.answer(request(auth = auth(freeTier = true)), ChatRecorder(), usage)
+        assertNull(server.takeJson().second!!["tools"])
+        val searched = engine.answer(request(), ChatRecorder(), usage)
+        assertEquals("Mit Suche.", searched.text)
+        assertFalse(searched.withoutWebSearch)
+        assertEquals("""[{"googleSearch":{}}]""", server.takeJson().second!!["tools"].toString())
+
+        // Refused again, then the key saved again (e.g. after billing was enabled): searched again.
+        server.enqueue(GeminiSse.httpError(400, refused))
+        server.enqueue(ok())
+        assertTrue(engine.answer(request(), ChatRecorder(), usage).withoutWebSearch)
+        server.takeJson()
+        server.takeJson()
+        memo.forget()
+        server.enqueue(ok())
+        assertFalse(engine.answer(request(), ChatRecorder(), usage).withoutWebSearch)
+        assertEquals("""[{"googleSearch":{}}]""", server.takeJson().second!!["tools"].toString())
+        assertEquals(7, server.requestCount)
+    }
+
+    @Test
+    fun `a refusal of a request from before a save is not remembered`() {
+        val memo = GeminiSearchMemo()
+        val before = memo.generation()
+        memo.forget()
+        // The request ran with the old tariff or key: its refusal says nothing about the new setup.
+        memo.remember(GeminiSse.KEY, before)
+        assertFalse(memo.cannotSearch(GeminiSse.KEY))
+
+        memo.remember(GeminiSse.KEY, memo.generation())
+        assertTrue(memo.cannotSearch(GeminiSse.KEY))
+        // Kept as a hash of the trimmed key; no key, nothing to remember.
+        assertTrue(memo.cannotSearch(" ${GeminiSse.KEY} "))
+        assertFalse(memo.cannotSearch("AIza-other-test-invalid"))
+        assertFalse(memo.cannotSearch(null))
+        memo.remember(null, memo.generation())
+        assertFalse(memo.cannotSearch(null))
+    }
+
+    @Test
     fun `a search quota error falls back at once instead of being retried`() = runBlocking<Unit> {
         server.enqueue(
             GeminiSse.httpError(429, GeminiSse.rpc(429, "RESOURCE_EXHAUSTED", "Grounding with Google Search is not available on the free tier.", retryDelay = "2s")),

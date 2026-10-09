@@ -111,6 +111,8 @@ internal class AiKeyEditor(
             }
             val models = outcome?.serverModels.orEmpty()
             val saved = attempt { store(provider, key, submission, stored, models) }
+            // Also after a partial write: a new tariff or key must not keep what the old one taught.
+            ai().providerSetupSaved(provider)
             if (saved.isFailure) {
                 Log.w(TAG, "Key could not be stored", saved.exceptionOrNull())
                 _state.value = AiKeyState.Failed(AiKeyProblem.SAVE_FAILED)

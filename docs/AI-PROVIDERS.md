@@ -714,7 +714,8 @@ Free-tier fallback (GE §3.3, Open question 1): if the request **with** `googleS
 first event** with 400 `FAILED_PRECONDITION`, or 400/403/429 whose message mentions „search“,
 „grounding“ or „Google Search“ (case-insensitive), and the error is not `API_KEY_INVALID`/402: retry
 once without `tools` and with `chatSystem(false)` (no prompt that asks to search and cite); result
-`withoutWebSearch = true`; remember per key hash for the process lifetime (skip search next time). The chat shows the note „Ohne Websuche beantwortet – für die Websuche braucht
+`withoutWebSearch = true`; remember per key hash in memory (skip search next time) until the tariff or a
+Gemini key is saved (`GeminiSearchMemo.forget`, then the search is tried again). The chat shows the note „Ohne Websuche beantwortet – für die Websuche braucht
 Gemini ein Projekt mit Abrechnung.“
 
 Key check: `GET {base}/models/{model}` → 200 OK; 400 `API_KEY_INVALID`, 401, 403 → INVALID; 404 → OK

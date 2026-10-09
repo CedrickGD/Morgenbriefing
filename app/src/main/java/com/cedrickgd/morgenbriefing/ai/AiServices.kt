@@ -11,6 +11,7 @@ import com.cedrickgd.morgenbriefing.ai.compat.CompatBackend
 import com.cedrickgd.morgenbriefing.ai.compat.CompatDialect
 import com.cedrickgd.morgenbriefing.ai.compat.CompatModels
 import com.cedrickgd.morgenbriefing.ai.gemini.GeminiBackend
+import com.cedrickgd.morgenbriefing.ai.gemini.GeminiSearchMemo
 import com.cedrickgd.morgenbriefing.ai.http.AiHttp
 import com.cedrickgd.morgenbriefing.ai.openai.ResponsesBackend
 import com.cedrickgd.morgenbriefing.ai.openai.ResponsesDialect
@@ -67,6 +68,9 @@ class AiServices(private val context: Context, private val container: AppContain
     /** One backend per provider of the families without an SDK, created on first use. */
     private val backends = ConcurrentHashMap<AiProviderId, AiBackend>()
 
+    /** Gemini keys that turned out not to search; forgotten in [providerSetupSaved]. */
+    private val geminiSearch = GeminiSearchMemo()
+
     /**
      * The backend of the engine family of [id] (docs/AI-PROVIDERS.md §4.2), or null where it
      * cannot run (Claude below Android 8). Every family without an SDK is plain OkHttp + SSE and
@@ -74,7 +78,16 @@ class AiServices(private val context: Context, private val container: AppContain
      */
     internal fun backendFor(id: AiProviderId): AiBackend? = when (ProviderCatalog.spec(id).engine) {
         EngineKind.CLAUDE_SDK -> claude
-        EngineKind.RESPONSES, EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> backends.getOrPut(id) { httpBackend(id, http) }
+        EngineKind.RESPONSES, EngineKind.GEMINI, EngineKind.CHAT_COMPLETIONS -> backends.getOrPut(id) { httpBackend(id, http, geminiSearch) }
+    }
+
+    /**
+     * A key or the Gemini tariff of [provider] was just saved (key dialog, "Tarif"): what earlier
+     * answers learned about the old setup is forgotten — a Gemini key that could not search is
+     * offered Google Search again.
+     */
+    fun providerSetupSaved(provider: AiProviderId) {
+        if (provider == AiProviderId.GEMINI) geminiSearch.forget()
     }
 
     /** Whether [id] has a backend on this device, without creating it (no SDK class loading). */
@@ -311,15 +324,17 @@ class AiServices(private val context: Context, private val container: AppContain
 
 /**
  * The backend of [id] for every engine family without an SDK (docs/AI-PROVIDERS.md §4.2): the
- * Responses dialects, Gemini and the Chat Completions dialects, all over [http].
+ * Responses dialects, Gemini (with [geminiSearch], the keys that could not search) and the Chat
+ * Completions dialects, all over [http].
  * @throws IllegalArgumentException for Claude, which needs the SDK ([AiServices] creates it).
  */
-internal fun httpBackend(id: AiProviderId, http: AiHttp): AiBackend = when (ProviderCatalog.spec(id).engine) {
-    EngineKind.RESPONSES -> ResponsesBackend(http, ResponsesDialect.of(id))
-    EngineKind.GEMINI -> GeminiBackend(http)
-    EngineKind.CHAT_COMPLETIONS -> CompatBackend(http, CompatDialect.of(id))
-    EngineKind.CLAUDE_SDK -> throw IllegalArgumentException("${id.key} needs the Anthropic SDK")
-}
+internal fun httpBackend(id: AiProviderId, http: AiHttp, geminiSearch: GeminiSearchMemo = GeminiSearchMemo()): AiBackend =
+    when (ProviderCatalog.spec(id).engine) {
+        EngineKind.RESPONSES -> ResponsesBackend(http, ResponsesDialect.of(id))
+        EngineKind.GEMINI -> GeminiBackend(http, searchMemo = geminiSearch)
+        EngineKind.CHAT_COMPLETIONS -> CompatBackend(http, CompatDialect.of(id))
+        EngineKind.CLAUDE_SDK -> throw IllegalArgumentException("${id.key} needs the Anthropic SDK")
+    }
 
 /**
  * Without a token "Heute" and the reader show the bundled demo brief [sample]; a chat about
