@@ -192,6 +192,13 @@ enum class AiKeyCheck {
     /** Own server: no connection to the address. */
     SERVER_UNREACHABLE,
 
+    /**
+     * Own server: something answers, but not with HTTPS the app trusts — a self-signed
+     * certificate, or a server that only speaks http:// behind an https:// address (the app
+     * trusts only public CAs and ISRG, docs/AI-PROVIDERS.md §7.6).
+     */
+    SERVER_CERTIFICATE,
+
     /** Own server: plain http:// to a host outside the cleartext allowlist. */
     CLEARTEXT_BLOCKED,
 

@@ -15,6 +15,9 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.net.InetAddress
+import java.net.ServerSocket
+import kotlin.concurrent.thread
 
 class CompatKeyCheckerTest {
     private lateinit var server: MockWebServer
@@ -126,6 +129,31 @@ class CompatKeyCheckerTest {
         assertEquals(AiKeyCheck.CLEARTEXT_BLOCKED, custom.check(ProviderAuth(AiProviderId.CUSTOM, null, baseUrl = "http://192.168.178.20:11434"), "", usage).check)
         assertEquals(AiKeyCheck.SERVER_UNREACHABLE, custom.check(ProviderAuth(AiProviderId.CUSTOM, null, baseUrl = null), "", usage).check)
         assertEquals(0, server.requestCount)
+    }
+
+    @Test
+    fun `https to a server without TLS is a certificate problem, not a dead server`() = runBlocking<Unit> {
+        // Plain Ollama behind an https:// address (the key tip sends IP users to https://): it
+        // answers the TLS handshake with plain HTTP, the handshake fails.
+        ServerSocket(0, 50, InetAddress.getLoopbackAddress()).use { plain ->
+            thread(isDaemon = true) {
+                while (!plain.isClosed) {
+                    runCatching {
+                        plain.accept().use { socket ->
+                            socket.getInputStream().read(ByteArray(4096))
+                            socket.getOutputStream().apply {
+                                write("HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\n\r\n".toByteArray())
+                                flush()
+                            }
+                            // Until the client gives up, so the answer is not lost to a reset.
+                            socket.getInputStream().read(ByteArray(4096))
+                        }
+                    }
+                }
+            }
+            val auth = ProviderAuth(AiProviderId.CUSTOM, null, baseUrl = "https://127.0.0.1:${plain.localPort}/v1")
+            assertEquals(AiKeyCheck.SERVER_CERTIFICATE, checker(CompatDialect.CUSTOM).check(auth, "", usage).check)
+        }
     }
 
     @Test

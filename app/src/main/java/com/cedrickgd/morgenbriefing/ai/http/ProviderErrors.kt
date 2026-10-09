@@ -19,6 +19,9 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.net.UnknownServiceException
 import javax.net.ssl.SSLException
+import javax.net.ssl.SSLHandshakeException
+import javax.net.ssl.SSLPeerUnverifiedException
+import javax.net.ssl.SSLProtocolException
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -131,10 +134,15 @@ internal object ProviderErrors {
         AiProviderId.ANTHROPIC, AiProviderId.PERPLEXITY, AiProviderId.MISTRAL, AiProviderId.DEEPSEEK -> null
     }
 
-    /** A connection problem before (or while) the response arrived. */
+    /**
+     * A connection problem before (or while) the response arrived. The own server's failed TLS
+     * setup (a self-signed certificate, or no TLS behind an https:// address) is no network
+     * trouble: the text says what to change (§7.6).
+     */
     fun io(provider: AiProviderId, e: IOException): MappedError = when {
         // Plain http:// to a host outside the network security config's allowlist (D10).
         e is UnknownServiceException -> MappedError(AiError.Unknown(CLEARTEXT_TEXT))
+        provider == AiProviderId.CUSTOM && e.isTlsSetupFailure() -> MappedError(AiError.Unknown(CERTIFICATE_TEXT))
         provider == AiProviderId.CUSTOM && e is SSLException -> MappedError(AiError.ServerUnreachable)
         provider == AiProviderId.CUSTOM && e.isUnreachable() -> MappedError(AiError.ServerUnreachable, retryable = true)
         e is SSLException -> MappedError(AiError.Network)
@@ -169,6 +177,14 @@ internal object ProviderErrors {
         }
     }
 
+    /**
+     * The TLS handshake failed: an untrusted (self-signed) certificate, a host name the
+     * certificate does not cover, or a server that answered the handshake with plain http.
+     * Other [SSLException]s (a read error mid-stream) are connection problems.
+     */
+    private fun IOException.isTlsSetupFailure(): Boolean =
+        this is SSLHandshakeException || this is SSLPeerUnverifiedException || this is SSLProtocolException
+
     private fun IOException.isUnreachable(): Boolean =
         this is ConnectException || this is UnknownHostException || this is NoRouteToHostException ||
             (this is SocketTimeoutException && message.orEmpty().contains("connect", ignoreCase = true))
@@ -195,6 +211,11 @@ internal object ProviderErrors {
 
     const val CLEARTEXT_TEXT =
         "http:// geht nur mit Namen wie nas.fritz.box oder nas.local – nicht mit einer IP-Adresse. Nimm den Namen oder https://."
+
+    /** The own server's HTTPS is not trusted (the app trusts only public CAs and ISRG, §7.6). */
+    const val CERTIFICATE_TEXT =
+        "Dein Server antwortet, aber nicht mit einem HTTPS-Zertifikat, dem die App traut (selbst signiert – oder kann er nur http?). " +
+            "Nimm in den Einstellungen http:// mit einem Namen wie nas.fritz.box oder ein Let's-Encrypt-Zertifikat."
 }
 
 /**

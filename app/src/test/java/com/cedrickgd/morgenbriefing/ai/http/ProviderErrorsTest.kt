@@ -26,7 +26,10 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.net.UnknownServiceException
+import javax.net.ssl.SSLException
 import javax.net.ssl.SSLHandshakeException
+import javax.net.ssl.SSLPeerUnverifiedException
+import javax.net.ssl.SSLProtocolException
 import kotlin.time.Duration.Companion.seconds
 
 /** docs/AI-PROVIDERS.md §8.1 and §8.2, row by row, with synthetic bodies in each provider's shape. */
@@ -191,7 +194,14 @@ class ProviderErrorsTest {
         assertEquals(MappedError(AiError.ServerUnreachable, retryable = true), ProviderErrors.io(CUSTOM, UnknownHostException("nas.fritz.box")))
         assertEquals(MappedError(AiError.ServerUnreachable, retryable = true), ProviderErrors.io(CUSTOM, SocketTimeoutException("connect timed out")))
         assertEquals(MappedError(AiError.Network, retryable = true), ProviderErrors.io(CUSTOM, SocketTimeoutException("timeout")))
-        assertEquals(MappedError(AiError.ServerUnreachable), ProviderErrors.io(CUSTOM, SSLHandshakeException("self-signed")))
+        // The own server's TLS setup fails: it answers, the certificate (or no TLS at all) is the problem (§7.6).
+        val certificate = MappedError(AiError.Unknown(ProviderErrors.CERTIFICATE_TEXT))
+        assertEquals(certificate, ProviderErrors.io(CUSTOM, SSLHandshakeException("Trust anchor for certification path not found.")))
+        assertEquals(certificate, ProviderErrors.io(CUSTOM, SSLPeerUnverifiedException("Hostname 192.168.178.20 not verified")))
+        assertEquals(certificate, ProviderErrors.io(CUSTOM, SSLProtocolException("WRONG_VERSION_NUMBER")))
+        assertTrue(ProviderErrors.CERTIFICATE_TEXT.startsWith("Dein Server antwortet, aber"))
+        // A TLS read error mid-stream is a connection problem.
+        assertEquals(MappedError(AiError.ServerUnreachable), ProviderErrors.io(CUSTOM, SSLException("Read error: Connection reset by peer")))
         val cleartext = ProviderErrors.io(CUSTOM, UnknownServiceException("CLEARTEXT communication to 192.168.1.5 not permitted"))
         assertEquals(AiError.Unknown(ProviderErrors.CLEARTEXT_TEXT), cleartext.error)
         assertFalse(cleartext.retryable)

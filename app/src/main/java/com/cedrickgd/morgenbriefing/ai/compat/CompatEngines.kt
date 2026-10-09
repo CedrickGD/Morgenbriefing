@@ -36,6 +36,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import java.io.IOException
 import java.net.UnknownServiceException
+import javax.net.ssl.SSLException
 
 /*
  * The OpenAI-compatible Chat Completions family (docs/AI-PROVIDERS.md §7.3): OpenRouter (chat with
@@ -200,9 +201,11 @@ internal class CompatKeyChecker(
     /**
      * `GET {base}/models` (Bearer only with a key): 200 with `data[]` → OK and the model ids;
      * 401/403 → INVALID; plain http to a host outside the allowlist → CLEARTEXT_BLOCKED (checked
-     * up front: Android would refuse the connection anyway); no connection, also a failed TLS
-     * handshake (the app trusts only public CAs) → SERVER_UNREACHABLE; 5xx → SERVER_UNREACHABLE
-     * (it answers, but not usefully); 404 or anything that is not a model list → NOT_AN_AI_SERVER.
+     * up front: Android would refuse the connection anyway); a failed TLS setup (a self-signed
+     * certificate — the app trusts only public CAs and ISRG — or a server that only speaks http
+     * behind an https:// address) → SERVER_CERTIFICATE, so the user is not sent to check the
+     * network; no connection → SERVER_UNREACHABLE; 5xx → SERVER_UNREACHABLE (it answers, but not
+     * usefully); 404 or anything that is not a model list → NOT_AN_AI_SERVER.
      */
     private suspend fun checkServer(auth: ProviderAuth): KeyCheckOutcome {
         if (CustomServer.issue(auth.baseUrl) == CustomUrlIssue.CLEARTEXT_HOST) return KeyCheckOutcome(AiKeyCheck.CLEARTEXT_BLOCKED)
@@ -219,8 +222,11 @@ internal class CompatKeyChecker(
             throw e
         } catch (_: UnknownServiceException) {
             KeyCheckOutcome(AiKeyCheck.CLEARTEXT_BLOCKED)
+        } catch (_: SSLException) {
+            // The first contact of the test: a TLS failure here is the certificate (or no TLS at all).
+            KeyCheckOutcome(AiKeyCheck.SERVER_CERTIFICATE)
         } catch (_: IOException) {
-            // Refused, unknown name, timeout, TLS handshake: the server cannot be reached as typed.
+            // Refused, unknown name, timeout: the server cannot be reached as typed.
             KeyCheckOutcome(AiKeyCheck.SERVER_UNREACHABLE)
         }
     }

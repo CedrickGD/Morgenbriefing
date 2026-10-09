@@ -427,7 +427,7 @@ sealed interface AiError {
     data object ServerUnreachable : AiError
 }
 enum class AiKeyCheck { OK, OK_NO_CREDIT, INVALID, NETWORK, UNSUPPORTED, WORKSPACE_REQUIRED, WORKSPACE_INVALID,
-                        SERVER_UNREACHABLE, CLEARTEXT_BLOCKED, NOT_AN_AI_SERVER }
+                        SERVER_UNREACHABLE, SERVER_CERTIFICATE, CLEARTEXT_BLOCKED, NOT_AN_AI_SERVER }
 
 data class ChatMessage(/* existing */ ..., val searchSuggestionsHtml: String? = null, val note: String? = null)
 data class ChatUiState(/* existing */ ..., val providerName: String = "", val provider: AiProviderId? = null)
@@ -830,9 +830,13 @@ Key checks: Mistral `GET /v1/models`; OpenRouter `GET /api/v1/key` (200 OK, 401 
 * Key check = connection test: `GET {base}/models` (Bearer if key) → 200 with `data[]` → OK +
   `serverModels = data[].id`; 401/403 → INVALID; `ConnectException`/`UnknownHostException`/connect
   timeout → SERVER_UNREACHABLE; `UnknownServiceException` (cleartext refused) → CLEARTEXT_BLOCKED;
-  `SSLHandshakeException` → SERVER_UNREACHABLE with the hint about self-signed certificates (the app
-  trusts only system CAs + ISRG); 404 / non-JSON → NOT_AN_AI_SERVER.
-* Runtime: IO errors on connect → `AiError.ServerUnreachable`; cost always 0 $.
+  any `SSLException` (a self-signed certificate, or plain http behind an https:// address) →
+  SERVER_CERTIFICATE with the hint about certificates (the app trusts only system CAs + ISRG; „Ohne
+  Test speichern“ is not offered, every request would fail the same way); 404 / non-JSON →
+  NOT_AN_AI_SERVER.
+* Runtime: IO errors on connect → `AiError.ServerUnreachable`; a failed TLS setup
+  (`SSLHandshakeException`, `SSLPeerUnverifiedException`, `SSLProtocolException`) →
+  `AiError.Unknown(ProviderErrors.CERTIFICATE_TEXT)` with the same hint; cost always 0 $.
 
 ---
 
@@ -1066,6 +1070,7 @@ provider supports Live; selecting one without key opens its key dialog.
   | WORKSPACE_REQUIRED | „✗ Dieser Key gehört zu keinem Workspace. Trag unten die Workspace-ID ein – oder erstell den Key mit Workspace „Default Workspace“.“ |
   | WORKSPACE_INVALID | „✗ Diese Workspace-ID kennt Anthropic nicht (oder dein Key darf ihn nicht nutzen).“ |
   | SERVER_UNREACHABLE | „✗ Dein Server antwortet nicht. Stimmt die Adresse, und läuft er im selben Netz?“ |
+  | SERVER_CERTIFICATE | „✗ Dein Server antwortet, aber nicht mit einem HTTPS-Zertifikat, dem die App traut (selbst signiert – oder kann er nur http?). Nimm http:// mit einem Namen wie nas.fritz.box oder ein Let's-Encrypt-Zertifikat.“ |
   | CLEARTEXT_BLOCKED | „✗ http:// geht nur mit Namen wie nas.fritz.box oder nas.local – nicht mit einer IP-Adresse. Nimm den Namen oder https://.“ |
   | NOT_AN_AI_SERVER | „✗ Unter dieser Adresse läuft kein OpenAI-kompatibler Server. Endet sie auf /v1?“ |
   | UNSUPPORTED | „✗ ${spec.name} läuft erst ab Android 8.“ |

@@ -98,6 +98,16 @@ class AiLogicTest {
         assertEquals(AiKeyProblem.UNSUPPORTED, AiKeyCheck.UNSUPPORTED.toProblem())
         assertEquals(AiKeyProblem.WORKSPACE_REQUIRED, AiKeyCheck.WORKSPACE_REQUIRED.toProblem())
         assertEquals(AiKeyProblem.SERVER_UNREACHABLE, AiKeyCheck.SERVER_UNREACHABLE.toProblem())
+        assertEquals(AiKeyProblem.SERVER_CERTIFICATE, AiKeyCheck.SERVER_CERTIFICATE.toProblem())
+    }
+
+    @Test
+    fun `an untrusted own server certificate is no network problem`() {
+        val text = aiKeyMessage(AiKeyState.Failed(AiKeyProblem.SERVER_CERTIFICATE), ProviderCatalog.CUSTOM)!!
+        assertTrue(text.startsWith("✗ Dein Server antwortet, aber"))
+        assertTrue(text.contains("Let's-Encrypt"))
+        // Saving untested would not help: every request would fail the same way.
+        assertFalse(canSaveUntested(AiKeyState.Failed(AiKeyProblem.SERVER_CERTIFICATE)))
     }
 
     @Test

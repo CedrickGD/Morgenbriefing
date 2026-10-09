@@ -33,6 +33,7 @@ enum class AiKeyProblem {
     WORKSPACE_REQUIRED,
     WORKSPACE_INVALID,
     SERVER_UNREACHABLE,
+    SERVER_CERTIFICATE,
     CLEARTEXT_BLOCKED,
     NOT_AN_AI_SERVER,
 }
@@ -81,6 +82,7 @@ internal fun AiKeyCheck.toProblem(): AiKeyProblem? = when (this) {
     AiKeyCheck.WORKSPACE_REQUIRED -> AiKeyProblem.WORKSPACE_REQUIRED
     AiKeyCheck.WORKSPACE_INVALID -> AiKeyProblem.WORKSPACE_INVALID
     AiKeyCheck.SERVER_UNREACHABLE -> AiKeyProblem.SERVER_UNREACHABLE
+    AiKeyCheck.SERVER_CERTIFICATE -> AiKeyProblem.SERVER_CERTIFICATE
     AiKeyCheck.CLEARTEXT_BLOCKED -> AiKeyProblem.CLEARTEXT_BLOCKED
     AiKeyCheck.NOT_AN_AI_SERVER -> AiKeyProblem.NOT_AN_AI_SERVER
 }
@@ -158,6 +160,9 @@ internal fun aiKeyMessage(state: AiKeyState, spec: ProviderSpec): String? {
                 "✗ Dieser Key gehört zu keinem Workspace. Trag unten die Workspace-ID ein – oder erstell den Key mit Workspace „Default Workspace“."
             AiKeyProblem.WORKSPACE_INVALID -> "✗ Diese Workspace-ID kennt Anthropic nicht (oder dein Key darf ihn nicht nutzen)."
             AiKeyProblem.SERVER_UNREACHABLE -> "✗ Dein Server antwortet nicht. Stimmt die Adresse, und läuft er im selben Netz?"
+            AiKeyProblem.SERVER_CERTIFICATE ->
+                "✗ Dein Server antwortet, aber nicht mit einem HTTPS-Zertifikat, dem die App traut (selbst signiert – oder kann er nur http?). " +
+                    "Nimm http:// mit einem Namen wie nas.fritz.box oder ein Let's-Encrypt-Zertifikat."
             AiKeyProblem.CLEARTEXT_BLOCKED ->
                 "✗ http:// geht nur mit Namen wie nas.fritz.box oder nas.local – nicht mit einer IP-Adresse. Nimm den Namen oder https://."
             AiKeyProblem.NOT_AN_AI_SERVER -> "✗ Unter dieser Adresse läuft kein OpenAI-kompatibler Server. Endet sie auf /v1?"
