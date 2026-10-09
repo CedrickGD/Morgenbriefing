@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import java.net.URI
 import java.net.URISyntaxException
@@ -40,6 +41,12 @@ internal object AiPrefKeys {
     fun untested(p: AiProviderId) = booleanPreferencesKey("ai_${p.key}_key_untested")
     fun rejected(p: AiProviderId) = booleanPreferencesKey("ai_${p.key}_key_rejected")
     fun model(p: AiProviderId) = stringPreferencesKey("ai_${p.key}_model")
+
+    /** [ProviderSettings.modelFallback]: the chosen model the provider refused for the stored key … */
+    fun fallbackFrom(p: AiProviderId) = stringPreferencesKey("ai_${p.key}_model_fallback_from")
+
+    /** … and the model that runs instead. Both or neither. */
+    fun fallbackTo(p: AiProviderId) = stringPreferencesKey("ai_${p.key}_model_fallback_to")
 
     /** Debug builds only: base URL override for QA (see [ProviderSettings.debugBaseUrl]). */
     fun debugBaseUrl(p: AiProviderId) = stringPreferencesKey("ai_${p.key}_debug_base_url")
@@ -117,6 +124,7 @@ internal fun readAiSettings(prefs: Preferences, debugOverrides: Boolean): AiSett
             },
             geminiTier = if (id == AiProviderId.GEMINI) GeminiTier.fromKey(prefs[AiPrefKeys.GEMINI_TIER]) ?: GeminiTier.FREE else GeminiTier.FREE,
             debugBaseUrl = if (debugOverrides) prefs[AiPrefKeys.debugBaseUrl(id)]?.let(::normalizeBaseUrl) else null,
+            modelFallback = readModelFallback(prefs, id).takeIf { hasKey },
         )
     }
     return AiSettings(
@@ -126,11 +134,32 @@ internal fun readAiSettings(prefs: Preferences, debugOverrides: Boolean): AiSett
     )
 }
 
+/** The stored model fallback of [id], or null unless both of its ids are there. */
+private fun readModelFallback(prefs: Preferences, id: AiProviderId): ModelFallback? {
+    val from = prefs[AiPrefKeys.fallbackFrom(id)]?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+    val to = prefs[AiPrefKeys.fallbackTo(id)]?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+    return ModelFallback(from.take(AiSettings.MAX_MODEL_LENGTH), to.take(AiSettings.MAX_MODEL_LENGTH))
+}
+
+/** Writes [fallback] of [id]; null removes it. */
+internal fun MutablePreferences.writeModelFallback(id: AiProviderId, fallback: ModelFallback?) {
+    val from = fallback?.from?.trim()?.take(AiSettings.MAX_MODEL_LENGTH)?.takeIf { it.isNotEmpty() }
+    val to = fallback?.to?.trim()?.take(AiSettings.MAX_MODEL_LENGTH)?.takeIf { it.isNotEmpty() }
+    if (from == null || to == null || from == to) {
+        remove(AiPrefKeys.fallbackFrom(id))
+        remove(AiPrefKeys.fallbackTo(id))
+    } else {
+        this[AiPrefKeys.fallbackFrom(id)] = from
+        this[AiPrefKeys.fallbackTo(id)] = to
+    }
+}
+
 /**
  * Writes the plain AI fields of [ai]: the chat and Live provider and the model of every provider
- * in [AiSettings.providers] (null removes it, providers not in the map stay untouched). Keys,
- * their flags, the base URLs, the workspace id and the Gemini tier only change through the
- * dedicated setters of SettingsRepository.
+ * in [AiSettings.providers] (null removes it, providers not in the map stay untouched). A model
+ * that changes drops the provider's model fallback: the user's new choice is tried again. Keys,
+ * their flags, the base URLs, the workspace id, the Gemini tier and the fallback itself only
+ * change through the dedicated setters of SettingsRepository.
  */
 internal fun MutablePreferences.writeAiSettings(ai: AiSettings) {
     this[AiPrefKeys.PROVIDER] = ai.provider.key
@@ -138,6 +167,7 @@ internal fun MutablePreferences.writeAiSettings(ai: AiSettings) {
     if (live == null) remove(AiPrefKeys.LIVE_PROVIDER) else this[AiPrefKeys.LIVE_PROVIDER] = live.key
     ai.providers.forEach { (id, settings) ->
         val model = settings.model?.trim()?.take(AiSettings.MAX_MODEL_LENGTH)?.takeIf { it.isNotEmpty() }
+        if (model != this[AiPrefKeys.model(id)]) writeModelFallback(id, null)
         if (model == null) remove(AiPrefKeys.model(id)) else this[AiPrefKeys.model(id)] = model
     }
 }

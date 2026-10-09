@@ -18,7 +18,9 @@ import com.cedrickgd.morgenbriefing.data.model.AccentId
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
+import com.cedrickgd.morgenbriefing.data.model.cleanApiKey
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 import kotlinx.coroutines.Dispatchers
@@ -102,12 +104,13 @@ class SettingsRepository(context: Context) {
      * @throws java.security.GeneralSecurityException if the keystore cannot encrypt.
      */
     suspend fun setAiKey(provider: AiProviderId, key: String?, tested: Boolean = true) {
-        val clean = key?.trim().orEmpty()
+        val clean = cleanApiKey(key)
         if (clean.isEmpty()) {
             store.edit {
                 it.remove(AiPrefKeys.keyEnc(provider))
                 it.remove(AiPrefKeys.untested(provider))
                 it.remove(AiPrefKeys.rejected(provider))
+                it.writeModelFallback(provider, null)
                 when (provider) {
                     AiProviderId.ANTHROPIC -> it.remove(AiPrefKeys.ANTHROPIC_WORKSPACE_ID)
                     AiProviderId.GEMINI -> it.remove(AiPrefKeys.GEMINI_TIER)
@@ -121,7 +124,32 @@ class SettingsRepository(context: Context) {
             it[AiPrefKeys.keyEnc(provider)] = encrypted
             if (tested) it.remove(AiPrefKeys.untested(provider)) else it[AiPrefKeys.untested(provider)] = true
             it.remove(AiPrefKeys.rejected(provider))
+            // The fallback belonged to the previous key; this one tries the chosen model again.
+            it.writeModelFallback(provider, null)
         }
+    }
+
+    /**
+     * The model that runs instead of the chosen one for the stored key of [provider]
+     * ([ProviderSettings.modelFallback]); null removes it. With [key], only while [key] is still
+     * the stored one (a chat answer that ran while another key was saved must not set it); without
+     * it the caller has just saved the key it tested.
+     * @throws IOException if DataStore cannot persist the change.
+     */
+    suspend fun setModelFallback(provider: AiProviderId, fallback: ModelFallback?, key: String? = null) {
+        if (key == null) {
+            store.edit { it.writeModelFallback(provider, fallback) }
+            return
+        }
+        val candidate = cleanApiKey(key)
+        if (candidate.isEmpty()) return
+        val slot = AiPrefKeys.keyEnc(provider)
+        val encrypted = readPrefs()?.get(slot)
+        if (encrypted.isNullOrBlank()) return
+        val stored = withContext(Dispatchers.IO) { TokenCipher.decrypt(encrypted) }?.trim()
+        if (stored == null || stored != candidate) return
+        // Same ciphertext as checked above: no other key was saved in between.
+        store.edit { if (it[slot] == encrypted) it.writeModelFallback(provider, fallback) }
     }
 
     /**
@@ -147,7 +175,7 @@ class SettingsRepository(context: Context) {
      * @throws IOException if DataStore cannot persist the change.
      */
     suspend fun markAiKeyRejected(provider: AiProviderId, key: String?) {
-        val candidate = key?.trim().orEmpty()
+        val candidate = cleanApiKey(key)
         if (candidate.isEmpty()) return
         val slot = AiPrefKeys.keyEnc(provider)
         val encrypted = readPrefs()?.get(slot)
@@ -197,11 +225,16 @@ class SettingsRepository(context: Context) {
     }
 
     /**
-     * The "Tarif" of the Gemini key ([GeminiTier.FREE] when never set).
+     * The "Tarif" of the Gemini key ([GeminiTier.FREE] when never set). Another tariff drops the
+     * model fallback: billing may open the chosen model.
      * @throws IOException if DataStore cannot persist the change.
      */
     suspend fun setGeminiTier(tier: GeminiTier) {
-        store.edit { it[AiPrefKeys.GEMINI_TIER] = tier.key }
+        store.edit {
+            val before = GeminiTier.fromKey(it[AiPrefKeys.GEMINI_TIER]) ?: GeminiTier.FREE
+            if (before != tier) it.writeModelFallback(AiProviderId.GEMINI, null)
+            it[AiPrefKeys.GEMINI_TIER] = tier.key
+        }
     }
 
     /**

@@ -30,6 +30,13 @@ internal class FakeAiAccess(
 ) : AiProviderAccess {
     val rejected = mutableListOf<Pair<AiProviderId, String?>>()
 
+    /** (provider, key, from, to) of every model fallback the chat reported. */
+    val fallbacks = mutableListOf<List<Any?>>()
+
+    override suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String) {
+        synchronized(fallbacks) { fallbacks += listOf(provider, key, from, to) }
+    }
+
     override suspend fun resolve(purpose: AiPurpose): Resolution {
         val ai = settings.value.ai
         val id = ai.providerFor(purpose)

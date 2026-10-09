@@ -13,6 +13,7 @@ import com.cedrickgd.morgenbriefing.ai.compat.CompatModels
 import com.cedrickgd.morgenbriefing.ai.gemini.GeminiBackend
 import com.cedrickgd.morgenbriefing.ai.gemini.GeminiSearchMemo
 import com.cedrickgd.morgenbriefing.ai.http.AiHttp
+import com.cedrickgd.morgenbriefing.ai.http.ErrorDiagnostics
 import com.cedrickgd.morgenbriefing.ai.openai.ResponsesBackend
 import com.cedrickgd.morgenbriefing.ai.openai.ResponsesDialect
 import com.cedrickgd.morgenbriefing.ai.provider.EngineKind
@@ -21,9 +22,11 @@ import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Brief
+import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
 import com.cedrickgd.morgenbriefing.data.model.NewsSection
 import com.cedrickgd.morgenbriefing.data.model.Topics
+import com.cedrickgd.morgenbriefing.data.model.cleanApiKey
 import com.cedrickgd.morgenbriefing.util.parseDateOrNull
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -137,6 +140,17 @@ class AiServices(private val context: Context, private val container: AppContain
             }.distinctUntilChanged()
 
         override suspend fun keyRejected(provider: AiProviderId, key: String?) = markKeyRejected(provider, key)
+
+        override suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String) {
+            try {
+                // Only while [key] is still the stored one: a key saved meanwhile starts without it.
+                container.settings.setModelFallback(provider, ModelFallback(from, to), key)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "${provider.key} model fallback could not be stored", e)
+            }
+        }
     }
 
     private val liveService: LiveNewsServiceImpl by lazy {
@@ -164,26 +178,28 @@ class AiServices(private val context: Context, private val container: AppContain
 
     /**
      * Key or connection test for the settings (as few tokens as possible) with the candidate
-     * configuration: [key] null = the stored key; a null field of [extras] = the stored
-     * workspace id or server address, "" = none. When the provider refuses exactly the stored key
-     * with the stored setup, Settings → KI marks it as rejected, as after a refused chat request.
+     * configuration: [key] null = the stored key ([cleanApiKey] drops spaces, quotes and invisible
+     * characters around a typed one); a null field of [extras] = the stored workspace id or server
+     * address, "" = none. The test runs with the chosen model ([ProviderCatalog.selectedModel], not
+     * a fallback of the stored key). When the provider refuses exactly the stored key with the
+     * stored setup, Settings → KI marks it as rejected, as after a refused chat request.
      */
     suspend fun testKey(provider: AiProviderId, key: String?, extras: KeyExtras = KeyExtras()): KeyCheckOutcome {
         if (!AiSupport.supports(provider)) return KeyCheckOutcome(AiKeyCheck.UNSUPPORTED)
         val backend = backendFor(provider) ?: return KeyCheckOutcome(AiKeyCheck.UNSUPPORTED)
-        val candidate = key?.trim()?.takeIf { it.isNotEmpty() } ?: keyOrNull(provider)
+        val candidate = cleanApiKey(key).takeIf { it.isNotEmpty() } ?: keyOrNull(provider)
         if (candidate == null && !provider.keyOptional) return KeyCheckOutcome(AiKeyCheck.INVALID)
-        // Inner spaces, or an invisible / non-ASCII character from a copy (a zero-width space, a
-        // BOM, an umlaut): such a key cannot travel in a header, so it is refused before any request.
+        // Inner spaces or a non-ASCII character (an umlaut): such a key cannot travel in a header,
+        // so it is refused before any request.
         if (candidate != null && !AiHttp.isPlainKey(candidate)) return KeyCheckOutcome(AiKeyCheck.INVALID)
         val ai = settingsOrDefault().ai
         val tested = keyTestSettings(ai, provider, extras)
         // Priced like a request, but it does not confirm the stored key: the candidate may be another one.
         val usage = ProviderUsageSink(usageStore, free = tested.costsNothing(provider))
-        val outcome = backend.keys.check(authFor(tested, provider, candidate), ProviderCatalog.effectiveModel(tested, provider), usage)
+        val outcome = backend.keys.check(authFor(tested, provider, candidate), ProviderCatalog.selectedModel(tested, provider), usage)
         // Marked only while the candidate is the stored key: the key store compares them.
         if (keyTestRejectsStoredKey(outcome.check, ai, tested, provider)) markKeyRejected(provider, candidate)
-        return outcome
+        return outcome.copy(diagnostic = ErrorDiagnostics.redact(outcome.diagnostic, candidate))
     }
 
     /**

@@ -11,6 +11,7 @@ import com.cedrickgd.morgenbriefing.ai.TurnEnd
 import com.cedrickgd.morgenbriefing.ai.UsageSink
 import com.cedrickgd.morgenbriefing.ai.http.AiHttp
 import com.cedrickgd.morgenbriefing.ai.http.ApiErrorBody
+import com.cedrickgd.morgenbriefing.ai.http.ErrorDiagnostics
 import com.cedrickgd.morgenbriefing.ai.http.HttpFailure
 import com.cedrickgd.morgenbriefing.ai.http.ProviderErrors
 import com.cedrickgd.morgenbriefing.ai.http.RetryPolicy
@@ -52,6 +53,13 @@ internal class GeminiTurn(
 internal class GeminiSearchUnavailable(cause: HttpFailure) : Exception("Google Search not available for this key", cause)
 
 /**
+ * Gemini refused the requested model for this key before streaming (404 `NOT_FOUND`, a 400/403
+ * about the model, a quota of 0, GE §12.5): the chat tries the next model of the fallback chain.
+ * Never leaves the engine; [failure] is the refusal (its diagnostic if no model answers).
+ */
+internal class GeminiModelUnavailable(val failure: HttpFailure) : Exception("Model not available for this key", failure)
+
+/**
  * Runs one streamed `streamGenerateContent` request: retries per [retry] before the first event
  * (a free key's 429 only for a short named wait, see ProviderErrors), feeds every chunk to a
  * [GeminiChunkParser], and records the request's usage with the [UsageSink] — also when it
@@ -64,6 +72,8 @@ internal class GeminiStreamer(
     /**
      * @param search the body asks for Google Search: a failure that says the key may not search
      *   becomes [GeminiSearchUnavailable] instead of an error (no retries for it).
+     * @throws GeminiModelUnavailable when Gemini refuses [model] for the key before streaming
+     *   (no retries for it either).
      */
     suspend fun run(
         auth: ProviderAuth,
@@ -78,7 +88,8 @@ internal class GeminiStreamer(
         val request = http.post(GeminiRequests.streamUrl(auth, model), body, GeminiRequests.headers(auth), stream = true)
         val requestChars = body.toString().length
         val mapper = ProviderErrors.mapper(auth, model)
-        return retry.run(AiProviderId.GEMINI.key, { e -> if (e is GeminiSearchUnavailable) null else mapper.map(e) }) { attempt ->
+        val passThrough = { e: Throwable -> e is GeminiSearchUnavailable || e is GeminiModelUnavailable }
+        return retry.run(AiProviderId.GEMINI.key, { e -> if (passThrough(e)) null else mapper.map(e) }) { attempt ->
             usage.beforeRequest()
             val parser = GeminiChunkParser(listener, sources, text, model, auth.freeTier)
             try {
@@ -88,6 +99,7 @@ internal class GeminiStreamer(
                 }
             } catch (e: HttpFailure) {
                 if (search && !attempt.delivered && isSearchUnavailable(e)) throw GeminiSearchUnavailable(e)
+                if (!attempt.delivered && isModelUnavailable(e, model, auth.freeTier)) throw GeminiModelUnavailable(e)
                 throw e
             } catch (e: Throwable) {
                 // Whatever streamed was billed: record it even when cancelled or failed.
@@ -113,13 +125,25 @@ internal class GeminiStreamer(
         fun isSearchUnavailable(failure: HttpFailure): Boolean {
             if (failure.code !in setOf(400, 403, 429)) return false
             val error = ApiErrorBody.parse(failure.body)
-            if (error.isGeminiKeyInvalid()) return false
+            // A refused key or a blocked API is no missing search, whatever the message says.
+            if (error.isGeminiKeyInvalid() || error.reasons.any { r -> KEY_REASONS.any(r::startsWith) }) return false
             if (failure.code == 400 && error.status == "FAILED_PRECONDITION") return true
             val message = error.message.orEmpty()
             return SEARCH_WORDS.any { message.contains(it, ignoreCase = true) }
         }
 
         private val SEARCH_WORDS = listOf("search", "grounding")
+
+        /** ErrorInfo reasons about the key or its project (GE §12.4). */
+        private val KEY_REASONS = listOf("API_KEY", "ACCESS_TOKEN", "SERVICE_DISABLED", "CONSUMER")
+
+        /**
+         * Gemini refused [model] for this key, not the key or the request (GE §12.5): the same
+         * line as the error mapping's [AiError.ModelUnavailable] — 404, a 400/403 about the model,
+         * a quota of 0 that is not the search's.
+         */
+        fun isModelUnavailable(failure: HttpFailure, model: String, freeTier: Boolean): Boolean =
+            ProviderErrors.http(AiProviderId.GEMINI, failure.code, failure.body, failure.retryAfter, model, freeTier).error is AiError.ModelUnavailable
     }
 }
 
@@ -177,7 +201,9 @@ internal class GeminiChunkParser(
     }
 
     private fun onChunk(chunk: JsonObject) {
-        if (chunk["error"] is JsonObject) throw AiException(ProviderErrors.streamError(AiProviderId.GEMINI, chunk, requestModel, freeTier))
+        if (chunk["error"] is JsonObject) {
+            throw AiException(ProviderErrors.streamError(AiProviderId.GEMINI, chunk, requestModel, freeTier), diagnostic = ErrorDiagnostics.stream(chunk))
+        }
         chunk.str("modelVersion")?.removePrefix("models/")?.takeIf { it.isNotBlank() }?.let { model = it }
         chunk.obj("usageMetadata")?.let { usage = it }
         chunk.obj("promptFeedback")?.str("blockReason")?.let { blockReason = it }
@@ -243,7 +269,10 @@ internal class GeminiChunkParser(
             "STOP" -> TurnEnd.COMPLETE
             "MAX_TOKENS" -> TurnEnd.TRUNCATED
             in REFUSAL_REASONS -> return GeminiTurn(TurnEnd.REFUSED, reason.lowercase(), null)
-            else -> throw AiException(AiError.Unknown("${ProviderCatalog.GEMINI.brand} hat die Antwort abgebrochen."))
+            else -> throw AiException(
+                AiError.Unknown("${ProviderCatalog.GEMINI.brand} hat die Antwort abgebrochen."),
+                diagnostic = ErrorDiagnostics.finishReason(reason),
+            )
         }
         return GeminiTurn(end, null, suggestions)
     }

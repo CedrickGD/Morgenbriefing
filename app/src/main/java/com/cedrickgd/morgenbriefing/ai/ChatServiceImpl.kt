@@ -1,6 +1,8 @@
 package com.cedrickgd.morgenbriefing.ai
 
 import android.util.Log
+import com.cedrickgd.morgenbriefing.ai.http.ErrorDiagnostics
+import com.cedrickgd.morgenbriefing.ai.provider.GeminiModels
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
@@ -275,11 +277,18 @@ internal class ChatServiceImpl(
                     webSearch = resolved.webSearch,
                 )
                 val result = resolved.backend.chat.answer(request, listener, usage)
+                // Another model answered because the chosen one is not open to this key: kept for
+                // the key, so the next question goes there directly (GE §12.5).
+                val fallback = result.fallbackModel?.takeIf { it != resolved.model }
+                if (fallback != null) access.modelFallback(resolved.auth.provider, resolved.auth.apiKey, resolved.model, fallback)
                 finish(answerId) { message ->
                     val text = result.text.ifBlank { buffer.toString() }.trim()
                     // Grounded text is never shown without its Search Suggestions (Gemini terms).
                     val suggestions = result.searchSuggestionsHtml ?: message.searchSuggestionsHtml
-                    val answerNote = if (result.withoutWebSearch) AiTexts.WITHOUT_WEB_SEARCH_NOTE else null
+                    val answerNote = listOfNotNull(
+                        fallback?.let { GeminiModels.fallbackNote(resolved.model, it) },
+                        AiTexts.WITHOUT_WEB_SEARCH_NOTE.takeIf { result.withoutWebSearch },
+                    ).joinToString("\n").ifEmpty { null }
                     when (result.end) {
                         TurnEnd.REFUSED -> message.copy(
                             text = "",
@@ -346,7 +355,7 @@ internal class ChatServiceImpl(
                 }
             } catch (e: AiException) {
                 // Settings → KI says so before the chat shows the error.
-                if (e.error == AiError.InvalidKey) access.keyRejected(resolved.auth.provider, resolved.auth.apiKey)
+                if (e.error.rejectsKey) access.keyRejected(resolved.auth.provider, resolved.auth.apiKey)
                 val withheld = withheld(answerId, grounded)
                 finish(answerId) {
                     it.copy(
@@ -354,6 +363,7 @@ internal class ChatServiceImpl(
                         sources = if (withheld) emptyList() else it.sources,
                         status = ChatMessage.Status.FAILED,
                         error = e.error,
+                        errorDetail = ErrorDiagnostics.redact(e.diagnostic, resolved.auth.apiKey),
                     )
                 }
             }
@@ -502,6 +512,7 @@ private fun ChatMessage.toStored(apiText: String?): StoredChatMessage? {
         searchSuggestionsHtml = searchSuggestionsHtml,
         note = note,
         provider = provider?.key,
+        errorDetail = errorDetail,
     )
 }
 
@@ -521,6 +532,7 @@ private fun StoredChatMessage.toChatMessage(): ChatMessage? {
         searchSuggestionsHtml = searchSuggestionsHtml,
         note = note,
         provider = AiProviderId.fromKey(provider),
+        errorDetail = errorDetail,
     )
 }
 

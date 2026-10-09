@@ -475,6 +475,64 @@ class ChatServiceTest {
     }
 
     @Test
+    fun `a refused Gemini key or project keeps its details, and only a refused key is marked`() = runBlocking<Unit> {
+        settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true) }
+        val access = access(apiKey = "AQ.test-invalid")
+        engine.scripts += {
+            throw AiException(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED), diagnostic = "HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED")
+        }
+        engine.scripts += {
+            throw AiException(AiError.GeminiAccess(GeminiProblem.API_BLOCKED), diagnostic = "HTTP 403 · PERMISSION_DENIED · API_KEY_SERVICE_BLOCKED")
+        }
+        // A diagnostic can never hold the key; if it did, it would be dropped.
+        engine.scripts += { throw AiException(AiError.Unknown(null), diagnostic = "HTTP 400 · AQ.test-invalid") }
+        val session = service(access = access).session(article)
+        session.send("Erste")
+        val first = session.await { it.settled(2) }.messages.last()
+        assertEquals(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED), first.error)
+        assertEquals("HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED", first.errorDetail)
+        assertEquals(listOf(AiProviderId.GEMINI to "AQ.test-invalid"), access.rejected)
+
+        session.send("Zweite")
+        val second = session.await { it.settled(4) }.messages.last()
+        assertEquals("HTTP 403 · PERMISSION_DENIED · API_KEY_SERVICE_BLOCKED", second.errorDetail)
+        // A blocked API is the project's problem, not the key's.
+        assertEquals(1, access.rejected.size)
+
+        session.send("Dritte")
+        assertEquals(null, session.await { it.settled(6) }.messages.last().errorDetail)
+
+        // The details survive a restart with the history.
+        val restored = service(access = access).session(article).await { it.messages.size == 6 }
+        assertEquals(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED), restored.messages[1].error)
+        assertEquals("HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED", restored.messages[1].errorDetail)
+        assertEquals("HTTP 403 · PERMISSION_DENIED · API_KEY_SERVICE_BLOCKED", restored.messages[3].errorDetail)
+    }
+
+    @Test
+    fun `a model fallback is kept for the key and said under the answer`() = runBlocking<Unit> {
+        settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true, geminiTier = GeminiTier.PAID) }
+        val access = access(apiKey = "AIza-test-invalid")
+        engine.scripts += { l ->
+            l.onText("Von 3.7.")
+            ChatTurnResult("Von 3.7.", emptyList(), TurnEnd.COMPLETE, fallbackModel = "gemini-3.7-flash")
+        }
+        engine.scripts += { l ->
+            l.onText("Ohne Suche.")
+            ChatTurnResult("Ohne Suche.", emptyList(), TurnEnd.COMPLETE, withoutWebSearch = true, fallbackModel = "gemini-3.7-flash")
+        }
+        val session = service(access = access).session(article)
+        session.send("Erste")
+        val first = session.await { it.settled(2) }.messages.last()
+        val note = "Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.7 Flash."
+        assertEquals(note, first.note)
+        assertEquals(listOf(listOf(AiProviderId.GEMINI, "AIza-test-invalid", "gemini-3.8-flash", "gemini-3.7-flash")), access.fallbacks)
+
+        session.send("Zweite")
+        assertEquals("$note\n${AiTexts.WITHOUT_WEB_SEARCH_NOTE}", session.await { it.settled(4) }.messages.last().note)
+    }
+
+    @Test
     fun `search suggestions and the fallback note stay with the answer, also after a restart`() = runBlocking<Unit> {
         settings.value = AppSettings().withProvider(AiProviderId.GEMINI) { it.copy(hasKey = true, geminiTier = GeminiTier.PAID) }
         val html = """<div class="container"><a class="chip" href="https://www.google.com/search?q=ezb">EZB Zins</a></div>"""

@@ -34,8 +34,45 @@ internal object GeminiRequests {
     fun streamUrl(auth: ProviderAuth, model: String): String =
         modelUrl(auth, model, ":streamGenerateContent").newBuilder().addQueryParameter("alt", "sse").build().toString()
 
-    /** `GET {base}/models/{model}`: the model's info, the key check without tokens (GE §13). */
+    /** `GET {base}/models/{model}`: the model's info (GE §2). */
     fun modelInfoUrl(auth: ProviderAuth, model: String): String = modelUrl(auth, model, "").toString()
+
+    /**
+     * `GET {base}/models?pageSize=1000`: every model the key may see in one page (the API's
+     * maximum page size, GE §13) — the first, token-free step of the key test.
+     */
+    fun modelListUrl(auth: ProviderAuth): String {
+        val base = baseUrl(auth).toHttpUrlOrNull() ?: throw AiException(AiError.Unknown("Die Adresse der Gemini API ist ungültig."))
+        return base.newBuilder().addPathSegment("models").addQueryParameter("pageSize", MODEL_PAGE_SIZE.toString()).build().toString()
+    }
+
+    /** `POST {base}/models/{model}:generateContent`: one answer without streaming (the key test's second step). */
+    fun generateUrl(auth: ProviderAuth, model: String): String = modelUrl(auth, model, ":generateContent").toString()
+
+    /**
+     * The key test's generation (GE §13): a few tokens that prove the key may generate with the
+     * model — "Antworte nur: OK", little thinking, a small output cap, no tools.
+     */
+    fun keyTest(): JsonObject = buildJsonObject {
+        putJsonArray("contents") {
+            addJsonObject {
+                put("role", USER)
+                putJsonArray("parts") { addJsonObject { put("text", KEY_TEST_PROMPT) } }
+            }
+        }
+        putJsonObject("generationConfig") {
+            putJsonObject("thinkingConfig") { put("thinkingLevel", CHAT_THINKING_LEVEL) }
+            put("maxOutputTokens", KEY_TEST_MAX_OUTPUT_TOKENS)
+        }
+    }
+
+    const val KEY_TEST_PROMPT = "Antworte nur: OK"
+
+    /** Room for "OK" and a little thinking; a test that ends at the cap still passed (HTTP 200). */
+    const val KEY_TEST_MAX_OUTPUT_TOKENS = 32
+
+    /** `models.list` returns at most this many per page (GE §13, ai.google.dev/api/models). */
+    private const val MODEL_PAGE_SIZE = 1000
 
     /** `x-goog-api-key: <key>`; never logged. */
     fun headers(auth: ProviderAuth): Map<String, String> {

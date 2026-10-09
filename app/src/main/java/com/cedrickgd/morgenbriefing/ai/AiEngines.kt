@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ai
 
+import com.cedrickgd.morgenbriefing.ai.http.ErrorDiagnostics
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 
@@ -10,9 +11,23 @@ import com.cedrickgd.morgenbriefing.data.model.SourceRef
  * (`ai.claude`) needs Android 8.0+; AiServices creates it behind AiSupport.sdkAvailable.
  */
 
-/** A classified failure of an AI request; [error] is what the UI shows. */
-internal class AiException(val error: AiError, cause: Throwable? = null) :
-    Exception(error.toString(), cause)
+/**
+ * A classified failure of an AI request; [error] is what the UI shows, [diagnostic] the key-free
+ * technical line under its "Details" ([ErrorDiagnostics]; by default the one of [cause]).
+ */
+internal class AiException(
+    val error: AiError,
+    cause: Throwable? = null,
+    val diagnostic: String? = ErrorDiagnostics.of(cause),
+) : Exception(error.toString(), cause)
+
+/**
+ * [this] refuses the key itself: Settings → KI marks the stored key as rejected and the chat
+ * offers "Key ändern". A Gemini auth key Google does not take, or one it blocked as leaked, counts too.
+ */
+internal val AiError.rejectsKey: Boolean
+    get() = this == AiError.InvalidKey ||
+        this == AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED) || this == AiError.GeminiAccess(GeminiProblem.KEY_LEAKED)
 
 /** A request was not sent because of [block] (e.g. the monthly limit was reached meanwhile). */
 internal class AiBlockedException(val block: AiBlock) : Exception(block.name)
@@ -112,6 +127,11 @@ internal data class ChatTurnResult(
     val searchSuggestionsHtml: String? = null,
     /** Gemini free-tier fallback: the answer came without web search although it was asked for. */
     val withoutWebSearch: Boolean = false,
+    /**
+     * Gemini model fallback: the requested model could not generate with this key, this one
+     * answered instead (docs/providers/gemini.md §12.5). Null when the requested model answered.
+     */
+    val fallbackModel: String? = null,
 )
 
 internal interface ChatEngine {

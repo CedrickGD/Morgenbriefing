@@ -1,6 +1,7 @@
 package com.cedrickgd.morgenbriefing.ai
 
 import com.cedrickgd.morgenbriefing.ai.provider.EngineKind
+import com.cedrickgd.morgenbriefing.ai.provider.GeminiModels
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
 import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
 import com.cedrickgd.morgenbriefing.ai.provider.LiveToolNote
@@ -8,6 +9,7 @@ import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -138,5 +140,46 @@ class ProviderCatalogTest {
         assertNotNull(ProviderCatalog.ANTHROPIC.model("claude-haiku-5-5"))
         assertTrue(ProviderCatalog.chatWebSearch(ai, AiProviderId.ANTHROPIC))
         assertFalse(ProviderCatalog.chatWebSearch(ai, AiProviderId.DEEPSEEK))
+    }
+
+    @Test
+    fun `a model fallback of the key runs instead of the chosen model, as long as it is chosen`() {
+        val gemini = AiProviderId.GEMINI
+        val base = AiSettings().with(gemini, ProviderSettings(hasKey = true, modelFallback = ModelFallback("gemini-3.8-flash", "gemini-3.7-flash")))
+        // The default 3.8 is chosen: 3.7 runs, the picker still marks 3.8.
+        assertEquals("gemini-3.8-flash", ProviderCatalog.selectedModel(base, gemini))
+        assertEquals("gemini-3.7-flash", ProviderCatalog.effectiveModel(base, gemini))
+        assertEquals("gemini-3.8-flash" to "gemini-3.7-flash", ProviderCatalog.activeFallback(base, gemini))
+        // Another model chosen: the fallback of 3.8 does not apply to it.
+        val lite = base.withModel(gemini, "gemini-3.5-flash-lite")
+        assertEquals("gemini-3.5-flash-lite", ProviderCatalog.effectiveModel(lite, gemini))
+        assertNull(ProviderCatalog.activeFallback(lite, gemini))
+        // A fallback to a model the free tier cannot run is never used.
+        val pro = AiSettings().with(gemini, ProviderSettings(hasKey = true, modelFallback = ModelFallback("gemini-3.8-flash", "gemini-3.1-pro-preview")))
+        assertEquals("gemini-3.8-flash", ProviderCatalog.effectiveModel(pro, gemini))
+        assertEquals("gemini-3.1-pro-preview", ProviderCatalog.effectiveModel(pro.with(gemini, pro.of(gemini).copy(geminiTier = GeminiTier.PAID)), gemini))
+    }
+
+    @Test
+    fun `the Gemini fallback chain goes down from the chosen model`() {
+        assertEquals(listOf("gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"), GeminiModels.CHAIN)
+        assertEquals(listOf("gemini-3.7-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"), GeminiModels.fallbacksAfter("gemini-3.8-flash", true))
+        assertEquals(listOf("gemini-3.5-flash-lite", "gemini-3.1-flash-lite"), GeminiModels.fallbacksAfter("models/gemini-3.7-flash", true))
+        assertEquals(emptyList<String>(), GeminiModels.fallbacksAfter("gemini-3.1-flash-lite", false))
+        // A model outside the chain (Pro, a typed id) falls back to the whole chain.
+        assertEquals(GeminiModels.CHAIN, GeminiModels.fallbacksAfter("gemini-3.1-pro-preview", false))
+        assertEquals(GeminiModels.CHAIN, GeminiModels.fallbacksAfter("gemini-2.5-flash", true))
+        // Every model of the chain runs on the free tier and has a price.
+        GeminiModels.CHAIN.forEach { id ->
+            assertFalse(id, ProviderCatalog.requiresBilling(AiProviderId.GEMINI, id))
+            assertFalse(id, AiPricing.ratesFor(AiProviderId.GEMINI, id, java.time.LocalDate.of(2026, 10, 9)).second)
+        }
+        assertEquals("Gemini 3.7 Flash", GeminiModels.label("gemini-3.7-flash"))
+        assertEquals("Gemini 3.5 Flash-Lite", GeminiModels.label("gemini-3.5-flash-lite"))
+        assertEquals("gemini-9", GeminiModels.label("gemini-9"))
+        assertEquals(
+            "Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.1 Flash-Lite.",
+            GeminiModels.fallbackNote("gemini-3.8-flash", "gemini-3.1-flash-lite"),
+        )
     }
 }

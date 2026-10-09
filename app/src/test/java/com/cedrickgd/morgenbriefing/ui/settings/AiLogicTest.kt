@@ -1,12 +1,14 @@
 package com.cedrickgd.morgenbriefing.ui.settings
 
 import com.cedrickgd.morgenbriefing.ai.AiKeyCheck
+import com.cedrickgd.morgenbriefing.ai.KeyCheckOutcome
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
 import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -151,9 +153,11 @@ class AiLogicTest {
 
     @Test
     fun `a gemini key without billing where google wants one gets its own warning`() {
+        // 402: the prepaid credit of the Google project is used up.
         val text = aiKeyMessage(AiKeyState.SavedNoCredit, ProviderCatalog.GEMINI)!!
         assertTrue(text.startsWith("Gespeichert ✓"))
-        assertTrue(text.contains("Abrechnung"))
+        assertTrue(text.contains("Prepay-Guthaben"))
+        assertTrue(text.contains("AI Studio"))
         assertEquals(
             "Gespeichert ✓ – aber dein Guthaben ist leer. Lade es auf, sonst schlagen Anfragen fehl.",
             aiKeyMessage(AiKeyState.SavedNoCredit, ProviderCatalog.OPENAI),
@@ -166,6 +170,82 @@ class AiLogicTest {
         assertTrue(canSaveUntested(AiKeyState.Failed(AiKeyProblem.SERVER_UNREACHABLE)))
         assertFalse(canSaveUntested(AiKeyState.Failed(AiKeyProblem.INVALID)))
         assertFalse(canSaveUntested(AiKeyState.Idle))
+    }
+
+    @Test
+    fun `a Gemini key test that fails says Google's reason, shows the details and the page that fixes it`() {
+        val gemini = ProviderCatalog.GEMINI
+        val auth = AiKeyState.Failed(AiKeyProblem.AUTH_KEY_REJECTED, "HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED")
+        val text = aiKeyMessage(auth, gemini)!!
+        assertTrue(text.startsWith("✗ Google nimmt deinen Key gerade nicht an."))
+        assertTrue(text.contains("neuen Key"))
+        assertEquals("HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED", auth.diagnostic)
+        assertEquals(KeyFixLink("Neuen Key in AI Studio", "https://aistudio.google.com/apikey"), aiKeyFixLink(auth))
+        assertFalse(canSaveUntested(auth))
+
+        val blocked = AiKeyState.Failed(AiKeyProblem.API_BLOCKED, "HTTP 403 · PERMISSION_DENIED · SERVICE_DISABLED")
+        assertTrue(aiKeyMessage(blocked, gemini)!!.startsWith("✗ Die Gemini API ist für dein Google-Projekt gesperrt oder nicht aktiviert"))
+        assertEquals("https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com", aiKeyFixLink(blocked)!!.url)
+        // The key may be fine: once the API is on, it works without being entered again.
+        assertTrue(canSaveUntested(blocked))
+
+        val region = AiKeyState.Failed(AiKeyProblem.FREE_TIER_UNAVAILABLE)
+        assertTrue(aiKeyMessage(region, gemini)!!.contains("Der kostenlose Gemini-Tarif ist für dein Land/Projekt nicht freigeschaltet"))
+        assertEquals("https://aistudio.google.com/projects", aiKeyFixLink(region)!!.url)
+        assertTrue(canSaveUntested(region))
+
+        assertNotNull(aiKeyFixLink(AiKeyState.Failed(AiKeyProblem.KEY_RESTRICTED)))
+        assertTrue(aiKeyMessage(AiKeyState.Failed(AiKeyProblem.MODEL_UNAVAILABLE), gemini)!!.startsWith("✗ Der Key funktioniert, aber keines der Gemini-Modelle"))
+        assertNull(aiKeyFixLink(AiKeyState.Failed(AiKeyProblem.INVALID)))
+        assertNull(aiKeyFixLink(AiKeyState.Saved))
+        // A failure without details has none to show; equality only looks at the problem plus details.
+        assertNull(AiKeyState.Failed(AiKeyProblem.NETWORK).diagnostic)
+        assertTrue(AiKeyState.Failed(AiKeyProblem.WORKSPACE_REQUIRED, "HTTP 400").failedWith(AiKeyProblem.WORKSPACE_REQUIRED))
+        assertTrue(canSaveUntested(AiKeyState.Failed(AiKeyProblem.NETWORK, "Verbindung · UnknownHostException")))
+
+        // The facade's verdicts map to these problems; a used-up quota still stores the key.
+        assertEquals(AiKeyProblem.AUTH_KEY_REJECTED, AiKeyCheck.AUTH_KEY_REJECTED.toProblem())
+        assertEquals(AiKeyProblem.API_BLOCKED, AiKeyCheck.API_BLOCKED.toProblem())
+        assertEquals(AiKeyProblem.KEY_RESTRICTED, AiKeyCheck.KEY_RESTRICTED.toProblem())
+        assertEquals(AiKeyProblem.FREE_TIER_UNAVAILABLE, AiKeyCheck.FREE_TIER_UNAVAILABLE.toProblem())
+        assertEquals(AiKeyProblem.MODEL_UNAVAILABLE, AiKeyCheck.MODEL_UNAVAILABLE.toProblem())
+        assertNull(AiKeyCheck.OK_QUOTA_EXHAUSTED.toProblem())
+    }
+
+    @Test
+    fun `a passed key test says what is special about the key`() {
+        val gemini = ProviderCatalog.GEMINI
+        assertEquals(AiKeyState.Saved, savedKeyState(KeyCheckOutcome(AiKeyCheck.OK)))
+        assertEquals(AiKeyState.SavedUntested, savedKeyState(null))
+        assertEquals(AiKeyState.SavedNoCredit, savedKeyState(KeyCheckOutcome(AiKeyCheck.OK_NO_CREDIT)))
+
+        val fallback = savedKeyState(KeyCheckOutcome(AiKeyCheck.OK, fallback = ModelFallback("gemini-3.8-flash", "gemini-3.7-flash")))
+        assertEquals(AiKeyState.SavedWithFallback("gemini-3.8-flash", "gemini-3.7-flash"), fallback)
+        assertEquals(
+            "✓ Der Key funktioniert und ist gespeichert. Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.7 Flash.",
+            aiKeyMessage(fallback, gemini),
+        )
+        assertTrue(fallback.isSaved)
+
+        val quota = savedKeyState(KeyCheckOutcome(AiKeyCheck.OK_QUOTA_EXHAUSTED, diagnostic = "HTTP 429 · RESOURCE_EXHAUSTED"))
+        assertEquals(AiKeyState.SavedQuotaExhausted("HTTP 429 · RESOURCE_EXHAUSTED"), quota)
+        assertTrue(aiKeyMessage(quota, gemini)!!.startsWith("Gespeichert ✓ – aber das Kontingent"))
+        assertEquals("HTTP 429 · RESOURCE_EXHAUSTED", quota.diagnostic)
+        assertTrue(quota.isSaved)
+    }
+
+    @Test
+    fun `the model picker marks the chosen model and says which one runs instead`() {
+        val ai = gemini(GeminiTier.FREE).let { a ->
+            a.with(AiProviderId.GEMINI, a.of(AiProviderId.GEMINI).copy(modelFallback = ModelFallback("gemini-3.8-flash", "gemini-3.7-flash")))
+        }
+        assertEquals("gemini-3.8-flash", modelChoices(ai, AiProviderId.GEMINI, today).single { it.selected }.id)
+        assertEquals(
+            "Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.7 Flash.",
+            modelFallbackNote(ai, AiProviderId.GEMINI),
+        )
+        assertNull(modelFallbackNote(gemini(GeminiTier.FREE), AiProviderId.GEMINI))
+        assertNull(modelFallbackNote(ai.withModel(AiProviderId.GEMINI, "gemini-3.5-flash-lite"), AiProviderId.GEMINI))
     }
 
     @Test
@@ -235,12 +315,14 @@ class AiLogicTest {
     @Test
     fun `an invisible or non-ASCII character in a key gets its own hint`() {
         val gemini = ProviderCatalog.GEMINI
-        // trim() and isWhitespace() let a zero-width space and a BOM through.
-        assertEquals(AiKeyFormatIssue.ODD_CHARACTER, aiKeyFormatIssue("AIza-test-invalid​", gemini))
-        assertEquals(AiKeyFormatIssue.ODD_CHARACTER, aiKeyFormatIssue("﻿AQ.test-invalid", gemini))
+        // A zero-width space or a BOM that a copy brought along is dropped when saving (cleanApiKey): no hint.
+        assertNull(aiKeyFormatIssue("AIza-test-invalid​", gemini))
+        assertNull(aiKeyFormatIssue("﻿AQ.test-invalid", gemini))
+        assertNull(aiKeyFormatIssue("​sk-ant-api03-abcdefghijklmnopqrstuvwxyz", claude))
+        // An umlaut stays: such a key cannot be sent.
         assertEquals(AiKeyFormatIssue.ODD_CHARACTER, aiKeyFormatIssue("AIza-test-invälid", gemini))
         // Not a wrong prefix: it starts right once the odd character is gone.
-        assertEquals(AiKeyFormatIssue.ODD_CHARACTER, aiKeyFormatIssue("​sk-ant-api03-abcdefghijklmnopqrstuvwxyz", claude))
+        assertEquals(AiKeyFormatIssue.ODD_CHARACTER, aiKeyFormatIssue("sk-ant-äpi03-abcdefghijklmnopqrstuvwxyz", claude))
         assertEquals(
             "Der Key enthält ein unsichtbares oder ungewöhnliches Zeichen – kopier ihn bitte noch einmal.",
             aiKeyFormatHint(AiKeyFormatIssue.ODD_CHARACTER, gemini),
