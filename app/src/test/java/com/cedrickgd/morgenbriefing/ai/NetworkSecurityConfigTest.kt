@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.ai
 
+import com.cedrickgd.morgenbriefing.ai.compat.CustomServer
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.w3c.dom.Element
@@ -42,6 +43,8 @@ class NetworkSecurityConfigTest {
         assertEquals("true", cleartext.getAttribute("cleartextTrafficPermitted"))
         val domains = cleartext.children("domain").associate { it.textContent.trim() to (it.getAttribute("includeSubdomains") == "true") }
         assertEquals(expected, domains)
+        // The own server's address check mirrors the allowlist, or it would promise what Android refuses.
+        assertEquals(domains, CustomServer.CLEARTEXT_HOSTS)
         // No own trust anchors: the domain config inherits the base ones (system + ISRG).
         assertEquals(0, cleartext.children("trust-anchors").size)
     }
