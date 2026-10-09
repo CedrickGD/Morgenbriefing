@@ -62,7 +62,7 @@ internal fun AiProviderPicker(
         Text(
             if (liveOnly) {
                 "⚡ Live recherchiert im Netz und schreibt eigene Artikel – das kann nicht jeder Anbieter. " +
-                    "„Frag nach“ bleibt bei ${chat.name}."
+                    "„Frag nach“ bleibt bei ${chat.dativeName}."
             } else {
                 "Jeder Anbieter hat seinen eigenen Key und sein eigenes Modell. Das Monatslimit gilt für alle zusammen."
             },

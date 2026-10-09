@@ -491,7 +491,7 @@ internal fun RemoveAiKeyDialog(spec: ProviderSpec, onConfirm: () -> Unit, onDism
         },
     ) {
         Text(
-            "Danach sind „Frag nach“ und „⚡ Live“ mit ${spec.name} aus, bis du wieder " +
+            "Danach sind „Frag nach“ und „⚡ Live“ mit ${spec.dativeName} aus, bis du wieder " +
                 "${if (custom) "einen Server einrichtest" else "einen Key einträgst"}. Dein bisheriger Verbrauch bleibt sichtbar.",
             style = MaterialTheme.typography.bodyMedium,
         )

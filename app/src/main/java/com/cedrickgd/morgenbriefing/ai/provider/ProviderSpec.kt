@@ -85,13 +85,20 @@ data class ProviderSpec(
     /** "" for the own server (its models come from the server). */
     val defaultModel: String,
 ) {
+    /**
+     * [name] after a preposition ("mit OpenAI", "bei Google Gemini"); the own server reads "mit
+     * deinem eigenen Server", not "mit Eigener Server".
+     */
+    val dativeName: String
+        get() = if (id == AiProviderId.CUSTOM) "deinem eigenen Server" else name
+
     /** Why "⚡ Live" is not available with this provider; null when it is. One sentence. */
     val liveUnavailableText: String?
         get() = when (live) {
             LiveSupport.YES -> null
-            LiveSupport.NO_WEB_SEARCH -> "Live braucht Websuche – mit $name nicht verfügbar."
+            LiveSupport.NO_WEB_SEARCH -> "Live braucht Websuche – mit $dativeName nicht verfügbar."
             LiveSupport.NOT_ALLOWED ->
-                "Live ist mit $name nicht verfügbar: Googles Bedingungen für die Websuche erlauben keine gespeicherten Artikel."
+                "Live ist mit $dativeName nicht verfügbar: Googles Bedingungen für die Websuche erlauben keine gespeicherten Artikel."
         }
 
     /** The curated entry for [modelId], or null for a free-text model. */

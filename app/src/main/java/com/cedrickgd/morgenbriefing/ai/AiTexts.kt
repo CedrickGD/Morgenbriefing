@@ -25,7 +25,7 @@ object AiTexts {
         AiBlock.UNSUPPORTED_DEVICE -> "${spec.brand.sentence()} braucht Android 8"
         AiBlock.NO_KEY -> if (spec.id == AiProviderId.CUSTOM) "Noch kein Server eingerichtet" else "Noch kein ${spec.brand}-Key hinterlegt"
         AiBlock.LIMIT_REACHED -> "Monatslimit erreicht"
-        AiBlock.LIVE_UNAVAILABLE -> "Live mit ${spec.brand} nicht verfügbar"
+        AiBlock.LIVE_UNAVAILABLE -> if (spec.id == AiProviderId.CUSTOM) "Live mit deinem Server nicht verfügbar" else "Live mit ${spec.brand} nicht verfügbar"
     }
 
     /** The one button of a [block] card in the chat and in "⚡ Live": what fixes it. */
@@ -49,7 +49,7 @@ object AiTexts {
         AiBlock.LIMIT_REACHED ->
             "Dein KI-Budget für diesen Monat ist aufgebraucht. Du kannst das Limit in den Einstellungen anheben – " +
                 "oder am Monatsersten geht es von selbst weiter."
-        AiBlock.LIVE_UNAVAILABLE -> spec.liveUnavailableText ?: "Live ist mit ${spec.name} gerade nicht verfügbar."
+        AiBlock.LIVE_UNAVAILABLE -> spec.liveUnavailableText ?: "Live ist mit ${spec.dativeName} gerade nicht verfügbar."
     }
 
     /** What went wrong, in one sentence. */
@@ -115,7 +115,7 @@ object AiTexts {
     fun chatNote(spec: ProviderSpec, webSearch: Boolean, freeTier: Boolean): String? = when {
         webSearch -> null
         freeTier -> GeminiTiers.NO_WEB_SEARCH_NOTE
-        else -> "Ohne Websuche – mit ${spec.name} nicht verfügbar"
+        else -> "Ohne Websuche – mit ${spec.dativeName} nicht verfügbar"
     }
 
     /** "dein Server" at the start of a sentence. */

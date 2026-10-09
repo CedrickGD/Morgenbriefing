@@ -100,4 +100,14 @@ class AiTextsTest {
         assertEquals(AiTexts.PROVIDER_ACTION, AiTexts.blockAction(AiBlock.UNSUPPORTED_DEVICE, claude))
         assertEquals("Live-Anbieter wählen", AiTexts.blockAction(AiBlock.LIVE_UNAVAILABLE, gemini))
     }
+
+    @Test
+    fun `the own server reads as proper german after a preposition`() {
+        assertEquals("deinem eigenen Server", server.dativeName)
+        assertEquals("OpenAI", ProviderCatalog.OPENAI.dativeName)
+        assertEquals("Live braucht Websuche – mit deinem eigenen Server nicht verfügbar.", server.liveUnavailableText)
+        assertEquals("Live mit deinem Server nicht verfügbar", AiTexts.blockTitle(AiBlock.LIVE_UNAVAILABLE, server))
+        assertEquals("Live mit Gemini nicht verfügbar", AiTexts.blockTitle(AiBlock.LIVE_UNAVAILABLE, gemini))
+        assertEquals("Ohne Websuche – mit deinem eigenen Server nicht verfügbar", AiTexts.chatNote(server, webSearch = false, freeTier = false))
+    }
 }
