@@ -22,6 +22,7 @@ import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.cleanApiKey
 import com.cedrickgd.morgenbriefing.util.attempt
 import com.cedrickgd.morgenbriefing.util.rememberLinkActions
@@ -46,6 +47,10 @@ import kotlinx.coroutines.launch
  * @property skipTest "Ohne Test speichern" (offline): stored, marked as untested.
  * @property extras the Anthropic workspace id and the own server's address as typed.
  * @property geminiTier the chosen "Tarif" of a Gemini key; null for every other provider.
+ * @property openRouterTier the chosen "Tarif" of an OpenRouter key (the key is tested for it); null
+ *   for every other provider.
+ * @property selectProvider make the provider the chat provider once its key is stored (OpenRouter
+ *   set up as the way out of a refused Gemini key).
  */
 @Immutable
 internal class KeySubmission(
@@ -53,8 +58,11 @@ internal class KeySubmission(
     val skipTest: Boolean = false,
     val extras: KeyExtras = KeyExtras(),
     val geminiTier: GeminiTier? = null,
+    val openRouterTier: OpenRouterTier? = null,
+    val selectProvider: Boolean = false,
 ) {
-    override fun toString(): String = "KeySubmission(skipTest=$skipTest, tier=$geminiTier)"
+    override fun toString(): String =
+        "KeySubmission(skipTest=$skipTest, tier=${geminiTier ?: openRouterTier}, select=$selectProvider)"
 }
 
 /**
@@ -78,10 +86,11 @@ internal class AiKeyEditor(
 
     /**
      * Tests [submission] for [provider] and stores the key, the workspace id, the server address
-     * and the Gemini tariff when it works. A blank key re-tests the stored one (a changed
-     * workspace id or tariff); the own server may have no key at all. A key that works but has
-     * no credit is stored with a warning. A freshly connected own server without a chosen model
-     * gets the first model it lists, so the chat can start right away.
+     * and the Gemini or OpenRouter tariff when it works. A blank key re-tests the stored one (a
+     * changed workspace id or tariff); the own server may have no key at all. A key that works but
+     * has no credit is stored with a warning. A freshly connected own server without a chosen
+     * model gets the first model it lists, so the chat can start right away. With
+     * [KeySubmission.selectProvider] the provider answers the chat from then on.
      */
     fun saveAndTest(provider: AiProviderId, submission: KeySubmission) {
         // Spaces, quotes and invisible characters a copy brought along are not part of the key.
@@ -94,7 +103,8 @@ internal class AiKeyEditor(
             var outcome: KeyCheckOutcome? = null
             if (!submission.skipTest) {
                 outcome = try {
-                    ai().testKey(provider, key.ifEmpty { null }, submission.extras)
+                    val extras = submission.openRouterTier?.let { submission.extras.copy(openRouterTier = it) } ?: submission.extras
+                    ai().testKey(provider, key.ifEmpty { null }, extras)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Throwable) {
@@ -141,6 +151,7 @@ internal class AiKeyEditor(
             submission.extras.baseUrl?.let { typed -> settings.setCustomBaseUrl(CustomServer.normalize(typed) ?: typed) }
         }
         if (provider == AiProviderId.GEMINI) submission.geminiTier?.let { settings.setGeminiTier(it) }
+        if (provider == AiProviderId.OPENROUTER) submission.openRouterTier?.let { settings.setOpenRouterTier(it) }
         when {
             key.isNotEmpty() -> settings.setAiKey(provider, key, tested = !submission.skipTest)
             // The stored key passed again (with a new workspace id or tariff).
@@ -155,6 +166,7 @@ internal class AiKeyEditor(
         if (provider == AiProviderId.CUSTOM && first != null && stored.of(provider).model.isNullOrBlank()) {
             settings.update { it.copy(ai = it.ai.withModel(AiProviderId.CUSTOM, first)) }
         }
+        if (submission.selectProvider) settings.update { it.copy(ai = it.ai.copy(provider = provider)) }
     }
 
     /** Back to idle (dialog closed or reopened); a running check is abandoned. */
@@ -197,10 +209,17 @@ internal class AiKeyViewModel(container: AppContainer, ai: () -> AiServices) : V
 /**
  * The key dialog of [provider] right where the user needs it (blocked chat, "⚡ Live"), so
  * entering a key never sends them hunting through the settings — and closing it returns them
- * exactly where they were. Removing a stored key stays in the settings.
+ * exactly where they were. Removing a stored key stays in the settings. [openRouterTier]
+ * preselects OpenRouter's tariff; [selectOnSave] makes [provider] the chat provider once its key
+ * is stored.
  */
 @Composable
-fun InlineAiKeyDialog(provider: AiProviderId, onDismiss: () -> Unit) {
+fun InlineAiKeyDialog(
+    provider: AiProviderId,
+    onDismiss: () -> Unit,
+    openRouterTier: OpenRouterTier? = null,
+    selectOnSave: Boolean = false,
+) {
     val viewModel: AiKeyViewModel = viewModel(factory = AiKeyViewModel.Factory)
     val state by viewModel.state.collectAsStateWithLifecycle()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
@@ -218,5 +237,7 @@ fun InlineAiKeyDialog(provider: AiProviderId, onDismiss: () -> Unit) {
             viewModel.reset()
             onDismiss()
         },
+        initialOpenRouterTier = openRouterTier,
+        selectOnSave = selectOnSave,
     )
 }

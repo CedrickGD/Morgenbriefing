@@ -677,4 +677,51 @@ class AiLogicTest {
             aiKeyMessage(AiKeyState.SavedNoCredit, openRouter),
         )
     }
+
+    @Test
+    fun `the free tariff picks among openrouter's free models`() {
+        val models = com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFree.FALLBACK +
+            listOf("a", "b", "c").map { com.cedrickgd.morgenbriefing.ai.compat.FreeModel("vendor/$it:free", "Vendor: Model $it (free)") }
+        val fresh = openRouter(OpenRouterTier.FREE)
+        val choices = freeModelChoices(fresh, models)
+        assertEquals(models.map { it.id }, choices.map { it.id })
+        // Gemma 4 31B runs by default and carries the badge; every row is free and selectable.
+        assertEquals(listOf("google/gemma-4-31b-it:free"), choices.filter { it.selected }.map { it.id })
+        assertEquals("Standard", choices.first().badge)
+        assertEquals("Gemma 4 31B", choices.first().title)
+        assertEquals("Googles offenes Modell · kostenlos", choices.first().subtitle)
+        assertTrue(choices.all { it.enabled && it.subtitle.endsWith("· kostenlos") })
+        // A stored free model is selected; one that left the list gives way to the default.
+        val picked = fresh.withModel(AiProviderId.OPENROUTER, "vendor/c:free")
+        assertEquals(listOf("vendor/c:free"), freeModelChoices(picked, models).filter { it.selected }.map { it.id })
+        val gone = fresh.withModel(AiProviderId.OPENROUTER, "vendor/gone:free")
+        assertEquals(listOf("google/gemma-4-31b-it:free"), freeModelChoices(gone, models).filter { it.selected }.map { it.id })
+
+        // Five rows, plus the selected one further down; all when expanded.
+        val pickedChoices = freeModelChoices(picked, models)
+        assertEquals(FREE_MODELS_SHOWN + 1, visibleFreeModels(pickedChoices, expanded = false).size)
+        assertEquals("vendor/c:free", visibleFreeModels(pickedChoices, expanded = false).last().id)
+        assertEquals(FREE_MODELS_SHOWN, visibleFreeModels(choices, expanded = false).size)
+        assertEquals(choices, visibleFreeModels(choices, expanded = true))
+        assertEquals(choices.take(3), visibleFreeModels(choices.take(3), expanded = false))
+    }
+
+    @Test
+    fun `the free model list says where it stands`() {
+        val list = com.cedrickgd.morgenbriefing.ai.compat.FreeModelList(
+            com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFree.FALLBACK,
+            com.cedrickgd.morgenbriefing.ai.compat.FreeModelSource.LIVE,
+        )
+        assertEquals("5 Gratis-Modelle von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag.", freeModelsNote(list, loading = false))
+        assertEquals(
+            "Offline – eine kleine Auswahl. Die ganze Liste lädt, sobald du online bist.",
+            freeModelsNote(list.copy(source = com.cedrickgd.morgenbriefing.ai.compat.FreeModelSource.FALLBACK), loading = false),
+        )
+        assertEquals("Lade die Gratis-Modelle von OpenRouter …", freeModelsNote(null, loading = true))
+        assertNull(freeModelsNote(null, loading = false))
+        assertEquals(
+            "Der Key gehört dir: Anfragen laufen über dein eigenes OpenRouter-Konto – kostenlos mit Gratis-Modellen oder mit Guthaben, wie du unten wählst.",
+            aiKeyIntro(ProviderCatalog.OPENROUTER),
+        )
+    }
 }

@@ -39,6 +39,7 @@ import com.cedrickgd.morgenbriefing.data.model.AccentId
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import com.cedrickgd.morgenbriefing.notify.MorningWorker
@@ -127,6 +128,7 @@ fun SettingsScreen(
     val aiKey by viewModel.aiKey.collectAsStateWithLifecycle()
     val usage by viewModel.usage.collectAsStateWithLifecycle()
     val serverModels by viewModel.serverModels.collectAsStateWithLifecycle()
+    val freeModels by viewModel.freeModels.collectAsStateWithLifecycle()
     val weather by viewModel.weather.collectAsStateWithLifecycle()
     val weatherLoading by viewModel.weatherLoading.collectAsStateWithLifecycle()
     val update by updateViewModel.state.collectAsStateWithLifecycle()
@@ -142,6 +144,10 @@ fun SettingsScreen(
     var dialog by rememberSaveable { mutableStateOf<SettingsDialog?>(null) }
     // The provider an AI dialog is about (AiProviderId.key), saveable like the dialog itself.
     var dialogProvider by rememberSaveable { mutableStateOf<String?>(null) }
+    // The key dialog's preselected OpenRouter tariff (OpenRouterTier.key) and whether a stored key
+    // makes the provider the chat provider (OpenRouter as the way out of a refused Gemini key).
+    var dialogTier by rememberSaveable { mutableStateOf<String?>(null) }
+    var dialogSelect by rememberSaveable { mutableStateOf(false) }
 
     val density = LocalDensity.current
     val topBarPx = with(density) { (statusBarTop() + TOP_BAR_HEIGHT).toPx() }
@@ -182,15 +188,21 @@ fun SettingsScreen(
         dialog = SettingsDialog.TOKEN
     }
 
-    fun openAiDialog(kind: SettingsDialog, provider: AiProviderId) {
+    fun openAiDialog(kind: SettingsDialog, provider: AiProviderId, openRouterTier: OpenRouterTier? = null, select: Boolean = false) {
         if (kind == SettingsDialog.AI_KEY) viewModel.resetAiKeyState()
         dialogProvider = provider.key
+        dialogTier = openRouterTier?.key
+        dialogSelect = select
         dialog = kind
     }
 
-    /** The key (own server: address) dialog of [provider]; by default the chat provider. */
-    fun openAiKeyDialog(provider: AiProviderId? = null) {
-        openAiDialog(SettingsDialog.AI_KEY, provider ?: settings?.ai?.provider ?: return)
+    /**
+     * The key (own server: address) dialog of [provider]; by default the chat provider.
+     * [openRouterTier] preselects OpenRouter's tariff, [select] makes the provider the chat
+     * provider once its key is stored.
+     */
+    fun openAiKeyDialog(provider: AiProviderId? = null, openRouterTier: OpenRouterTier? = null, select: Boolean = false) {
+        openAiDialog(SettingsDialog.AI_KEY, provider ?: settings?.ai?.provider ?: return, openRouterTier, select)
     }
 
     /** The KI pill: a provider that cannot run here leads to the picker, everything else to its key. */
@@ -308,6 +320,7 @@ fun SettingsScreen(
         onEditDebugBaseUrl = { dialog = SettingsDialog.AI_DEBUG_URL },
         onLimit = viewModel::setAiMonthlyLimit,
         onLiveAuto = viewModel::setLiveAutoRefresh,
+        onOpenRouterTier = viewModel::setOpenRouterTier,
     )
 
     val current = settings
@@ -362,6 +375,7 @@ fun SettingsScreen(
                         weatherLoading = weatherLoading,
                         usage = usage,
                         serverModels = serverModels,
+                        freeModels = freeModels,
                         update = update,
                         reduceMotion = reduceMotion,
                     ),
@@ -465,8 +479,14 @@ fun SettingsScreen(
                 liveOnly = liveOnly,
                 onPick = { picked ->
                     if (liveOnly) viewModel.setLiveProvider(picked) else picked?.let(viewModel::setAiProvider)
-                    // A provider without key is set up right away; the rest is done.
-                    if (picked != null && !current.ai.isConfigured(picked)) openAiKeyDialog(picked) else dialog = null
+                    // A provider without key is set up right away — for Live also OpenRouter on its
+                    // free tariff, which researches only with credits; the rest is done.
+                    val setup = picked != null && if (liveOnly) liveNeedsSetup(current.ai, picked) else !current.ai.isConfigured(picked)
+                    if (setup && picked != null) {
+                        openAiKeyDialog(picked, openRouterTier = OpenRouterTier.CREDITS.takeIf { liveOnly && picked == AiProviderId.OPENROUTER })
+                    } else {
+                        dialog = null
+                    }
                 },
                 onDismiss = { dialog = null },
             )
@@ -485,6 +505,8 @@ fun SettingsScreen(
                     dialog = null
                     viewModel.resetAiKeyState()
                 },
+                initialOpenRouterTier = OpenRouterTier.fromKey(dialogTier),
+                selectOnSave = dialogSelect,
             )
         }
 
@@ -544,6 +566,7 @@ private class BlockContent(
     val weatherLoading: Boolean,
     val usage: UsageSnapshot,
     val serverModels: ServerModels,
+    val freeModels: FreeModels,
     val update: UpdatePanelState,
     val reduceMotion: Boolean,
 )
@@ -662,6 +685,7 @@ private fun SettingsBlock(
             settings = settings,
             usage = content.usage,
             serverModels = content.serverModels,
+            freeModels = content.freeModels,
             today = content.now.toLocalDate(),
             sdkAvailable = AiSupport.sdkAvailable,
             debugTools = BuildConfig.DEBUG,

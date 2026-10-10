@@ -16,6 +16,7 @@ import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.AccentId
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
@@ -79,6 +80,13 @@ class SettingsViewModel(
     /** The own server's models (last connection test or "Vom Server laden"). */
     internal val serverModels: StateFlow<ServerModels> = _serverModels.asStateFlow()
 
+    private val _freeModels = MutableStateFlow(FreeModels())
+
+    /** OpenRouter's free models for the model picker of its free tariff. */
+    internal val freeModels: StateFlow<FreeModels> = _freeModels.asStateFlow()
+
+    private var freeModelsJob: Job? = null
+
     private val aiKeyEditor = AiKeyEditor(viewModelScope, container, ai) { ids -> _serverModels.value = ServerModels(ids) }
     val aiKey: StateFlow<AiKeyState> = aiKeyEditor.state
 
@@ -126,6 +134,14 @@ class SettingsViewModel(
         viewModelScope.launch {
             delay(WEATHER_WAIT_MS)
             _weatherLoading.value = false
+        }
+        // OpenRouter on its free tariff answers the chat: the picker needs the day's free models.
+        viewModelScope.launch {
+            container.settings.settings
+                .map { it.ai.provider == AiProviderId.OPENROUTER && it.ai.isOpenRouterFree(AiProviderId.OPENROUTER) }
+                .distinctUntilChanged()
+                .catch { e -> Log.w(TAG, "Settings unavailable", e) }
+                .collect { free -> if (free) loadFreeModels() }
         }
         // Token added or removed (here or in onboarding): update the connection status.
         viewModelScope.launch {
@@ -233,6 +249,34 @@ class SettingsViewModel(
                 Log.w(TAG, "Gemini tier could not be stored", saved.exceptionOrNull())
                 _messages.send("Das konnte gerade nicht gespeichert werden.")
             }
+        }
+    }
+
+    /**
+     * The "Tarif" of the OpenRouter key: the free models without web search, or every model on
+     * the account's credits.
+     */
+    fun setOpenRouterTier(tier: OpenRouterTier) {
+        viewModelScope.launch {
+            val saved = attempt { container.settings.setOpenRouterTier(tier) }
+            if (saved.isFailure) {
+                Log.w(TAG, "OpenRouter tier could not be stored", saved.exceptionOrNull())
+                _messages.send("Das konnte gerade nicht gespeichert werden.")
+            }
+        }
+    }
+
+    /**
+     * OpenRouter's free models for the picker: the day's list, else a new one ([force]: always a
+     * new one). Without network the last list or the built-in one.
+     */
+    fun loadFreeModels(force: Boolean = false) {
+        if (freeModelsJob?.isActive == true) return
+        freeModelsJob = viewModelScope.launch {
+            _freeModels.update { it.copy(loading = true) }
+            val list = attempt { ai().openRouterFreeModels(force) }.getOrNull()
+            ensureActive()
+            _freeModels.value = FreeModels(list = list ?: _freeModels.value.list, loading = false)
         }
     }
 

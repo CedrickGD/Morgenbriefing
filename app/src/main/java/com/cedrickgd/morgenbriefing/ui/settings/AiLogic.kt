@@ -8,6 +8,10 @@ import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.GeminiProblem
 import com.cedrickgd.morgenbriefing.ai.KeyCheckOutcome
 import com.cedrickgd.morgenbriefing.ai.OpenRouterKeyInfo
+import com.cedrickgd.morgenbriefing.ai.compat.FreeModel
+import com.cedrickgd.morgenbriefing.ai.compat.FreeModelList
+import com.cedrickgd.morgenbriefing.ai.compat.FreeModelSource
+import com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFree
 import com.cedrickgd.morgenbriefing.ai.provider.EngineKind
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiLinks
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiModels
@@ -225,6 +229,8 @@ internal fun aiKeyIntro(spec: ProviderSpec): String = when (spec.id) {
         "Der Key gehört dir: Anfragen laufen über dein eigenes Anthropic-Konto, unabhängig von einem Claude-Abo."
     AiProviderId.GEMINI ->
         "Der Key gehört dir: Anfragen laufen über dein eigenes Google-Konto – kostenlos oder mit Abrechnung, wie du unten wählst."
+    AiProviderId.OPENROUTER ->
+        "Der Key gehört dir: Anfragen laufen über dein eigenes OpenRouter-Konto – kostenlos mit Gratis-Modellen oder mit Guthaben, wie du unten wählst."
     AiProviderId.CUSTOM ->
         "Dein eigener Server mit Ollama, LM Studio & Co.: Fragen und Antworten bleiben in deinem Netz und kosten nichts."
     else -> "Der Key gehört dir: Anfragen laufen über dein eigenes ${keyOwner(spec)}-Konto und werden dort abgerechnet."
@@ -574,6 +580,49 @@ internal fun modelChoices(ai: AiSettings, id: AiProviderId, on: LocalDate): List
  */
 internal fun modelFallbackNote(ai: AiSettings, id: AiProviderId): String? =
     ProviderCatalog.activeFallback(ai, id)?.let { (from, to) -> GeminiModels.fallbackNote(from, to) }
+
+/**
+ * The model picker of OpenRouter's free tariff: OpenRouter's free [models] in their order, the one
+ * requests use selected (a chosen model that left the list gives way to the default, as in the
+ * chat), the default marked "Standard". Every row costs nothing.
+ */
+internal fun freeModelChoices(ai: AiSettings, models: List<FreeModel>): List<ModelChoice> {
+    val selected = OpenRouterFree.effective(ProviderCatalog.selectedModel(ai, AiProviderId.OPENROUTER), models)
+    val default = OpenRouterFree.defaultOf(models)
+    return models.map { model ->
+        ModelChoice(
+            id = model.id,
+            title = OpenRouterFree.title(model),
+            subtitle = OpenRouterFree.subtitle(model),
+            badge = "Standard".takeIf { model.id == default },
+            selected = model.id == selected,
+            enabled = true,
+        )
+    }
+}
+
+/** Free models the picker shows before "Alle … zeigen". */
+internal const val FREE_MODELS_SHOWN = 5
+
+/**
+ * The free models the picker shows: all when [expanded], else the first [FREE_MODELS_SHOWN] and
+ * the selected one when it is further down.
+ */
+internal fun visibleFreeModels(choices: List<ModelChoice>, expanded: Boolean): List<ModelChoice> {
+    if (expanded || choices.size <= FREE_MODELS_SHOWN) return choices
+    val first = choices.take(FREE_MODELS_SHOWN)
+    val selected = choices.drop(FREE_MODELS_SHOWN).filter { it.selected }
+    return first + selected
+}
+
+/** The quiet line under the free models: loading, offline, or how many there are today. */
+internal fun freeModelsNote(list: FreeModelList?, loading: Boolean): String? = when {
+    list == null -> if (loading) "Lade die Gratis-Modelle von OpenRouter …" else null
+    list.source == FreeModelSource.FALLBACK ->
+        "Offline – eine kleine Auswahl. Die ganze Liste lädt, sobald du online bist."
+    list.models.size == 1 -> "1 Gratis-Modell von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag."
+    else -> "${list.models.size} Gratis-Modelle von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag."
+}
 
 /** The stored model of [id] when it is none of the curated ones ("Eigenes Modell …"), else null. */
 internal fun customModelOf(ai: AiSettings, id: AiProviderId): String? {

@@ -67,11 +67,13 @@ import com.cedrickgd.morgenbriefing.ai.KeyExtras
 import com.cedrickgd.morgenbriefing.ai.compat.CustomServer
 import com.cedrickgd.morgenbriefing.ai.compat.CustomUrlIssue
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
+import com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import com.cedrickgd.morgenbriefing.data.normalizeBaseUrl
 import com.cedrickgd.morgenbriefing.ui.components.ErrorDetails
@@ -95,9 +97,11 @@ private val GEMINI_KEY_SHAPES: AnnotatedString = buildAnnotatedString {
  * how to get a key (Gemini: the short AI Studio guide and the "Tarif" choice), a link to the
  * console, a password field with show/hide and a format hint, and "Speichern & testen" — only a
  * key that works is stored; offline also "Ohne Test speichern", which says so. Claude has the
- * workspace id under "Erweitert", the own server an address field and an optional key. With a
- * stored key the field may stay blank: then the stored key is tested with the new settings.
- * [onRemove] (settings only) offers removing what is stored.
+ * workspace id under "Erweitert", the own server an address field and an optional key. With
+ * a stored key the field may stay blank: then the stored key is tested with the new settings.
+ * OpenRouter has its "Tarif" like Gemini: [initialOpenRouterTier] preselects one (credits when it
+ * was picked for Live), else the stored one. [selectOnSave] makes the provider the chat provider
+ * once the key is stored. [onRemove] (settings only) offers removing what is stored.
  */
 @Composable
 internal fun AiKeyDialog(
@@ -108,10 +112,13 @@ internal fun AiKeyDialog(
     onOpenLink: (String) -> Unit,
     onRemove: (() -> Unit)?,
     onDismiss: () -> Unit,
+    initialOpenRouterTier: OpenRouterTier? = null,
+    selectOnSave: Boolean = false,
 ) {
     val custom = spec.id == AiProviderId.CUSTOM
     val anthropic = spec.id == AiProviderId.ANTHROPIC
     val gemini = spec.id == AiProviderId.GEMINI
+    val openRouter = spec.id == AiProviderId.OPENROUTER
     val configured = stored.hasKey || (custom && !stored.baseUrl.isNullOrBlank())
     // Deliberately not rememberSaveable: the secret should not end up in saved instance state.
     var key by remember { mutableStateOf("") }
@@ -119,6 +126,7 @@ internal fun AiKeyDialog(
     var address by rememberSaveable { mutableStateOf(stored.baseUrl.orEmpty()) }
     var workspace by rememberSaveable { mutableStateOf(stored.workspaceId.orEmpty()) }
     var tier by rememberSaveable { mutableStateOf(stored.geminiTier) }
+    var openRouterTier by rememberSaveable { mutableStateOf(initialOpenRouterTier ?: stored.openRouterTier) }
     var advanced by rememberSaveable { mutableStateOf(!stored.workspaceId.isNullOrBlank()) }
     LaunchedEffect(state) {
         if (state.failedWith(AiKeyProblem.WORKSPACE_REQUIRED) || state.failedWith(AiKeyProblem.WORKSPACE_INVALID)) {
@@ -151,6 +159,8 @@ internal fun AiKeyDialog(
                     baseUrl = address.trim().takeIf { custom },
                 ),
                 geminiTier = tier.takeIf { gemini },
+                openRouterTier = openRouterTier.takeIf { openRouter },
+                selectProvider = selectOnSave,
             ),
         )
     }
@@ -185,6 +195,12 @@ internal fun AiKeyDialog(
             Overline("Tarif")
             Spacer(Modifier.height(8.dp))
             GeminiTierChoice(selected = tier, onSelect = { tier = it }, compact = true, enabled = !checking && !saved)
+        }
+        if (openRouter) {
+            Spacer(Modifier.height(18.dp))
+            Overline("Tarif")
+            Spacer(Modifier.height(8.dp))
+            OpenRouterTierChoice(selected = openRouterTier, onSelect = { openRouterTier = it }, compact = true, enabled = !checking && !saved)
         }
         if (custom) {
             Spacer(Modifier.height(14.dp))
@@ -289,8 +305,8 @@ internal fun AiKeyDialog(
 }
 
 /**
- * "So bekommst du den Key": Gemini gets the short AI Studio path in one line (G2), every other
- * provider its numbered steps; then the tip and the link to the console.
+ * "So bekommst du den Key": Gemini and OpenRouter get their short path in one line (G2), every
+ * other provider its numbered steps; then the tip and the link to the console.
  */
 @Composable
 private fun KeyGuide(spec: ProviderSpec, onOpenLink: (String) -> Unit) {
@@ -299,9 +315,9 @@ private fun KeyGuide(spec: ProviderSpec, onOpenLink: (String) -> Unit) {
         Overline("So bekommst du den Key")
         Spacer(Modifier.height(8.dp))
     }
-    if (spec.id == AiProviderId.GEMINI) {
+    if (spec.id == AiProviderId.GEMINI || spec.id == AiProviderId.OPENROUTER) {
         Text(
-            GeminiTiers.KEY_GUIDE,
+            if (spec.id == AiProviderId.GEMINI) GeminiTiers.KEY_GUIDE else OpenRouterTiers.KEY_GUIDE,
             style = MaterialTheme.typography.titleSmall,
             color = colors.onSurface,
             modifier = Modifier
@@ -309,12 +325,14 @@ private fun KeyGuide(spec: ProviderSpec, onOpenLink: (String) -> Unit) {
                 .lamina()
                 .padding(horizontal = 14.dp, vertical = 12.dp),
         )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            GEMINI_KEY_SHAPES,
-            style = MaterialTheme.typography.bodySmall,
-            color = colors.onSurfaceVariant,
-        )
+        if (spec.id == AiProviderId.GEMINI) {
+            Spacer(Modifier.height(6.dp))
+            Text(
+                GEMINI_KEY_SHAPES,
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant,
+            )
+        }
     } else {
         Steps(spec.keySteps)
     }
@@ -369,6 +387,33 @@ internal fun GeminiTierChoice(selected: GeminiTier, onSelect: (GeminiTier) -> Un
         Spacer(Modifier.height(4.dp))
         Text(GeminiTiers.SEARCH_ALLOWANCE, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+/**
+ * The OpenRouter "Tarif": "Kostenlos (Gratis-Modelle)" (the default of a new setup) or "Mit
+ * Guthaben", each with its line, then what free models may do with requests or what credits open.
+ * [compact] and [enabled] as in [GeminiTierChoice].
+ */
+@Composable
+internal fun OpenRouterTierChoice(selected: OpenRouterTier, onSelect: (OpenRouterTier) -> Unit, compact: Boolean = false, enabled: Boolean = true) {
+    Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        OpenRouterTier.entries.forEach { tier ->
+            ChoiceRow(
+                title = OpenRouterTiers.label(tier),
+                subtitle = OpenRouterTiers.subtitle(tier),
+                selected = tier == selected,
+                onSelect = { onSelect(tier) },
+                enabled = enabled,
+                compact = compact,
+            )
+        }
+    }
+    Spacer(Modifier.height(8.dp))
+    Text(
+        if (selected == OpenRouterTier.FREE) OpenRouterTiers.PRIVACY else OpenRouterTiers.CREDITS_NOTE,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 /** "Erweitert: Workspace-ID" of the Claude key dialog, collapsed unless an id is stored or needed. */
