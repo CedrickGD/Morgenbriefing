@@ -631,13 +631,15 @@ internal fun visibleFreeModels(choices: List<ModelChoice>, expanded: Boolean): L
 }
 
 /**
- * The quiet line under the free models: loading, offline, or how many there are today — and the
- * daily limit, which depends on the account (50, or 1,000 once 10 $ of credits were bought).
+ * The quiet line under the free models: loading, not loaded (offline, or OpenRouter answered
+ * with an error — the built-in list stands in, reloaded when the app comes back), or how many
+ * there are today — and the daily limit, which depends on the account (50, or 1,000 once 10 $
+ * of credits were bought).
  */
 internal fun freeModelsNote(list: FreeModelList?, loading: Boolean): String? = when {
     list == null -> if (loading) "Lade die Gratis-Modelle von OpenRouter …" else null
     list.source == FreeModelSource.FALLBACK ->
-        "Offline – eine kleine Auswahl. Die ganze Liste lädt, sobald du online bist."
+        "OpenRouter gerade nicht erreichbar – eine kleine Auswahl. Die ganze Liste lädt beim nächsten Öffnen."
     list.models.size == 1 -> "1 Gratis-Modell von OpenRouter, täglich aktualisiert. $FREE_REQUESTS_PER_DAY"
     else -> "${list.models.size} Gratis-Modelle von OpenRouter, täglich aktualisiert. $FREE_REQUESTS_PER_DAY"
 }

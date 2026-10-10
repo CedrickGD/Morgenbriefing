@@ -726,7 +726,8 @@ class AiLogicTest {
             freeModelsNote(list, loading = false),
         )
         assertEquals(
-            "Offline – eine kleine Auswahl. Die ganze Liste lädt, sobald du online bist.",
+            // Offline or an error answer from OpenRouter: the note does not guess which.
+            "OpenRouter gerade nicht erreichbar – eine kleine Auswahl. Die ganze Liste lädt beim nächsten Öffnen.",
             freeModelsNote(list.copy(source = com.cedrickgd.morgenbriefing.ai.compat.FreeModelSource.FALLBACK), loading = false),
         )
         assertEquals("Lade die Gratis-Modelle von OpenRouter …", freeModelsNote(null, loading = true))

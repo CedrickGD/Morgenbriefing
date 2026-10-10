@@ -1475,7 +1475,8 @@ Settings → KI: „Tarif“ under the key row (like Gemini); on FREE the model 
 free models, the selected one when it is further down, „Alle N Gratis-Modelle zeigen“, and a quiet
 line („15 Gratis-Modelle von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag, ab 10 $
 gekauftem Guthaben 1.000.“ — both limits, since the tariff does not tell which account it is /
-offline note); no „Eigenes Modell …“. The list loads when OpenRouter on FREE is the chat provider
+without a list „OpenRouter gerade nicht erreichbar – eine kleine Auswahl. Die ganze Liste lädt beim
+nächsten Öffnen.“, offline or after an error answer alike); no „Eigenes Modell …“. The list loads when OpenRouter on FREE is the chat provider
 (`SettingsViewModel.loadFreeModels`) and again whenever the app comes back to the foreground on
 Settings: the day's list costs no download, the built-in list shown offline (or a list older than a
 day) is replaced as soon as OpenRouter answers.
