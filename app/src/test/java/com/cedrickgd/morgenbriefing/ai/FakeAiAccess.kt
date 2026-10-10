@@ -49,7 +49,7 @@ internal class FakeAiAccess(
         if (key == null && !id.keyOptional) return Resolution.Blocked(spec, AiBlock.NO_KEY)
         return Resolution.Ready(
             spec = spec,
-            auth = ProviderAuth(id, key, freeTier = ai.isGeminiFree(id)),
+            auth = ProviderAuth(id, key, freeTier = ai.isFreeTier(id)),
             model = ProviderCatalog.effectiveModel(ai, id),
             selectedModel = ProviderCatalog.selectedModel(ai, id),
             backend = backend,

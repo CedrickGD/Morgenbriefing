@@ -488,6 +488,8 @@ private fun MessageList(
                         message = message,
                         spec = spec,
                         isLast = isLast,
+                        // Sent again only where the chat can send: not while an answer streams or AI is blocked.
+                        canRetry = isLast && !state.busy && state.blocked == null,
                         onSuggestionsResized = { height -> if (isLast) lastSuggestionsHeight = height },
                         onRetry = onRetry,
                         onChangeKey = { onChangeKey(spec.id) },
@@ -529,6 +531,7 @@ private fun AssistantMessage(
     message: ChatMessage,
     spec: ProviderSpec,
     isLast: Boolean,
+    canRetry: Boolean,
     onRetry: () -> Unit,
     onChangeKey: () -> Unit,
     onSetUpOpenRouter: () -> Unit,
@@ -570,7 +573,7 @@ private fun AssistantMessage(
             ErrorCard(
                 error = error,
                 spec = spec,
-                canRetry = isLast,
+                canRetry = canRetry,
                 onRetry = onRetry,
                 onOpenSettings = onChangeKey,
                 onSetUpOpenRouter = onSetUpOpenRouter,

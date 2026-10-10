@@ -501,8 +501,9 @@ internal fun TruncatedNote(modifier: Modifier = Modifier) {
 }
 
 /**
- * A failed answer as a small glass card: what happened and, where it helps, "Nochmal", the way
- * to the settings (rejected key) or the page that fixes it (Gemini: AI Studio, Cloud Console).
+ * A failed answer as a small glass card: what happened and its buttons ([errorActions]): the way
+ * to the key (rejected key), the page that fixes it (Gemini: AI Studio, Cloud Console), OpenRouter
+ * for a refused Gemini key, and "Nochmal versuchen" / "Nochmal senden".
  * [detail] — the provider's answer in one technical line — sits under "Details", copyable.
  */
 @OptIn(ExperimentalLayoutApi::class)
@@ -565,7 +566,7 @@ internal fun ErrorCard(
                     }
                     ErrorAction.SET_UP_OPENROUTER -> TextButton(onClick = onSetUpOpenRouter) { Text(action.label.orEmpty()) }
                     ErrorAction.CHANGE_KEY -> TextButton(onClick = onOpenSettings) { Text(action.label.orEmpty()) }
-                    ErrorAction.RETRY -> TextButton(onClick = onRetry) { Text(action.label.orEmpty()) }
+                    ErrorAction.RETRY, ErrorAction.RESEND -> TextButton(onClick = onRetry) { Text(action.label.orEmpty()) }
                 }
             }
             if (actions.isEmpty()) Spacer(Modifier.height(8.dp))
