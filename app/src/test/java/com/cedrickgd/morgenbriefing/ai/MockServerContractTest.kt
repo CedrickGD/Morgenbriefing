@@ -4,12 +4,15 @@ import com.cedrickgd.morgenbriefing.ai.claude.ClaudeBackend
 import com.cedrickgd.morgenbriefing.ai.claude.ClaudeClients
 import com.cedrickgd.morgenbriefing.ai.compat.CompatBackend
 import com.cedrickgd.morgenbriefing.ai.compat.CompatDialect
+import com.cedrickgd.morgenbriefing.ai.compat.FreeModelSource
+import com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFreeModels
 import com.cedrickgd.morgenbriefing.ai.gemini.GeminiBackend
 import com.cedrickgd.morgenbriefing.ai.gemini.GeminiSse
 import com.cedrickgd.morgenbriefing.ai.http.AiHttp
 import com.cedrickgd.morgenbriefing.ai.http.RetryPolicy
 import com.cedrickgd.morgenbriefing.ai.openai.ResponsesBackend
 import com.cedrickgd.morgenbriefing.ai.openai.ResponsesDialect
+import com.cedrickgd.morgenbriefing.data.AppJson
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
@@ -24,6 +27,7 @@ import org.junit.Assert.fail
 import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
+import java.io.File
 import java.time.Instant
 
 /**
@@ -249,6 +253,53 @@ class MockServerContractTest {
         }
         val noCredit = ProviderAuth(AiProviderId.DEEPSEEK, "sk-test-invalid", "$base/mock/402/v1")
         assertEquals(AiKeyCheck.OK_NO_CREDIT, check(CompatBackend(http, CompatDialect.DEEPSEEK, retry), noCredit, "deepseek-flash"))
+    }
+
+    @Test
+    fun `openrouter free tariff - free models, key status and the day's quota`() = runBlocking<Unit> {
+        // The public model list: only the free text chat models, Gemma 4 31B first.
+        val cache = File.createTempFile("openrouter-free", ".json").apply { delete() }
+        val list = OpenRouterFreeModels(http, cache, AppJson).list("$base/v1")
+        cache.delete()
+        assertEquals(FreeModelSource.LIVE, list.source)
+        assertEquals(
+            listOf(
+                "google/gemma-4-31b-it:free",
+                "google/gemma-4-26b-a4b-it:free",
+                "nvidia/nemotron-3-ultra-550b-a55b:free",
+                "nvidia/nemotron-3-super-120b-a12b:free",
+                "openrouter/free",
+                "inclusionai/ling-3.1-flash",
+            ),
+            list.models.map { it.id },
+        )
+
+        val backend = CompatBackend(http, CompatDialect.OPENROUTER, retry)
+        val key = "sk-or-v1-test-invalid"
+        val model = "google/gemma-4-31b-it:free"
+        fun auth(mode: String, freeTier: Boolean = true) = ProviderAuth(AiProviderId.OPENROUTER, key, "$base/mock/$mode/v1", freeTier = freeTier)
+
+        // GET /key: an account without credits, 37 of 50 free requests left today.
+        val status = backend.keys.check(auth("free-tier"), model, RecordingUsage())
+        assertEquals(KeyCheckOutcome(AiKeyCheck.OK, openRouter = OpenRouterKeyInfo(freeTier = true, freeRequestsLeft = 37, freeRequestsPerDay = 50)), status)
+        assertEquals(AiKeyCheck.OK_NO_CREDIT, check(backend, auth("free-tier", freeTier = false), "google/gemini-3.8-flash"))
+        assertEquals(0, backend.keys.check(auth("free-tier,429-free"), model, RecordingUsage()).openRouter!!.freeRequestsLeft)
+
+        // A free answer without web search.
+        val (answer, recorder) = chat(backend, ProviderAuth(AiProviderId.OPENROUTER, key, "$base/v1", freeTier = true), model, search = false)
+        assertEquals(TurnEnd.COMPLETE, answer.end)
+        assertTrue(recorder.text.contains("Ohne Websuche"))
+        // The day's free requests used up: said at once; the minute's limit is a short wait.
+        expectError(AiError.QuotaExhausted) { chat(backend, auth("429-free"), model, search = false) }
+        expectError(AiError.RateLimited) { chat(backend, auth("429-free-min"), model, search = false) }
+    }
+
+    @Test
+    fun `gemini - a precondition that is not about the free tier stays a refused request`() {
+        val auth = ProviderAuth(AiProviderId.GEMINI, "AQ.test-invalid", "$base/mock/400-precondition/v1beta", freeTier = true)
+        expectError(AiError.Unknown("Gemini hat die Anfrage abgelehnt (HTTP 400).")) {
+            chat(GeminiBackend(http, retry), auth, "gemini-3.8-flash", search = false)
+        }
     }
 
     @Test
