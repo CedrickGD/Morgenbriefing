@@ -247,8 +247,12 @@ internal class OpenRouterFreeModels(
         FreeModelList(OpenRouterFree.FALLBACK, FreeModelSource.FALLBACK)
     }
 
-    /** The last list loaded from [baseUrl] (of any age) without going online; null when there is none. */
-    suspend fun known(baseUrl: String): List<FreeModel>? = lock.withLock { cached(baseUrl.trimEnd('/'))?.models }
+    /**
+     * The last list loaded from [baseUrl] (of any age) without going online; null when there is
+     * none. Never waits for a download that is under way: a chat request must not stall behind
+     * the settings loading the list (the file is replaced atomically, the memory copy is volatile).
+     */
+    suspend fun known(baseUrl: String): List<FreeModel>? = cached(baseUrl.trimEnd('/'))?.models
 
     private suspend fun cached(base: String): StoredFreeModels? {
         memory?.let { if (it.baseUrl == base) return it }

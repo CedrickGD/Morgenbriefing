@@ -3,6 +3,7 @@ package com.cedrickgd.morgenbriefing.ai.compat
 import com.cedrickgd.morgenbriefing.ai.http.AiHttp
 import com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers
 import com.cedrickgd.morgenbriefing.data.AppJson
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
@@ -196,5 +197,23 @@ class OpenRouterFreeModelsTest {
         assertNull(models.known(server.local("/api/v1")))
         // A base OkHttp cannot read is no crash.
         assertEquals(FreeModelSource.FALLBACK, models.list("not a url").source)
+    }
+
+    @Test
+    fun `the chat's lookup never waits for a download under way`() = runBlocking<Unit> {
+        val clock = MovableClock(Instant.parse("2026-10-10T08:00:00Z"))
+        val base = server.local("/api/v1")
+        val models = OpenRouterFreeModels(http, folder.root.resolve("slow.json"), AppJson, clock)
+        server.enqueue(CompatSse.json(200, list))
+        models.list(base)
+        // A day later the next download hangs; the lookup answers from the last list meanwhile.
+        clock.now = clock.now.plusSeconds(25 * 3600)
+        server.enqueue(CompatSse.json(200, list).setHeadersDelay(3, java.util.concurrent.TimeUnit.SECONDS))
+        val download = async(kotlinx.coroutines.Dispatchers.IO) { models.list(base) }
+        kotlinx.coroutines.delay(300)
+        val started = System.nanoTime()
+        assertEquals("google/gemma-4-31b-it:free", models.known(base)!!.first().id)
+        assertTrue("the lookup waited", System.nanoTime() - started < 1_000_000_000L)
+        assertEquals(FreeModelSource.LIVE, download.await().source)
     }
 }
