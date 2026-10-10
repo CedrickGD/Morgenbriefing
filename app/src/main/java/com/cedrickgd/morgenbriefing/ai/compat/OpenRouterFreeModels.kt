@@ -29,8 +29,8 @@ import java.time.format.DateTimeParseException
 
 /*
  * OpenRouter's free models for the "Kostenlos" tariff (docs/AI-PROVIDERS.md §16): loaded live
- * from the public `GET /models` (no key needed), filtered to the zero-price chat models, kept for
- * a day, and a small built-in list when nothing could be loaded yet.
+ * from the public `GET /models` (no key needed), filtered to the `:free` chat models that cost
+ * nothing, kept for a day, and a small built-in list when nothing could be loaded yet.
  */
 
 /** One zero-price model of OpenRouter. [name] is OpenRouter's, e.g. "Google: Gemma 4 31B (free)". */
@@ -85,8 +85,13 @@ object OpenRouterFree {
 
     /**
      * The free chat models of a `GET /models` answer in picker order ([ordered]); null when
-     * [body] is no model list. A model counts when it costs nothing ([isFree]), reads and writes
-     * text only ([isChatModel]) and has not expired before [today].
+     * [body] is no model list. A model counts when it is one of OpenRouter's free variants by id
+     * ([OpenRouterTiers.looksFree]: `…:free` or the free router), costs nothing ([isFree]), reads
+     * and writes text only ([isChatModel]) and has not expired before [today].
+     *
+     * The id matters: OpenRouter also lists models at price 0 for a launch promotion
+     * (`inclusionai/ling-3.1-flash` on 2026-10-10) and keeps their id when the promotion ends —
+     * from then on they bill the credits. Only the `:free` variants are free for good.
      */
     fun parse(body: String, today: LocalDate): List<FreeModel>? {
         val root = try {
@@ -97,7 +102,7 @@ object OpenRouterFree {
         if (root.array("data") == null) return null
         val models = root.objects("data").mapNotNull { model ->
             val id = model.str("id")?.trim()?.takeIf { it.isNotEmpty() } ?: return@mapNotNull null
-            if (!isFree(model) || !isChatModel(model) || expired(model, today)) return@mapNotNull null
+            if (!OpenRouterTiers.looksFree(id) || !isFree(model) || !isChatModel(model) || expired(model, today)) return@mapNotNull null
             FreeModel(id = id, name = model.str("name")?.trim()?.takeIf { it.isNotEmpty() } ?: id, contextLength = model.str("context_length")?.toIntOrNull())
         }
         return ordered(models.distinctBy { it.id })
@@ -265,9 +270,11 @@ internal class OpenRouterFreeModels(
                 null
             }
         } ?: return null
-        if (stored.baseUrl != base || stored.models.isEmpty()) return null
-        memory = stored
-        return stored
+        // A list stored before only the `:free` variants counted may hold a promotional model.
+        val free = stored.copy(models = stored.models.filter { OpenRouterTiers.looksFree(it.id) })
+        if (free.baseUrl != base || free.models.isEmpty()) return null
+        memory = free
+        return free
     }
 
     private suspend fun fetch(base: String): List<FreeModel>? = try {

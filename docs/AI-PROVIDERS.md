@@ -1422,10 +1422,10 @@ OpenRouter free) and `costsNothing(id)` = own server or a free tariff. Wording a
 
 | | FREE | CREDITS |
 |---|---|---|
-| Models | the day's free models only (§16.2); own slot `ProviderSettings.freeModel` (`ai_openrouter_free_model`), default `google/gemma-4-31b-it:free` | the curated list and „Eigenes Modell …“ (`ai_openrouter_model`) |
+| Models | the day's free models only (§16.2); own slot `ProviderSettings.freeModel` (`ai_openrouter_free_model`), default `google/gemma-4-31b-it:free`; `ProviderCatalog.selectedModel` never returns a stored id that is no free variant (`OpenRouterTiers.looksFree`), the default runs instead | the curated list and „Eigenes Modell …“ (`ai_openrouter_model`) |
 | Web search | none (`ProviderCatalog.chatWebSearch` false): chat note „Ohne Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar“, no `tools` in the request | `openrouter:web_search` |
 | Live | `ProviderCatalog.liveSupport` = NO_WEB_SEARCH → `AiBlock.LIVE_UNAVAILABLE`, „Live braucht Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar.“ + „Live-Anbieter wählen“ | as before |
-| Costs, limit | 0 $ (`ProviderUsageSink(free = true)`), the monthly limit never blocks | `usage.cost`, limit applies |
+| Costs, limit | 0 $ (`ProviderUsageSink(free = true)`), the monthly limit never blocks; a `usage.cost` > 0 that OpenRouter reports anyway is kept, so a charge shows in the usage | `usage.cost`, limit applies |
 | 429 | free quota (§16.4) | as before (a `:free` model: 1,000 a day) |
 
 The two models live in separate slots so switching the tariff back and forth keeps both choices
@@ -1439,6 +1439,10 @@ The Live picker still lists OpenRouter on the free tariff; picking it opens the 
 `OpenRouterFree.parse` keeps a model of `GET {base}/models` (public, sent without a key, with
 OpenRouter's attribution headers) when:
 
+* its id is one of OpenRouter's free variants, `…:free`, or the router `openrouter/free`
+  (`OpenRouterTiers.looksFree`) — a zero price alone is no promise: `inclusionai/ling-3.1-flash` was
+  priced 0 for a launch promotion and keeps its id when the promotion ends, from then on billing the
+  credits; a cached list is filtered the same way when it is read;
 * `pricing.prompt` and `pricing.completion` are decimal 0 and a `pricing.request` (if any) is 0 —
   routers with variable prices (`"-1"`) and half-free models are out;
 * `architecture.output_modalities` is text only and `input_modalities` contains text (else the

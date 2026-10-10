@@ -161,6 +161,20 @@ class AiBlockTest {
     }
 
     @Test
+    fun `a charge OpenRouter reports on the free tariff stays visible`() = runBlocking<Unit> {
+        val store = RecordingUsage()
+        val free = ProviderUsageSink(store, free = true)
+        free.record(AiProviderId.OPENROUTER, "google/gemma-4-31b-it:free", TokenUsage(inputTokens = 100, reportedCostUsd = 0.0))
+        assertEquals(0.0, store.records.last().second.reportedCostUsd!!, 0.0)
+        // A model whose free promotion ended billed the credits after all.
+        free.record(AiProviderId.OPENROUTER, "inclusionai/ling-3.1-flash", TokenUsage(inputTokens = 100, reportedCostUsd = 0.0042))
+        assertEquals(0.0042, store.records.last().second.reportedCostUsd!!, 1e-12)
+        // The own server's "cost" is no bill.
+        free.record(AiProviderId.CUSTOM, "llama3.3", TokenUsage(inputTokens = 100, reportedCostUsd = 0.5))
+        assertEquals(0.0, store.records.last().second.reportedCostUsd!!, 0.0)
+    }
+
+    @Test
     fun `a key test sets up the candidate workspace id and server address`() {
         val claude = AppSettings().withProvider(AiProviderId.ANTHROPIC) { it.copy(hasKey = true, workspaceId = "wrkspc_alt") }.ai
         val anthropic = AiProviderId.ANTHROPIC

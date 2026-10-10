@@ -751,9 +751,12 @@ Always included ("`usage: { include: true }` and `stream_options: { include_usag
 * 458 models; **19** with `pricing.prompt == "0"` and `pricing.completion == "0"`. Most are `…:free`
   variants (`google/gemma-4-31b-it:free`, `google/gemma-4-26b-a4b-it:free`,
   `nvidia/nemotron-3-ultra-550b-a55b:free`, `nvidia/nemotron-3-super-120b-a12b:free`, …), but not all:
-  `inclusionai/ling-3.1-flash` is free without the suffix, and the router `openrouter/free` ("selects
-  free models at random") is priced 0 too. Routers with variable prices (`openrouter/auto`,
+  `inclusionai/ling-3.1-flash` is priced 0 without the suffix, and the router `openrouter/free`
+  ("selects free models at random") is priced 0 too. Routers with variable prices (`openrouter/auto`,
   `openrouter/fusion`, …) say `"-1"`.
+* A zero price without `:free` is a time-limited launch promotion: the model keeps its id when the
+  promotion ends and from then on bills the credits. Only the `:free` variants (and `openrouter/free`)
+  are free by guarantee, so the app offers only those on its free tariff (docs/AI-PROVIDERS.md §16.2).
 * Look-alikes among the 19: `google/lyria-3-pro-preview` / `-clip-preview` (music: `output_modalities`
   `["text","audio"]`, no `tools`) and `nvidia/nemotron-3.5-content-safety:free` (a guardrail
   classifier, no `tools`). Every free chat model lists `tools` in `supported_parameters`.

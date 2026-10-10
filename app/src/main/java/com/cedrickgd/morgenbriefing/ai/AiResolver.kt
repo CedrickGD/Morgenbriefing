@@ -154,8 +154,10 @@ internal fun AiKeyCheck.rejectsKey(): Boolean =
 /**
  * The usage sink of one provider over the shared monthly [store]. A [free] provider (own
  * server, a key on a free tariff) is never stopped by the limit and costs 0 $ (its requests and
- * searches still count). [onRecorded] runs after each recorded request — usage only exists for
- * a request the provider accepted, so it confirms the key.
+ * searches still count) — except a charge OpenRouter itself reports (`usage.cost` > 0): a model
+ * whose free promotion ended bills the credits, and the usage must show that. [onRecorded] runs
+ * after each recorded request — usage only exists for a request the provider accepted, so it
+ * confirms the key.
  */
 internal class ProviderUsageSink(
     private val store: UsageSink,
@@ -167,7 +169,11 @@ internal class ProviderUsageSink(
     }
 
     override suspend fun record(provider: AiProviderId, modelId: String, usage: TokenUsage) {
-        store.record(provider, modelId, if (free) usage.copy(reportedCostUsd = 0.0) else usage)
+        store.record(provider, modelId, if (free) usage.copy(reportedCostUsd = chargedOnFreeTariff(provider, usage)) else usage)
         onRecorded(provider)
     }
+
+    /** What a free request cost: 0 $, or what OpenRouter says it charged after all. */
+    private fun chargedOnFreeTariff(provider: AiProviderId, usage: TokenUsage): Double =
+        usage.reportedCostUsd?.takeIf { provider == AiProviderId.OPENROUTER && it > 0.0 } ?: 0.0
 }

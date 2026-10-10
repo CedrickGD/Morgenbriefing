@@ -317,11 +317,15 @@ object ProviderCatalog {
      * never runs a model that needs billing (the tier may have been switched back) — it falls
      * back to the default instead of failing. OpenRouter on the free tariff runs its free model
      * ([com.cedrickgd.morgenbriefing.data.model.ProviderSettings.freeModel], else
-     * [OpenRouterTiers.DEFAULT_FREE_MODEL]), never the model of the credits tariff. The model
+     * [OpenRouterTiers.DEFAULT_FREE_MODEL]), never the model of the credits tariff — and never a
+     * stored id that is not one of OpenRouter's free variants ([OpenRouterTiers.looksFree]): a
+     * model that cost nothing only for a promotion bills the credits once it ends. The model
      * picker marks this one; a key test tries it first.
      */
     fun selectedModel(ai: AiSettings, id: AiProviderId): String {
-        if (ai.isOpenRouterFree(id)) return ai.of(id).freeModel?.trim()?.takeIf { it.isNotEmpty() } ?: OpenRouterTiers.DEFAULT_FREE_MODEL
+        if (ai.isOpenRouterFree(id)) {
+            return ai.of(id).freeModel?.trim()?.takeIf { OpenRouterTiers.looksFree(it) } ?: OpenRouterTiers.DEFAULT_FREE_MODEL
+        }
         val spec = spec(id)
         val stored = ai.of(id).model?.trim()?.takeIf { it.isNotEmpty() } ?: return spec.defaultModel
         return if (isModelSelectable(ai, id, stored)) stored else spec.defaultModel

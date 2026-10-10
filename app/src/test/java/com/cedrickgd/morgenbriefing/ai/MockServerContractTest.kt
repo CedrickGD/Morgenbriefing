@@ -257,7 +257,8 @@ class MockServerContractTest {
 
     @Test
     fun `openrouter free tariff - free models, key status and the day's quota`() = runBlocking<Unit> {
-        // The public model list: only the free text chat models, Gemma 4 31B first.
+        // The public model list: only the free text chat variants, Gemma 4 31B first — not the
+        // promotional zero-price model without ":free".
         val cache = File.createTempFile("openrouter-free", ".json").apply { delete() }
         val list = OpenRouterFreeModels(http, cache, AppJson).list("$base/v1")
         cache.delete()
@@ -269,7 +270,6 @@ class MockServerContractTest {
                 "nvidia/nemotron-3-ultra-550b-a55b:free",
                 "nvidia/nemotron-3-super-120b-a12b:free",
                 "openrouter/free",
-                "inclusionai/ling-3.1-flash",
             ),
             list.models.map { it.id },
         )

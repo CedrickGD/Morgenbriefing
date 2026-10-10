@@ -64,6 +64,7 @@ class OpenRouterFreeModelsTest {
     private val list = """{"data":[""" + listOf(
         model("stepfun/step-5-preview", "StepFun: Step 5 Preview", prompt = "0.0000003", completion = "0.0000012"),
         model("nvidia/nemotron-3-ultra-550b-a55b:free", "NVIDIA: Nemotron 3 Ultra (free)"),
+        // Priced 0 for a launch promotion, without ":free": it bills once the promotion ends.
         model("inclusionai/ling-3.1-flash", "inclusionAI: Ling 3.1 Flash"),
         model("google/gemma-4-31b-it:free", "Google: Gemma 4 31B (free)", input = """["image","text","video"]"""),
         model("google/gemma-4-26b-a4b-it:free", "Google: Gemma 4 26B A4B  (free)"),
@@ -84,7 +85,7 @@ class OpenRouterFreeModelsTest {
     ).joinToString(",") + "]}"
 
     @Test
-    fun `only zero-price text chat models count, in picker order`() {
+    fun `only zero-price free variants that chat count, in picker order`() {
         val models = OpenRouterFree.parse(list, today)!!
         assertEquals(
             listOf(
@@ -93,10 +94,11 @@ class OpenRouterFreeModelsTest {
                 "nvidia/nemotron-3-ultra-550b-a55b:free",
                 "openrouter/free",
                 "poolside/laguna-s-2.1:free",
-                "inclusionai/ling-3.1-flash",
             ),
             models.map { it.id },
         )
+        // A zero price alone is no promise: the promotional model is not offered.
+        assertFalse(models.any { it.id == "inclusionai/ling-3.1-flash" })
         assertEquals(262_144, models.first().contextLength)
         // Not a model list.
         assertNull(OpenRouterFree.parse("""{"error":{"message":"nope"}}""", today))
@@ -122,8 +124,9 @@ class OpenRouterFreeModelsTest {
         assertEquals("google/gemma-4-26b-a4b-it:free", OpenRouterFree.defaultOf(models.drop(1)))
         assertEquals(OpenRouterTiers.DEFAULT_FREE_MODEL, OpenRouterFree.defaultOf(null))
         // A chosen model that left the list gives way to the default; without a list it stands.
-        assertEquals("inclusionai/ling-3.1-flash", OpenRouterFree.effective("inclusionai/ling-3.1-flash", models))
+        assertEquals("poolside/laguna-s-2.1:free", OpenRouterFree.effective("poolside/laguna-s-2.1:free", models))
         assertEquals("google/gemma-4-31b-it:free", OpenRouterFree.effective("vendor/gone:free", models))
+        assertEquals("google/gemma-4-31b-it:free", OpenRouterFree.effective("inclusionai/ling-3.1-flash", models))
         assertEquals("vendor/gone:free", OpenRouterFree.effective("vendor/gone:free", null))
         // The offline list starts with the default and is free by name.
         assertEquals(OpenRouterTiers.DEFAULT_FREE_MODEL, OpenRouterFree.FALLBACK.first().id)
@@ -215,5 +218,28 @@ class OpenRouterFreeModelsTest {
         assertEquals("google/gemma-4-31b-it:free", models.known(base)!!.first().id)
         assertTrue("the lookup waited", System.nanoTime() - started < 1_000_000_000L)
         assertEquals(FreeModelSource.LIVE, download.await().source)
+    }
+
+    @Test
+    fun `a stored list offers only the free variants`() = runBlocking<Unit> {
+        val clock = MovableClock(Instant.parse("2026-10-10T08:00:00Z"))
+        val base = server.local("/api/v1")
+        val file = folder.root.resolve("older.json")
+        // Written before only the ":free" variants counted: it still holds the promotional model.
+        val older = StoredFreeModels(
+            fetchedAt = clock.millis(),
+            baseUrl = base,
+            models = listOf(
+                FreeModel("inclusionai/ling-3.1-flash", "inclusionAI: Ling 3.1 Flash"),
+                FreeModel("google/gemma-4-31b-it:free", "Google: Gemma 4 31B (free)"),
+            ),
+        )
+        file.writeText(AppJson.encodeToString(StoredFreeModels.serializer(), older))
+        val models = OpenRouterFreeModels(http, file, AppJson, clock)
+        assertEquals(listOf("google/gemma-4-31b-it:free"), models.known(base)!!.map { it.id })
+        val list = models.list(base)
+        assertEquals(FreeModelSource.CACHE, list.source)
+        assertEquals(listOf("google/gemma-4-31b-it:free"), list.models.map { it.id })
+        assertEquals(0, server.requestCount)
     }
 }

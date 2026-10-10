@@ -198,6 +198,11 @@ class ProviderCatalogTest {
         assertEquals("nvidia/nemotron-3-ultra-550b-a55b:free", picked.of(id).freeModel)
         assertEquals("anthropic/claude-sonnet-5.5", picked.of(id).model)
         assertEquals("nvidia/nemotron-3-ultra-550b-a55b:free", ProviderCatalog.selectedModel(picked, id))
+        // A stored id that is no free variant (a promotion that may start billing) never runs for free.
+        val promo = free.with(id, free.of(id).copy(freeModel = "inclusionai/ling-3.1-flash"))
+        assertEquals(OpenRouterTiers.DEFAULT_FREE_MODEL, ProviderCatalog.selectedModel(promo, id))
+        assertEquals(OpenRouterTiers.DEFAULT_FREE_MODEL, ProviderCatalog.effectiveModel(promo, id))
+        assertEquals("openrouter/free", ProviderCatalog.selectedModel(free.withModel(id, "openrouter/free"), id))
         // With credits the credits model runs again, and a pick there leaves the free one alone.
         val credits = picked.with(id, picked.of(id).copy(openRouterTier = OpenRouterTier.CREDITS))
         assertEquals("anthropic/claude-sonnet-5.5", ProviderCatalog.selectedModel(credits, id))
