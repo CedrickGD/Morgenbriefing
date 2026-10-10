@@ -10,6 +10,9 @@ import com.cedrickgd.morgenbriefing.ai.claude.ClaudeBackend
 import com.cedrickgd.morgenbriefing.ai.compat.CompatBackend
 import com.cedrickgd.morgenbriefing.ai.compat.CompatDialect
 import com.cedrickgd.morgenbriefing.ai.compat.CompatModels
+import com.cedrickgd.morgenbriefing.ai.compat.FreeModelList
+import com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFree
+import com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFreeModels
 import com.cedrickgd.morgenbriefing.ai.gemini.GeminiBackend
 import com.cedrickgd.morgenbriefing.ai.gemini.GeminiSearchMemo
 import com.cedrickgd.morgenbriefing.ai.http.AiHttp
@@ -74,6 +77,11 @@ class AiServices(private val context: Context, private val container: AppContain
     /** Gemini keys that turned out not to search; forgotten in [providerSetupSaved]. */
     private val geminiSearch = GeminiSearchMemo()
 
+    /** OpenRouter's free models (the "Kostenlos" tariff), kept for a day. */
+    private val openRouterFree: OpenRouterFreeModels by lazy {
+        OpenRouterFreeModels(http, File(storeDir, "openrouter-free-models.json"), container.json)
+    }
+
     /**
      * The backend of the engine family of [id] (docs/AI-PROVIDERS.md §4.2), or null where it
      * cannot run (Claude below Android 8). Every family without an SDK is plain OkHttp + SSE and
@@ -124,11 +132,12 @@ class AiServices(private val context: Context, private val container: AppContain
             if (purpose == AiPurpose.LIVE && backend.live == null) return Resolution.Blocked(spec, AiBlock.LIVE_UNAVAILABLE)
             val key = keyOrNull(id)
             if (key == null && !id.keyOptional) return Resolution.Blocked(spec, AiBlock.NO_KEY)
+            val (model, selected) = modelsFor(ai, id)
             return Resolution.Ready(
                 spec = spec,
                 auth = authFor(ai, id, key),
-                model = ProviderCatalog.effectiveModel(ai, id),
-                selectedModel = ProviderCatalog.selectedModel(ai, id),
+                model = model,
+                selectedModel = selected,
                 backend = backend,
                 webSearch = ProviderCatalog.chatWebSearch(ai, id),
                 usage = requestUsage(ai, id),
@@ -202,6 +211,31 @@ class AiServices(private val context: Context, private val container: AppContain
         if (keyTestRejectsStoredKey(outcome.check, ai, tested, provider)) markKeyRejected(provider, candidate)
         return outcome.copy(diagnostic = ErrorDiagnostics.redact(outcome.diagnostic, candidate))
     }
+
+    /**
+     * OpenRouter's free models for the "Kostenlos" tariff (model picker): the list of the day,
+     * else a new one from OpenRouter (or the debug base URL), else the last known or the built-in
+     * one. [force] loads a new list in any case.
+     */
+    suspend fun openRouterFreeModels(force: Boolean = false): FreeModelList =
+        openRouterFree.list(openRouterBase(settingsOrDefault().ai), force)
+
+    /**
+     * The model a request with [id] runs and the one the user chose ([Resolution.Ready]). On
+     * OpenRouter's free tariff a chosen model that the last loaded list no longer has gives way to
+     * that list's default — OpenRouter's free variants come and go.
+     */
+    private suspend fun modelsFor(ai: AiSettings, id: AiProviderId): Pair<String, String> {
+        if (ai.isOpenRouterFree(id)) {
+            val model = OpenRouterFree.effective(ProviderCatalog.selectedModel(ai, id), openRouterFree.known(openRouterBase(ai)))
+            return model to model
+        }
+        return ProviderCatalog.effectiveModel(ai, id) to ProviderCatalog.selectedModel(ai, id)
+    }
+
+    /** OpenRouter's API base: the debug override (debug builds only), else the catalog's. */
+    private fun openRouterBase(ai: AiSettings): String =
+        ai.of(AiProviderId.OPENROUTER).debugBaseUrl ?: requireNotNull(ProviderCatalog.OPENROUTER.baseUrl)
 
     /**
      * The model ids of the own server at [baseUrl] ("Vom Server laden" in the model picker);
