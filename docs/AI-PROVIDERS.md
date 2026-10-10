@@ -1,7 +1,8 @@
 # KI-Anbieter (v1.3.0): Design
 
 Status: implemented on branch `ai-providers` (T1–T11); manual QA with real keys is still open (§11, §14). Target
-release: **v1.3.0**. Written 2026-10-09.
+release: **v1.3.0**. Written 2026-10-09. **v1.3.2** (2026-10-10) adds OpenRouter's free tariff, the way
+out of Google's refused `AQ.…` keys and a round of polish: §16.
 Inputs: the current AI layer (`ai/**`, settings, `docs/AI.md`, `docs/DESIGN.md`) and the research specs
 [`providers/openai.md`](providers/openai.md), [`providers/gemini.md`](providers/gemini.md),
 [`providers/openai-compatible.md`](providers/openai-compatible.md) (all AS_OF 2026-10-09). Section
@@ -28,7 +29,7 @@ ersten Start still übernommen.
 | Google Gemini | ✓ | ✓ (Google-Suche) | ✗ (Googles Nutzungsbedingungen) | ✓ |
 | xAI Grok | ✓ | ✓ | ✓ | ✓ |
 | Perplexity | ✓ | ✓ | ✓ | ✓ |
-| OpenRouter | ✓ | ✓ | ✓ | ✓ |
+| OpenRouter | ✓ (ab 1.3.2 auch kostenlos, §16) | ✓ mit Guthaben | ✓ mit Guthaben | ✓ |
 | Mistral | ✓ | ✗ (in 1.3 ohne) | ✗ | ✓ |
 | DeepSeek | ✓ | ✗ | ✗ | ✓ |
 | Eigener Server | ✓ | ✗ | ✗ | ✓ |
@@ -243,7 +244,7 @@ used `AppSettings(hasAiKey = true)`.
 
 | Key | Type | Content |
 |---|---|---|
-| `ai_schema` | int | `2` after migration |
+| `ai_schema` | int | `2` after migration (`3` from v1.3.2, §16.6) |
 | `ai_provider` | string | `AiProviderId.key` of the chat provider |
 | `ai_live_provider` | string | absent = same as chat |
 | `ai_<p>_key_enc` | string | `TokenCipher` ciphertext (never logged, never in `AppSettings`) |
@@ -252,6 +253,9 @@ used `AppSettings(hasAiKey = true)`.
 | `ai_<p>_model` | string | model id (curated or free text, trimmed, ≤ 200 chars) |
 | `ai_custom_base_url` | string | normalized base URL |
 | `ai_anthropic_workspace_id` | string | plain text (not a secret) |
+| `ai_gemini_tier` | string | `free` / `paid`; absent = free |
+| `ai_openrouter_tier` | string | `free` / `credits` (v1.3.2); absent = free, a key of v1.3.0/1.3.1 was migrated to `credits` |
+| `ai_openrouter_free_model` | string | the model of OpenRouter's free tariff (v1.3.2); absent = Gemma 4 31B |
 | `ai_monthly_limit_usd`, `live_auto_refresh` | unchanged | global |
 | ~~`ai_key_enc`, `ai_key_untested`, `ai_key_rejected`, `ai_model`~~ | removed by the migration | |
 
@@ -293,6 +297,7 @@ internal fun migrateAiPrefs(old: Preferences): Preferences = old.toMutablePrefer
 ```
 
 Register it: `preferencesDataStore(name = "settings", produceMigrations = { listOf(AiProvidersMigration) })`.
+v1.3.2 raises the schema to 3 and adds one step to the same migration (§16.6).
 Fresh installs run the same path (provider = Anthropic, schema 2). On Android 7 the default provider
 Anthropic is blocked with `UNSUPPORTED_DEVICE` and the settings invite a switch (no automatic switch).
 
@@ -1294,7 +1299,7 @@ node tools/mock-ai-server.mjs --port 9000 --delay 0 --host 0.0.0.0
 | `POST …/models/{m}:streamGenerateContent?alt=sse` | Gemini | One `GenerateContentResponse` per `data:` line, no event names, no `[DONE]`: a thought part (hidden by the app), text in several chunks, `groundingMetadata` (`webSearchQueries`, redirect `groundingChunks` with domain titles, `searchEntryPoint.renderedContent` with light/dark CSS and chip links to Google), `finishReason: STOP`, `usageMetadata`. Grounding only when the request has `googleSearch`. |
 | `POST …/chat/completions` | Chat Completions | OpenRouter (a model with `/` or the `openrouter:web_search` tool): `: OPENROUTER PROCESSING` comment, text, `url_citation` annotations, the extra accounting chunk with `usage.cost` and `server_tool_use_details`. Mistral: a `thinking` content part first. DeepSeek: usage in a last chunk with `choices: []` when `stream_options.include_usage`. Anything else = own server (no key needed). Live: `tool_calls` fragments by index, `finish_reason: tool_calls`. |
 | `POST /v1/messages` | Anthropic (Claude SDK) | `message_start` → `server_tool_use` (`web_search`) + `web_search_tool_result` → text with a `citations_delta` → `message_delta` (`server_tool_use.web_search_requests`) → `message_stop`. Live: a `tool_use` block streamed as `input_json_delta`, `stop_reason: tool_use`. Non-streamed → the key check's `Message`. |
-| `GET …/models`, `…/v1beta/models`, `…/v1beta/models/{m}`, `…/api-key`, `…/key`, `…/user/balance` | key and connection checks | OpenAI/Mistral/own-server model list, Gemini model list (with `supportedGenerationMethods`, the key test's first step) and model info, xAI key status, OpenRouter key info, DeepSeek balance. `POST …/models/{m}:generateContent` answers the Gemini key test's „Antworte nur: OK“. |
+| `GET …/models`, `…/v1beta/models`, `…/v1beta/models/{m}`, `…/api-key`, `…/key`, `…/user/balance` | key and connection checks | OpenAI/Mistral/own-server model list, Gemini model list (with `supportedGenerationMethods`, the key test's first step) and model info, xAI key status, OpenRouter key info (with `is_free_tier` and `free_model_daily_requests`), DeepSeek balance. `POST …/models/{m}:generateContent` answers the Gemini key test's „Antworte nur: OK“. A `GET …/models` with OpenRouter's `X-OpenRouter-Title` header (or under `/api/v1`) gets OpenRouter's priced list: free models, look-alikes the app leaves out (music output, a guardrail without tools, a router with variable prices, an expired free model) and paid models (§16.2). |
 
 **Live:** when a request offers `publish_articles`, the mock first "searches", then calls it once
 with one valid article per topic (at most two, topic ids from the schema's `topicId` enum,
@@ -1325,6 +1330,8 @@ and the row and its dialog only exist when `BuildConfig.DEBUG`.
 | `free-tier-search`, `free-tier-search-400` | Gemini rejects `googleSearch` (429 grounding quota with limit 0, or 400 `FAILED_PRECONDITION`); requests without search work. Tests the safety net of a key set to „Mit Abrechnung“ that is a free one. |
 | `401-auth-key`, `403-blocked`, `403-disabled`, `403-restricted`, `400-region` | Gemini's refusals of GE §12.4 on every Gemini route, the model list included: `ACCESS_TOKEN_TYPE_UNSUPPORTED`, `API_KEY_SERVICE_BLOCKED`, `SERVICE_DISABLED` (with Help link), `API_KEY_ANDROID_APP_BLOCKED`, `FAILED_PRECONDITION` (free tier not in your country). Other families answer them with the base status (`403-blocked` → their `403`). |
 | `400-key-echo` | Gemini: 400 for an invalid key whose body echoes the key it got into every field (code, type, `ErrorInfo.reason` and metadata, quota id, message, Help link) — the Details must stay key-free (GE §12.6). Other families: their `400`. |
+| `400-precondition` | Gemini: 400 `FAILED_PRECONDITION` about something else than the free tier („Precondition check failed.“) — the app shows the plain refusal with its Details, not the billing text (§16.7). |
+| `free-tier`, `429-free`, `429-free-min` | OpenRouter (§16): `GET …/key` reports an account without bought credits (`is_free_tier: true`, 37 of 50 free requests left; with `429-free` none left); `429-free` answers chat requests with OpenRouter's „Rate limit exceeded: free-models-per-day …“, `429-free-min` with the minute's limit and `Retry-After: 1`. Free models (`…:free`, `openrouter/free`) report `usage.cost: 0`. |
 | `model-gone`, `model-no-quota` | Gemini: `gemini-3.8-flash` answers 404 `NOT_FOUND` (and is missing from the model list), or 429 with a free-tier quota of 0; every other model works. The chat and the key test fall back to `gemini-3.7-flash` (GE §12.5). |
 | `no-search` | Never search, even when asked. |
 | `refusal`, `truncated`, `midstream-error` | A refusal, a cut-off answer, an error after the first words. |
@@ -1345,7 +1352,8 @@ Gemini 3, a trailing model turn, Responses without `store: false`, `stream_optio
 
 **Contract test:** `MockServerContractTest` (JVM) runs the real engines of all four families
 against the running mock: chat with search, Live with the correction loop, key checks, the Gemini
-free-tier fallback, the free quota and the workspace error. It is skipped unless `MOCK_AI_SERVER`
+free-tier fallback, the free quota and the workspace error; from v1.3.2 also OpenRouter's free models,
+its key status and both free quotas, and Gemini's other precondition. It is skipped unless `MOCK_AI_SERVER`
 is set (the variable is a test input, so setting or clearing it re-runs the tests):
 
 ```bash
@@ -1383,9 +1391,148 @@ and every check with real keys (§11).
 | `https://aistudio.google.com/apikey` | 200 after the Google sign-in redirect (`continue=…/apikey`) |
 | `https://console.x.ai` | 200 (`/home`) |
 | `https://openrouter.ai/settings/keys` | 200 after the sign-in redirect back to the keys page |
+| `https://openrouter.ai/keys` (v1.3.2, the key dialog's link) | 307 to `/workspace-redirect/keys`, the same target as `/settings/keys` (2026-10-10) |
 | `https://console.mistral.ai/api-keys` | 307 to the Mistral login (the page exists) |
 | `https://platform.openai.com/api-keys`, `https://www.perplexity.ai/account/api/keys` | 403: bot challenge for scripted clients. **Open once in a browser before the release.** |
 | `https://platform.deepseek.com/api_keys` | 202: WAF interstitial. **Check in a browser.** |
 | `https://aistudio.google.com/projects` (v1.3.1, billing) | 200 after the Google sign-in redirect (`continue=…/projects`) |
 | `https://console.cloud.google.com/apis/credentials` (v1.3.1, key restrictions) | 200 after the Google sign-in redirect (`continue=…/apis/credentials`) |
 | `https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com` (v1.3.1, enable the API) | 302 loop without cookies (scripted client); **open once in a browser before the release.** |
+
+## 16. v1.3.2: OpenRouter for free, the way out of refused Gemini keys, polish (2026-10-10)
+
+**Why:** AI without separate billing. Google currently refuses many new AI Studio auth keys
+(`AQ.…`) on every endpoint with 401 `UNAUTHENTICATED` / `ACCESS_TOKEN_TYPE_UNSUPPORTED`, also
+keys AI Studio shows as valid; older `AIza…` keys keep working (forum reports since 2026-08, no fix
+as of 2026-10-10). OpenRouter offers zero-price models to any account with a key, no payment
+method needed (OC §7.9: 20 requests a minute, 50 a day without purchased credits, 1,000 a day with
+≥ 10 $ bought; a negative balance blocks them with 402). On 2026-10-10 the public
+`GET https://openrouter.ai/api/v1/models` listed 19 models with `pricing.prompt == "0"` and
+`pricing.completion == "0"` (OC §7.10), e.g. `google/gemma-4-31b-it:free`,
+`google/gemma-4-26b-a4b-it:free`, `nvidia/nemotron-3-ultra-550b-a55b:free` and the router
+`openrouter/free`.
+
+### 16.1 OpenRouter tariff
+
+`OpenRouterTier` (`data/model/AiSettingsModels.kt`) like `GeminiTier`: **FREE** „Kostenlos
+(Gratis-Modelle)“ (default of a new setup) and **CREDITS** „Mit Guthaben“ (everything as in v1.3.0).
+`ProviderSettings.openRouterTier`, `AiSettings.isOpenRouterFree(id)`, `isFreeTier(id)` (Gemini or
+OpenRouter free) and `costsNothing(id)` = own server or a free tariff. Wording and limits in
+`OpenRouterTiers` (`ai/provider/ProviderCatalog.kt`).
+
+| | FREE | CREDITS |
+|---|---|---|
+| Models | the day's free models only (§16.2); own slot `ProviderSettings.freeModel` (`ai_openrouter_free_model`), default `google/gemma-4-31b-it:free` | the curated list and „Eigenes Modell …“ (`ai_openrouter_model`) |
+| Web search | none (`ProviderCatalog.chatWebSearch` false): chat note „Ohne Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar“, no `tools` in the request | `openrouter:web_search` |
+| Live | `ProviderCatalog.liveSupport` = NO_WEB_SEARCH → `AiBlock.LIVE_UNAVAILABLE`, „Live braucht Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar.“ + „Live-Anbieter wählen“ | as before |
+| Costs, limit | 0 $ (`ProviderUsageSink(free = true)`), the monthly limit never blocks | `usage.cost`, limit applies |
+| 429 | free quota (§16.4) | as before (a `:free` model: 1,000 a day) |
+
+The two models live in separate slots so switching the tariff back and forth keeps both choices
+(`AiSettings.withModel` writes the slot of the current tariff). Capability pills: „Websuche nur mit
+Guthaben“, „Live nur mit Guthaben“; the picker's status line ends in „· kostenlos“ / „· mit Guthaben“.
+The Live picker still lists OpenRouter on the free tariff; picking it opens the key dialog on
+„Mit Guthaben“ (`liveNeedsSetup`).
+
+### 16.2 The free models (`ai/compat/OpenRouterFreeModels.kt`)
+
+`OpenRouterFree.parse` keeps a model of `GET {base}/models` (public, sent without a key, with
+OpenRouter's attribution headers) when:
+
+* `pricing.prompt` and `pricing.completion` are decimal 0 and a `pricing.request` (if any) is 0 —
+  routers with variable prices (`"-1"`) and half-free models are out;
+* `architecture.output_modalities` is text only and `input_modalities` contains text (else the
+  `modality` string decides) — music models (Lyria: text+audio out) are out;
+* `supported_parameters` lists `tools` — the proxy for an instruction/chat model; guardrail
+  classifiers (Nemotron Content Safety) are out (missing fields are not held against a model);
+* `expiration_date` is not before today.
+
+Order: Gemma 4 31B, Gemma 4 26B A4B, Nemotron 3 Ultra, Nemotron 3 Super, `openrouter/free` (when
+listed), then the rest by name. Titles drop the maker and „(free)“ („Gemma 4 31B“), the router reads
+„Zufälliges Gratis-Modell“; subtitles say what it is and „· kostenlos“. `OpenRouterFreeModels` keeps
+the list in memory and in `files/store/openrouter-free-models.json` (with the base URL it came from,
+so a debug mock list never stands in for the real one) for 24 h; when a new list cannot be loaded
+the last one of any age is used, without any the built-in `OpenRouterFree.FALLBACK` (the five
+preferred models). `AiServices.openRouterFreeModels(force)` serves the settings;
+`AiServices.resolve` runs `OpenRouterFree.effective(selected, known list)`: a chosen free model that
+left the list gives way to the list's default (Gemma 4 31B when listed, else the first).
+
+Settings → KI: „Tarif“ under the key row (like Gemini); on FREE the model picker shows the first five
+free models, the selected one when it is further down, „Alle N Gratis-Modelle zeigen“, and a quiet
+line („19 Gratis-Modelle von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag.“ / offline
+note); no „Eigenes Modell …“. The list loads when OpenRouter on FREE is the chat provider
+(`SettingsViewModel.loadFreeModels`).
+
+### 16.3 Key dialog and key test
+
+The dialog shows OpenRouter's one-line guide „openrouter.ai → Anmelden → Keys → Create Key (kein
+Zahlungsmittel nötig)“, the link `https://openrouter.ai/keys` and the tariff choice (FREE: privacy
+note „Bei Gratis-Modellen dürfen die Anbieter deine Anfragen je nach Modell speichern und
+auswerten.“; CREDITS: what credits open). The key is tested for the tariff in the dialog
+(`KeyExtras.openRouterTier`). `GET {base}/key` (free) → `OpenRouterKeyStatus.parse`:
+`is_free_tier`, `free_model_daily_requests.{limit, remaining, used}` (remaining = limit − used when
+missing) → `KeyCheckOutcome.openRouter` → `AiKeyState.SavedWithKeyInfo`: „✓ Der Key funktioniert und
+ist gespeichert – Gratis-Konto ohne gekauftes Guthaben. Heute noch 37 von 50 Gratis-Anfragen.“
+(„Konto mit Guthaben“ with credits; „Heute keine Gratis-Anfragen mehr (50 am Tag) – morgen geht's
+weiter.“ at 0). CREDITS on an account with `is_free_tier: true` → OK_NO_CREDIT: „Gespeichert ✓ – aber
+auf deinem OpenRouter-Konto ist noch kein Guthaben. Kauf unter „Credits“ welches – oder nimm den
+Tarif „Kostenlos“.“
+
+### 16.4 Errors
+
+| Answer | With | AiError / text |
+|---|---|---|
+| 429 „free-models-per-day“ (or any other 429) | FREE | `QuotaExhausted`: „Gratis-Kontingent von OpenRouter für heute aufgebraucht (50 Anfragen/Tag) – morgen geht's weiter.“ — never retried |
+| 429 „free-models-per-min“ or „… rate-limited upstream …“ | a free model | `RateLimited`, retried before the first event (Retry-After) |
+| 429 on a `:free` model | CREDITS | „… (1.000 Anfragen/Tag) – morgen geht's weiter, oder wähl ein Modell mit Preis.“ |
+| 402 without Retry-After | any | `NoCredit`: „Dein Guthaben bei OpenRouter ist aufgebraucht oder im Minus – dann gehen auch die Gratis-Modelle nicht. Lade es unter „Credits“ auf, dann geht es weiter.“ |
+| 404 „No endpoints found matching your data policy“ | any | „Für dieses Modell findet OpenRouter keinen Anbieter, der zu deinen Datenschutz-Einstellungen passt. Erlaub unter openrouter.ai/settings/privacy die Gratis-Modelle – oder wähl ein anderes.“ (**UNVERIFIED** wording, seen in the wild) |
+
+The 429 wordings are OpenRouter's as reported in the wild (**UNVERIFIED** against the docs; the
+manual QA records the real one, docs/AI.md).
+
+### 16.5 Plan B for refused Gemini auth keys
+
+`GeminiProblem.AUTH_KEY_REJECTED` now reads: „Google nimmt deinen Key gerade nicht an – ein bekannter
+Fehler bei Google, der viele neue Keys („AQ.…“) trifft, auch wenn AI Studio sie als gültig zeigt. Was
+hilft: ein älterer Key, der mit „AIza“ beginnt – oder OpenRouter kostenlos mit Gemma 4, Googles
+offenem Modell.“ The link is „Keys in AI Studio“ (an older key is listed there). `AiTexts.offersOpenRouter`
+adds **„OpenRouter kostenlos einrichten“** to the key dialog (`aiKeyOffersOpenRouter`) and the chat's
+error card (`ErrorAction.SET_UP_OPENROUTER`): OpenRouter's key dialog on FREE with
+`KeySubmission.selectProvider` — once the key works, OpenRouter is the chat provider, and „Nochmal
+senden“ (§16.7 g) asks the question again with Gemma 4.
+
+### 16.6 Migration (schema 3)
+
+`migrateAiPrefs` (same `AiProvidersMigration`, now below schema 3): an OpenRouter key stored before
+schema 3 without a stored tariff gets `ai_openrouter_tier = credits` — it was set up for credits;
+nothing else changes. Without a key nothing is set, so a new setup starts on FREE. Removing the
+OpenRouter key removes the tariff too (like Gemini's).
+
+### 16.7 Polish
+
+| | Problem | Fix |
+|---|---|---|
+| a | The key dialog's two-line format hint was cut off by the keyboard (a text field brings only its cursor line into view) | `Modifier.keepInViewWhileTyping(hint)` (`SettingsGlass.kt`) on the key, address and workspace fields: while focused, field and hint are brought into view whenever the keyboard's height or the hint changes |
+| b | The status hero said „2 Kleinigkeiten fehlen noch“ under three yellow pills (the KI pill was not counted) | `heroText` counts every yellow pill; the KI still never holds up „ready“, and alone it says „Nur die KI braucht dich – tippe auf den gelben Punkt.“ |
+| c | „hast du ihn vollständig kopiert?“ twice for a too short, refused key | `aiKeyMessage(state, spec, formatIssue)`: with a format hint above it, a refused key is just „✗ Anthropic lehnt den Key ab.“ |
+| d | „warme Jacke“ and „Regenjacke“ both showed 🧥 | the rain jacket shows 🦺 (Emoji 12); `EmojiSupport` falls back to 💧 below Android 10, unique among the clothing fallbacks |
+| e | The precipitation chip said „Regen“ on a snowy day | `precipKind` (`domain/WeatherFacts.kt`) from the codes of now and the next hours: „Schnee“ ❄️, „Schneeregen“ 🌨️ (snow and rain), else „Regen“ 💧 |
+| f | Every Gemini 400 `FAILED_PRECONDITION` became the free-tier/region text | only when the message names the free tier, billing, the location or the country (`ApiErrorBody.namesFreeTierOrRegion`); any other precondition is the plain refusal with its Details |
+| g | After a provider error the chat offered no way to resend once the cause was fixed | `errorActions`: under the last failed answer, while the chat can send, „Nochmal senden“ for errors a retry alone does not fix (key, credits, model, project), „Nochmal versuchen“ for the others; not for a refusal |
+| h | An answer finishing after a Gemini tariff switch stored the model fallback the switch had dropped | `AiProviderAccess.modelFallback(…, freeTier)`; the fallback is stored only while the key (ciphertext), the tariff the request ran on (`fallbackStillFits`, atomic in the DataStore edit) and the chosen model are still the stored ones |
+
+### 16.8 Tests and QA
+
+Unit tests: `OpenRouterFreeModelsTest` (filter, order, names, default, effective model, cache for a
+day, restart, stale list, fallback, per-base cache), `ProviderCatalogTest` (model slots, search and
+Live per tariff, wording), `AiProvidersMigrationTest` (schema 3), `AiSettingsPrefsTest` (tariff,
+free model slot, `fallbackStillFits`), `AiBlockTest` (Live block, limit, chat note, key test
+tariff), `CompatKeyCheckerTest` (`GET /key` parsing, OK_NO_CREDIT), `ProviderErrorsTest` (429/402/404,
+Gemini precondition), `AiTextsTest`, `GeminiErrorMappingTest` (plan B text and link),
+`AiLogicTest` (pills, status line, Live picker, free model picker, key messages, dedupe),
+`ChatTextsTest` (error actions), `ChatServiceTest` (refused Gemini key → OpenRouter → „Nochmal
+senden“; fallback tariff), `StatusLogicTest`, `PrecipKindTest`, `EmojiSupportTest`,
+`WeatherInsightsTest`. `MockServerContractTest` against `tools/mock-ai-server.mjs` (§14 switches
+`free-tier`, `429-free`, `429-free-min`, `400-precondition`).
+
