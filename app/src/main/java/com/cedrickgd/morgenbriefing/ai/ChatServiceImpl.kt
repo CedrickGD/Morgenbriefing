@@ -282,7 +282,9 @@ internal class ChatServiceImpl(
                 // the chosen model — the one asked for may already be a fallback of it, which
                 // ProviderCatalog.effectiveModel would not apply to the chosen one.
                 val fallback = result.fallbackModel?.takeIf { it != resolved.model }
-                if (fallback != null) access.modelFallback(resolved.auth.provider, resolved.auth.apiKey, resolved.selectedModel, fallback)
+                if (fallback != null) {
+                    access.modelFallback(resolved.auth.provider, resolved.auth.apiKey, resolved.selectedModel, fallback, resolved.auth.freeTier)
+                }
                 finish(answerId) { message ->
                     val text = result.text.ifBlank { buffer.toString() }.trim()
                     // Grounded text is never shown without its Search Suggestions (Gemini terms).

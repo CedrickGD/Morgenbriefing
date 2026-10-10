@@ -25,6 +25,7 @@ import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Brief
+import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.ModelFallback
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
 import com.cedrickgd.morgenbriefing.data.model.NewsSection
@@ -151,10 +152,14 @@ class AiServices(private val context: Context, private val container: AppContain
 
         override suspend fun keyRejected(provider: AiProviderId, key: String?) = markKeyRejected(provider, key)
 
-        override suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String) {
+        override suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String, freeTier: Boolean) {
             try {
-                // Only while [key] is still the stored one: a key saved meanwhile starts without it.
-                container.settings.setModelFallback(provider, ModelFallback(from, to), key)
+                // Another model was chosen while the answer ran: the fallback was the old choice's.
+                if (ProviderCatalog.selectedModel(settingsOrDefault().ai, provider) != from) return
+                val tier = if (provider != AiProviderId.GEMINI) null else if (freeTier) GeminiTier.FREE else GeminiTier.PAID
+                // Only while [key] is still the stored one, on the tariff the request ran with: a key
+                // or tariff saved meanwhile dropped the fallback and starts without it.
+                container.settings.setModelFallback(provider, ModelFallback(from, to), key, tier)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

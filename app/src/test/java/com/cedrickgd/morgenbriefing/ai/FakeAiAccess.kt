@@ -33,8 +33,14 @@ internal class FakeAiAccess(
     /** (provider, key, from, to) of every model fallback the chat reported. */
     val fallbacks = mutableListOf<List<Any?>>()
 
-    override suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String) {
-        synchronized(fallbacks) { fallbacks += listOf(provider, key, from, to) }
+    /** Whether each of [fallbacks] came from a request on a free tariff. */
+    val fallbackFreeTiers = mutableListOf<Boolean>()
+
+    override suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String, freeTier: Boolean) {
+        synchronized(fallbacks) {
+            fallbacks += listOf(provider, key, from, to)
+            fallbackFreeTiers += freeTier
+        }
     }
 
     override suspend fun resolve(purpose: AiPurpose): Resolution {

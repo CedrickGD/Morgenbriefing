@@ -137,9 +137,10 @@ internal interface AiProviderAccess {
 
     /**
      * [provider] refused [from] for [key] and [to] answered instead (Gemini, GE §12.5): requests
-     * with this key use [to] from now on. Must not throw.
+     * with this key use [to] from now on — unless the key, its tariff ([freeTier]: the request ran
+     * on the free one) or the chosen model changed while the answer ran. Must not throw.
      */
-    suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String) {}
+    suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String, freeTier: Boolean) {}
 }
 
 /**

@@ -167,6 +167,18 @@ private fun readModelFallback(prefs: Preferences, id: AiProviderId): ModelFallba
     return ModelFallback(from.take(AiSettings.MAX_MODEL_LENGTH), to.take(AiSettings.MAX_MODEL_LENGTH))
 }
 
+/**
+ * A model fallback learned by a request that ran with the stored key [encrypted] (its ciphertext)
+ * on the Gemini tariff [geminiTier] still fits [prefs]: the same key is stored and — for Gemini,
+ * when the tariff is known — the tariff is the same. A new key or another tariff dropped the
+ * fallback; an answer that was still under way then must not bring it back.
+ */
+internal fun fallbackStillFits(prefs: Preferences, id: AiProviderId, encrypted: String, geminiTier: GeminiTier?): Boolean {
+    if (prefs[AiPrefKeys.keyEnc(id)] != encrypted) return false
+    if (id != AiProviderId.GEMINI || geminiTier == null) return true
+    return (GeminiTier.fromKey(prefs[AiPrefKeys.GEMINI_TIER]) ?: GeminiTier.FREE) == geminiTier
+}
+
 /** Writes [fallback] of [id]; null removes it. */
 internal fun MutablePreferences.writeModelFallback(id: AiProviderId, fallback: ModelFallback?) {
     val from = fallback?.from?.trim()?.take(AiSettings.MAX_MODEL_LENGTH)?.takeIf { it.isNotEmpty() }

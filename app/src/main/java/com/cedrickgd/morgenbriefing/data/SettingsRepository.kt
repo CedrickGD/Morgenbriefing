@@ -134,11 +134,13 @@ class SettingsRepository(context: Context) {
     /**
      * The model that runs instead of the chosen one for the stored key of [provider]
      * ([ProviderSettings.modelFallback]); null removes it. With [key], only while [key] is still
-     * the stored one (a chat answer that ran while another key was saved must not set it); without
-     * it the caller has just saved the key it tested.
+     * the stored one (a chat answer that ran while another key was saved must not set it) and,
+     * with [geminiTier], while that is still the stored tariff (a switch dropped the fallback, an
+     * answer that finishes afterwards must not store it again); without [key] the caller has just
+     * saved the key it tested.
      * @throws IOException if DataStore cannot persist the change.
      */
-    suspend fun setModelFallback(provider: AiProviderId, fallback: ModelFallback?, key: String? = null) {
+    suspend fun setModelFallback(provider: AiProviderId, fallback: ModelFallback?, key: String? = null, geminiTier: GeminiTier? = null) {
         if (key == null) {
             store.edit { it.writeModelFallback(provider, fallback) }
             return
@@ -150,8 +152,8 @@ class SettingsRepository(context: Context) {
         if (encrypted.isNullOrBlank()) return
         val stored = withContext(Dispatchers.IO) { TokenCipher.decrypt(encrypted) }?.trim()
         if (stored == null || stored != candidate) return
-        // Same ciphertext as checked above: no other key was saved in between.
-        store.edit { if (it[slot] == encrypted) it.writeModelFallback(provider, fallback) }
+        // Same ciphertext as checked above (no other key was saved in between), same tariff.
+        store.edit { if (fallbackStillFits(it, provider, encrypted, geminiTier)) it.writeModelFallback(provider, fallback) }
     }
 
     /**

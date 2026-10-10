@@ -554,6 +554,8 @@ class ChatServiceTest {
         val note = "Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.7 Flash."
         assertEquals(note, first.note)
         assertEquals(listOf(listOf(AiProviderId.GEMINI, "AIza-test-invalid", "gemini-3.8-flash", "gemini-3.7-flash")), access.fallbacks)
+        // Stored only for the tariff the answer ran on, here with billing (a switch meanwhile dropped it for good).
+        assertEquals(listOf(false), access.fallbackFreeTiers)
 
         session.send("Zweite")
         assertEquals("$note\n${AiTexts.WITHOUT_WEB_SEARCH_NOTE}", session.await { it.settled(4) }.messages.last().note)

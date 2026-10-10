@@ -122,6 +122,23 @@ class AiSettingsPrefsTest {
     }
 
     @Test
+    fun `a late answer's model fallback fits only the key and tariff it ran with`() {
+        val gemini = AiProviderId.GEMINI
+        val free = preferencesOf(AiPrefKeys.keyEnc(gemini) to "CT==")
+        // Same key, same tariff: stored.
+        assertTrue(fallbackStillFits(free, gemini, "CT==", GeminiTier.FREE))
+        // The tariff was switched while the answer ran: the switch dropped the fallback, it stays dropped.
+        val paid = preferencesOf(AiPrefKeys.keyEnc(gemini) to "CT==", AiPrefKeys.GEMINI_TIER to "paid")
+        assertFalse(fallbackStillFits(paid, gemini, "CT==", GeminiTier.FREE))
+        assertTrue(fallbackStillFits(paid, gemini, "CT==", GeminiTier.PAID))
+        // Another key was saved meanwhile.
+        assertFalse(fallbackStillFits(free, gemini, "OLD==", GeminiTier.FREE))
+        // Without a known tariff only the key counts; other providers have none.
+        assertTrue(fallbackStillFits(paid, gemini, "CT==", null))
+        assertTrue(fallbackStillFits(preferencesOf(AiPrefKeys.keyEnc(AiProviderId.OPENAI) to "X=="), AiProviderId.OPENAI, "X==", GeminiTier.FREE))
+    }
+
+    @Test
     fun `debug base URLs are only read when debug overrides are allowed`() {
         val prefs = preferencesOf(
             AiPrefKeys.debugBaseUrl(AiProviderId.GEMINI) to "http://10.0.2.2:8080/v1beta/",
