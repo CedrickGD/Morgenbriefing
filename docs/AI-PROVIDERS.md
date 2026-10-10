@@ -1547,15 +1547,18 @@ OpenRouter key removes the tariff too (like Gemini's).
 
 ### 16.8 Tests and QA
 
-Unit tests: `OpenRouterFreeModelsTest` (filter, order, names, default, effective model, cache for a
-day, restart, stale list, fallback, per-base cache), `ProviderCatalogTest` (model slots, search and
-Live per tariff, wording), `AiProvidersMigrationTest` (schema 3), `AiSettingsPrefsTest` (tariff,
-free model slot, `fallbackStillFits`), `AiBlockTest` (Live block, limit, chat note, key test
-tariff), `CompatKeyCheckerTest` (`GET /key` parsing, OK_NO_CREDIT), `ProviderErrorsTest` (429/402/404,
-Gemini precondition), `AiTextsTest`, `GeminiErrorMappingTest` (plan B text and link),
-`AiLogicTest` (pills, status line, Live picker, free model picker, key messages, dedupe),
-`ChatTextsTest` (error actions), `ChatServiceTest` (refused Gemini key → OpenRouter → „Nochmal
-senden“; fallback tariff), `StatusLogicTest`, `PrecipKindTest`, `EmojiSupportTest`,
+Unit tests: `OpenRouterFreeModelsTest` (filter incl. the promotional model without `:free`, order,
+names, default, effective model, cache for a day, restart, stale list, fallback, per-base cache, a
+stored list filtered on read, expiry kept and applied, the chat's background load and its pause),
+`ProviderCatalogTest` (model slots, a stored non-free id never runs for free, search and Live per
+tariff, wording), `AiProvidersMigrationTest` (schema 3), `AiSettingsPrefsTest` (tariff, free model
+slot, `fallbackStillFits`), `AiBlockTest` (Live block, limit, chat note, key test tariff, a reported
+OpenRouter charge kept), `CompatKeyCheckerTest` (`GET /key` parsing, OK_NO_CREDIT), `ProviderErrorsTest`
+(429/402/404, `metadata.raw` upstream, rate-limit headers, Gemini precondition), `AiTextsTest`,
+`GeminiErrorMappingTest` (plan B text and link), `AiLogicTest` (pills, status line, Live picker, free
+model picker, key messages, dedupe), `ChatTextsTest` (error actions, OpenRouter's day → „Nochmal
+senden“), `ChatServiceTest` (refused Gemini key → OpenRouter → „Nochmal senden“; fallback tariff; a
+model OpenRouter does not serve is reported), `StatusLogicTest`, `PrecipKindTest`, `EmojiSupportTest`,
 `WeatherInsightsTest`. `MockServerContractTest` against `tools/mock-ai-server.mjs` (§14 switches
-`free-tier`, `429-free`, `429-free-min`, `400-precondition`).
+`free-tier`, `429-free`, `429-free-min`, `429-free-upstream`, `400-precondition`).
 

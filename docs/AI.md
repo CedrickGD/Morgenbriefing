@@ -81,19 +81,23 @@ Zahlungsmittel nötig)*, Link auf [openrouter.ai/keys](https://openrouter.ai/key
 den **Tarif**:
 
 * **Kostenlos (Gratis-Modelle)** – Standard bei neuen OpenRouter-Keys. Die Modellwahl zeigt nur die
-  Gratis-Modelle, live von OpenRouters öffentlicher Modellliste (`GET /api/v1/models`: Preis für
-  Eingabe und Ausgabe 0, nur Text rein und raus, Chat-Modelle mit Tool-Unterstützung, nicht
-  abgelaufen), einmal am Tag geladen; offline die zuletzt geladene Liste oder eine kleine eingebaute
-  Auswahl. Vorgewählt ist **Gemma 4 31B** (`google/gemma-4-31b-it:free`), wenn OpenRouter es anbietet,
-  sonst das erste Modell der Liste; verschwindet ein gewähltes Gratis-Modell, nimmt die App den
-  Standard. Keine Websuche (`openrouter:web_search` braucht Guthaben): der Chat sagt ruhig „Ohne
-  Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar“; ⚡ Live sagt „Live braucht
-  Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar.“ mit „Live-Anbieter wählen“.
-  Anfragen zählen 0 $, das Monatslimit bremst sie nie. OpenRouters Grenzen: 20 Anfragen pro Minute
-  und **50 pro Tag** (1.000 ab 10 $ gekauftem Guthaben). Ist das Tageskontingent weg (HTTP 429):
-  „Gratis-Kontingent von OpenRouter für heute aufgebraucht (50 Anfragen/Tag) – morgen geht's
-  weiter.“ (nie automatisch wiederholt; das Minutenlimit und ein ausgelasteter Upstream werden kurz
-  abgewartet).
+  Gratis-Modelle, live von OpenRouters öffentlicher Modellliste (`GET /api/v1/models`: nur die
+  Gratis-Varianten `…:free` und `openrouter/free` – ein Modell, das nur für eine Aktion 0 kostet,
+  kostet nach der Aktion Guthaben –, Preis für Eingabe und Ausgabe 0, nur Text rein und raus,
+  Chat-Modelle mit Tool-Unterstützung, nicht abgelaufen), einmal am Tag geladen – auch vom Chat aus im
+  Hintergrund, ohne dass eine Frage darauf wartet; offline die zuletzt geladene Liste oder eine kleine
+  eingebaute Auswahl. Vorgewählt ist **Gemma 4 31B** (`google/gemma-4-31b-it:free`), wenn OpenRouter
+  es anbietet, sonst das erste Modell der Liste; verschwindet ein gewähltes Gratis-Modell (oder läuft
+  es ab), nimmt die App den Standard. Keine Websuche (`openrouter:web_search` braucht Guthaben): der
+  Chat sagt ruhig „Ohne Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar“; ⚡ Live sagt
+  „Live braucht Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar.“ mit
+  „Live-Anbieter wählen“. Anfragen zählen 0 $, das Monatslimit bremst sie nie (meldet OpenRouter doch
+  Kosten, zeigt die Nutzung sie). OpenRouters Grenzen: 20 Anfragen pro Minute und **50 pro Tag**
+  (1.000 ab 10 $ gekauftem Guthaben). Ist das Tageskontingent weg (HTTP 429 mit
+  „free-models-per-day“ oder einem Tageslimit ohne Rest): „Gratis-Kontingent von OpenRouter für heute
+  aufgebraucht – morgen geht's weiter.“ (nie automatisch wiederholt; die Karte bietet „Nochmal
+  senden“ für nach einem Tarif- oder Anbieterwechsel). Das Minutenlimit und ein ausgelasteter
+  Upstream („Provider returned error“) werden kurz abgewartet.
 * **Mit Guthaben** – wie bisher: alle Modelle, Websuche, ⚡ Live, Kosten aus `usage.cost`.
 * **Key-Prüfung** über `GET /api/v1/key` (kostenlos): sie zeigt, ob das Konto schon Guthaben gekauft
   hat, und die Gratis-Anfragen von heute („✓ … – Gratis-Konto ohne gekauftes Guthaben. Heute noch 37
@@ -231,8 +235,10 @@ den **Tarif**:
 - [ ] OpenRouter **kostenlos** (Konto ohne Zahlungsmittel): Key-Prüfung zeigt „Gratis-Konto …
       Heute noch … von 50 Gratis-Anfragen“, die Modellwahl zeigt die Gratis-Modelle mit Gemma 4 31B
       vorgewählt, der Chat antwortet ohne Websuche und ohne Kosten, Live sagt „Live-Anbieter wählen“;
-      nach 50 Anfragen am Tag der Gratis-Kontingent-Text. Welchen Fehlertext OpenRouter dabei
-      wirklich schickt (`free-models-per-day`?), in [providers/openai-compatible.md](providers/openai-compatible.md) §7.10 nachtragen.
+      nach 50 Anfragen am Tag der Gratis-Kontingent-Text mit „Nochmal senden“. Welchen Fehlertext
+      OpenRouter dabei wirklich schickt (`free-models-per-day`?) und wie ein ausgelasteter Upstream
+      aussieht (`metadata.raw`?), in [providers/openai-compatible.md](providers/openai-compatible.md) §7.10 nachtragen.
+      Die Modellwahl zeigt kein Modell ohne `:free` (außer „Zufälliges Gratis-Modell“).
 - [ ] Gemini **mit Abrechnung**: Search Suggestions unter der Antwort, hell und dunkel, auch nach
       App-Neustart aus dem Verlauf; ein Chip öffnet Googles Ergebnisseite im Custom Tab.
 - [ ] Gemini-Key ohne Abrechnung, aber als „Mit Abrechnung“ eingetragen: Antwort mit „Ohne
