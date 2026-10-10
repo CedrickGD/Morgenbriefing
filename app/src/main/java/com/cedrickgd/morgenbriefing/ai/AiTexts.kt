@@ -3,6 +3,7 @@ package com.cedrickgd.morgenbriefing.ai
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiLinks
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
 import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
+import com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 
@@ -17,6 +18,12 @@ object AiTexts {
 
     /** Button that leads from [AiBlock.UNSUPPORTED_DEVICE] to the provider choice. */
     const val PROVIDER_ACTION = "Anbieter wählen"
+
+    /**
+     * Button under a Gemini key Google refuses ([GeminiProblem.AUTH_KEY_REJECTED]): the OpenRouter
+     * key dialog on the free tariff, which makes OpenRouter the chat provider once the key works.
+     */
+    const val OPENROUTER_PLAN_B = "OpenRouter kostenlos einrichten"
 
     /** Under an answer that came without web search although it was asked for (Gemini fallback). */
     const val WITHOUT_WEB_SEARCH_NOTE = GeminiTiers.FALLBACK_NOTE
@@ -50,7 +57,9 @@ object AiTexts {
         AiBlock.LIMIT_REACHED ->
             "Dein KI-Budget für diesen Monat ist aufgebraucht. Du kannst das Limit in den Einstellungen anheben – " +
                 "oder am Monatsersten geht es von selbst weiter."
-        AiBlock.LIVE_UNAVAILABLE -> spec.liveUnavailableText ?: "Live ist mit ${spec.dativeName} gerade nicht verfügbar."
+        // A provider that has Live in general lacks it only on its free tariff (OpenRouter).
+        AiBlock.LIVE_UNAVAILABLE -> spec.liveUnavailableText
+            ?: if (spec.id == AiProviderId.OPENROUTER) OpenRouterTiers.LIVE_UNAVAILABLE else "Live ist mit ${spec.dativeName} gerade nicht verfügbar."
     }
 
     /** What went wrong, in one sentence. */
@@ -59,9 +68,17 @@ object AiTexts {
         return when (error) {
             AiError.InvalidKey -> spec.invalidKeyText
                 ?: "${brand.sentence()} hat deinen API-Key abgelehnt. Prüf ihn bitte oder trag einen neuen ein."
-            AiError.NoCredit -> "Dein Guthaben bei $brand ist aufgebraucht. Lade es in der Konsole auf, dann geht es weiter."
+            AiError.NoCredit -> if (spec.id == AiProviderId.OPENROUTER) {
+                OpenRouterTiers.NO_CREDIT
+            } else {
+                "Dein Guthaben bei $brand ist aufgebraucht. Lade es in der Konsole auf, dann geht es weiter."
+            }
             AiError.RateLimited -> "Gerade kommen zu viele Anfragen auf einmal an. Versuch es in einer Minute noch mal."
-            AiError.QuotaExhausted -> "$brand-Gratiskontingent für den Moment aufgebraucht – in ein paar Minuten bzw. morgen geht's weiter."
+            AiError.QuotaExhausted -> if (spec.id == AiProviderId.OPENROUTER) {
+                OpenRouterTiers.QUOTA_EXHAUSTED
+            } else {
+                "$brand-Gratiskontingent für den Moment aufgebraucht – in ein paar Minuten bzw. morgen geht's weiter."
+            }
             AiError.Overloaded -> "${brand.sentence()} ist im Moment überlastet. Versuch es gleich noch einmal."
             AiError.Network -> if (spec.id == AiProviderId.CUSTOM) {
                 "Keine Verbindung zu deinem Server. Prüf dein Netz und versuch es noch mal."
@@ -92,8 +109,9 @@ object AiTexts {
     /** Why Google refused a Gemini request, and what fixes it (docs/providers/gemini.md §12.4). */
     fun gemini(problem: GeminiProblem): String = when (problem) {
         GeminiProblem.AUTH_KEY_REJECTED ->
-            "Google nimmt deinen Key gerade nicht an. Das passiert derzeit bei manchen neuen Keys („AQ.…“), auch wenn " +
-                "AI Studio sie als gültig zeigt: Erstell in AI Studio einen neuen Key und prüf, dass sein Projekt die Gemini API nutzen darf."
+            "Google nimmt deinen Key gerade nicht an – ein bekannter Fehler bei Google, der viele neue Keys („AQ.…“) trifft, " +
+                "auch wenn AI Studio sie als gültig zeigt. Was hilft: ein älterer Key, der mit „AIza“ beginnt – " +
+                "oder OpenRouter kostenlos mit Gemma 4, Googles offenem Modell."
         GeminiProblem.KEY_LEAKED ->
             "Google hat deinen Key gesperrt, weil er öffentlich aufgetaucht ist. Erstell in AI Studio einen neuen Key – und gib ihn nicht weiter."
         GeminiProblem.API_BLOCKED ->
@@ -112,17 +130,31 @@ object AiTexts {
      * the Cloud Console for a blocked API or a restricted key; null when there is none.
      */
     fun errorLink(error: AiError): Pair<String, String>? = when ((error as? AiError.GeminiAccess)?.problem) {
-        GeminiProblem.AUTH_KEY_REJECTED, GeminiProblem.KEY_LEAKED -> "Neuen Key in AI Studio" to GeminiLinks.API_KEYS
+        // An older "AIza…" key is listed there too.
+        GeminiProblem.AUTH_KEY_REJECTED -> "Keys in AI Studio" to GeminiLinks.API_KEYS
+        GeminiProblem.KEY_LEAKED -> "Neuen Key in AI Studio" to GeminiLinks.API_KEYS
         GeminiProblem.API_BLOCKED -> "Gemini API aktivieren" to GeminiLinks.API_LIBRARY
         GeminiProblem.KEY_RESTRICTED -> "Key-Beschränkung prüfen" to GeminiLinks.CREDENTIALS
         GeminiProblem.FREE_TIER_UNAVAILABLE -> "Abrechnung in AI Studio" to GeminiLinks.PROJECTS
         null -> null
     }
 
-    /** True when trying the same request again (by hand) can help. */
-    fun isRetryable(error: AiError): Boolean = when (error) {
-        AiError.RateLimited, AiError.Overloaded, AiError.Network, AiError.ServerUnreachable,
-        AiError.QuotaExhausted, is AiError.Unknown -> true
+    /**
+     * The way out of [error] that needs no Google key: OpenRouter's free tariff with Gemma 4
+     * ([OPENROUTER_PLAN_B]) — offered while Google refuses new auth keys.
+     */
+    fun offersOpenRouter(error: AiError): Boolean = error == AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED)
+
+    /**
+     * True when trying the same request again (by hand) can help. [provider] wrote the answer:
+     * OpenRouter's used-up free quota is the day's ([AiError.QuotaExhausted] there, or its text on
+     * the credits tariff) and comes back only tomorrow — or after a switch to credits or another
+     * provider, which "Nochmal senden" covers. Gemini's free quota is often the minute's.
+     */
+    fun isRetryable(error: AiError, provider: AiProviderId? = null): Boolean = when (error) {
+        AiError.RateLimited, AiError.Overloaded, AiError.Network, AiError.ServerUnreachable -> true
+        AiError.QuotaExhausted -> provider != AiProviderId.OPENROUTER
+        is AiError.Unknown -> error.message != OpenRouterTiers.QUOTA_EXHAUSTED_WITH_CREDITS
         AiError.InvalidKey, AiError.NoCredit, AiError.WorkspaceRequired, AiError.WorkspaceNotFound,
         is AiError.ModelUnavailable, is AiError.Refusal, AiError.Truncated, is AiError.GeminiAccess -> false
     }
@@ -141,11 +173,12 @@ object AiTexts {
     }
 
     /**
-     * The calm note of a chat that cannot search the web: a free Gemini key ([freeTier]), or a
-     * provider without web search. Null when the chat searches.
+     * The calm note of a chat that cannot search the web: a key on a free tariff ([freeTier]:
+     * Gemini, OpenRouter), or a provider without web search. Null when the chat searches.
      */
     fun chatNote(spec: ProviderSpec, webSearch: Boolean, freeTier: Boolean): String? = when {
         webSearch -> null
+        freeTier && spec.id == AiProviderId.OPENROUTER -> OpenRouterTiers.NO_WEB_SEARCH_NOTE
         freeTier -> GeminiTiers.NO_WEB_SEARCH_NOTE
         else -> "Ohne Websuche – mit ${spec.dativeName} nicht verfügbar"
     }

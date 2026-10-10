@@ -17,14 +17,17 @@ object EmojiSupport {
     /**
      * Close relatives, best first. Only used when the original has no glyph. Clothing chips
      * that appear side by side must stay apart: on Android 7, whose emoji font lacks 🧥, 🧶, 🩳,
-     * 🧣 and 🧤, a jacket shows 🥋, a pullover 👚, shorts 👖, a scarf ❄️, gloves ✋ and the
-     * T-shirt stays 👕.
+     * 🧣, 🧤 and 🦺, a jacket shows 🥋, a pullover 👚, shorts 👖, a scarf ❄️, gloves ✋, the rain
+     * jacket 💧 and the T-shirt stays 👕.
      */
     private val fallbacks: Map<String, List<String>> = mapOf(
         // Coat and jacket (Emoji 5, Android 8): the grey wrap jacket of 🥋 (Unicode 9, in the
         // Android 7 font) still reads as a jacket; 👔 for fonts older than that. A scarf would be
         // wrong for "leichte Jacke" and "Regenjacke", a T-shirt is the pullover's last resort.
         "🧥" to listOf("🥋", "👔"),
+        // The rain jacket (the yellow vest, Emoji 12, Android 10) sits next to a warm jacket: below
+        // Android 10 a water drop (Unicode 6) keeps it apart from the jacket's 🥋 and the umbrella.
+        "🦺" to listOf("💧"),
         // Emoji 11–12 (Android 9–10): knitting (the pullover), lotion, ice, puzzle piece.
         "🧶" to listOf("👚", "👕"),
         "🧴" to listOf("☀️"),

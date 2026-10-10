@@ -21,7 +21,7 @@ die Wire-Formate in [providers/](providers/).
 | Google Gemini | ✓ | ✓ mit Abrechnung (Google-Suche) | ✗ (Googles Nutzungsbedingungen) | ✓ |
 | xAI Grok | ✓ | ✓ | ✓ | ✓ |
 | Perplexity | ✓ | ✓ | ✓ | ✓ |
-| OpenRouter | ✓ | ✓ | ✓ | ✓ |
+| OpenRouter | ✓ (auch kostenlos) | ✓ mit Guthaben | ✓ mit Guthaben | ✓ |
 | Mistral | ✓ | ✗ | ✗ | ✓ |
 | DeepSeek | ✓ | ✗ | ✗ | ✓ |
 | Eigener Server (Ollama, LM Studio …) | ✓ | ✗ | ✗ | ✓ |
@@ -39,10 +39,17 @@ die Wire-Formate in [providers/](providers/).
 
 ### Google Gemini: kostenlos oder mit Abrechnung
 
-Gemini ist der einfachste Einstieg, weil es ohne Zahlungsmittel geht. Im Key-Dialog steht der
+Gemini geht ohne Zahlungsmittel. Im Key-Dialog steht der
 kurze Weg (*aistudio.google.com → Get API key → Create API key*, Link auf
 [aistudio.google.com/apikey](https://aistudio.google.com/apikey)); Keys mit `AIza…` und die neuen
-`AQ.…` gehen beide, ihr Format wird nicht geprüft. Pro Key wählst du den **Tarif**:
+`AQ.…` nimmt die App beide, ihr Format wird nicht geprüft. **Bekannter Fehler bei Google (Stand
+2026-10-10):** viele neue `AQ.…`-Keys lehnt Google auf allen Endpunkten mit 401
+`ACCESS_TOKEN_TYPE_UNSUPPORTED` ab, auch wenn AI Studio sie als gültig zeigt; ältere `AIza…`-Keys
+laufen weiter. Die App sagt das in zwei Sätzen, nennt beide Auswege (ein älterer `AIza…`-Key oder
+OpenRouter kostenlos mit Gemma 4, Googles offenem Modell) und bietet im Key-Dialog und unter der
+Fehlerkarte im Chat **„OpenRouter kostenlos einrichten“** an: der OpenRouter-Key-Dialog auf dem Tarif
+„Kostenlos“; sobald der Key dort funktioniert, ist OpenRouter der Chat-Anbieter, und „Nochmal senden“
+stellt die Frage neu. Pro Key wählst du den **Tarif**:
 
 * **Kostenlos (ohne Abrechnung)** – Standard bei neuen Gemini-Keys. Die App schickt nie die
   Google-Suche mit (kostenlose Keys dürfen sie bei Gemini 3.x nicht nutzen); der Chat antwortet
@@ -66,6 +73,42 @@ kurze Weg (*aistudio.google.com → Get API key → Create API key*, Link auf
   Vorschläge bei jedem Ergebnis und schränken das Speichern ein – Live-Artikel werden aber
   gespeichert und ohne Vorschläge gezeigt.
 
+### OpenRouter: kostenlos mit Gratis-Modellen
+
+Ein OpenRouter-Konto mit Key, aber ohne Zahlungsmittel reicht für die **Gratis-Modelle** (Modelle mit
+Preis 0, z. B. Googles Gemma 4). Key-Dialog: *openrouter.ai → Anmelden → Keys → Create Key (kein
+Zahlungsmittel nötig)*, Link auf [openrouter.ai/keys](https://openrouter.ai/keys). Pro Key wählst du
+den **Tarif**:
+
+* **Kostenlos (Gratis-Modelle)** – Standard bei neuen OpenRouter-Keys. Die Modellwahl zeigt nur die
+  Gratis-Modelle, live von OpenRouters öffentlicher Modellliste (`GET /api/v1/models`: nur die
+  Gratis-Varianten `…:free` und `openrouter/free` – ein Modell, das nur für eine Aktion 0 kostet,
+  kostet nach der Aktion Guthaben –, Preis für Eingabe und Ausgabe 0, nur Text rein und raus,
+  Chat-Modelle mit Tool-Unterstützung, nicht abgelaufen), einmal am Tag geladen – auch vom Chat aus im
+  Hintergrund, ohne dass eine Frage darauf wartet; offline die zuletzt geladene Liste oder eine kleine
+  eingebaute Auswahl. Vorgewählt ist **Gemma 4 31B** (`google/gemma-4-31b-it:free`), wenn OpenRouter
+  es anbietet, sonst das erste Modell der Liste; verschwindet ein gewähltes Gratis-Modell (oder läuft
+  es ab), nimmt die App den Standard. Keine Websuche (`openrouter:web_search` braucht Guthaben): der
+  Chat sagt ruhig „Ohne Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar“; ⚡ Live sagt
+  „Live braucht Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar.“ mit
+  „Live-Anbieter wählen“. Anfragen zählen 0 $, das Monatslimit bremst sie nie (meldet OpenRouter doch
+  Kosten, zeigt die Nutzung sie). OpenRouters Grenzen: 20 Anfragen pro Minute und **50 pro Tag**
+  (1.000 ab 10 $ gekauftem Guthaben). Ist das Tageskontingent weg (HTTP 429 mit
+  „free-models-per-day“ oder einem Tageslimit ohne Rest): „Gratis-Kontingent von OpenRouter für heute
+  aufgebraucht – morgen geht's weiter.“ (nie automatisch wiederholt; die Karte bietet „Nochmal
+  senden“ für nach einem Tarif- oder Anbieterwechsel). Das Minutenlimit und ein ausgelasteter
+  Upstream („Provider returned error“) werden kurz abgewartet.
+* **Mit Guthaben** – wie bisher: alle Modelle, Websuche, ⚡ Live, Kosten aus `usage.cost`.
+* **Key-Prüfung** über `GET /api/v1/key` (kostenlos): sie zeigt, ob das Konto schon Guthaben gekauft
+  hat, und die Gratis-Anfragen von heute („✓ … – Gratis-Konto ohne gekauftes Guthaben. Heute noch 37
+  von 50 Gratis-Anfragen.“). „Mit Guthaben“ auf einem Konto ohne gekauftes Guthaben wird gespeichert,
+  mit dem Hinweis, Guthaben zu kaufen oder „Kostenlos“ zu nehmen.
+* **402** (Guthaben aufgebraucht oder im Minus – dann sperrt OpenRouter auch die Gratis-Modelle):
+  „Dein Guthaben bei OpenRouter ist aufgebraucht oder im Minus – …“.
+* **Bestehende Nutzer:** ein OpenRouter-Key aus v1.3.0/1.3.1 bleibt auf „Mit Guthaben“ (Migration,
+  Schema 3); erst ein neu eingerichteter OpenRouter-Key startet auf „Kostenlos“. Wer OpenRouter im
+  Live-Picker wählt, während der Key auf „Kostenlos“ steht, landet im Key-Dialog auf „Mit Guthaben“.
+
 ## Kosten & Monatslimit
 
 * Preise stehen an einer Stelle im Code (`ai/AiPricing.kt`), pro Anbieter und Modell mit Quelle
@@ -76,7 +119,8 @@ kurze Weg (*aistudio.google.com → Get API key → Create API key*, Link auf
 * Die App rechnet jede Anfrage aus der `usage` des Anbieters in Dollar um, summiert pro
   Kalendermonat und zeigt den Stand in den Einstellungen. **Monatslimit** (Standard 5 $, 0 = aus)
   für alle Anbieter zusammen: Ist es erreicht, gehen keine kostenpflichtigen KI-Anfragen mehr
-  raus. Der eigene Server und Gemini kostenlos zählen als 0 $ und laufen immer. Am Monatsersten
+  raus. Der eigene Server und die kostenlosen Tarife von Gemini und OpenRouter zählen als 0 $ und
+  laufen immer. Am Monatsersten
   (Europe/Berlin) beginnt die Zählung bei null – auch in einer laufenden App.
 
 ## Netz & Sicherheit
@@ -136,6 +180,10 @@ kurze Weg (*aistudio.google.com → Get API key → Create API key*, Link auf
   Gespräch geht).
 * Wer den Chat verlässt (Zurück), bricht eine laufende Antwort ab – das bisher Gestreamte bleibt
   stehen. Eine Frage ganz am Ende ohne Antwort zeigt „Nochmal fragen“.
+* Unter der letzten fehlgeschlagenen Antwort steht „Nochmal versuchen“, wo es von selbst gleich
+  wieder gehen kann (Netz, überlastet), und **„Nochmal senden“**, wo erst etwas zu ändern ist (Key,
+  Guthaben, Modell, Anbieter): nach der Änderung stellt es dieselbe Frage neu – auch mit einem
+  anderen Anbieter. Eine Ablehnung des Modells wird nicht unverändert neu gesendet.
 
 ## 2. „⚡ Live“ (brandaktuell)
 
@@ -181,6 +229,16 @@ kurze Weg (*aistudio.google.com → Get API key → Create API key*, Link auf
       Einstellungen) und je Anbieter mit Live ein Live-Lauf (Artikel erscheinen, Abbrechen geht).
 - [ ] Gemini **kostenlos**: Chat antwortet ohne Websuche mit der ruhigen Notiz, keine Kosten,
       Pro-Modelle gesperrt; bei aufgebrauchtem Kontingent der Gratiskontingent-Text.
+- [ ] Gemini-`AQ.…`-Key, den Google ablehnt: Text zum bekannten Google-Fehler, „OpenRouter kostenlos
+      einrichten“ öffnet den OpenRouter-Dialog auf „Kostenlos“, danach ist OpenRouter Chat-Anbieter
+      und „Nochmal senden“ beantwortet die Frage mit Gemma 4.
+- [ ] OpenRouter **kostenlos** (Konto ohne Zahlungsmittel): Key-Prüfung zeigt „Gratis-Konto …
+      Heute noch … von 50 Gratis-Anfragen“, die Modellwahl zeigt die Gratis-Modelle mit Gemma 4 31B
+      vorgewählt, der Chat antwortet ohne Websuche und ohne Kosten, Live sagt „Live-Anbieter wählen“;
+      nach 50 Anfragen am Tag der Gratis-Kontingent-Text mit „Nochmal senden“. Welchen Fehlertext
+      OpenRouter dabei wirklich schickt (`free-models-per-day`?) und wie ein ausgelasteter Upstream
+      aussieht (`metadata.raw`?), in [providers/openai-compatible.md](providers/openai-compatible.md) §7.10 nachtragen.
+      Die Modellwahl zeigt kein Modell ohne `:free` (außer „Zufälliges Gratis-Modell“).
 - [ ] Gemini **mit Abrechnung**: Search Suggestions unter der Antwort, hell und dunkel, auch nach
       App-Neustart aus dem Verlauf; ein Chip öffnet Googles Ergebnisseite im Custom Tab.
 - [ ] Gemini-Key ohne Abrechnung, aber als „Mit Abrechnung“ eingetragen: Antwort mit „Ohne

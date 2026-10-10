@@ -13,6 +13,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
+import com.cedrickgd.morgenbriefing.ai.compat.FreeModelList
+import com.cedrickgd.morgenbriefing.ai.compat.FreeModelSource
+import com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFree
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AccentId
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
@@ -115,6 +118,7 @@ private val noAiActions = AiActions(
     onEditDebugBaseUrl = {},
     onLimit = {},
     onLiveAuto = {},
+    onOpenRouterTier = {},
 )
 
 @ThemePreviews
@@ -155,6 +159,29 @@ private fun GeminiFreePreview() {
             debugTools = false,
             reduceMotion = true,
             actions = noAiActions,
+        )
+    }
+}
+
+/** OpenRouter on the free tariff: the free models (built-in list), no web search, no Live. */
+@ThemePreviews
+@Composable
+private fun OpenRouterFreePreview() {
+    val ai = AiSettings(
+        provider = AiProviderId.OPENROUTER,
+        providers = mapOf(AiProviderId.OPENROUTER to ProviderSettings(hasKey = true)),
+    )
+    PreviewSky {
+        AiCard(
+            settings = AppSettings(ai = ai),
+            usage = UsageSnapshot(month = "2026-10", requests = 4),
+            serverModels = ServerModels(),
+            today = previewNow.toLocalDate(),
+            sdkAvailable = true,
+            debugTools = false,
+            reduceMotion = true,
+            actions = noAiActions,
+            freeModels = FreeModels(FreeModelList(OpenRouterFree.FALLBACK, FreeModelSource.FALLBACK)),
         )
     }
 }

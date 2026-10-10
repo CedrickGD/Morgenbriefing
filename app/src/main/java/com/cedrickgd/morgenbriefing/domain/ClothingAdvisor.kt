@@ -24,7 +24,8 @@ internal object ClothingAdvisor {
     private val SCHAL = ClothingItem("🧣", "Schal")
     private val HANDSCHUHE = ClothingItem("🧤", "Handschuhe")
     private val SCHIRM = ClothingItem("☂️", "Schirm")
-    private val REGENJACKE = ClothingItem("🧥", "Regenjacke")
+    // Not the coat: next to "warme Jacke" the two chips must look different (the yellow vest reads as rain gear).
+    private val REGENJACKE = ClothingItem("🦺", "Regenjacke")
     private val SONNENBRILLE = ClothingItem("🕶️", "Sonnenbrille")
     private val SONNENCREME = ClothingItem("🧴", "Sonnencreme")
     private val FESTE_SCHUHE = ClothingItem("🥾", "feste Schuhe")

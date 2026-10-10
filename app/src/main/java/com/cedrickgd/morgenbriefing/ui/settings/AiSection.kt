@@ -44,7 +44,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,13 +71,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
-import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
+import com.cedrickgd.morgenbriefing.ai.compat.FreeModelList
+import com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFree
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
 import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
@@ -101,15 +105,21 @@ internal class AiActions(
     val onEditDebugBaseUrl: () -> Unit,
     val onLimit: (Double) -> Unit,
     val onLiveAuto: (Boolean) -> Unit,
+    val onOpenRouterTier: (OpenRouterTier) -> Unit = {},
 )
 
 /** The own server's models for the picker: from the last connection test or "Vom Server laden". */
 @Immutable
 internal data class ServerModels(val ids: List<String> = emptyList(), val loading: Boolean = false, val failed: Boolean = false)
 
+/** OpenRouter's free models for the picker of its free tariff; [list] null until the first load. */
+@Immutable
+internal data class FreeModels(val list: FreeModelList? = null, val loading: Boolean = false)
+
 /**
  * Settings section "KI" (docs/AI-PROVIDERS.md §10.1): what it does in one line, the chosen
- * provider with its capabilities, its key (own server: address), the Gemini "Tarif", the model,
+ * provider with its capabilities, its key (own server: address), the Gemini or OpenRouter
+ * "Tarif", the model (OpenRouter's free tariff: its free models, [freeModels]),
  * who runs "⚡ Live", in debug builds the base URL override, the monthly cap with this month's
  * usage and the live auto-refresh switch.
  *
@@ -127,6 +137,7 @@ internal fun AiCard(
     reduceMotion: Boolean,
     actions: AiActions,
     modifier: Modifier = Modifier,
+    freeModels: FreeModels = FreeModels(),
 ) {
     val ai = settings.ai
     val provider = ai.provider
@@ -177,12 +188,20 @@ internal fun AiCard(
                 Spacer(Modifier.height(8.dp))
                 GeminiTierChoice(selected = ai.of(provider).geminiTier, onSelect = actions.onGeminiTier)
             }
+            if (provider == AiProviderId.OPENROUTER) {
+                Spacer(Modifier.height(22.dp))
+                Overline("Tarif")
+                Spacer(Modifier.height(8.dp))
+                OpenRouterTierChoice(selected = ai.of(provider).openRouterTier, onSelect = actions.onOpenRouterTier)
+            }
 
             Spacer(Modifier.height(22.dp))
             Overline("Modell")
             Spacer(Modifier.height(8.dp))
             if (provider == AiProviderId.CUSTOM) {
                 ServerModelPicker(ai = ai, models = serverModels, actions = actions)
+            } else if (ai.isOpenRouterFree(provider)) {
+                FreeModelPicker(ai = ai, models = freeModels, actions = actions)
             } else {
                 ModelPicker(ai = ai, provider = provider, today = today, actions = actions)
             }
@@ -421,6 +440,42 @@ private fun ModelPicker(ai: AiSettings, provider: AiProviderId, today: LocalDate
 }
 
 /**
+ * OpenRouter's free models (the free tariff): the day's list, the first few and "Alle … zeigen";
+ * no "Eigenes Modell …" — the tariff runs only what OpenRouter offers for free. Until the list is
+ * loaded the built-in one stands in.
+ */
+@Composable
+private fun FreeModelPicker(ai: AiSettings, models: FreeModels, actions: AiActions) {
+    val list = models.list?.models ?: OpenRouterFree.FALLBACK
+    val choices = remember(ai, list) { freeModelChoices(ai, list) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val shown = visibleFreeModels(choices, expanded)
+    Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        shown.forEach { choice ->
+            ChoiceRow(
+                title = choice.title,
+                subtitle = choice.subtitle,
+                badge = choice.badge,
+                selected = choice.selected,
+                onSelect = { actions.onModel(choice.id) },
+            )
+        }
+    }
+    if (choices.size > FREE_MODELS_SHOWN) {
+        Spacer(Modifier.height(8.dp))
+        GlassPillButton(
+            text = if (expanded) "Weniger zeigen" else "Alle ${choices.size} Gratis-Modelle zeigen",
+            onClick = { expanded = !expanded },
+            style = PillStyle.Quiet,
+        )
+    }
+    freeModelsNote(models.list, models.loading)?.let { note ->
+        Spacer(Modifier.height(8.dp))
+        Text(note, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/**
  * The own server's models: the ones it listed (last connection test or "Vom Server laden") as
  * choices, the stored one even when the list is not loaded, and "Eigenes Modell …".
  */
@@ -486,9 +541,8 @@ private fun ServerModelPicker(ai: AiSettings, models: ServerModels, actions: AiA
 private fun LiveProviderRow(ai: AiSettings, sdkAvailable: Boolean, onChange: () -> Unit) {
     val line = liveProviderLine(ai)
     if (line == null) {
-        val chat = ProviderCatalog.spec(ai.effectiveLiveProvider)
         Text(
-            chat.liveUnavailableText ?: "Live ist gerade nicht verfügbar.",
+            ProviderCatalog.liveUnavailableText(ai, ai.effectiveLiveProvider) ?: "Live ist gerade nicht verfügbar.",
             style = MaterialTheme.typography.bodyMedium,
             color = StatusPalette.attention(),
         )
@@ -499,7 +553,7 @@ private fun LiveProviderRow(ai: AiSettings, sdkAvailable: Boolean, onChange: () 
     val live = ai.effectiveLiveProvider
     val liveSpec = ProviderCatalog.spec(live)
     val supported = !liveSpec.needsSdk || sdkAvailable
-    val ready = supported && ai.isConfigured(live) && liveSpec.live == LiveSupport.YES
+    val ready = supported && ai.isConfigured(live) && ProviderCatalog.canRunLive(ai, live)
     SettingRow(
         icon = Icons.Rounded.Bolt,
         iconTint = if (ready) StatusPalette.ok() else StatusPalette.attention(),

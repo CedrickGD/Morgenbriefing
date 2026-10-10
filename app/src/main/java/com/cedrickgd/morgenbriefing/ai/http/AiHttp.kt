@@ -104,9 +104,15 @@ internal class AiHttp(
 /**
  * A non-2xx answer. [body] is the error body as text (at most [AiHttp.MAX_ERROR_BODY]), also
  * when the server labelled it `text/event-stream` (Gemini does, GE §5.1); [retryAfter] is the
- * `Retry-After` header. Never put [body] into a log: it can echo parts of the key.
+ * `Retry-After` header, [rateLimit] the `X-RateLimit-*` headers (names lower-cased: OpenRouter's
+ * limit, what is left and when it resets). Never put [body] into a log: it can echo parts of the key.
  */
-internal class HttpFailure(val code: Int, val body: String, val retryAfter: Duration?) : IOException("HTTP $code")
+internal class HttpFailure(
+    val code: Int,
+    val body: String,
+    val retryAfter: Duration?,
+    val rateLimit: Map<String, String> = emptyMap(),
+) : IOException("HTTP $code")
 
 /** One Server-Sent Event: the `event:` name (null when there was none) and the joined `data:` lines. */
 internal data class SseEvent(val event: String?, val data: String)
@@ -146,7 +152,7 @@ internal suspend fun AiHttp.streamSse(request: Request, onEvent: suspend (SseEve
             try {
                 val response = runInterruptible { call.execute() }
                 response.use { r ->
-                    if (!r.isSuccessful) throw HttpFailure(r.code, r.errorBody(), r.retryAfter())
+                    if (!r.isSuccessful) throw HttpFailure(r.code, r.errorBody(), r.retryAfter(), r.rateLimitHeaders())
                     val reader = SseReader(r.body.source())
                     var end: SseEnd? = null
                     while (end == null) {
@@ -192,6 +198,12 @@ private fun Response.errorBody(): String = try {
 
 /** `Retry-After` as seconds (also fractional) or an HTTP date; null when absent or unreadable. */
 internal fun Response.retryAfter(): Duration? = parseRetryAfter(header("Retry-After"), ZonedDateTime.now())
+
+/** The `X-RateLimit-*` headers that are there, names lower-cased (OkHttp reads them case-insensitively). */
+internal fun Response.rateLimitHeaders(): Map<String, String> =
+    RATE_LIMIT_HEADERS.mapNotNull { name -> header(name)?.trim()?.takeIf { it.isNotEmpty() }?.let { name to it } }.toMap()
+
+private val RATE_LIMIT_HEADERS = listOf("x-ratelimit-limit", "x-ratelimit-remaining", "x-ratelimit-reset")
 
 internal fun parseRetryAfter(value: String?, now: ZonedDateTime): Duration? {
     val text = value?.trim()?.takeIf { it.isNotEmpty() } ?: return null

@@ -22,8 +22,8 @@ internal fun AiSettings.providerFor(purpose: AiPurpose): AiProviderId =
 
 /**
  * Why AI can't run for [purpose] right now; null = go. Order: device (or no backend for the
- * provider in this build), Live support, configuration, monthly limit. Free providers (own
- * server, a free Gemini key) are never stopped by the limit.
+ * provider in this build), Live support (OpenRouter on the free tariff has none), configuration,
+ * monthly limit. Free providers (own server, a key on a free tariff) are never stopped by the limit.
  */
 internal fun aiBlock(
     ai: AiSettings,
@@ -36,7 +36,7 @@ internal fun aiBlock(
     val spec = ProviderCatalog.spec(id)
     return when {
         (spec.needsSdk && !sdkAvailable) || !hasBackend -> AiBlock.UNSUPPORTED_DEVICE
-        purpose == AiPurpose.LIVE && spec.live != LiveSupport.YES -> AiBlock.LIVE_UNAVAILABLE
+        purpose == AiPurpose.LIVE && ProviderCatalog.liveSupport(ai, id) != LiveSupport.YES -> AiBlock.LIVE_UNAVAILABLE
         !ai.isConfigured(id) -> AiBlock.NO_KEY
         !ai.costsNothing(id) && usage.limitUsd > 0.0 && usage.spentUsd >= usage.limitUsd -> AiBlock.LIMIT_REACHED
         else -> null
@@ -45,8 +45,8 @@ internal fun aiBlock(
 
 /**
  * What a chat or Live view needs to know about its provider before a request: who it is,
- * whether it is blocked, and whether the chat searches the web ([freeTier]: a free Gemini key,
- * the reason it does not).
+ * whether it is blocked, and whether the chat searches the web ([freeTier]: a key on a free
+ * tariff — Gemini or OpenRouter — the reason it does not).
  */
 internal data class AiStatus(
     val spec: ProviderSpec,
@@ -68,13 +68,14 @@ internal fun aiStatus(
         spec = ProviderCatalog.spec(id),
         block = aiBlock(ai, purpose, sdkAvailable, usage, hasBackend),
         webSearch = ProviderCatalog.chatWebSearch(ai, id),
-        freeTier = ai.isGeminiFree(id),
+        freeTier = ai.isFreeTier(id),
     )
 }
 
 /**
  * The setup a key test of [provider] runs with: [ai] with the candidate [extras] — a null field
- * keeps the stored workspace id or server address, "" clears it.
+ * keeps the stored workspace id or server address, "" clears it; an OpenRouter tariff replaces the
+ * stored one (the dialog tests the key for the tariff it is about to store).
  */
 internal fun keyTestSettings(ai: AiSettings, provider: AiProviderId, extras: KeyExtras): AiSettings {
     val stored = ai.of(provider)
@@ -83,6 +84,7 @@ internal fun keyTestSettings(ai: AiSettings, provider: AiProviderId, extras: Key
         stored.copy(
             workspaceId = extras.workspaceId?.let { it.trim().ifEmpty { null } } ?: stored.workspaceId.takeIf { extras.workspaceId == null },
             baseUrl = extras.baseUrl?.let { it.trim().ifEmpty { null } } ?: stored.baseUrl.takeIf { extras.baseUrl == null },
+            openRouterTier = extras.openRouterTier?.takeIf { provider == AiProviderId.OPENROUTER } ?: stored.openRouterTier,
         ),
     )
 }
@@ -135,9 +137,17 @@ internal interface AiProviderAccess {
 
     /**
      * [provider] refused [from] for [key] and [to] answered instead (Gemini, GE §12.5): requests
-     * with this key use [to] from now on. Must not throw.
+     * with this key use [to] from now on — unless the key, its tariff ([freeTier]: the request ran
+     * on the free one) or the chosen model changed while the answer ran. Must not throw.
      */
-    suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String) {}
+    suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String, freeTier: Boolean) {}
+
+    /**
+     * A chat request to [provider] ended in [AiError.ModelUnavailable] ([freeTier]: on a free
+     * tariff). On OpenRouter's free tariff the free model may have left OpenRouter's list: the
+     * list loads anew, so the next request falls back to its default. Must not throw.
+     */
+    suspend fun modelUnavailable(provider: AiProviderId, freeTier: Boolean) {}
 }
 
 /**
@@ -150,9 +160,11 @@ internal fun AiKeyCheck.rejectsKey(): Boolean =
 
 /**
  * The usage sink of one provider over the shared monthly [store]. A [free] provider (own
- * server, free Gemini key) is never stopped by the limit and costs 0 $ (its requests and
- * searches still count). [onRecorded] runs after each recorded request — usage only exists for
- * a request the provider accepted, so it confirms the key.
+ * server, a key on a free tariff) is never stopped by the limit and costs 0 $ (its requests and
+ * searches still count) — except a charge OpenRouter itself reports (`usage.cost` > 0): a model
+ * whose free promotion ended bills the credits, and the usage must show that. [onRecorded] runs
+ * after each recorded request — usage only exists for a request the provider accepted, so it
+ * confirms the key.
  */
 internal class ProviderUsageSink(
     private val store: UsageSink,
@@ -164,7 +176,11 @@ internal class ProviderUsageSink(
     }
 
     override suspend fun record(provider: AiProviderId, modelId: String, usage: TokenUsage) {
-        store.record(provider, modelId, if (free) usage.copy(reportedCostUsd = 0.0) else usage)
+        store.record(provider, modelId, if (free) usage.copy(reportedCostUsd = chargedOnFreeTariff(provider, usage)) else usage)
         onRecorded(provider)
     }
+
+    /** What a free request cost: 0 $, or what OpenRouter says it charged after all. */
+    private fun chargedOnFreeTariff(provider: AiProviderId, usage: TokenUsage): Double =
+        usage.reportedCostUsd?.takeIf { provider == AiProviderId.OPENROUTER && it > 0.0 } ?: 0.0
 }

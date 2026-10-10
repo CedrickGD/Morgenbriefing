@@ -5,11 +5,13 @@ import com.cedrickgd.morgenbriefing.ai.provider.GeminiModels
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
 import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
 import com.cedrickgd.morgenbriefing.ai.provider.LiveToolNote
+import com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.ModelFallback
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -181,5 +183,58 @@ class ProviderCatalogTest {
             "Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.1 Flash-Lite.",
             GeminiModels.fallbackNote("gemini-3.8-flash", "gemini-3.1-flash-lite"),
         )
+    }
+
+    @Test
+    fun `openrouter keeps one model per tariff and runs Gemma 4 for free by default`() {
+        val id = AiProviderId.OPENROUTER
+        val free = AiSettings().with(id, ProviderSettings(hasKey = true, model = "anthropic/claude-sonnet-5.5"))
+        // A new setup is on the free tariff: the credits model is never sent there.
+        assertEquals(OpenRouterTier.FREE, free.of(id).openRouterTier)
+        assertEquals("google/gemma-4-31b-it:free", ProviderCatalog.selectedModel(free, id))
+        assertEquals(OpenRouterTiers.DEFAULT_FREE_MODEL, ProviderCatalog.effectiveModel(free, id))
+        // Picking a model on the free tariff stores the free model; the credits model stays.
+        val picked = free.withModel(id, " nvidia/nemotron-3-ultra-550b-a55b:free ")
+        assertEquals("nvidia/nemotron-3-ultra-550b-a55b:free", picked.of(id).freeModel)
+        assertEquals("anthropic/claude-sonnet-5.5", picked.of(id).model)
+        assertEquals("nvidia/nemotron-3-ultra-550b-a55b:free", ProviderCatalog.selectedModel(picked, id))
+        // A stored id that is no free variant (a promotion that may start billing) never runs for free.
+        val promo = free.with(id, free.of(id).copy(freeModel = "inclusionai/ling-3.1-flash"))
+        assertEquals(OpenRouterTiers.DEFAULT_FREE_MODEL, ProviderCatalog.selectedModel(promo, id))
+        assertEquals(OpenRouterTiers.DEFAULT_FREE_MODEL, ProviderCatalog.effectiveModel(promo, id))
+        assertEquals("openrouter/free", ProviderCatalog.selectedModel(free.withModel(id, "openrouter/free"), id))
+        // With credits the credits model runs again, and a pick there leaves the free one alone.
+        val credits = picked.with(id, picked.of(id).copy(openRouterTier = OpenRouterTier.CREDITS))
+        assertEquals("anthropic/claude-sonnet-5.5", ProviderCatalog.selectedModel(credits, id))
+        assertEquals("nvidia/nemotron-3-ultra-550b-a55b:free", credits.withModel(id, "openai/gpt-6-luna").of(id).freeModel)
+        assertEquals("google/gemini-3.8-flash", ProviderCatalog.selectedModel(credits.withModel(id, null), id))
+    }
+
+    @Test
+    fun `openrouter on the free tariff has neither web search nor live`() {
+        val id = AiProviderId.OPENROUTER
+        val free = AiSettings(provider = id).with(id, ProviderSettings(hasKey = true))
+        val credits = AiSettings(provider = id).with(id, ProviderSettings(hasKey = true, openRouterTier = OpenRouterTier.CREDITS))
+        assertFalse(ProviderCatalog.chatWebSearch(free, id))
+        assertTrue(ProviderCatalog.chatWebSearch(credits, id))
+        assertEquals(LiveSupport.NO_WEB_SEARCH, ProviderCatalog.liveSupport(free, id))
+        assertFalse(ProviderCatalog.canRunLive(free, id))
+        assertEquals("Live braucht Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar.", ProviderCatalog.liveUnavailableText(free, id))
+        assertEquals(LiveSupport.YES, ProviderCatalog.liveSupport(credits, id))
+        assertTrue(ProviderCatalog.canRunLive(credits, id))
+        assertNull(ProviderCatalog.liveUnavailableText(credits, id))
+        // Other providers keep their own rules.
+        assertEquals(LiveSupport.NOT_ALLOWED, ProviderCatalog.liveSupport(free, AiProviderId.GEMINI))
+        assertTrue(ProviderCatalog.canRunLive(free, AiProviderId.OPENAI))
+        // The key guide and the tariff wording.
+        assertEquals("https://openrouter.ai/keys", ProviderCatalog.OPENROUTER.consoleUrl)
+        assertEquals("openrouter.ai → Anmelden → Keys → Create Key (kein Zahlungsmittel nötig)", OpenRouterTiers.KEY_GUIDE)
+        assertEquals("Kostenlos (Gratis-Modelle)", OpenRouterTiers.label(OpenRouterTier.FREE))
+        assertEquals("Mit Guthaben", OpenRouterTiers.label(OpenRouterTier.CREDITS))
+        assertTrue(OpenRouterTiers.looksFree("google/gemma-4-31b-it:free"))
+        assertTrue(OpenRouterTiers.looksFree("openrouter/free"))
+        assertFalse(OpenRouterTiers.looksFree("google/gemini-3.8-flash"))
+        assertEquals("1.000", OpenRouterTiers.count(1000))
+        assertEquals("37", OpenRouterTiers.count(37))
     }
 }

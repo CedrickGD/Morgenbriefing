@@ -11,6 +11,7 @@ import com.cedrickgd.morgenbriefing.domain.WeatherFixtures.summerThunder
 import com.cedrickgd.morgenbriefing.domain.WeatherFixtures.tomorrowEvening
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -227,6 +228,9 @@ class WeatherInsightsTest {
         assertFalse(labels.toString(), "Schirm" in labels)
         assertContains(advice.text, "Regenjacke statt Schirm – zu windig")
         assertTrue(advice.short, advice.short.wordCount() <= 8)
+        // The rain jacket has its own pictogram, never the coat of the warm jacket next to it.
+        val rainJacket = advice.items.single { it.label == "Regenjacke" }
+        advice.items.filter { it.label != "Regenjacke" }.forEach { assertNotEquals(it.label, rainJacket.emoji, it.emoji) }
     }
 
     @Test
@@ -321,6 +325,31 @@ class WeatherInsightsTest {
         assertContains(ice.text, "Reifglätte")
         assertContains(WeatherInsights.homeNote(frosty), "Glättegefahr bei -1°")
         assertTrue(WeatherInsights.headline(frosty), WeatherInsights.headline(frosty).startsWith("Frostiger Start, später "))
+    }
+
+    @Test
+    fun `snow that already falls on a snowy day is no later snow`() {
+        val hours = WeatherFixtures.window(
+            "2026-12-02", 15,
+            temps = listOf(-2.0, -1.5, -1.0, -1.0, -1.5, -2.0, -2.0),
+            codes = List(7) { 73 },
+            pops = List(7) { 90 },
+            precip = List(7) { 0.6 },
+        )
+        val snowing = foggyAutumn.copy(
+            home = foggyAutumn.home.copy(
+                current = CurrentConditions(
+                    time = "2026-12-02T15:15", temp = -2.0, feels = -6.0, code = 73, isDay = true,
+                    windKmh = 10.0, gustKmh = 20.0, precipMm = 0.6, humidity = 92, visibilityM = 3_000.0,
+                ),
+                nextHours = foggyAutumn.home.nextHours.map { it.copy(code = 73, temp = -2.0, visibilityM = 3_000.0) },
+            ),
+            day = WeatherFixtures.day("2026-12-02", hours),
+        )
+        val headline = WeatherInsights.headline(snowing)
+        assertNotContains(headline, "später")
+        assertContains(headline, "Schnee")
+        assertEquals("Frostiger Start, dazu Schnee bei -1°.", headline)
     }
 
     @Test

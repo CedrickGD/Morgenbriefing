@@ -5,6 +5,7 @@ import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import com.cedrickgd.morgenbriefing.data.withAiKey
 import com.cedrickgd.morgenbriefing.data.withProvider
@@ -20,6 +21,10 @@ class AiBlockTest {
     private val fine = UsageSnapshot(month = "2026-10", spentUsd = 1.0, limitUsd = 5.0)
 
     private fun ai(id: AiProviderId) = AppSettings().withAiKey(id).ai
+
+    /** OpenRouter with a key on [tier]. */
+    private fun openRouter(tier: OpenRouterTier) =
+        AppSettings().withProvider(AiProviderId.OPENROUTER) { it.copy(hasKey = true, openRouterTier = tier) }.ai
 
     @Test
     fun `checks come in order - device, Live, key, limit`() {
@@ -56,9 +61,37 @@ class AiBlockTest {
             assertEquals(id.key, AiBlock.LIVE_UNAVAILABLE, aiBlock(ai, AiPurpose.LIVE, true, fine))
             assertNull(id.key, aiBlock(ai, AiPurpose.CHAT, true, fine))
         }
-        listOf(AiProviderId.ANTHROPIC, AiProviderId.OPENAI, AiProviderId.XAI, AiProviderId.PERPLEXITY, AiProviderId.OPENROUTER).forEach { id ->
+        listOf(AiProviderId.ANTHROPIC, AiProviderId.OPENAI, AiProviderId.XAI, AiProviderId.PERPLEXITY).forEach { id ->
             assertNull(id.key, aiBlock(ai(id), AiPurpose.LIVE, true, fine))
         }
+        // OpenRouter researches with credits; its free tariff has no web search.
+        assertNull(aiBlock(openRouter(OpenRouterTier.CREDITS), AiPurpose.LIVE, true, fine))
+        assertEquals(AiBlock.LIVE_UNAVAILABLE, aiBlock(openRouter(OpenRouterTier.FREE), AiPurpose.LIVE, true, fine))
+        assertNull(aiBlock(openRouter(OpenRouterTier.FREE), AiPurpose.CHAT, true, fine))
+    }
+
+    @Test
+    fun `openrouter on the free tariff chats without search, costs and limit`() {
+        val free = openRouter(OpenRouterTier.FREE)
+        assertTrue(free.isOpenRouterFree(AiProviderId.OPENROUTER))
+        assertTrue(free.isFreeTier(AiProviderId.OPENROUTER))
+        assertTrue(free.costsNothing(AiProviderId.OPENROUTER))
+        // The monthly limit never stops the free tariff, but it stops credits.
+        assertNull(aiBlock(free, AiPurpose.CHAT, true, spent))
+        assertEquals(AiBlock.LIMIT_REACHED, aiBlock(openRouter(OpenRouterTier.CREDITS), AiPurpose.CHAT, true, spent))
+        val status = aiStatus(free, AiPurpose.CHAT, true, fine)
+        assertFalse(status.webSearch)
+        assertTrue(status.freeTier)
+        assertEquals("Ohne Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar", AiTexts.chatNote(status.spec, status.webSearch, status.freeTier))
+        val credits = aiStatus(openRouter(OpenRouterTier.CREDITS), AiPurpose.CHAT, true, fine)
+        assertTrue(credits.webSearch)
+        assertFalse(credits.freeTier)
+        assertNull(AiTexts.chatNote(credits.spec, credits.webSearch, credits.freeTier))
+        // Live says why in the existing words and offers "Live-Anbieter wählen".
+        val live = aiStatus(free, AiPurpose.LIVE, true, fine)
+        assertEquals(AiBlock.LIVE_UNAVAILABLE, live.block)
+        assertEquals("Live braucht Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar.", AiTexts.blockBody(AiBlock.LIVE_UNAVAILABLE, live.spec))
+        assertEquals("Live-Anbieter wählen", AiTexts.blockAction(AiBlock.LIVE_UNAVAILABLE, live.spec))
     }
 
     @Test
@@ -128,6 +161,20 @@ class AiBlockTest {
     }
 
     @Test
+    fun `a charge OpenRouter reports on the free tariff stays visible`() = runBlocking<Unit> {
+        val store = RecordingUsage()
+        val free = ProviderUsageSink(store, free = true)
+        free.record(AiProviderId.OPENROUTER, "google/gemma-4-31b-it:free", TokenUsage(inputTokens = 100, reportedCostUsd = 0.0))
+        assertEquals(0.0, store.records.last().second.reportedCostUsd!!, 0.0)
+        // A model whose free promotion ended billed the credits after all.
+        free.record(AiProviderId.OPENROUTER, "inclusionai/ling-3.1-flash", TokenUsage(inputTokens = 100, reportedCostUsd = 0.0042))
+        assertEquals(0.0042, store.records.last().second.reportedCostUsd!!, 1e-12)
+        // The own server's "cost" is no bill.
+        free.record(AiProviderId.CUSTOM, "llama3.3", TokenUsage(inputTokens = 100, reportedCostUsd = 0.5))
+        assertEquals(0.0, store.records.last().second.reportedCostUsd!!, 0.0)
+    }
+
+    @Test
     fun `a key test sets up the candidate workspace id and server address`() {
         val claude = AppSettings().withProvider(AiProviderId.ANTHROPIC) { it.copy(hasKey = true, workspaceId = "wrkspc_alt") }.ai
         val anthropic = AiProviderId.ANTHROPIC
@@ -168,5 +215,16 @@ class AiBlockTest {
         val server = AppSettings().withProvider(custom) { it.copy(hasKey = true, baseUrl = "http://nas.local:11434/v1") }.ai
         assertTrue(keyTestRejectsStoredKey(AiKeyCheck.INVALID, server, keyTestSettings(server, custom, KeyExtras(baseUrl = "http://nas.local:11434/v1")), custom))
         assertFalse(keyTestRejectsStoredKey(AiKeyCheck.INVALID, server, keyTestSettings(server, custom, KeyExtras(baseUrl = "http://pi.local:11434/v1")), custom))
+    }
+
+    @Test
+    fun `a key test runs for the openrouter tariff the dialog is about to store`() {
+        val id = AiProviderId.OPENROUTER
+        val stored = openRouter(OpenRouterTier.CREDITS)
+        assertEquals(OpenRouterTier.FREE, keyTestSettings(stored, id, KeyExtras(openRouterTier = OpenRouterTier.FREE)).of(id).openRouterTier)
+        assertEquals(OpenRouterTier.CREDITS, keyTestSettings(stored, id, KeyExtras()).of(id).openRouterTier)
+        // Other providers ignore it.
+        val gemini = ai(AiProviderId.GEMINI)
+        assertEquals(gemini, keyTestSettings(gemini, AiProviderId.GEMINI, KeyExtras(openRouterTier = OpenRouterTier.CREDITS)))
     }
 }

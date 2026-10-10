@@ -7,11 +7,17 @@ import com.cedrickgd.morgenbriefing.ai.AiPricing
 import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.GeminiProblem
 import com.cedrickgd.morgenbriefing.ai.KeyCheckOutcome
+import com.cedrickgd.morgenbriefing.ai.OpenRouterKeyInfo
+import com.cedrickgd.morgenbriefing.ai.compat.FreeModel
+import com.cedrickgd.morgenbriefing.ai.compat.FreeModelList
+import com.cedrickgd.morgenbriefing.ai.compat.FreeModelSource
+import com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFree
 import com.cedrickgd.morgenbriefing.ai.provider.EngineKind
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiLinks
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiModels
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
 import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
+import com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
@@ -84,6 +90,12 @@ sealed interface AiKeyState {
      */
     data class SavedWithFallback(val from: String, val to: String) : AiKeyState
 
+    /**
+     * Tested and stored (OpenRouter): [info] is what OpenRouter says about the account — whether
+     * it bought credits, and how many free requests are left today.
+     */
+    data class SavedWithKeyInfo(val info: OpenRouterKeyInfo) : AiKeyState
+
     /** Tested and stored, but the key's quota is used up right now (Gemini 429); [diagnostic] under "Details". */
     data class SavedQuotaExhausted(val diagnostic: String? = null) : AiKeyState
 
@@ -97,7 +109,8 @@ sealed interface AiKeyState {
 /** The dialog's work is done: it offers "Fertig" instead of another test. */
 internal val AiKeyState.isSaved: Boolean
     get() = this == AiKeyState.Saved || this == AiKeyState.SavedUntested || this == AiKeyState.SavedNoCredit ||
-        this is AiKeyState.SavedWithFallback || this is AiKeyState.SavedQuotaExhausted || this is AiKeyState.ServerConnected
+        this is AiKeyState.SavedWithFallback || this is AiKeyState.SavedQuotaExhausted || this is AiKeyState.ServerConnected ||
+        this is AiKeyState.SavedWithKeyInfo
 
 /** The technical line under "Details" of [this] state, if any. */
 internal val AiKeyState.diagnostic: String?
@@ -122,17 +135,41 @@ internal fun savedKeyState(tested: Boolean, noCredit: Boolean = false): AiKeySta
 
 /**
  * What the dialog says once the key is stored after [outcome] (null: stored without a test): no
- * credit, a quota used up right now, or a model fallback (Gemini) are said; else a plain "works".
+ * credit, a quota used up right now, or a model fallback (Gemini) are said; OpenRouter's account
+ * facts (free tier, free requests left today) when it sent them; else a plain "works".
  */
 internal fun savedKeyState(outcome: KeyCheckOutcome?): AiKeyState {
     val fallback = outcome?.fallback
+    val openRouter = outcome?.openRouter
     return when {
         outcome == null -> AiKeyState.SavedUntested
         outcome.check == AiKeyCheck.OK_NO_CREDIT -> AiKeyState.SavedNoCredit
         outcome.check == AiKeyCheck.OK_QUOTA_EXHAUSTED -> AiKeyState.SavedQuotaExhausted(outcome.diagnostic)
         fallback != null -> AiKeyState.SavedWithFallback(fallback.from, fallback.to)
+        openRouter != null -> AiKeyState.SavedWithKeyInfo(openRouter)
         else -> AiKeyState.Saved
     }
+}
+
+/**
+ * What a passed OpenRouter key test says about the account after "✓ Der Key funktioniert und ist
+ * gespeichert": "– Gratis-Konto ohne gekauftes Guthaben. Heute noch 37 von 50 Gratis-Anfragen."
+ * Only what OpenRouter sent.
+ */
+internal fun openRouterKeyNote(info: OpenRouterKeyInfo): String {
+    val account = when (info.freeTier) {
+        true -> " – Gratis-Konto ohne gekauftes Guthaben"
+        false -> " – Konto mit Guthaben"
+        null -> ""
+    }
+    val left = info.freeRequestsLeft
+    val perDay = info.freeRequestsPerDay
+    val quota = when {
+        left == null || perDay == null -> ""
+        left <= 0 -> " Heute keine Gratis-Anfragen mehr (${OpenRouterTiers.count(perDay)} am Tag) – morgen geht's weiter."
+        else -> " Heute noch ${OpenRouterTiers.count(left)} von ${OpenRouterTiers.count(perDay)} Gratis-Anfragen."
+    }
+    return "$account.$quota"
 }
 
 /** Maps the facade's check result; null = the key works (store it, also without credit or quota). */
@@ -192,13 +229,19 @@ internal fun aiKeyIntro(spec: ProviderSpec): String = when (spec.id) {
         "Der Key gehört dir: Anfragen laufen über dein eigenes Anthropic-Konto, unabhängig von einem Claude-Abo."
     AiProviderId.GEMINI ->
         "Der Key gehört dir: Anfragen laufen über dein eigenes Google-Konto – kostenlos oder mit Abrechnung, wie du unten wählst."
+    AiProviderId.OPENROUTER ->
+        "Der Key gehört dir: Anfragen laufen über dein eigenes OpenRouter-Konto – kostenlos mit Gratis-Modellen oder mit Guthaben, wie du unten wählst."
     AiProviderId.CUSTOM ->
         "Dein eigener Server mit Ollama, LM Studio & Co.: Fragen und Antworten bleiben in deinem Netz und kosten nichts."
     else -> "Der Key gehört dir: Anfragen laufen über dein eigenes ${keyOwner(spec)}-Konto und werden dort abgerechnet."
 }
 
-/** German feedback line under the key field of [spec]'s dialog; null while idle. */
-internal fun aiKeyMessage(state: AiKeyState, spec: ProviderSpec): String? {
+/**
+ * German feedback line under the key field of [spec]'s dialog; null while idle. [formatIssue] is
+ * what the hint right above already says about the typed key: a refused key then gets no second
+ * "hast du ihn vollständig kopiert?".
+ */
+internal fun aiKeyMessage(state: AiKeyState, spec: ProviderSpec, formatIssue: AiKeyFormatIssue? = null): String? {
     val custom = spec.id == AiProviderId.CUSTOM
     val owner = keyOwner(spec)
     return when (state) {
@@ -206,11 +249,15 @@ internal fun aiKeyMessage(state: AiKeyState, spec: ProviderSpec): String? {
         AiKeyState.Checking -> if (custom) "Verbinde mit deinem Server …" else "Prüfe den Key bei $owner …"
         AiKeyState.Saved -> "✓ Der Key funktioniert und ist gespeichert."
         AiKeyState.SavedUntested -> "Gespeichert – noch nicht getestet. Die erste Anfrage zeigt, ob er funktioniert."
-        AiKeyState.SavedNoCredit -> if (spec.id == AiProviderId.GEMINI) {
-            "Gespeichert ✓ – aber das Prepay-Guthaben deines Google-Projekts ist aufgebraucht. Lade es in AI Studio auf, sonst schlagen Anfragen fehl."
-        } else {
-            "Gespeichert ✓ – aber dein Guthaben ist leer. Lade es auf, sonst schlagen Anfragen fehl."
+        AiKeyState.SavedNoCredit -> when (spec.id) {
+            AiProviderId.GEMINI ->
+                "Gespeichert ✓ – aber das Prepay-Guthaben deines Google-Projekts ist aufgebraucht. Lade es in AI Studio auf, sonst schlagen Anfragen fehl."
+            AiProviderId.OPENROUTER ->
+                "Gespeichert ✓ – aber auf deinem OpenRouter-Konto ist noch kein Guthaben. Kauf unter „Credits“ welches – " +
+                    "oder nimm den Tarif „Kostenlos“."
+            else -> "Gespeichert ✓ – aber dein Guthaben ist leer. Lade es auf, sonst schlagen Anfragen fehl."
         }
+        is AiKeyState.SavedWithKeyInfo -> "✓ Der Key funktioniert und ist gespeichert${openRouterKeyNote(state.info)}"
         is AiKeyState.SavedWithFallback -> "✓ Der Key funktioniert und ist gespeichert. ${GeminiModels.fallbackNote(state.from, state.to)}"
         is AiKeyState.SavedQuotaExhausted ->
             "Gespeichert ✓ – aber das Kontingent deines Keys ist gerade aufgebraucht. In ein paar Minuten bzw. morgen geht's weiter."
@@ -221,7 +268,12 @@ internal fun aiKeyMessage(state: AiKeyState, spec: ProviderSpec): String? {
         }
         is AiKeyState.Failed -> when (state.problem) {
             AiKeyProblem.INVALID -> spec.invalidKeyText?.let { "✗ $it" }
-                ?: if (custom) "✗ Dein Server lehnt den Key ab – stimmt er?" else "✗ $owner lehnt den Key ab – hast du ihn vollständig kopiert?"
+                ?: when {
+                    custom -> "✗ Dein Server lehnt den Key ab – stimmt er?"
+                    // The hint above the message already asks about the copy.
+                    formatIssue != null -> "✗ $owner lehnt den Key ab."
+                    else -> "✗ $owner lehnt den Key ab – hast du ihn vollständig kopiert?"
+                }
             AiKeyProblem.NETWORK ->
                 if (custom) "✗ Keine Verbindung zu deinem Server – ist dein Handy im selben Netz?" else "✗ Keine Verbindung zu $owner – bist du online?"
             AiKeyProblem.UNSUPPORTED -> "✗ ${spec.brand} läuft erst ab Android 8."
@@ -264,6 +316,12 @@ private val UNTESTED_SAVE_PROBLEMS = setOf(
     AiKeyProblem.FREE_TIER_UNAVAILABLE,
     AiKeyProblem.MODEL_UNAVAILABLE,
 )
+
+/**
+ * The key test failed because Google refuses the (auth) key: the dialog offers OpenRouter's free
+ * tariff as the way out ([AiTexts.OPENROUTER_PLAN_B]).
+ */
+internal fun aiKeyOffersOpenRouter(state: AiKeyState): Boolean = state.failedWith(AiKeyProblem.AUTH_KEY_REJECTED)
 
 /** A page that fixes a failed key test, as the pill under the message shows it. */
 @Immutable
@@ -370,31 +428,42 @@ internal data class Capability(val label: String, val available: Boolean, val sp
 
 /**
  * What [spec] can do, as the provider cards show it: Chat, Websuche, Live, Android 7. [ai] makes
- * it concrete for the stored settings: a Gemini key on the free tier searches nothing.
+ * it concrete for the stored settings: a Gemini key on the free tier searches nothing, OpenRouter
+ * on the free tariff neither searches nor runs Live.
  */
 internal fun capabilities(spec: ProviderSpec, ai: AiSettings? = null): List<Capability> {
     val geminiFree = ai?.isGeminiFree(spec.id) == true
-    val search = spec.chatWebSearch && !geminiFree
+    val openRouterFree = ai?.isOpenRouterFree(spec.id) == true
+    val search = spec.chatWebSearch && !geminiFree && !openRouterFree
     val searchLabel = when {
         geminiFree -> "Websuche nur mit Abrechnung"
+        openRouterFree -> "Websuche nur mit Guthaben"
         spec.id == AiProviderId.GEMINI -> "Google-Suche"
         else -> "Websuche"
     }
-    val live = spec.live == LiveSupport.YES
+    val live = spec.live == LiveSupport.YES && !openRouterFree
     val android7 = !spec.needsSdk
     return listOf(
         Capability("Chat", available = true, spoken = "Chat verfügbar"),
         Capability(
             searchLabel,
             available = search,
-            // TalkBack hears what the pill shows: a free Gemini key gets search with billing.
+            // TalkBack hears what the pill shows: a free key gets search with billing or credits.
             spoken = when {
                 search -> "Websuche verfügbar"
-                geminiFree -> "Websuche nur mit Abrechnung"
+                geminiFree || openRouterFree -> searchLabel
                 else -> "Websuche nicht verfügbar"
             },
         ),
-        Capability("Live", available = live, spoken = if (live) "Live verfügbar" else "Live nicht verfügbar"),
+        Capability(
+            if (openRouterFree) "Live nur mit Guthaben" else "Live",
+            available = live,
+            spoken = when {
+                live -> "Live verfügbar"
+                openRouterFree -> "Live nur mit Guthaben"
+                else -> "Live nicht verfügbar"
+            },
+        ),
         Capability(
             if (android7) "Android 7" else "ab Android 8",
             available = android7,
@@ -418,11 +487,16 @@ internal fun providerStatusLine(ai: AiSettings, id: AiProviderId, supported: Boo
         p.keyUntested -> "Key gespeichert · noch nicht getestet"
         else -> "Key gespeichert ✓"
     }
-    return if (id == AiProviderId.GEMINI && supported && p.hasKey) "$base · ${tierShort(ai)}" else base
+    val tier = tierShort(ai, id)
+    return if (tier != null && supported && p.hasKey) "$base · $tier" else base
 }
 
-/** "kostenlos" / "mit Abrechnung" for the stored Gemini tariff. */
-private fun tierShort(ai: AiSettings): String = if (ai.isGeminiFree(AiProviderId.GEMINI)) "kostenlos" else "mit Abrechnung"
+/** "kostenlos" / "mit Abrechnung" (Gemini) / "mit Guthaben" (OpenRouter) for the stored tariff; null without one. */
+private fun tierShort(ai: AiSettings, id: AiProviderId): String? = when (id) {
+    AiProviderId.GEMINI -> if (ai.isGeminiFree(id)) "kostenlos" else "mit Abrechnung"
+    AiProviderId.OPENROUTER -> if (ai.isOpenRouterFree(id)) "kostenlos" else "mit Guthaben"
+    else -> null
+}
 
 /** Under the summary card when the chosen provider cannot run here (Claude below Android 8). */
 internal fun unsupportedProviderHint(spec: ProviderSpec): String = "${spec.brand} braucht Android 8 – wähl einen anderen Anbieter."
@@ -433,13 +507,14 @@ internal fun unsupportedProviderHint(spec: ProviderSpec): String = "${spec.brand
 
 /**
  * Settings → KI → "⚡ Live": who researches. Null when the effective Live provider cannot run Live
- * (the chat provider has none and no own Live provider is chosen) — the section then explains
- * why ([ProviderSpec.liveUnavailableText]) and offers "Live-Anbieter wählen". Names the brand
- * ("Claude", not "Claude (Anthropic)"), so "(wie Chat)" never nests in another bracket.
+ * (the chat provider has none — or OpenRouter is on its free tariff — and no own Live provider is
+ * chosen) — the section then explains why ([ProviderCatalog.liveUnavailableText]) and offers
+ * "Live-Anbieter wählen". Names the brand ("Claude", not "Claude (Anthropic)"), so "(wie Chat)"
+ * never nests in another bracket.
  */
 internal fun liveProviderLine(ai: AiSettings): String? {
     val spec = ProviderCatalog.spec(ai.effectiveLiveProvider)
-    if (spec.live != LiveSupport.YES) return null
+    if (!ProviderCatalog.canRunLive(ai, spec.id)) return null
     val sameAsChat = ai.liveProvider == null || ai.liveProvider == ai.provider
     return if (sameAsChat) "Live über ${spec.brand} (wie Chat)" else "Live über ${spec.brand}"
 }
@@ -449,14 +524,23 @@ internal fun sameAsChatLabel(chat: ProviderSpec): String = "Wie Chat (${chat.bra
 
 /**
  * The choices of the Live provider picker: null = "Wie Chat" (only when the chat provider can
- * research itself), then every provider with Live that runs on this device ([sdkAvailable]).
+ * research itself as configured), then every provider with Live that runs on this device
+ * ([sdkAvailable]) — OpenRouter also on the free tariff: picking it there opens its key dialog
+ * on "Mit Guthaben" ([liveNeedsSetup]).
  */
 internal fun liveProviderChoices(ai: AiSettings, sdkAvailable: Boolean): List<AiProviderId?> = buildList {
-    if (ProviderCatalog.spec(ai.provider).live == LiveSupport.YES) add(null)
+    if (ProviderCatalog.canRunLive(ai, ai.provider)) add(null)
     ProviderCatalog.all
         .filter { it.live == LiveSupport.YES && (!it.needsSdk || sdkAvailable) }
         .forEach { add(it.id) }
 }
+
+/**
+ * A Live provider picked in the Live picker still needs its key dialog: no key (own server: no
+ * address) yet, or OpenRouter on the free tariff, which researches only with credits.
+ */
+internal fun liveNeedsSetup(ai: AiSettings, picked: AiProviderId): Boolean =
+    !ai.isConfigured(picked) || !ProviderCatalog.canRunLive(ai, picked)
 
 /**
  * The stored Live provider for a pick in the Live picker: "Wie Chat" (null) and the chat provider
@@ -511,6 +595,59 @@ internal fun modelChoices(ai: AiSettings, id: AiProviderId, on: LocalDate): List
  */
 internal fun modelFallbackNote(ai: AiSettings, id: AiProviderId): String? =
     ProviderCatalog.activeFallback(ai, id)?.let { (from, to) -> GeminiModels.fallbackNote(from, to) }
+
+/**
+ * The model picker of OpenRouter's free tariff: OpenRouter's free [models] in their order, the one
+ * requests use selected (a chosen model that left the list gives way to the default, as in the
+ * chat), the default marked "Standard". Every row costs nothing.
+ */
+internal fun freeModelChoices(ai: AiSettings, models: List<FreeModel>): List<ModelChoice> {
+    val selected = OpenRouterFree.effective(ProviderCatalog.selectedModel(ai, AiProviderId.OPENROUTER), models)
+    val default = OpenRouterFree.defaultOf(models)
+    return models.map { model ->
+        ModelChoice(
+            id = model.id,
+            title = OpenRouterFree.title(model),
+            subtitle = OpenRouterFree.subtitle(model),
+            badge = "Standard".takeIf { model.id == default },
+            selected = model.id == selected,
+            enabled = true,
+        )
+    }
+}
+
+/** Free models the picker shows before "Alle … zeigen". */
+internal const val FREE_MODELS_SHOWN = 5
+
+/**
+ * The free models the picker shows: all when [expanded], else the first [FREE_MODELS_SHOWN] and
+ * the selected one when it is further down.
+ */
+internal fun visibleFreeModels(choices: List<ModelChoice>, expanded: Boolean): List<ModelChoice> {
+    if (expanded || choices.size <= FREE_MODELS_SHOWN) return choices
+    val first = choices.take(FREE_MODELS_SHOWN)
+    val selected = choices.drop(FREE_MODELS_SHOWN).filter { it.selected }
+    return first + selected
+}
+
+/**
+ * The quiet line under the free models: loading, not loaded (offline, or OpenRouter answered
+ * with an error — the built-in list stands in, reloaded when the app comes back), or how many
+ * there are today — and the daily limit, which depends on the account (50, or 1,000 once 10 $
+ * of credits were bought).
+ */
+internal fun freeModelsNote(list: FreeModelList?, loading: Boolean): String? = when {
+    list == null -> if (loading) "Lade die Gratis-Modelle von OpenRouter …" else null
+    list.source == FreeModelSource.FALLBACK ->
+        "OpenRouter gerade nicht erreichbar – eine kleine Auswahl. Die ganze Liste lädt beim nächsten Öffnen."
+    list.models.size == 1 -> "1 Gratis-Modell von OpenRouter, täglich aktualisiert. $FREE_REQUESTS_PER_DAY"
+    else -> "${list.models.size} Gratis-Modelle von OpenRouter, täglich aktualisiert. $FREE_REQUESTS_PER_DAY"
+}
+
+/** OpenRouter's daily free requests for both kinds of account (OC §7.9). */
+private val FREE_REQUESTS_PER_DAY =
+    "Bis ${OpenRouterTiers.count(OpenRouterTiers.FREE_PER_DAY)} Anfragen am Tag, ab 10 $ gekauftem Guthaben " +
+        "${OpenRouterTiers.count(OpenRouterTiers.FREE_PER_DAY_WITH_CREDITS)}."
 
 /** The stored model of [id] when it is none of the curated ones ("Eigenes Modell …"), else null. */
 internal fun customModelOf(ai: AiSettings, id: AiProviderId): String? {
@@ -657,7 +794,7 @@ internal object AiLimit {
         "Ohne Limit schickt die App jede KI-Anfrage – die Kosten trägt dein Konto beim Anbieter."
     } else {
         "Ist es erreicht, schickt die App bis zum Monatsende keine KI-Anfragen mehr. Es gilt für alle Anbieter zusammen; " +
-            "der eigene Server und Gemini kostenlos laufen immer weiter."
+            "der eigene Server und die kostenlosen Tarife von Gemini und OpenRouter laufen immer weiter."
     }
 }
 

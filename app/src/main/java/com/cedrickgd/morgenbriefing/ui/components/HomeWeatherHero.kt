@@ -44,6 +44,7 @@ import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import com.cedrickgd.morgenbriefing.domain.Condition
 import com.cedrickgd.morgenbriefing.domain.Fmt
 import com.cedrickgd.morgenbriefing.domain.WeatherInsights
+import com.cedrickgd.morgenbriefing.domain.precipKind
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
 import com.cedrickgd.morgenbriefing.ui.theme.OverlineLetterSpacing
 import java.time.LocalDateTime
@@ -200,7 +201,9 @@ private data class HeroChip(val emoji: String, val text: String)
 private fun heroChips(home: HomeWeather): List<HeroChip> = buildList {
     val current = home.current
     val maxPop = home.nextHours.maxOfOrNull { it.pop } ?: 0
-    add(HeroChip("💧", "Regen ${maxPop.coerceIn(0, 100)} %"))
+    // "Schnee 80 %" on a snowy morning, "Schneeregen" when both fall: the word follows the weather codes.
+    val kind = precipKind(home)
+    add(HeroChip(kind.emoji, "${kind.word} ${maxPop.coerceIn(0, 100)} %"))
 
     val wind = "Wind ${current.windKmh.roundToInt()} km/h"
     add(

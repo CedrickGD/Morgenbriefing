@@ -73,4 +73,55 @@ class ChatTextsTest {
         // A redirect without a title still shows something.
         assertEquals("vertexaisearch.cloud.google.com" to null, sourceChipParts(SourceRef("", grounded.url)))
     }
+
+    @Test
+    fun `a refused gemini auth key offers openrouter for free next to the key`() {
+        val auth = com.cedrickgd.morgenbriefing.ai.AiError.GeminiAccess(com.cedrickgd.morgenbriefing.ai.GeminiProblem.AUTH_KEY_REJECTED)
+        assertEquals(
+            listOf(ErrorAction.OPEN_LINK, ErrorAction.SET_UP_OPENROUTER, ErrorAction.CHANGE_KEY, ErrorAction.RESEND),
+            errorActions(auth, canRetry = true),
+        )
+        assertEquals("OpenRouter kostenlos einrichten", ErrorAction.SET_UP_OPENROUTER.label)
+        assertEquals(listOf(ErrorAction.OPEN_LINK, ErrorAction.SET_UP_OPENROUTER, ErrorAction.CHANGE_KEY), errorActions(auth, canRetry = false))
+        // Other errors keep their buttons.
+        assertEquals(listOf(ErrorAction.RETRY), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.Network, canRetry = true))
+        assertEquals(emptyList<ErrorAction>(), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.Network, canRetry = false))
+    }
+
+    @Test
+    fun `a failed answer can be sent again once its cause is fixed`() {
+        assertEquals("Nochmal senden", ErrorAction.RESEND.label)
+        // A new key, credits, another model or tariff fix it elsewhere: then "Nochmal senden".
+        assertEquals(listOf(ErrorAction.CHANGE_KEY, ErrorAction.RESEND), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.InvalidKey, canRetry = true))
+        assertEquals(listOf(ErrorAction.RESEND), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.NoCredit, canRetry = true))
+        assertEquals(listOf(ErrorAction.RESEND), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.ModelUnavailable("m"), canRetry = true))
+        assertEquals(listOf(ErrorAction.RESEND), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.Truncated, canRetry = true))
+        assertEquals(
+            listOf(ErrorAction.OPEN_LINK, ErrorAction.RESEND),
+            errorActions(com.cedrickgd.morgenbriefing.ai.AiError.GeminiAccess(com.cedrickgd.morgenbriefing.ai.GeminiProblem.API_BLOCKED), canRetry = true),
+        )
+        // Busy or not the last answer: nothing to send; a refusal is never sent again unchanged.
+        assertEquals(listOf(ErrorAction.CHANGE_KEY), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.InvalidKey, canRetry = false))
+        assertEquals(emptyList<ErrorAction>(), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.Refusal("cyber"), canRetry = true))
+        // A retry that may simply work keeps its own words.
+        assertEquals(listOf(ErrorAction.RETRY), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.QuotaExhausted, canRetry = true))
+        assertEquals(
+            listOf(ErrorAction.RETRY),
+            errorActions(com.cedrickgd.morgenbriefing.ai.AiError.QuotaExhausted, canRetry = true, provider = AiProviderId.GEMINI),
+        )
+    }
+
+    @Test
+    fun `openrouter's used-up day is sent again once something changed, not retried`() {
+        val quota = com.cedrickgd.morgenbriefing.ai.AiError.QuotaExhausted
+        assertEquals(listOf(ErrorAction.RESEND), errorActions(quota, canRetry = true, provider = AiProviderId.OPENROUTER))
+        val credits = com.cedrickgd.morgenbriefing.ai.AiError.Unknown(com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers.QUOTA_EXHAUSTED_WITH_CREDITS)
+        assertEquals(listOf(ErrorAction.RESEND), errorActions(credits, canRetry = true, provider = AiProviderId.OPENROUTER))
+        // A busy moment still offers a retry.
+        assertEquals(
+            listOf(ErrorAction.RETRY),
+            errorActions(com.cedrickgd.morgenbriefing.ai.AiError.RateLimited, canRetry = true, provider = AiProviderId.OPENROUTER),
+        )
+        assertEquals(listOf(ErrorAction.RETRY), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.Unknown("x"), canRetry = true))
+    }
 }

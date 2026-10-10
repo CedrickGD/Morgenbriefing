@@ -4,6 +4,7 @@ import android.os.Build
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.ModelFallback
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import kotlinx.coroutines.flow.Flow
@@ -280,13 +281,31 @@ enum class AiKeyCheck {
  *   (e.g. "HTTP 403 · PERMISSION_DENIED · API_KEY_SERVICE_BLOCKED"), shown under "Details".
  * @property fallback Gemini: the chosen model could not generate with this key, [ModelFallback.to]
  *   could — the app uses that one for this key from now on.
+ * @property openRouter OpenRouter: what `GET /key` says about the account.
  */
 data class KeyCheckOutcome(
     val check: AiKeyCheck,
     val serverModels: List<String> = emptyList(),
     val diagnostic: String? = null,
     val fallback: ModelFallback? = null,
+    val openRouter: OpenRouterKeyInfo? = null,
 )
 
-/** What a key test needs besides the key: the Anthropic workspace id, the own server's address. */
-data class KeyExtras(val workspaceId: String? = null, val baseUrl: String? = null)
+/**
+ * What OpenRouter's `GET /key` says about an account (OC §7.9); every field null when not sent.
+ *
+ * @property freeTier `is_free_tier`: the account never bought credits (50 free requests a day).
+ * @property freeRequestsLeft `free_model_daily_requests.remaining`: requests to free models left today.
+ * @property freeRequestsPerDay `free_model_daily_requests.limit`: 50, or 1,000 with 10 $ bought.
+ */
+data class OpenRouterKeyInfo(
+    val freeTier: Boolean? = null,
+    val freeRequestsLeft: Int? = null,
+    val freeRequestsPerDay: Int? = null,
+)
+
+/**
+ * What a key test needs besides the key: the Anthropic workspace id, the own server's address and
+ * the OpenRouter tariff the key is tested for (null = the stored one).
+ */
+data class KeyExtras(val workspaceId: String? = null, val baseUrl: String? = null, val openRouterTier: OpenRouterTier? = null)

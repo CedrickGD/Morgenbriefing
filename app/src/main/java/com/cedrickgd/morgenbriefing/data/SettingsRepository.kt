@@ -19,6 +19,7 @@ import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.ModelFallback
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import com.cedrickgd.morgenbriefing.data.model.cleanApiKey
 import com.cedrickgd.morgenbriefing.data.model.Place
@@ -96,8 +97,8 @@ class SettingsRepository(context: Context) {
     /**
      * The API key of [provider] (docs/AI-PROVIDERS.md §3), stored encrypted like the GitHub
      * token. Trims whitespace; null/blank clears it with its flags (a removed Anthropic key also
-     * takes its workspace id along, a removed Gemini key its tariff, so the next setup starts
-     * fresh). [tested] false marks it as saved without a passed test
+     * takes its workspace id along, a removed Gemini or OpenRouter key its tariff, so the next
+     * setup starts fresh). [tested] false marks it as saved without a passed test
      * ([ProviderSettings.keyUntested]) until [markAiKeyWorks]. Saving a key (or none) always
      * drops the rejected mark ([ProviderSettings.keyRejected]) of the previous one.
      * @throws IOException if DataStore cannot persist the change.
@@ -114,6 +115,7 @@ class SettingsRepository(context: Context) {
                 when (provider) {
                     AiProviderId.ANTHROPIC -> it.remove(AiPrefKeys.ANTHROPIC_WORKSPACE_ID)
                     AiProviderId.GEMINI -> it.remove(AiPrefKeys.GEMINI_TIER)
+                    AiProviderId.OPENROUTER -> it.remove(AiPrefKeys.OPENROUTER_TIER)
                     else -> Unit
                 }
             }
@@ -132,11 +134,13 @@ class SettingsRepository(context: Context) {
     /**
      * The model that runs instead of the chosen one for the stored key of [provider]
      * ([ProviderSettings.modelFallback]); null removes it. With [key], only while [key] is still
-     * the stored one (a chat answer that ran while another key was saved must not set it); without
-     * it the caller has just saved the key it tested.
+     * the stored one (a chat answer that ran while another key was saved must not set it) and,
+     * with [geminiTier], while that is still the stored tariff (a switch dropped the fallback, an
+     * answer that finishes afterwards must not store it again); without [key] the caller has just
+     * saved the key it tested.
      * @throws IOException if DataStore cannot persist the change.
      */
-    suspend fun setModelFallback(provider: AiProviderId, fallback: ModelFallback?, key: String? = null) {
+    suspend fun setModelFallback(provider: AiProviderId, fallback: ModelFallback?, key: String? = null, geminiTier: GeminiTier? = null) {
         if (key == null) {
             store.edit { it.writeModelFallback(provider, fallback) }
             return
@@ -148,8 +152,8 @@ class SettingsRepository(context: Context) {
         if (encrypted.isNullOrBlank()) return
         val stored = withContext(Dispatchers.IO) { TokenCipher.decrypt(encrypted) }?.trim()
         if (stored == null || stored != candidate) return
-        // Same ciphertext as checked above: no other key was saved in between.
-        store.edit { if (it[slot] == encrypted) it.writeModelFallback(provider, fallback) }
+        // Same ciphertext as checked above (no other key was saved in between), same tariff.
+        store.edit { if (fallbackStillFits(it, provider, encrypted, geminiTier)) it.writeModelFallback(provider, fallback) }
     }
 
     /**
@@ -235,6 +239,15 @@ class SettingsRepository(context: Context) {
             if (before != tier) it.writeModelFallback(AiProviderId.GEMINI, null)
             it[AiPrefKeys.GEMINI_TIER] = tier.key
         }
+    }
+
+    /**
+     * The "Tarif" of the OpenRouter key ([OpenRouterTier.FREE] when never set): the free models
+     * without web search, or every model on the account's credits.
+     * @throws IOException if DataStore cannot persist the change.
+     */
+    suspend fun setOpenRouterTier(tier: OpenRouterTier) {
+        store.edit { it[AiPrefKeys.OPENROUTER_TIER] = tier.key }
     }
 
     /**

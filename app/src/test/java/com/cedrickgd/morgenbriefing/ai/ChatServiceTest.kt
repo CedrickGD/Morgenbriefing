@@ -191,6 +191,31 @@ class ChatServiceTest {
     }
 
     @Test
+    fun `a question refused for its gemini key is sent again with openrouter for free`() = runBlocking<Unit> {
+        settings.value = AppSettings().withAiKey(AiProviderId.GEMINI)
+        engine.scripts += { throw AiException(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED)) }
+        val session = service().session(article) as RetryableChatSession
+        session.send("Frage")
+        val failed = session.await { it.settled(2) }.messages.last()
+        assertEquals(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED), failed.error)
+        assertEquals(AiProviderId.GEMINI, failed.provider)
+
+        // OpenRouter set up on its free tariff and chosen for the chat: "Nochmal senden" asks it.
+        settings.value = AppSettings().withAiKey(AiProviderId.OPENROUTER)
+        val switched = session.await { it.provider == AiProviderId.OPENROUTER }
+        assertEquals("Ohne Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar", switched.note)
+        session.retry()
+        val answered = session.await { it.settled(2) && it.messages.last().status == ChatMessage.Status.DONE }
+        assertEquals(listOf("Frage", "Die Antwort."), answered.messages.map { it.text })
+        assertEquals(AiProviderId.OPENROUTER, answered.messages.last().provider)
+        // The free tariff: Gemma 4, no web search, the free quota instead of costs.
+        val request = engine.requests.last()
+        assertEquals("google/gemma-4-31b-it:free", request.model)
+        assertFalse(request.webSearch)
+        assertTrue(request.auth.freeTier)
+    }
+
+    @Test
     fun `a refused key is reported with the key the turn used, other errors are not`() = runBlocking<Unit> {
         val access = access(apiKey = "sk-ant-old")
         engine.scripts += { throw AiException(AiError.Network) }
@@ -203,6 +228,19 @@ class ChatServiceTest {
         session.send("Noch eine")
         assertEquals(AiError.InvalidKey, session.await { it.settled(4) }.messages.last().error)
         assertEquals(listOf(AiProviderId.ANTHROPIC to "sk-ant-old"), access.rejected)
+        assertTrue(access.unavailable.isEmpty())
+    }
+
+    @Test
+    fun `a model OpenRouter does not serve on the free tariff is reported, so the list loads anew`() = runBlocking<Unit> {
+        settings.value = AppSettings().withAiKey(AiProviderId.OPENROUTER)
+        val access = access()
+        engine.scripts += { throw AiException(AiError.ModelUnavailable("google/gemma-4-31b-it:free")) }
+        val session = service(access = access).session(article)
+        session.await { it.provider == AiProviderId.OPENROUTER }
+        session.send("Frage")
+        assertTrue(session.await { it.settled(2) }.messages.last().error is AiError.ModelUnavailable)
+        assertEquals(listOf(AiProviderId.OPENROUTER to true), access.unavailable)
     }
 
     @Test
@@ -529,6 +567,8 @@ class ChatServiceTest {
         val note = "Gemini 3.8 Flash ist für deinen Key nicht freigeschaltet – die App nutzt jetzt Gemini 3.7 Flash."
         assertEquals(note, first.note)
         assertEquals(listOf(listOf(AiProviderId.GEMINI, "AIza-test-invalid", "gemini-3.8-flash", "gemini-3.7-flash")), access.fallbacks)
+        // Stored only for the tariff the answer ran on, here with billing (a switch meanwhile dropped it for good).
+        assertEquals(listOf(false), access.fallbackFreeTiers)
 
         session.send("Zweite")
         assertEquals("$note\n${AiTexts.WITHOUT_WEB_SEARCH_NOTE}", session.await { it.settled(4) }.messages.last().note)

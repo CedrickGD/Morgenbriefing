@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Dns
 import androidx.compose.material.icons.rounded.ExpandLess
@@ -63,15 +64,18 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.KeyExtras
 import com.cedrickgd.morgenbriefing.ai.compat.CustomServer
 import com.cedrickgd.morgenbriefing.ai.compat.CustomUrlIssue
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
+import com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import com.cedrickgd.morgenbriefing.data.normalizeBaseUrl
 import com.cedrickgd.morgenbriefing.ui.components.ErrorDetails
@@ -80,14 +84,18 @@ import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
 /** Where Anthropic lists the workspaces and their ids. */
 private const val ANTHROPIC_WORKSPACES_URL = "https://platform.claude.com/settings/workspaces"
 
-/** The two Gemini key shapes, the prefixes in monospace: "AIza" never reads as "Alza". */
+/**
+ * The two Gemini key shapes, the prefixes in monospace: "AIza" never reads as "Alza". The app
+ * takes both, but Google currently refuses many new "AQ." keys (docs/AI-PROVIDERS.md §16): the
+ * line names the way out instead of promising that both work.
+ */
 private val GEMINI_KEY_SHAPES: AnnotatedString = buildAnnotatedString {
     val code = SpanStyle(fontFamily = FontFamily.Monospace)
     append("Neue Keys beginnen mit „")
     withStyle(code) { append("AQ.") }
     append("“, ältere mit „")
     withStyle(code) { append("AIza") }
-    append("“ – beide gehen.")
+    append("“ – die App nimmt beide. Lehnt Google einen neuen ab, hilft ein älterer oder OpenRouter kostenlos.")
 }
 
 /**
@@ -95,9 +103,13 @@ private val GEMINI_KEY_SHAPES: AnnotatedString = buildAnnotatedString {
  * how to get a key (Gemini: the short AI Studio guide and the "Tarif" choice), a link to the
  * console, a password field with show/hide and a format hint, and "Speichern & testen" — only a
  * key that works is stored; offline also "Ohne Test speichern", which says so. Claude has the
- * workspace id under "Erweitert", the own server an address field and an optional key. With a
- * stored key the field may stay blank: then the stored key is tested with the new settings.
- * [onRemove] (settings only) offers removing what is stored.
+ * workspace id under "Erweitert", the own server an address field and an optional key. With
+ * a stored key the field may stay blank: then the stored key is tested with the new settings.
+ * OpenRouter has its "Tarif" like Gemini: [initialOpenRouterTier] preselects one (credits when it
+ * was picked for Live), else the stored one. [selectOnSave] makes the provider the chat provider
+ * once the key is stored. [onSetUpOpenRouter]: the way out when Google refuses a Gemini key —
+ * OpenRouter's key dialog on the free tariff. [onRemove] (settings only) offers removing what is
+ * stored.
  */
 @Composable
 internal fun AiKeyDialog(
@@ -108,10 +120,14 @@ internal fun AiKeyDialog(
     onOpenLink: (String) -> Unit,
     onRemove: (() -> Unit)?,
     onDismiss: () -> Unit,
+    initialOpenRouterTier: OpenRouterTier? = null,
+    selectOnSave: Boolean = false,
+    onSetUpOpenRouter: (() -> Unit)? = null,
 ) {
     val custom = spec.id == AiProviderId.CUSTOM
     val anthropic = spec.id == AiProviderId.ANTHROPIC
     val gemini = spec.id == AiProviderId.GEMINI
+    val openRouter = spec.id == AiProviderId.OPENROUTER
     val configured = stored.hasKey || (custom && !stored.baseUrl.isNullOrBlank())
     // Deliberately not rememberSaveable: the secret should not end up in saved instance state.
     var key by remember { mutableStateOf("") }
@@ -119,6 +135,7 @@ internal fun AiKeyDialog(
     var address by rememberSaveable { mutableStateOf(stored.baseUrl.orEmpty()) }
     var workspace by rememberSaveable { mutableStateOf(stored.workspaceId.orEmpty()) }
     var tier by rememberSaveable { mutableStateOf(stored.geminiTier) }
+    var openRouterTier by rememberSaveable { mutableStateOf(initialOpenRouterTier ?: stored.openRouterTier) }
     var advanced by rememberSaveable { mutableStateOf(!stored.workspaceId.isNullOrBlank()) }
     LaunchedEffect(state) {
         if (state.failedWith(AiKeyProblem.WORKSPACE_REQUIRED) || state.failedWith(AiKeyProblem.WORKSPACE_INVALID)) {
@@ -129,15 +146,20 @@ internal fun AiKeyDialog(
     val saved = state.isSaved
     val addressIssue = if (custom) CustomServer.issue(address) else null
     val canSave = !checking && if (custom) addressIssue == null else key.isNotBlank() || stored.hasKey
-    val message = aiKeyMessage(state, spec)
+    val formatIssue = if (key.isNotBlank()) aiKeyFormatIssue(key, spec) else null
+    val message = aiKeyMessage(state, spec, formatIssue)
     val colors = MaterialTheme.colorScheme
     // The check's line sits under the key field: with the Gemini tariff texts above it, it can be
     // below the fold when "Speichern & testen" was tapped — scrolled into view once it changes.
+    // A refused Gemini auth key also brings its way out ("OpenRouter kostenlos einrichten") along.
     val messageInView = remember { BringIntoViewRequester() }
+    val planBInView = remember { BringIntoViewRequester() }
+    val offersPlanB = onSetUpOpenRouter != null && aiKeyOffersOpenRouter(state)
     LaunchedEffect(state) {
         if (state != AiKeyState.Idle) {
             withFrameNanos { }
             messageInView.bringIntoView()
+            if (offersPlanB) planBInView.bringIntoView()
         }
     }
 
@@ -151,6 +173,8 @@ internal fun AiKeyDialog(
                     baseUrl = address.trim().takeIf { custom },
                 ),
                 geminiTier = tier.takeIf { gemini },
+                openRouterTier = openRouterTier.takeIf { openRouter },
+                selectProvider = selectOnSave,
             ),
         )
     }
@@ -186,28 +210,44 @@ internal fun AiKeyDialog(
             Spacer(Modifier.height(8.dp))
             GeminiTierChoice(selected = tier, onSelect = { tier = it }, compact = true, enabled = !checking && !saved)
         }
+        if (openRouter) {
+            Spacer(Modifier.height(18.dp))
+            Overline("Tarif")
+            Spacer(Modifier.height(8.dp))
+            OpenRouterTierChoice(selected = openRouterTier, onSelect = { openRouterTier = it }, compact = true, enabled = !checking && !saved)
+        }
         if (custom) {
             Spacer(Modifier.height(14.dp))
+            val addressHint = addressIssue?.let(CustomServer::hint) ?: "Ollama nutzt Port 11434, LM Studio Port 1234."
             OutlinedTextField(
                 value = address,
                 onValueChange = { address = it },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .keepInViewWhileTyping(addressHint),
                 label = { Text("Server-Adresse") },
                 placeholder = { Text("http://nas.fritz.box:11434/v1") },
                 singleLine = true,
                 enabled = !checking,
                 isError = addressIssue != null && addressIssue != CustomUrlIssue.BLANK,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
-                supportingText = {
-                    Text(addressIssue?.let(CustomServer::hint) ?: "Ollama nutzt Port 11434, LM Studio Port 1234.")
-                },
+                supportingText = { Text(addressHint) },
             )
         }
         Spacer(Modifier.height(if (custom) 4.dp else 14.dp))
+        val keyHint = when {
+            formatIssue != null -> aiKeyFormatHint(formatIssue, spec)
+            key.isBlank() && stored.hasKey -> "Leer lassen, um den gespeicherten Key zu behalten."
+            custom -> "Nur nötig, wenn dein Server einen verlangt. Wird verschlüsselt gespeichert."
+            else -> "Wird verschlüsselt nur auf diesem Gerät gespeichert."
+        }
         OutlinedTextField(
             value = key,
             onValueChange = { key = it },
-            modifier = Modifier.fillMaxWidth(),
+            // The hint under the field may take two lines: it stays above the keyboard too.
+            modifier = Modifier
+                .fillMaxWidth()
+                .keepInViewWhileTyping(keyHint),
             label = { Text(if (custom) "API-Key (optional)" else "API-Key") },
             placeholder = { Text(spec.keyPlaceholder) },
             singleLine = true,
@@ -223,17 +263,7 @@ internal fun AiKeyDialog(
                     )
                 }
             },
-            supportingText = {
-                val issue = if (key.isNotBlank()) aiKeyFormatIssue(key, spec) else null
-                Text(
-                    when {
-                        issue != null -> aiKeyFormatHint(issue, spec)
-                        key.isBlank() && stored.hasKey -> "Leer lassen, um den gespeicherten Key zu behalten."
-                        custom -> "Nur nötig, wenn dein Server einen verlangt. Wird verschlüsselt gespeichert."
-                        else -> "Wird verschlüsselt nur auf diesem Gerät gespeichert."
-                    },
-                )
-            },
+            supportingText = { Text(keyHint) },
         )
         if (anthropic) {
             WorkspaceSection(
@@ -261,7 +291,9 @@ internal fun AiKeyDialog(
                     text = message,
                     style = MaterialTheme.typography.bodyMedium,
                     color = when (state) {
-                        AiKeyState.Saved, is AiKeyState.ServerConnected, is AiKeyState.SavedWithFallback -> StatusPalette.ok()
+                        AiKeyState.Saved, is AiKeyState.ServerConnected, is AiKeyState.SavedWithFallback,
+                        is AiKeyState.SavedWithKeyInfo,
+                        -> StatusPalette.ok()
                         AiKeyState.SavedNoCredit, is AiKeyState.SavedQuotaExhausted -> StatusPalette.attention()
                         AiKeyState.Checking, AiKeyState.SavedUntested -> colors.onSurfaceVariant
                         else -> colors.error
@@ -275,6 +307,18 @@ internal fun AiKeyDialog(
             Spacer(Modifier.height(4.dp))
             GlassPillButton(text = fix.label, onClick = { onOpenLink(fix.url) }, icon = Icons.AutoMirrored.Rounded.OpenInNew, style = PillStyle.Quiet)
         }
+        if (offersPlanB && onSetUpOpenRouter != null) {
+            Spacer(Modifier.height(8.dp))
+            GlassPillButton(
+                text = AiTexts.OPENROUTER_PLAN_B,
+                onClick = onSetUpOpenRouter,
+                modifier = Modifier.bringIntoViewRequester(planBInView),
+                icon = Icons.Rounded.AutoAwesome,
+                style = PillStyle.Tonal,
+                // The way out must read in full: one line is too narrow for it in a 360 dp wide dialog.
+                maxLines = 2,
+            )
+        }
         if (canSaveUntested(state) && (key.isNotBlank() || custom)) {
             Spacer(Modifier.height(8.dp))
             GlassPillButton(text = "Ohne Test speichern", onClick = { submit(skipTest = true) }, style = PillStyle.Quiet)
@@ -287,8 +331,8 @@ internal fun AiKeyDialog(
 }
 
 /**
- * "So bekommst du den Key": Gemini gets the short AI Studio path in one line (G2), every other
- * provider its numbered steps; then the tip and the link to the console.
+ * "So bekommst du den Key": Gemini and OpenRouter get their short path in one line (G2), every
+ * other provider its numbered steps; then the tip and the link to the console.
  */
 @Composable
 private fun KeyGuide(spec: ProviderSpec, onOpenLink: (String) -> Unit) {
@@ -297,9 +341,9 @@ private fun KeyGuide(spec: ProviderSpec, onOpenLink: (String) -> Unit) {
         Overline("So bekommst du den Key")
         Spacer(Modifier.height(8.dp))
     }
-    if (spec.id == AiProviderId.GEMINI) {
+    if (spec.id == AiProviderId.GEMINI || spec.id == AiProviderId.OPENROUTER) {
         Text(
-            GeminiTiers.KEY_GUIDE,
+            if (spec.id == AiProviderId.GEMINI) GeminiTiers.KEY_GUIDE else OpenRouterTiers.KEY_GUIDE,
             style = MaterialTheme.typography.titleSmall,
             color = colors.onSurface,
             modifier = Modifier
@@ -307,12 +351,14 @@ private fun KeyGuide(spec: ProviderSpec, onOpenLink: (String) -> Unit) {
                 .lamina()
                 .padding(horizontal = 14.dp, vertical = 12.dp),
         )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            GEMINI_KEY_SHAPES,
-            style = MaterialTheme.typography.bodySmall,
-            color = colors.onSurfaceVariant,
-        )
+        if (spec.id == AiProviderId.GEMINI) {
+            Spacer(Modifier.height(6.dp))
+            Text(
+                GEMINI_KEY_SHAPES,
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant,
+            )
+        }
     } else {
         Steps(spec.keySteps)
     }
@@ -369,6 +415,33 @@ internal fun GeminiTierChoice(selected: GeminiTier, onSelect: (GeminiTier) -> Un
     }
 }
 
+/**
+ * The OpenRouter "Tarif": "Kostenlos (Gratis-Modelle)" (the default of a new setup) or "Mit
+ * Guthaben", each with its line, then what free models may do with requests or what credits open.
+ * [compact] and [enabled] as in [GeminiTierChoice].
+ */
+@Composable
+internal fun OpenRouterTierChoice(selected: OpenRouterTier, onSelect: (OpenRouterTier) -> Unit, compact: Boolean = false, enabled: Boolean = true) {
+    Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        OpenRouterTier.entries.forEach { tier ->
+            ChoiceRow(
+                title = OpenRouterTiers.label(tier),
+                subtitle = OpenRouterTiers.subtitle(tier),
+                selected = tier == selected,
+                onSelect = { onSelect(tier) },
+                enabled = enabled,
+                compact = compact,
+            )
+        }
+    }
+    Spacer(Modifier.height(8.dp))
+    Text(
+        if (selected == OpenRouterTier.FREE) OpenRouterTiers.PRIVACY else OpenRouterTiers.CREDITS_NOTE,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
 /** "Erweitert: Workspace-ID" of the Claude key dialog, collapsed unless an id is stored or needed. */
 @Composable
 private fun WorkspaceSection(
@@ -403,16 +476,19 @@ private fun WorkspaceSection(
                 color = colors.onSurfaceVariant,
             )
             Spacer(Modifier.height(8.dp))
+            val hint = workspaceIdHint(workspace)
             OutlinedTextField(
                 value = workspace,
                 onValueChange = onWorkspace,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .keepInViewWhileTyping(hint),
                 label = { Text("Workspace-ID") },
                 placeholder = { Text("wrkspc_…") },
                 singleLine = true,
                 enabled = enabled,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii, imeAction = ImeAction.Done),
-                supportingText = workspaceIdHint(workspace)?.let { hint -> { Text(hint) } },
+                supportingText = hint?.let { { Text(it) } },
             )
             GlassPillButton(
                 text = "Workspaces öffnen",

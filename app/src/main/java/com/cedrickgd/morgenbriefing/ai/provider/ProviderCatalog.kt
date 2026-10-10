@@ -3,6 +3,7 @@ package com.cedrickgd.morgenbriefing.ai.provider
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 
 /**
  * The one place with per-provider facts (docs/AI-PROVIDERS.md §2): names, engines, endpoints,
@@ -178,23 +179,29 @@ object ProviderCatalog {
         defaultModel = "google/gemini-3.8-flash",
     )
 
+    /**
+     * OpenRouter: a free tariff with the zero-price models (no payment method needed, no web
+     * search, no Live) or credits for every model; see [OpenRouterTiers]. The free models come
+     * live from `GET /models` ([com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFree]), the
+     * curated [ProviderSpec.models] are the credits tariff's.
+     */
     val OPENROUTER = ProviderSpec(
         id = AiProviderId.OPENROUTER,
         name = "OpenRouter",
         brand = "OpenRouter",
-        tagline = "Ein Key für viele Modelle – Claude, GPT, Gemini und mehr.",
+        tagline = "Auch kostenlos mit Gratis-Modellen – mit Guthaben Claude, GPT, Gemini und mehr.",
         engine = EngineKind.CHAT_COMPLETIONS,
         baseUrl = "https://openrouter.ai/api/v1",
         chatWebSearch = true,
         live = LiveSupport.YES,
         liveToolNote = LiveToolNote.SEARCH_ONLY,
         needsSdk = false,
-        consoleUrl = "https://openrouter.ai/settings/keys",
+        consoleUrl = "https://openrouter.ai/keys",
         consoleLabel = "openrouter.ai öffnen",
         keySteps = listOf(
             "openrouter.ai öffnen und anmelden",
-            "„Keys“ → „Create Key“",
-            "Unter „Credits“ Guthaben kaufen",
+            "„Keys“ → „Create Key“ (kein Zahlungsmittel nötig)",
+            "Nur für „Mit Guthaben“: unter „Credits“ Guthaben kaufen",
             COPY_KEY,
         ),
         keyTip = "Ein Key für viele Modelle. Am Key kannst du ein Ausgabenlimit setzen.",
@@ -308,10 +315,17 @@ object ProviderCatalog {
     /**
      * The model chosen for [id]: the stored one, else the catalog default. A free Gemini key
      * never runs a model that needs billing (the tier may have been switched back) — it falls
-     * back to the default instead of failing. The model picker marks this one; a key test tries
-     * it first.
+     * back to the default instead of failing. OpenRouter on the free tariff runs its free model
+     * ([com.cedrickgd.morgenbriefing.data.model.ProviderSettings.freeModel], else
+     * [OpenRouterTiers.DEFAULT_FREE_MODEL]), never the model of the credits tariff — and never a
+     * stored id that is not one of OpenRouter's free variants ([OpenRouterTiers.looksFree]): a
+     * model that cost nothing only for a promotion bills the credits once it ends. The model
+     * picker marks this one; a key test tries it first.
      */
     fun selectedModel(ai: AiSettings, id: AiProviderId): String {
+        if (ai.isOpenRouterFree(id)) {
+            return ai.of(id).freeModel?.trim()?.takeIf { OpenRouterTiers.looksFree(it) } ?: OpenRouterTiers.DEFAULT_FREE_MODEL
+        }
         val spec = spec(id)
         val stored = ai.of(id).model?.trim()?.takeIf { it.isNotEmpty() } ?: return spec.defaultModel
         return if (isModelSelectable(ai, id, stored)) stored else spec.defaultModel
@@ -356,10 +370,94 @@ object ProviderCatalog {
     private val GEMINI_PRO = Regex("""(^|[-/])pro(-|$)""")
 
     /**
-     * Whether the chat with [id] may search the web as configured: the provider can, and a Gemini
-     * key is not on the free tier (free keys get no Google Search on Gemini 3.x).
+     * Whether the chat with [id] may search the web as configured: the provider can, and the key
+     * is not on a free tariff (free Gemini keys get no Google Search on Gemini 3.x, OpenRouter's
+     * `openrouter:web_search` needs credits).
      */
-    fun chatWebSearch(ai: AiSettings, id: AiProviderId): Boolean = spec(id).chatWebSearch && !ai.isGeminiFree(id)
+    fun chatWebSearch(ai: AiSettings, id: AiProviderId): Boolean = spec(id).chatWebSearch && !ai.isFreeTier(id)
+
+    /**
+     * Whether "⚡ Live" can run with [id] as configured: the provider's [ProviderSpec.live], except
+     * that OpenRouter on the free tariff has no web search and so no Live.
+     */
+    fun liveSupport(ai: AiSettings, id: AiProviderId): LiveSupport =
+        if (ai.isOpenRouterFree(id)) LiveSupport.NO_WEB_SEARCH else spec(id).live
+
+    /** [liveSupport] is [LiveSupport.YES]. */
+    fun canRunLive(ai: AiSettings, id: AiProviderId): Boolean = liveSupport(ai, id) == LiveSupport.YES
+
+    /** Why "⚡ Live" cannot run with [id] as configured, in one sentence; null when it can. */
+    fun liveUnavailableText(ai: AiSettings, id: AiProviderId): String? =
+        if (ai.isOpenRouterFree(id)) OpenRouterTiers.LIVE_UNAVAILABLE else spec(id).liveUnavailableText
+}
+
+/**
+ * Wording and defaults of the OpenRouter "Tarif" (key dialog, settings, chat, Live). [OpenRouterTier.FREE]
+ * is the default of a new OpenRouter setup; the limits are OpenRouter's (OC §7.9): free models 20
+ * requests a minute and 50 a day, 1,000 a day once 10 $ of credits were bought.
+ */
+object OpenRouterTiers {
+    /** The free model a new free setup runs, when OpenRouter lists it (Google's open model). */
+    const val DEFAULT_FREE_MODEL = "google/gemma-4-31b-it:free"
+
+    /** The short guide of the key dialog (with the link [ProviderCatalog.OPENROUTER]'s console URL). */
+    const val KEY_GUIDE = "openrouter.ai → Anmelden → Keys → Create Key (kein Zahlungsmittel nötig)"
+
+    /** Daily free requests without purchased credits, and with at least 10 $ bought. */
+    const val FREE_PER_DAY = 50
+    const val FREE_PER_DAY_WITH_CREDITS = 1_000
+
+    /** Calm note in a chat on the free tariff. */
+    const val NO_WEB_SEARCH_NOTE = "Ohne Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar"
+
+    /** Why Live does not run on the free tariff. */
+    const val LIVE_UNAVAILABLE = "Live braucht Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar."
+
+    /**
+     * A free request after the daily free quota is used up (HTTP 429 on a free model). Without a
+     * number: the day has 50 requests, or 1,000 once 10 $ of credits were bought — also on this tariff.
+     */
+    const val QUOTA_EXHAUSTED = "Gratis-Kontingent von OpenRouter für heute aufgebraucht – morgen geht's weiter."
+
+    /** The same for a free model on the credits tariff, where models with a price still run. */
+    const val QUOTA_EXHAUSTED_WITH_CREDITS =
+        "Gratis-Kontingent von OpenRouter für heute aufgebraucht – morgen geht's weiter, oder wähl ein Modell mit Preis."
+
+    /** 402: credits used up — with a negative balance OpenRouter blocks the free models too. */
+    const val NO_CREDIT =
+        "Dein Guthaben bei OpenRouter ist aufgebraucht oder im Minus – dann gehen auch die Gratis-Modelle nicht. " +
+            "Lade es unter „Credits“ auf, dann geht es weiter."
+
+    /** Under the tariff choice: what free models may do with requests. */
+    const val PRIVACY = "Bei Gratis-Modellen dürfen die Anbieter deine Anfragen je nach Modell speichern und auswerten."
+
+    /** With credits: what the tariff opens. */
+    const val CREDITS_NOTE = "Mit Guthaben laufen alle Modelle mit Websuche und ⚡ Live; ab 10 $ gekauftem Guthaben " +
+        "gibt es außerdem 1.000 Gratis-Anfragen am Tag."
+
+    /** Name of a tariff in the picker. */
+    fun label(tier: OpenRouterTier): String = when (tier) {
+        OpenRouterTier.FREE -> "Kostenlos (Gratis-Modelle)"
+        OpenRouterTier.CREDITS -> "Mit Guthaben"
+    }
+
+    /** The line under a tariff in the choice. */
+    fun subtitle(tier: OpenRouterTier): String = when (tier) {
+        OpenRouterTier.FREE -> "Kein Zahlungsmittel nötig. Nur Gratis-Modelle wie Gemma 4, ohne Websuche – bis 50 Anfragen am Tag."
+        OpenRouterTier.CREDITS -> "Guthaben bei OpenRouter kaufen. Alle Modelle, mit Websuche und ⚡ Live."
+    }
+
+    /** A model id that names one of OpenRouter's free variants (`…:free`) or its free router. */
+    fun looksFree(model: String): Boolean {
+        val id = model.trim()
+        return id.endsWith(":free") || id == FREE_ROUTER
+    }
+
+    /** OpenRouter's router that picks a free model at random. */
+    const val FREE_ROUTER = "openrouter/free"
+
+    /** "1.000" — free request counts the German way. */
+    fun count(value: Int): String = String.format(java.util.Locale.GERMANY, "%,d", value)
 }
 
 /**

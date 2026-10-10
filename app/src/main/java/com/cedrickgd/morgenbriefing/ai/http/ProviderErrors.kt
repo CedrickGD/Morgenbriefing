@@ -5,6 +5,7 @@ import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.AiException
 import com.cedrickgd.morgenbriefing.ai.GeminiProblem
 import com.cedrickgd.morgenbriefing.ai.ProviderAuth
+import com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import kotlinx.serialization.json.Json
@@ -50,17 +51,18 @@ internal object ProviderErrors {
     /**
      * Any failure of a request to [provider]. An [AiException] keeps its error, an
      * [AiBlockedException] is no API failure (null), anything unexpected is [AiError.Unknown].
-     * [freeTier]: a free Gemini key (a 429 then means the free quota is used up).
+     * [freeTier]: a key on a free tariff, Gemini or OpenRouter (a 429 may then mean the free
+     * quota is used up).
      */
     fun map(provider: AiProviderId, failure: Throwable, model: String?, freeTier: Boolean = false): MappedError? = when (failure) {
         is AiException -> MappedError(failure.error)
         is AiBlockedException -> null
-        is HttpFailure -> http(provider, failure.code, failure.body, failure.retryAfter, model, freeTier)
+        is HttpFailure -> http(provider, failure.code, failure.body, failure.retryAfter, model, freeTier, failure.rateLimit)
         is IOException -> io(provider, failure)
         else -> MappedError(AiError.Unknown(null))
     }
 
-    /** A non-2xx answer (§8.1). */
+    /** A non-2xx answer (§8.1); [rateLimit] are its `X-RateLimit-*` headers ([HttpFailure.rateLimit]). */
     fun http(
         provider: AiProviderId,
         code: Int,
@@ -68,9 +70,10 @@ internal object ProviderErrors {
         retryAfter: Duration?,
         model: String?,
         freeTier: Boolean = false,
+        rateLimit: Map<String, String> = emptyMap(),
     ): MappedError {
         val e = ApiErrorBody.parse(body)
-        specific(provider, code, e, retryAfter, model, freeTier)?.let { return it }
+        specific(provider, code, e, retryAfter, model, freeTier, rateLimit)?.let { return it }
         val brand = brand(provider)
         return when {
             code == 401 -> MappedError(AiError.InvalidKey)
@@ -92,6 +95,7 @@ internal object ProviderErrors {
         retryAfter: Duration?,
         model: String?,
         freeTier: Boolean,
+        rateLimit: Map<String, String>,
     ): MappedError? = when (provider) {
         AiProviderId.OPENAI -> when {
             code == 400 && e.namesUnknownModel() -> MappedError(AiError.ModelUnavailable(model))
@@ -117,7 +121,10 @@ internal object ProviderErrors {
             e.hasReason(*GEMINI_API_BLOCKED) -> MappedError(AiError.GeminiAccess(GeminiProblem.API_BLOCKED))
             e.reasons.any { it in GEMINI_KEY_RESTRICTED } -> MappedError(AiError.GeminiAccess(GeminiProblem.KEY_RESTRICTED))
             code == 401 && e.hasReason("ACCESS_TOKEN_TYPE_UNSUPPORTED") -> MappedError(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED))
-            code == 400 && e.status == "FAILED_PRECONDITION" -> MappedError(AiError.GeminiAccess(GeminiProblem.FREE_TIER_UNAVAILABLE))
+            // Only a precondition about the free tier, billing or the country: any other one stays
+            // a refused request with its Details instead of a wrong "enable billing" text.
+            code == 400 && e.status == "FAILED_PRECONDITION" && e.namesFreeTierOrRegion() ->
+                MappedError(AiError.GeminiAccess(GeminiProblem.FREE_TIER_UNAVAILABLE))
             e.isGeminiModelProblem(code) -> MappedError(AiError.ModelUnavailable(model))
             code == 403 -> MappedError(AiError.Unknown("Der Key darf die Gemini API nicht nutzen."))
             code == 429 && freeTier -> {
@@ -130,9 +137,14 @@ internal object ProviderErrors {
             else -> null
         }
         AiProviderId.OPENROUTER -> when {
-            // 402 with Retry-After: an upstream's credit check, temporary (OC §9).
+            // 402 with Retry-After: an upstream's credit check, temporary (OC §9). Without it the
+            // credits are used up — or negative, which blocks the free models too (OC §7.9).
             code == 402 && retryAfter != null -> MappedError(AiError.RateLimited, retryable = true, retryAfter = retryAfter)
             code == 403 -> MappedError(AiError.Unknown("OpenRouter hat die Anfrage abgelehnt (Moderation oder Rechte)."))
+            // "No endpoints found matching your data policy": the account's privacy settings
+            // exclude every provider of a free model (UNVERIFIED wording, seen in the wild).
+            code == 404 && e.message.orEmpty().contains("data policy", ignoreCase = true) -> MappedError(AiError.Unknown(OPENROUTER_DATA_POLICY_TEXT))
+            code == 429 && (freeTier || OpenRouterTiers.looksFree(model.orEmpty())) -> openRouterFreeQuota(e, retryAfter, freeTier, rateLimit)
             else -> null
         }
         AiProviderId.CUSTOM -> when (code) {
@@ -143,6 +155,37 @@ internal object ProviderErrors {
             else -> null
         }
         AiProviderId.ANTHROPIC, AiProviderId.PERPLEXITY, AiProviderId.MISTRAL, AiProviderId.DEEPSEEK -> null
+    }
+
+    /**
+     * A 429 for a free OpenRouter model (OC §7.9: 20 requests a minute, 50 a day without bought
+     * credits, 1,000 with). Only the day's quota waits for tomorrow — reported at once, never
+     * hammered ([isOpenRouterDayQuota]). Every other 429 passes after a short wait: the minute's
+     * limit ("free-models-per-min") and, most often, a busy upstream — "Provider returned error"
+     * with the provider's own words in `metadata.raw` ("… is temporarily rate-limited upstream.
+     * Please retry shortly …"). [freeTariff] false: a free model on the credits tariff.
+     */
+    private fun openRouterFreeQuota(e: ApiErrorBody, retryAfter: Duration?, freeTariff: Boolean, rateLimit: Map<String, String>): MappedError =
+        when {
+            !isOpenRouterDayQuota(e, rateLimit) -> MappedError(AiError.RateLimited, retryable = true, retryAfter = retryAfter)
+            freeTariff -> MappedError(AiError.QuotaExhausted)
+            else -> MappedError(AiError.Unknown(OpenRouterTiers.QUOTA_EXHAUSTED_WITH_CREDITS))
+        }
+
+    /**
+     * OpenRouter's daily free quota is used up: its message (or the upstream's) names the day's
+     * limit ("Rate limit exceeded: free-models-per-day. …"), or the rate-limit headers — the body's
+     * `metadata.headers`, else the response's [rateLimit] — show a daily limit (50 or 1,000) with
+     * nothing left. The minute's limit (20, "free-models-per-min") never counts as the day's.
+     */
+    private fun isOpenRouterDayQuota(e: ApiErrorBody, rateLimit: Map<String, String>): Boolean {
+        val text = listOfNotNull(e.message, e.upstream).joinToString(" ").lowercase()
+        if ("per-min" in text) return false
+        if ("per-day" in text) return true
+        val headers = rateLimit + e.rateLimit
+        val limit = headers["x-ratelimit-limit"]?.trim()?.toIntOrNull()
+        val remaining = headers["x-ratelimit-remaining"]?.trim()?.toIntOrNull()
+        return remaining == 0 && (limit == OpenRouterTiers.FREE_PER_DAY || limit == OpenRouterTiers.FREE_PER_DAY_WITH_CREDITS)
     }
 
     /**
@@ -265,6 +308,11 @@ internal object ProviderErrors {
     /** The longest wait a free Gemini quota is retried for; anything longer is reported at once. */
     private val FREE_QUOTA_MAX_WAIT = 20.seconds
 
+    /** OpenRouter found no provider for a model that fits the account's privacy settings. */
+    const val OPENROUTER_DATA_POLICY_TEXT =
+        "Für dieses Modell findet OpenRouter keinen Anbieter, der zu deinen Datenschutz-Einstellungen passt. " +
+            "Erlaub unter openrouter.ai/settings/privacy die Gratis-Modelle – oder wähl ein anderes."
+
     const val CLEARTEXT_TEXT =
         "http:// geht nur mit Namen wie nas.fritz.box oder nas.local – nicht mit einer IP-Adresse. Nimm den Namen oder https://."
 
@@ -315,6 +363,13 @@ internal class ApiErrorBody(
     val helpLinks: List<String> = emptyList(),
     /** google.rpc `QuotaFailure.violations`. */
     val quotaViolations: List<QuotaViolation> = emptyList(),
+    /**
+     * OpenRouter's `error.metadata.raw`: the upstream provider's own error behind "Provider
+     * returned error" — a string as it is, an object as its JSON.
+     */
+    val upstream: String? = null,
+    /** OpenRouter's `error.metadata.headers` (`X-RateLimit-Limit`, …), names lower-cased. */
+    val rateLimit: Map<String, String> = emptyMap(),
 ) {
     fun hasCode(vararg codes: String): Boolean = codes.any { it == code || it == type }
 
@@ -346,6 +401,13 @@ internal class ApiErrorBody(
     fun isGeminiKeyInvalid(): Boolean =
         "API_KEY_INVALID" in reasons || message.orEmpty().contains("API key not valid", ignoreCase = true)
 
+    /**
+     * Gemini's precondition names the free tier, billing or where the user is: "Gemini API free tier
+     * is not available in your country. Please enable billing …", "User location is not supported
+     * for the API use without a billing account linked."
+     */
+    fun namesFreeTierOrRegion(): Boolean = FREE_TIER_OR_REGION.containsMatchIn(message.orEmpty())
+
     /** The message is about the API key, e.g. xAI's 400 "Incorrect API key provided. …". */
     fun namesApiKey(): Boolean = message.orEmpty().contains("API key", ignoreCase = true)
 
@@ -355,6 +417,7 @@ internal class ApiErrorBody(
         /** "limit: 0" in a google.rpc quota message (the QuotaFailure detail may be missing). */
         private val ZERO_LIMIT = Regex("""\blimit:\s*0\b(?![.,]\d)""")
         private val SEARCH_QUOTA = listOf("search", "grounding")
+        private val FREE_TIER_OR_REGION = Regex("""free[\s_-]*tier|billing|location|country""", RegexOption.IGNORE_CASE)
 
         fun parse(body: String): ApiErrorBody {
             if (body.isBlank()) return ApiErrorBody()
@@ -376,6 +439,8 @@ internal class ApiErrorBody(
             val details = (o["details"] as? JsonArray).orEmpty().mapNotNull { it as? JsonObject }
             fun detailsOf(type: String) = details.filter { it["@type"].text().orEmpty().endsWith(type) }
             val errorInfos = detailsOf("ErrorInfo")
+            // OpenRouter: {"error": {code, message, metadata: {raw, provider_name, headers}}}.
+            val openRouter = o["metadata"] as? JsonObject
             return ApiErrorBody(
                 message = o["message"].text() ?: o["detail"].text(),
                 type = o["type"].text(),
@@ -399,6 +464,8 @@ internal class ApiErrorBody(
                         )
                     }
                 },
+                upstream = openRouter?.get("raw")?.let { raw -> raw.text() ?: (raw as? JsonObject)?.toString() ?: (raw as? JsonArray)?.toString() },
+                rateLimit = openRouter?.get("headers").textMap().mapKeys { it.key.lowercase() },
             )
         }
 

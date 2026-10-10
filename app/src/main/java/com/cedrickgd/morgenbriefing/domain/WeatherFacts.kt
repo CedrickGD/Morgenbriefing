@@ -93,6 +93,37 @@ internal fun precipNoun(condition: Condition): String = when (condition) {
     else -> "Regen"
 }
 
+/** What falls from the sky, for the short precipitation chip ("Schnee 80 %"). */
+internal enum class PrecipKind(val word: String, val emoji: String) {
+    RAIN("Regen", "💧"),
+    SNOW("Schnee", "❄️"),
+
+    /** Snow and rain in the same hours. */
+    SLEET("Schneeregen", "🌨️"),
+}
+
+/**
+ * The kind of precipitation the wet ones of [conditions] bring: only snow (and snow showers) is
+ * [PrecipKind.SNOW], snow next to rain, drizzle, freezing rain or thunder is
+ * [PrecipKind.SLEET], everything else — also no precipitation at all — [PrecipKind.RAIN].
+ */
+internal fun precipKind(conditions: List<Condition>): PrecipKind {
+    val wet = conditions.filter { it.isWet }
+    val snow = wet.any { it.isSnow }
+    val rain = wet.any { !it.isSnow }
+    return when {
+        snow && rain -> PrecipKind.SLEET
+        snow -> PrecipKind.SNOW
+        else -> PrecipKind.RAIN
+    }
+}
+
+/** The kind of precipitation at home: now and in the next hours (the hours the chip's chance covers). */
+internal fun precipKind(home: HomeWeather): PrecipKind =
+    precipKind(listOf(Condition.fromCode(home.current.code)) + home.nextHours.map { it.condition })
+
+private val Condition.isSnow: Boolean get() = this == Condition.SNOW || this == Condition.SNOW_SHOWERS
+
 /** "ab Mittag" for 12/13 Uhr, otherwise "ab 15 Uhr"; "später" when the hour is unknown. */
 internal fun fromHour(hour: Int?): String = when (hour) {
     null -> "später"

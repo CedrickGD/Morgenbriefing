@@ -45,7 +45,8 @@ interface RetryableChatSession : ChatSession {
  * restored from [store] after a restart. Each turn asks [access] for the chat provider of that
  * moment (D1) and streams the answer through its backend; every session shows the provider and
  * why it is blocked, live ([AiProviderAccess.status]). A key the provider refuses
- * ([AiError.InvalidKey]) is reported to [AiProviderAccess.keyRejected].
+ * ([AiError.InvalidKey]) is reported to [AiProviderAccess.keyRejected], a model it does not serve
+ * ([AiError.ModelUnavailable]) to [AiProviderAccess.modelUnavailable].
  */
 internal class ChatServiceImpl(
     private val scope: CoroutineScope,
@@ -282,7 +283,9 @@ internal class ChatServiceImpl(
                 // the chosen model — the one asked for may already be a fallback of it, which
                 // ProviderCatalog.effectiveModel would not apply to the chosen one.
                 val fallback = result.fallbackModel?.takeIf { it != resolved.model }
-                if (fallback != null) access.modelFallback(resolved.auth.provider, resolved.auth.apiKey, resolved.selectedModel, fallback)
+                if (fallback != null) {
+                    access.modelFallback(resolved.auth.provider, resolved.auth.apiKey, resolved.selectedModel, fallback, resolved.auth.freeTier)
+                }
                 finish(answerId) { message ->
                     val text = result.text.ifBlank { buffer.toString() }.trim()
                     // Grounded text is never shown without its Search Suggestions (Gemini terms).
@@ -358,6 +361,7 @@ internal class ChatServiceImpl(
             } catch (e: AiException) {
                 // Settings → KI says so before the chat shows the error.
                 if (e.error.rejectsKey) access.keyRejected(resolved.auth.provider, resolved.auth.apiKey)
+                if (e.error is AiError.ModelUnavailable) access.modelUnavailable(resolved.auth.provider, resolved.auth.freeTier)
                 val withheld = withheld(answerId, grounded)
                 finish(answerId) {
                     it.copy(

@@ -8,7 +8,9 @@
 //   POST …/chat/completions                           Chat Completions (OpenRouter, Mistral, DeepSeek, own server)
 //   POST /v1/messages                                 Anthropic Messages SSE (Claude through the SDK)
 //   GET  …/models, …/models/{m}, …/api-key, …/key, …/user/balance   key and connection checks
-//        (Gemini: GET /v1beta/models is the key test's model list, with supportedGenerationMethods)
+//        (Gemini: GET /v1beta/models is the key test's model list, with supportedGenerationMethods;
+//        OpenRouter — sent with X-OpenRouter-Title, or under /api/v1 — gets its priced list with free
+//        and paid models, and GET …/key its free-tier facts, docs/AI-PROVIDERS.md §16)
 //
 // Point the app at it in a debug build: Einstellungen → KI → "Entwickler: Basis-URL", e.g.
 //   Claude      http://10.0.2.2:8787           (the SDK adds /v1/messages)
@@ -20,10 +22,13 @@
 //   errors   400 401 402 403 404 429 500 503 529, and variants 400-workspace 400-model 429-quota 429-short
 //            Gemini (GE §12.4): 401-auth-key (ACCESS_TOKEN_TYPE_UNSUPPORTED), 403-blocked (API_KEY_SERVICE_BLOCKED),
 //            403-disabled (SERVICE_DISABLED), 403-restricted (API_KEY_ANDROID_APP_BLOCKED), 400-region
-//            (FAILED_PRECONDITION: free tier not in your country), 400-key-echo (an invalid key echoed into every
-//            field of the error body, GE §12.6); other families answer them with the base status
+//            (FAILED_PRECONDITION: free tier not in your country), 400-precondition (FAILED_PRECONDITION about
+//            something else), 400-key-echo (an invalid key echoed into every field of the error body, GE §12.6);
+//            OpenRouter: 429-free (the day's 50 free requests used up), 429-free-min (20 a minute),
+//            429-free-upstream ("Provider returned error", busy upstream in metadata.raw); other
+//            families answer them with the base status
 //   modes    slow, no-search, free-tier-search, free-tier-search-400, refusal, truncated, midstream-error,
-//            live-reject, live-empty,
+//            live-reject, live-empty, free-tier (OpenRouter's GET /key: an account without bought credits),
 //            Gemini model fallback (GE §12.5): model-gone (gemini-3.8-flash: 404 NOT_FOUND, missing from the list),
 //            model-no-quota (gemini-3.8-flash: 429 with a free-tier quota of 0)
 // Set them
@@ -45,9 +50,10 @@ const DELAY_MS = Number(args.delay ?? process.env.MOCK_DELAY_MS ?? 35);
 
 const ERROR_SWITCHES = new Set(['400', '401', '402', '403', '404', '429', '500', '503', '529',
   '400-workspace', '400-model', '429-quota', '429-short',
-  '401-auth-key', '403-blocked', '403-disabled', '403-restricted', '400-region', '400-key-echo']);
+  '401-auth-key', '403-blocked', '403-disabled', '403-restricted', '400-region', '400-precondition', '400-key-echo',
+  '429-free', '429-free-min', '429-free-upstream']);
 const MODE_SWITCHES = new Set(['slow', 'no-search', 'free-tier-search', 'free-tier-search-400', 'refusal', 'truncated',
-  'midstream-error', 'live-reject', 'live-empty', 'model-gone', 'model-no-quota']);
+  'midstream-error', 'live-reject', 'live-empty', 'model-gone', 'model-no-quota', 'free-tier']);
 
 /** The Gemini model the model-gone / model-no-quota modes refuse (the app's default, GE §12.5). */
 const GONE_MODEL = 'gemini-3.8-flash';
@@ -106,6 +112,7 @@ async function route(ctx) {
   if (m === 'POST' && path.endsWith('/responses')) return responses(ctx, ctx.body?.model?.startsWith('grok') ? 'xai' : 'openai');
   if (m === 'POST' && path.endsWith('/agent')) return responses(ctx, 'perplexity');
   if (m === 'POST' && path.endsWith('/chat/completions')) return chatCompletions(ctx);
+  if (m === 'GET' && path.endsWith('/models') && isOpenRouter(ctx)) return openRouterModelList(ctx);
   if (m === 'GET' && path.endsWith('/models')) return modelList(ctx);
   if (m === 'GET' && path.endsWith('/api-key')) return keyInfo(ctx, 'xai');
   if (m === 'GET' && path.endsWith('/key')) return keyInfo(ctx, 'openrouter');
@@ -480,6 +487,15 @@ function responsesError(ctx, error, model) {
     '429': [429, body(429, 'requests', 'rate_limit_exceeded', 'Rate limit reached. Please try again in 1s.'), { 'Retry-After': '1' }],
     '429-short': [429, body(429, 'requests', 'rate_limit_exceeded', 'Rate limit reached. Please try again in 1s.'), { 'Retry-After': '1' }],
     '429-quota': [429, body(429, 'insufficient_quota', 'insufficient_quota', 'You exceeded your current quota, please check your plan and billing details.')],
+    // OpenRouter's free models (OC §7.9): 50 requests a day without bought credits, 20 a minute.
+    '429-free': [429, { error: { code: 429, message: 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day',
+      metadata: { headers: { 'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': String(nextMidnightUtc()) } } } },
+      { 'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': String(nextMidnightUtc()) }],
+    '429-free-min': [429, { error: { code: 429, message: 'Rate limit exceeded: free-models-per-min.' } }, { 'Retry-After': '1' }],
+    // The usual one: the upstream provider of a free model is busy (its own words in metadata.raw).
+    '429-free-upstream': [429, { error: { code: 429, message: 'Provider returned error', metadata: {
+      raw: `${model || 'google/gemma-4-31b-it:free'} is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations`,
+      provider_name: 'Google AI Studio' } } }],
     '500': [500, body(500, 'server_error', 'server_error', 'The server had an error while processing your request.')],
     '503': [503, body(503, 'server_error', 'service_unavailable', 'The engine is currently overloaded, please try again later.')],
     '529': [503, body(503, 'server_error', 'service_unavailable', 'The engine is currently overloaded, please try again later.')],
@@ -648,6 +664,7 @@ function geminiError(ctx, error, model, streamed) {
     '403-disabled': rpc(403, 'PERMISSION_DENIED', `Generative Language API has not been used in project ${project} before or it is disabled. Enable it by visiting ${activation} then retry.`, [info('SERVICE_DISABLED', { consumer: `projects/${project}`, activationUrl: activation }), help(activation)]),
     '403-restricted': rpc(403, 'PERMISSION_DENIED', 'Requests from this Android client application <empty> are blocked.', [info('API_KEY_ANDROID_APP_BLOCKED', { consumer: `projects/${project}` })]),
     '400-region': rpc(400, 'FAILED_PRECONDITION', 'Gemini API free tier is not available in your country. Please enable billing on your project in Google AI Studio.'),
+    '400-precondition': rpc(400, 'FAILED_PRECONDITION', 'Precondition check failed.'),
     // GE §12.6: the worst case for the app's "Details" – the key it sent comes back in every field the line could read
     // (code, type, ErrorInfo.reason, the quota id) and in those it never reads (message, metadata, Help link).
     '400-key-echo': [400, { error: {
@@ -718,11 +735,13 @@ async function chatCompletions(ctx) {
   const chunk = (delta, finish = null, extra = {}) => events.push(sse({ ...base, choices: [{ index: 0, delta, finish_reason: finish }], ...extra }));
   if (flavor === 'openrouter') events.push(': OPENROUTER PROCESSING\n\n');
   const promptTokens = tokens(body);
+  const freeModel = model.endsWith(':free') || model === 'openrouter/free';
+  if (flavor === 'openrouter' && freeModel && search) warn('Free OpenRouter model with openrouter:web_search (needs credits)');
   const usage = (completion, searches = 0) => {
     const u = { prompt_tokens: promptTokens, completion_tokens: completion, total_tokens: promptTokens + completion };
     if (flavor === 'openrouter') {
       Object.assign(u, {
-        cost: Number(((promptTokens * 0.75 + completion * 3.75) / 1e6 + searches * 0.014).toFixed(6)), is_byok: false,
+        cost: freeModel ? 0 : Number(((promptTokens * 0.75 + completion * 3.75) / 1e6 + searches * 0.014).toFixed(6)), is_byok: false,
         prompt_tokens_details: { cached_tokens: 0, cache_write_tokens: 0 }, completion_tokens_details: { reasoning_tokens: 24 },
         server_tool_use_details: { web_search_requests: searches },
       });
@@ -805,7 +824,9 @@ function keyInfo(ctx, provider) {
   log(provider, `GET ${ctx.path} key=${mask(key)} (key check)`);
   // "402" is no error here: the key works, the account has no credit (the check's OK_NO_CREDIT).
   const noCredit = ctx.switches.has('402');
-  const error = authError(key) ?? (noCredit ? null : errorSwitch(ctx.switches));
+  // Used-up free requests are no error of the key check either: GET /key reports them (remaining 0).
+  const freeQuota = errorSwitch(ctx.switches)?.startsWith('429-free') ?? false;
+  const error = authError(key) ?? (noCredit || freeQuota ? null : errorSwitch(ctx.switches));
   if (provider === 'xai' && error === '401' && key) return xaiIncorrectKey(ctx);
   if (error) return responsesError(ctx, error, '');
   if (provider === 'xai') {
@@ -815,7 +836,62 @@ function keyInfo(ctx, provider) {
   if (provider === 'deepseek') {
     return json(ctx.res, 200, { is_available: !noCredit, balance_infos: [{ currency: 'USD', total_balance: noCredit ? '0.00' : '10.00', granted_balance: '0.00', topped_up_balance: noCredit ? '0.00' : '10.00' }] });
   }
-  return json(ctx.res, 200, { data: { label: 'sk-or-v1-mock', limit: null, usage: 0.42, is_free_tier: false, rate_limit: { requests: 20, interval: '10s' } } });
+  // OpenRouter (OC §7.9): "free-tier" is an account that never bought credits (50 free requests a day),
+  // "429-free" one whose free requests of the day are used up.
+  const freeTier = ctx.switches.has('free-tier');
+  const perDay = freeTier ? 50 : 1000;
+  const used = ctx.switches.has('429-free') ? perDay : freeTier ? 13 : 20;
+  return json(ctx.res, 200, { data: {
+    label: 'sk-or-v1-mock', limit: null, limit_remaining: null, usage: freeTier ? 0 : 0.42, is_free_tier: freeTier,
+    free_model_daily_requests: { limit: perDay, remaining: perDay - used, used },
+    rate_limit: { requests: 20, interval: '10s' },
+  } });
+}
+
+/** OpenRouter's public model list: sent with its attribution header, or under /api/v1. */
+function isOpenRouter(ctx) {
+  return Boolean(ctx.req.headers['x-openrouter-title']) || ctx.path.includes('/api/v1/');
+}
+
+/**
+ * OpenRouter's GET /models (public, no key; shaped like the live list of 2026-10-10): free chat models,
+ * look-alikes the app must leave out (music output, a guardrail without tools, a router with variable
+ * prices, an expired free model) and paid models.
+ */
+function openRouterModelList(ctx) {
+  log('openrouter', `GET ${ctx.path} (free models)`);
+  const error = errorSwitch(ctx.switches);
+  if (error && !error.startsWith('429-free')) return responsesError(ctx, error, '');
+  const tools = ['max_tokens', 'reasoning', 'include_reasoning', 'temperature', 'tool_choice', 'tools'];
+  const model = (id, name, { prompt = '0', completion = '0', input = ['text'], output = ['text'], params = tools, ctxLen = 262144, expires = null } = {}) => ({
+    id, canonical_slug: id, name, created: 1775000000, description: `Mock: ${name}`, context_length: ctxLen,
+    architecture: { modality: `${input.join('+')}->${output.join('+')}`, input_modalities: input, output_modalities: output, tokenizer: 'Other', instruct_type: null },
+    pricing: { prompt, completion }, top_provider: { context_length: ctxLen, max_completion_tokens: 32768, is_moderated: false },
+    per_request_limits: null, supported_parameters: params, default_parameters: {}, expiration_date: expires,
+  });
+  const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+  const data = [
+    model('google/gemma-4-31b-it:free', 'Google: Gemma 4 31B (free)', { input: ['image', 'text', 'video'] }),
+    model('google/gemma-4-26b-a4b-it:free', 'Google: Gemma 4 26B A4B  (free)', { input: ['image', 'text', 'video'] }),
+    model('nvidia/nemotron-3-ultra-550b-a55b:free', 'NVIDIA: Nemotron 3 Ultra (free)', { ctxLen: 1000000 }),
+    model('nvidia/nemotron-3-super-120b-a12b:free', 'NVIDIA: Nemotron 3 Super (free)'),
+    model('openrouter/free', 'Free Models Router', { input: ['text', 'image'], ctxLen: 200000 }),
+    model('inclusionai/ling-3.1-flash', 'inclusionAI: Ling 3.1 Flash'),
+    model('google/lyria-3-pro-preview', 'Google: Lyria 3 Pro Preview', { input: ['text', 'image'], output: ['text', 'audio'], params: ['max_tokens'] }),
+    model('nvidia/nemotron-3.5-content-safety:free', 'NVIDIA: Nemotron 3.5 Content Safety (free)', { params: ['max_tokens', 'temperature'] }),
+    model('poolside/laguna-old:free', 'Poolside: Laguna Old (free)', { expires: yesterday }),
+    model('openrouter/auto', 'Auto Router', { prompt: '-1', completion: '-1' }),
+    model('google/gemini-3.8-flash', 'Google: Gemini 3.8 Flash', { prompt: '0.00000075', completion: '0.00000375', ctxLen: 1048576 }),
+    model('openai/gpt-6-luna', 'OpenAI: GPT-6 Luna', { prompt: '0.0000001', completion: '0.0000005', ctxLen: 1050000 }),
+    model('anthropic/claude-sonnet-5.5', 'Anthropic: Claude Sonnet 5.5', { prompt: '0.000002', completion: '0.00001', ctxLen: 1000000 }),
+  ];
+  return json(ctx.res, 200, { data });
+}
+
+/** Epoch millis of the next UTC midnight (when OpenRouter's daily free requests start again). */
+function nextMidnightUtc() {
+  const d = new Date();
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1);
 }
 
 /** 401 for a missing key or one that contains "reject"; null otherwise. */

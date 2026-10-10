@@ -9,6 +9,7 @@ import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.ModelFallback
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -29,6 +30,13 @@ class AiLogicTest {
     private companion object {
         const val NBSP = ' '
     }
+
+    /** OpenRouter as the chat provider with a key on [tier]. */
+    private fun openRouter(tier: OpenRouterTier, provider: AiProviderId = AiProviderId.OPENROUTER, live: AiProviderId? = null) = AiSettings(
+        provider = provider,
+        liveProvider = live,
+        providers = mapOf(AiProviderId.OPENROUTER to ProviderSettings(hasKey = true, openRouterTier = tier)),
+    )
 
     private fun gemini(tier: GeminiTier, model: String? = null, hasKey: Boolean = true) = AiSettings(
         provider = AiProviderId.GEMINI,
@@ -89,7 +97,7 @@ class AiLogicTest {
         assertFalse(AiLimit.hint(0.0).contains("Anthropic"))
         val capped = AiLimit.hint(5.0)
         assertTrue(capped.contains("alle Anbieter zusammen"))
-        assertTrue(capped.contains("Gemini kostenlos"))
+        assertTrue(capped.contains("kostenlosen Tarife von Gemini und OpenRouter"))
     }
 
     @Test
@@ -177,11 +185,20 @@ class AiLogicTest {
         val gemini = ProviderCatalog.GEMINI
         val auth = AiKeyState.Failed(AiKeyProblem.AUTH_KEY_REJECTED, "HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED")
         val text = aiKeyMessage(auth, gemini)!!
-        assertTrue(text.startsWith("✗ Google nimmt deinen Key gerade nicht an."))
-        assertTrue(text.contains("neuen Key"))
+        assertEquals(
+            "✗ Google nimmt deinen Key gerade nicht an – ein bekannter Fehler bei Google, der viele neue Keys („AQ.…“) trifft, " +
+                "auch wenn AI Studio sie als gültig zeigt. Was hilft: ein älterer Key, der mit „AIza“ beginnt – " +
+                "oder OpenRouter kostenlos mit Gemma 4, Googles offenem Modell.",
+            text,
+        )
         assertEquals("HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED", auth.diagnostic)
-        assertEquals(KeyFixLink("Neuen Key in AI Studio", "https://aistudio.google.com/apikey"), aiKeyFixLink(auth))
+        assertEquals(KeyFixLink("Keys in AI Studio", "https://aistudio.google.com/apikey"), aiKeyFixLink(auth))
         assertFalse(canSaveUntested(auth))
+        // The way out without a Google key: OpenRouter's free tariff.
+        assertTrue(aiKeyOffersOpenRouter(auth))
+        assertFalse(aiKeyOffersOpenRouter(AiKeyState.Failed(AiKeyProblem.KEY_LEAKED)))
+        assertFalse(aiKeyOffersOpenRouter(AiKeyState.Failed(AiKeyProblem.INVALID)))
+        assertFalse(aiKeyOffersOpenRouter(AiKeyState.Saved))
 
         val blocked = AiKeyState.Failed(AiKeyProblem.API_BLOCKED, "HTTP 403 · PERMISSION_DENIED · SERVICE_DISABLED")
         assertTrue(aiKeyMessage(blocked, gemini)!!.startsWith("✗ Die Gemini API ist für dein Google-Projekt gesperrt oder nicht aktiviert"))
@@ -411,6 +428,38 @@ class AiLogicTest {
     }
 
     @Test
+    fun `openrouter on the free tariff shows what it lacks and needs credits for live`() {
+        val free = openRouter(OpenRouterTier.FREE)
+        val pills = capabilities(ProviderCatalog.OPENROUTER, free)
+        assertEquals(listOf(true, false, false, true), pills.map { it.available })
+        assertEquals("Websuche nur mit Guthaben", pills[1].label)
+        assertEquals("Live nur mit Guthaben", pills[2].label)
+        assertEquals(
+            "Chat verfügbar, Websuche nur mit Guthaben, Live nur mit Guthaben, läuft auf Android 7",
+            capabilitySemantics(pills),
+        )
+        // With credits (and without settings) OpenRouter can do everything.
+        assertEquals(listOf(true, true, true, true), capabilities(ProviderCatalog.OPENROUTER, openRouter(OpenRouterTier.CREDITS)).map { it.available })
+        assertEquals("Live", capabilities(ProviderCatalog.OPENROUTER)[2].label)
+        // The picker names the tariff.
+        assertEquals("Key gespeichert ✓ · kostenlos", providerStatusLine(free, AiProviderId.OPENROUTER, supported = true))
+        assertEquals("Key gespeichert ✓ · mit Guthaben", providerStatusLine(openRouter(OpenRouterTier.CREDITS), AiProviderId.OPENROUTER, supported = true))
+        assertEquals("Kein Key", providerStatusLine(AiSettings(), AiProviderId.OPENROUTER, supported = true))
+        // Live: no "wie Chat" on the free tariff; picking OpenRouter for Live asks for its credits.
+        assertNull(liveProviderLine(free))
+        assertEquals("Live über OpenRouter (wie Chat)", liveProviderLine(openRouter(OpenRouterTier.CREDITS)))
+        assertEquals("Live über OpenAI", liveProviderLine(openRouter(OpenRouterTier.FREE, live = AiProviderId.OPENAI)))
+        val choices = liveProviderChoices(free, sdkAvailable = true)
+        assertFalse(null in choices)
+        assertTrue(AiProviderId.OPENROUTER in choices)
+        assertEquals(null, liveProviderChoices(openRouter(OpenRouterTier.CREDITS), sdkAvailable = true).first())
+        assertTrue(liveNeedsSetup(free, AiProviderId.OPENROUTER))
+        assertFalse(liveNeedsSetup(openRouter(OpenRouterTier.CREDITS), AiProviderId.OPENROUTER))
+        assertTrue(liveNeedsSetup(free, AiProviderId.OPENAI))
+        assertFalse(liveNeedsSetup(free.with(AiProviderId.OPENAI, ProviderSettings(hasKey = true)), AiProviderId.OPENAI))
+    }
+
+    @Test
     fun `live provider line - same as chat, separate, or none`() {
         assertEquals("Live über OpenAI (wie Chat)", liveProviderLine(AiSettings(provider = AiProviderId.OPENAI)))
         assertEquals(
@@ -428,9 +477,10 @@ class AiLogicTest {
         assertEquals("Wie Chat (Claude)", sameAsChatLabel(ProviderCatalog.ANTHROPIC))
         assertEquals("Live über Grok", liveProviderLine(AiSettings(provider = AiProviderId.OPENAI, liveProvider = AiProviderId.XAI)))
         ProviderCatalog.all.filter { it.live == LiveSupport.YES }.forEach { spec ->
+            // OpenRouter researches with credits.
             val labels = listOfNotNull(
-                liveProviderLine(AiSettings(provider = spec.id)),
-                liveProviderLine(AiSettings(provider = AiProviderId.GEMINI, liveProvider = spec.id)),
+                liveProviderLine(openRouter(OpenRouterTier.CREDITS, provider = spec.id)),
+                liveProviderLine(openRouter(OpenRouterTier.CREDITS, provider = AiProviderId.GEMINI, live = spec.id)),
                 sameAsChatLabel(spec),
             )
             assertEquals(spec.id.key, 3, labels.size)
@@ -603,5 +653,108 @@ class AiLogicTest {
     @Test
     fun `unsupported provider hint`() {
         assertEquals("Claude braucht Android 8 – wähl einen anderen Anbieter.", unsupportedProviderHint(claude))
+    }
+
+    @Test
+    fun `an openrouter key test tells about credits and today's free requests`() {
+        val openRouter = ProviderCatalog.OPENROUTER
+        val free = com.cedrickgd.morgenbriefing.ai.OpenRouterKeyInfo(freeTier = true, freeRequestsLeft = 37, freeRequestsPerDay = 50)
+        val state = savedKeyState(KeyCheckOutcome(AiKeyCheck.OK, openRouter = free))
+        assertEquals(AiKeyState.SavedWithKeyInfo(free), state)
+        assertTrue(state.isSaved)
+        assertEquals(
+            "✓ Der Key funktioniert und ist gespeichert – Gratis-Konto ohne gekauftes Guthaben. Heute noch 37 von 50 Gratis-Anfragen.",
+            aiKeyMessage(state, openRouter),
+        )
+        val credits = com.cedrickgd.morgenbriefing.ai.OpenRouterKeyInfo(freeTier = false, freeRequestsLeft = 1000, freeRequestsPerDay = 1000)
+        assertEquals(
+            "✓ Der Key funktioniert und ist gespeichert – Konto mit Guthaben. Heute noch 1.000 von 1.000 Gratis-Anfragen.",
+            aiKeyMessage(AiKeyState.SavedWithKeyInfo(credits), openRouter),
+        )
+        assertEquals(
+            "✓ Der Key funktioniert und ist gespeichert – Gratis-Konto ohne gekauftes Guthaben. Heute keine Gratis-Anfragen mehr (50 am Tag) – morgen geht's weiter.",
+            aiKeyMessage(AiKeyState.SavedWithKeyInfo(free.copy(freeRequestsLeft = 0)), openRouter),
+        )
+        assertEquals(
+            "✓ Der Key funktioniert und ist gespeichert.",
+            aiKeyMessage(AiKeyState.SavedWithKeyInfo(com.cedrickgd.morgenbriefing.ai.OpenRouterKeyInfo()), openRouter),
+        )
+        // "Mit Guthaben" without any credits bought.
+        assertEquals(AiKeyState.SavedNoCredit, savedKeyState(KeyCheckOutcome(AiKeyCheck.OK_NO_CREDIT, openRouter = free)))
+        assertEquals(
+            "Gespeichert ✓ – aber auf deinem OpenRouter-Konto ist noch kein Guthaben. Kauf unter „Credits“ welches – oder nimm den Tarif „Kostenlos“.",
+            aiKeyMessage(AiKeyState.SavedNoCredit, openRouter),
+        )
+    }
+
+    @Test
+    fun `the free tariff picks among openrouter's free models`() {
+        val models = com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFree.FALLBACK +
+            listOf("a", "b", "c").map { com.cedrickgd.morgenbriefing.ai.compat.FreeModel("vendor/$it:free", "Vendor: Model $it (free)") }
+        val fresh = openRouter(OpenRouterTier.FREE)
+        val choices = freeModelChoices(fresh, models)
+        assertEquals(models.map { it.id }, choices.map { it.id })
+        // Gemma 4 31B runs by default and carries the badge; every row is free and selectable.
+        assertEquals(listOf("google/gemma-4-31b-it:free"), choices.filter { it.selected }.map { it.id })
+        assertEquals("Standard", choices.first().badge)
+        assertEquals("Gemma 4 31B", choices.first().title)
+        assertEquals("Googles offenes Modell · kostenlos", choices.first().subtitle)
+        assertTrue(choices.all { it.enabled && it.subtitle.endsWith("· kostenlos") })
+        // A stored free model is selected; one that left the list gives way to the default.
+        val picked = fresh.withModel(AiProviderId.OPENROUTER, "vendor/c:free")
+        assertEquals(listOf("vendor/c:free"), freeModelChoices(picked, models).filter { it.selected }.map { it.id })
+        val gone = fresh.withModel(AiProviderId.OPENROUTER, "vendor/gone:free")
+        assertEquals(listOf("google/gemma-4-31b-it:free"), freeModelChoices(gone, models).filter { it.selected }.map { it.id })
+
+        // Five rows, plus the selected one further down; all when expanded.
+        val pickedChoices = freeModelChoices(picked, models)
+        assertEquals(FREE_MODELS_SHOWN + 1, visibleFreeModels(pickedChoices, expanded = false).size)
+        assertEquals("vendor/c:free", visibleFreeModels(pickedChoices, expanded = false).last().id)
+        assertEquals(FREE_MODELS_SHOWN, visibleFreeModels(choices, expanded = false).size)
+        assertEquals(choices, visibleFreeModels(choices, expanded = true))
+        assertEquals(choices.take(3), visibleFreeModels(choices.take(3), expanded = false))
+    }
+
+    @Test
+    fun `the free model list says where it stands`() {
+        val list = com.cedrickgd.morgenbriefing.ai.compat.FreeModelList(
+            com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFree.FALLBACK,
+            com.cedrickgd.morgenbriefing.ai.compat.FreeModelSource.LIVE,
+        )
+        assertEquals(
+            "5 Gratis-Modelle von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag, ab 10 $ gekauftem Guthaben 1.000.",
+            freeModelsNote(list, loading = false),
+        )
+        assertEquals(
+            // Offline or an error answer from OpenRouter: the note does not guess which.
+            "OpenRouter gerade nicht erreichbar – eine kleine Auswahl. Die ganze Liste lädt beim nächsten Öffnen.",
+            freeModelsNote(list.copy(source = com.cedrickgd.morgenbriefing.ai.compat.FreeModelSource.FALLBACK), loading = false),
+        )
+        assertEquals("Lade die Gratis-Modelle von OpenRouter …", freeModelsNote(null, loading = true))
+        assertNull(freeModelsNote(null, loading = false))
+        assertEquals(
+            "Der Key gehört dir: Anfragen laufen über dein eigenes OpenRouter-Konto – kostenlos mit Gratis-Modellen oder mit Guthaben, wie du unten wählst.",
+            aiKeyIntro(ProviderCatalog.OPENROUTER),
+        )
+    }
+
+    @Test
+    fun `a short key that is refused is asked about its copy only once`() {
+        val refused = AiKeyState.Failed(AiKeyProblem.INVALID)
+        val short = aiKeyFormatIssue("sk-ant-api03-short", claude)
+        assertEquals(AiKeyFormatIssue.TOO_SHORT, short)
+        val hint = aiKeyFormatHint(short!!, claude)
+        val message = aiKeyMessage(refused, claude, short)!!
+        assertEquals("Der Key wirkt zu kurz – hast du ihn vollständig kopiert?", hint)
+        assertEquals("✗ Anthropic lehnt den Key ab.", message)
+        val phrase = "hast du ihn vollständig kopiert?"
+        assertEquals(1, listOf(hint, message).sumOf { it.split(phrase).size - 1 })
+        // A key without a hint keeps the question; the own server and Perplexity keep their sentences.
+        assertEquals("✗ Anthropic lehnt den Key ab – hast du ihn vollständig kopiert?", aiKeyMessage(refused, claude))
+        assertEquals("✗ Dein Server lehnt den Key ab – stimmt er?", aiKeyMessage(refused, ProviderCatalog.CUSTOM, AiKeyFormatIssue.WHITESPACE))
+        assertEquals(
+            "✗ Perplexity lehnt den Key ab – er ist ungültig oder dein Guthaben ist leer.",
+            aiKeyMessage(refused, ProviderCatalog.PERPLEXITY, AiKeyFormatIssue.WHITESPACE),
+        )
     }
 }

@@ -139,7 +139,9 @@ internal fun aiStatusItem(ai: AiSettings, supported: Boolean): StatusItem {
 
 /**
  * What the hero says. [day] is "morgen"/"heute"/…, [time] "05:30". Only the requirements of
- * the morning briefing count (not the optional KI); a blocked notification is the worst case.
+ * the morning briefing decide whether it is ready (not the optional KI); a blocked notification
+ * is the worst case. The sentence counts every yellow pill it asks to tap — a refused KI key
+ * too — so the number always matches what the user sees.
  */
 internal fun heroText(enabled: Boolean, items: List<StatusItem>, day: String, time: String): HeroText {
     if (!enabled) {
@@ -150,10 +152,15 @@ internal fun heroText(enabled: Boolean, items: List<StatusItem>, day: String, ti
         )
     }
     val problems = items.filter { it.level == StatusLevel.ATTENTION && it.kind != StatusKind.AI }
+    val aiAttention = items.any { it.level == StatusLevel.ATTENTION && it.kind == StatusKind.AI }
     if (problems.isEmpty()) {
         return HeroText(
             title = "Alles bereit für $day, $time",
-            subtitle = "Wetter und News kommen pünktlich – du musst nichts weiter tun.",
+            subtitle = if (aiAttention) {
+                "Wetter und News kommen pünktlich. Nur die KI braucht dich – tippe auf den gelben Punkt."
+            } else {
+                "Wetter und News kommen pünktlich – du musst nichts weiter tun."
+            },
             ready = true,
         )
     }
@@ -162,10 +169,11 @@ internal fun heroText(enabled: Boolean, items: List<StatusItem>, day: String, ti
     } else {
         "Fast bereit für $day, $time"
     }
-    val subtitle = if (problems.size == 1) {
+    val yellow = problems.size + if (aiAttention) 1 else 0
+    val subtitle = if (yellow == 1) {
         hintFor(problems.single())
     } else {
-        "${problems.size} Kleinigkeiten fehlen noch – tippe auf die gelben Punkte."
+        "$yellow Kleinigkeiten fehlen noch – tippe auf die gelben Punkte."
     }
     return HeroText(title = title, subtitle = subtitle, ready = false)
 }

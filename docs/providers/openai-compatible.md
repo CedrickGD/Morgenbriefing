@@ -746,6 +746,36 @@ Always included ("`usage: { include: true }` and `stream_options: { include_usag
 * **Errors** [R6]: body `{"error":{"code":<=HTTP status>,"message","metadata?"}}`. 400 bad params; **401** invalid/disabled key or expired OAuth; **402** insufficient credits (a 402 **with `Retry-After`** = in-flight budget full → wait and retry; without it → top up) [R6, R9]; **403** permission, guardrail or **moderation flag** (`metadata.reasons`, `flagged_input`, `provider_name`, `model_slug`); 408 timeout; **429** rate limited (platform 429s carry `X-RateLimit-Limit/Remaining/Reset`; can also be upstream) [R9]; **502** model down / invalid upstream response; **503** no provider meets the routing requirements. `Retry-After` may appear on 429, 503 and some 402s [R6].
 * **Rate limits** [R9]: `:free` models 20 req/min, and 50/day (< 10 credits ever purchased) or 1,000/day. Paid models: "no platform-level request cap". A negative balance → 402 even on free models.
 
+### 7.10 Free models (observed 2026-10-10, public `GET /api/v1/models`, no key)
+
+* 458 models; **19** with `pricing.prompt == "0"` and `pricing.completion == "0"`. Most are `…:free`
+  variants (`google/gemma-4-31b-it:free`, `google/gemma-4-26b-a4b-it:free`,
+  `nvidia/nemotron-3-ultra-550b-a55b:free`, `nvidia/nemotron-3-super-120b-a12b:free`, …), but not all:
+  `inclusionai/ling-3.1-flash` is priced 0 without the suffix, and the router `openrouter/free`
+  ("selects free models at random") is priced 0 too. Routers with variable prices (`openrouter/auto`,
+  `openrouter/fusion`, …) say `"-1"`.
+* A zero price without `:free` is a time-limited launch promotion: the model keeps its id when the
+  promotion ends and from then on bills the credits. Only the `:free` variants (and `openrouter/free`)
+  are free by guarantee, so the app offers only those on its free tariff (docs/AI-PROVIDERS.md §16.2).
+* Look-alikes among the 19: `google/lyria-3-pro-preview` / `-clip-preview` (music: `output_modalities`
+  `["text","audio"]`, no `tools`) and `nvidia/nemotron-3.5-content-safety:free` (a guardrail
+  classifier, no `tools`). Every free chat model lists `tools` in `supported_parameters`.
+* Some free variants carry an `expiration_date` (e.g. `poolside/laguna-s-2.1:free`: 2026-10-31).
+* `pricing` keys seen across the list: `prompt`, `completion`, `input_cache_read`,
+  `input_cache_write`, `input_cache_write_1h`, `web_search`, `image`, `image_output`, `audio`,
+  `audio_output`, `input_audio_cache`, `internal_reasoning`, `overrides`.
+* The list is ~765 KB (≈ 79 KB gzip). `?max_price=0` returns 18 of the 19 (without `openrouter/free`);
+  the app loads the whole list once a day and filters it itself (docs/AI-PROVIDERS.md §16.2).
+* `https://openrouter.ai/keys` and `https://openrouter.ai/settings/keys` both 307 to
+  `/workspace-redirect/keys`.
+* **Open (record with a real free account):** the exact 429 body when the 50 daily free requests are
+  used up (reported in the wild as "Rate limit exceeded: free-models-per-day. Add 10 credits to
+  unlock 1000 free model requests per day"), and whether `free_model_daily_requests` is in every
+  `GET /key` answer. The most common free-model 429 in the wild is a busy upstream, not the quota:
+  `{"error":{"message":"Provider returned error","code":429,"metadata":{"raw":"<model> is temporarily
+  rate-limited upstream. Please retry shortly, …","provider_name":"Google AI Studio"}}}` — `metadata.raw`
+  carries the provider's verbatim payload [R6]; the app retries it like any busy moment.
+
 ---
 
 ## 8. Self-hosted (Ollama, LM Studio, vLLM)

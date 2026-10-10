@@ -141,14 +141,19 @@ object WeatherInsights {
         data class After(val text: String) : Candidate
     }
 
-    private fun todayStart(home: HomeFacts, day: DayFacts, seed: String): Start? = when {
-        home.freezingRain -> Start(StartKind.ICE, "Glatteis am Morgen", "später")
-        home.condition == Condition.FOG -> Start(StartKind.FOG, pick(seed, 1, listOf("Nebel zum Start", "Erst Nebel")), "dann")
-        home.wetNow && !day.isWetDay && day.thunder == null ->
-            Start(StartKind.WET, if (home.condition.isWintry) "Schnee zum Start" else "Nass zum Start", "danach")
-        home.now.temp <= -6 -> Start(StartKind.FROST, "Eisiger Start", "später")
-        home.now.temp <= 0 -> Start(StartKind.FROST, "Frostiger Start", "später")
-        else -> null
+    private fun todayStart(home: HomeFacts, day: DayFacts, seed: String): Start? {
+        // Snowing (or raining) already on a wet day: the wet day is no "later" — "Frostiger Start,
+        // dazu Schnee bei -1°", not "…, später Schnee …" while it snows.
+        val frostConnector = if (home.wetNow && day.isWetDay) "dazu" else "später"
+        return when {
+            home.freezingRain -> Start(StartKind.ICE, "Glatteis am Morgen", "später")
+            home.condition == Condition.FOG -> Start(StartKind.FOG, pick(seed, 1, listOf("Nebel zum Start", "Erst Nebel")), "dann")
+            home.wetNow && !day.isWetDay && day.thunder == null ->
+                Start(StartKind.WET, if (home.condition.isWintry) "Schnee zum Start" else "Nass zum Start", "danach")
+            home.now.temp <= -6 -> Start(StartKind.FROST, "Eisiger Start", frostConnector)
+            home.now.temp <= 0 -> Start(StartKind.FROST, "Frostiger Start", frostConnector)
+            else -> null
+        }
     }
 
     /** For tomorrow's window the current evening says nothing; look at the window's first hour. */

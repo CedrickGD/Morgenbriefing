@@ -1,5 +1,7 @@
 package com.cedrickgd.morgenbriefing.ui.chat
 
+import com.cedrickgd.morgenbriefing.ai.AiError
+import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.ChatMessage
 import com.cedrickgd.morgenbriefing.ai.hostOf
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
@@ -56,6 +58,41 @@ internal fun emptyChatIntro(aboutArticle: Boolean, webSearch: Boolean): String =
 
 /** The input's placeholder while an answer streams. */
 internal fun answeringPlaceholder(spec: ProviderSpec): String = "${answerMark(spec)} antwortet …"
+
+/** One button under a failed answer, in the order the card shows them. */
+internal enum class ErrorAction(val label: String?) {
+    /** The page that fixes it ([AiTexts.errorLink], its label comes with the link). */
+    OPEN_LINK(null),
+
+    /** Google refuses the Gemini key: OpenRouter's free tariff instead. */
+    SET_UP_OPENROUTER(AiTexts.OPENROUTER_PLAN_B),
+
+    /** The key dialog of the provider that wrote the answer. */
+    CHANGE_KEY("Key ändern"),
+
+    /** The same request again: it may simply work in a moment. */
+    RETRY("Nochmal versuchen"),
+
+    /**
+     * The question once more after the user fixed the cause elsewhere (a new key, credits, another
+     * provider or model): retrying alone would not help.
+     */
+    RESEND("Nochmal senden"),
+}
+
+/**
+ * The buttons under a failed answer with [error] from [provider]: the page that fixes it,
+ * OpenRouter as the way out of a refused Gemini key, "Key ändern" where a key is the cause, and —
+ * only under the last answer while the chat can send ([canRetry]) — "Nochmal versuchen" where a
+ * retry can help ([AiTexts.isRetryable]; not OpenRouter's used-up day), else "Nochmal senden" for
+ * once the cause is fixed. A refusal is not sent again unchanged.
+ */
+internal fun errorActions(error: AiError, canRetry: Boolean, provider: AiProviderId? = null): List<ErrorAction> = buildList {
+    if (AiTexts.errorLink(error) != null) add(ErrorAction.OPEN_LINK)
+    if (AiTexts.offersOpenRouter(error)) add(ErrorAction.SET_UP_OPENROUTER)
+    if (AiTexts.needsKeyChange(error)) add(ErrorAction.CHANGE_KEY)
+    if (canRetry && error !is AiError.Refusal) add(if (AiTexts.isRetryable(error, provider)) ErrorAction.RETRY else ErrorAction.RESEND)
+}
 
 /** Gemini's grounding sources are Google redirects on this host; their title is the real domain (GE §6.2). */
 private const val GROUNDING_REDIRECT_HOST = "vertexaisearch.cloud.google.com"

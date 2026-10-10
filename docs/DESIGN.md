@@ -133,8 +133,8 @@ zum nächsten Artikel; unten die Pill „✨ Frag zu diesem Artikel nach“.
 
 **Frag nach** (Chat) – Nachrichten direkt auf dem Himmel, Glas-Kopfleiste und schwebende
 Glas-Eingabe. Über jeder Antwort ein kleines „✦ Gemini“ (Name des Anbieters), die Antwort in der
-Leser-Serif, Quellen als Glas-Pills. Kann der Chat nicht im Netz suchen (Gemini kostenlos,
-Mistral, DeepSeek, eigener Server), steht das einmal als ruhige Zeile mit Symbol über dem
+Leser-Serif, Quellen als Glas-Pills. Kann der Chat nicht im Netz suchen (Gemini oder OpenRouter
+kostenlos, Mistral, DeepSeek, eigener Server), steht das einmal als ruhige Zeile mit Symbol über dem
 Gespräch. Unter einer Antwort mit Google-Suche stehen Googles Suchvorschläge **unverändert** in
 ihrem eigenen Look (hell/dunkel nach dem Look der App) und so breit wie die Antwort – das ist die
 einzige Fläche, die die Glas-Regeln bewusst nicht übernimmt.

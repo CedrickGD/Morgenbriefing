@@ -43,6 +43,22 @@ enum class GeminiTier(val key: String) {
     }
 }
 
+/**
+ * The "Tarif" of an OpenRouter key. [FREE] (the default of a new OpenRouter setup) runs only
+ * OpenRouter's zero-price models: no web search, no Live, no costs, but a daily cap of free
+ * requests (50 without purchased credits). [CREDITS] spends the account's credits on any model,
+ * with web search and Live. Keys stored before v1.3.2 were migrated to [CREDITS].
+ */
+enum class OpenRouterTier(val key: String) {
+    FREE("free"),
+    CREDITS("credits"),
+    ;
+
+    companion object {
+        fun fromKey(key: String?): OpenRouterTier? = entries.firstOrNull { it.key == key }
+    }
+}
+
 /** What is stored for one provider. The key itself never leaves SettingsRepository. */
 data class ProviderSettings(
     /** A key is stored (encrypted). */
@@ -66,6 +82,14 @@ data class ProviderSettings(
     val workspaceId: String? = null,
     /** [AiProviderId.GEMINI] only: the key's tariff. */
     val geminiTier: GeminiTier = GeminiTier.FREE,
+    /** [AiProviderId.OPENROUTER] only: the key's tariff. */
+    val openRouterTier: OpenRouterTier = OpenRouterTier.FREE,
+    /**
+     * [AiProviderId.OPENROUTER] only: the model of the free tariff (one of the zero-price models;
+     * null = the default). Kept apart from [model], so switching the tariff back and forth keeps
+     * both choices.
+     */
+    val freeModel: String? = null,
     /**
      * Debug builds only (QA against a local mock server, e.g. `http://10.0.2.2:8080/v1`): replaces
      * the catalog base URL of this provider verbatim. Always null in release builds — the
@@ -128,18 +152,29 @@ data class AiSettings(
     /** A Gemini key on the free tier: no Google Search, no Pro models, no costs. */
     fun isGeminiFree(id: AiProviderId): Boolean = id == AiProviderId.GEMINI && of(id).geminiTier == GeminiTier.FREE
 
+    /** An OpenRouter key on the free tariff: only zero-price models, no web search, no Live, no costs. */
+    fun isOpenRouterFree(id: AiProviderId): Boolean = id == AiProviderId.OPENROUTER && of(id).openRouterTier == OpenRouterTier.FREE
+
+    /** A key on a provider's free tariff (Gemini or OpenRouter): no web search, a free quota instead of costs. */
+    fun isFreeTier(id: AiProviderId): Boolean = isGeminiFree(id) || isOpenRouterFree(id)
+
     /**
-     * Requests with [id] cost nothing: the own server, or Gemini on the free tier. They count as
-     * 0 $, and the monthly limit never blocks them.
+     * Requests with [id] cost nothing: the own server, or a key on a free tariff (Gemini,
+     * OpenRouter). They count as 0 $, and the monthly limit never blocks them.
      */
-    fun costsNothing(id: AiProviderId): Boolean = id == AiProviderId.CUSTOM || isGeminiFree(id)
+    fun costsNothing(id: AiProviderId): Boolean = id == AiProviderId.CUSTOM || isFreeTier(id)
 
     /** A copy with [settings] for [id]. */
     fun with(id: AiProviderId, settings: ProviderSettings): AiSettings = copy(providers = providers + (id to settings))
 
-    /** A copy with [model] (null = catalog default) for [id]. */
-    fun withModel(id: AiProviderId, model: String?): AiSettings =
-        with(id, of(id).copy(model = model?.trim()?.take(MAX_MODEL_LENGTH)?.takeIf { it.isNotEmpty() }))
+    /**
+     * A copy with [model] (null = catalog default) for [id] — for OpenRouter on the free tariff as
+     * its free model ([ProviderSettings.freeModel]), so the model of the credits tariff stays.
+     */
+    fun withModel(id: AiProviderId, model: String?): AiSettings {
+        val clean = model?.trim()?.take(MAX_MODEL_LENGTH)?.takeIf { it.isNotEmpty() }
+        return with(id, if (isOpenRouterFree(id)) of(id).copy(freeModel = clean) else of(id).copy(model = clean))
+    }
 
     companion object {
         /** Model ids are stored trimmed and at most this long. */

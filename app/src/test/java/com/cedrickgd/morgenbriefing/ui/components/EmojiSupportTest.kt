@@ -11,7 +11,7 @@ class EmojiSupportTest {
      * Clothing emoji missing from the Android 7.0 (API 24) system image's NotoColorEmoji.ttf
      * (read from its cmap). It has the Unicode 9 🥋 and the older 👕 👔 👚 👖 ❄️ ✋ 👟 ☀️.
      */
-    private val missingOnAndroid7 = setOf("🧥", "🧣", "🧤", "🧶", "🩳", "🥾", "🧴")
+    private val missingOnAndroid7 = setOf("🧥", "🧣", "🧤", "🧶", "🩳", "🥾", "🧴", "🦺")
     private val android7: (String) -> Boolean = { it !in missingOnAndroid7 }
     private val everything: (String) -> Boolean = { true }
 
@@ -46,7 +46,7 @@ class EmojiSupportTest {
 
     @Test
     fun `every clothing fallback on android 7 is drawable and unique`() {
-        val clothing = listOf("🧥", "🧣", "🧤", "🧶", "🩳", "🥾", "🧴")
+        val clothing = listOf("🧥", "🧣", "🧤", "🧶", "🩳", "🥾", "🧴", "🦺")
         val shown = clothing.associateWith { EmojiSupport.pick(it, android7) }
         shown.forEach { (emoji, fallback) ->
             assertNotEquals("$emoji has no fallback", emoji, fallback)
