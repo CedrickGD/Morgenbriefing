@@ -87,6 +87,10 @@ class SettingsViewModel(
 
     private var freeModelsJob: Job? = null
 
+    /** OpenRouter on its free tariff answers the chat: the settings show its free models. */
+    @Volatile
+    private var freeModelsWanted = false
+
     private val aiKeyEditor = AiKeyEditor(viewModelScope, container, ai) { ids -> _serverModels.value = ServerModels(ids) }
     val aiKey: StateFlow<AiKeyState> = aiKeyEditor.state
 
@@ -141,7 +145,10 @@ class SettingsViewModel(
                 .map { it.ai.provider == AiProviderId.OPENROUTER && it.ai.isOpenRouterFree(AiProviderId.OPENROUTER) }
                 .distinctUntilChanged()
                 .catch { e -> Log.w(TAG, "Settings unavailable", e) }
-                .collect { free -> if (free) loadFreeModels() }
+                .collect { free ->
+                    freeModelsWanted = free
+                    if (free) loadFreeModels()
+                }
         }
         // Token added or removed (here or in onboarding): update the connection status.
         viewModelScope.launch {
@@ -160,10 +167,15 @@ class SettingsViewModel(
         }
     }
 
-    /** Screen resumed: fresh weather, and re-check the connection when the last check is old. */
+    /**
+     * Screen resumed: fresh weather, re-check the connection when the last check is old, and the
+     * free models again — the day's list costs no download, while the built-in list shown offline
+     * (or a list older than a day) is replaced as soon as OpenRouter answers.
+     */
     fun onResume() {
         loadWeather()
         checkSource(force = false)
+        if (freeModelsWanted) loadFreeModels()
     }
 
     fun setThemeMode(mode: ThemeMode) = edit { it.copy(themeMode = mode) }

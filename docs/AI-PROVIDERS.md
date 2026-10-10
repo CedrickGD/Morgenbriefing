@@ -1461,7 +1461,9 @@ Settings → KI: „Tarif“ under the key row (like Gemini); on FREE the model 
 free models, the selected one when it is further down, „Alle N Gratis-Modelle zeigen“, and a quiet
 line („19 Gratis-Modelle von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag.“ / offline
 note); no „Eigenes Modell …“. The list loads when OpenRouter on FREE is the chat provider
-(`SettingsViewModel.loadFreeModels`).
+(`SettingsViewModel.loadFreeModels`) and again whenever the app comes back to the foreground on
+Settings: the day's list costs no download, the built-in list shown offline (or a list older than a
+day) is replaced as soon as OpenRouter answers.
 
 ### 16.3 Key dialog and key test
 
