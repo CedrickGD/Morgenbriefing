@@ -19,6 +19,7 @@ import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.ModelFallback
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import com.cedrickgd.morgenbriefing.data.model.cleanApiKey
 import com.cedrickgd.morgenbriefing.data.model.Place
@@ -96,8 +97,8 @@ class SettingsRepository(context: Context) {
     /**
      * The API key of [provider] (docs/AI-PROVIDERS.md §3), stored encrypted like the GitHub
      * token. Trims whitespace; null/blank clears it with its flags (a removed Anthropic key also
-     * takes its workspace id along, a removed Gemini key its tariff, so the next setup starts
-     * fresh). [tested] false marks it as saved without a passed test
+     * takes its workspace id along, a removed Gemini or OpenRouter key its tariff, so the next
+     * setup starts fresh). [tested] false marks it as saved without a passed test
      * ([ProviderSettings.keyUntested]) until [markAiKeyWorks]. Saving a key (or none) always
      * drops the rejected mark ([ProviderSettings.keyRejected]) of the previous one.
      * @throws IOException if DataStore cannot persist the change.
@@ -114,6 +115,7 @@ class SettingsRepository(context: Context) {
                 when (provider) {
                     AiProviderId.ANTHROPIC -> it.remove(AiPrefKeys.ANTHROPIC_WORKSPACE_ID)
                     AiProviderId.GEMINI -> it.remove(AiPrefKeys.GEMINI_TIER)
+                    AiProviderId.OPENROUTER -> it.remove(AiPrefKeys.OPENROUTER_TIER)
                     else -> Unit
                 }
             }
@@ -235,6 +237,15 @@ class SettingsRepository(context: Context) {
             if (before != tier) it.writeModelFallback(AiProviderId.GEMINI, null)
             it[AiPrefKeys.GEMINI_TIER] = tier.key
         }
+    }
+
+    /**
+     * The "Tarif" of the OpenRouter key ([OpenRouterTier.FREE] when never set): the free models
+     * without web search, or every model on the account's credits.
+     * @throws IOException if DataStore cannot persist the change.
+     */
+    suspend fun setOpenRouterTier(tier: OpenRouterTier) {
+        store.edit { it[AiPrefKeys.OPENROUTER_TIER] = tier.key }
     }
 
     /**

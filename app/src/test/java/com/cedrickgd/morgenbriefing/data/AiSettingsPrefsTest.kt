@@ -6,6 +6,7 @@ import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.ModelFallback
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import com.cedrickgd.morgenbriefing.data.model.cleanApiKey
 import org.junit.Assert.assertEquals
@@ -83,6 +84,41 @@ class AiSettingsPrefsTest {
         // Other providers are never "free Gemini".
         assertFalse(ai.isGeminiFree(AiProviderId.OPENAI))
         assertFalse(ai.costsNothing(AiProviderId.ANTHROPIC))
+    }
+
+    @Test
+    fun `a new OpenRouter setup is on the free tariff, its free model has a slot of its own`() {
+        val id = AiProviderId.OPENROUTER
+        val fresh = readAiSettings(preferencesOf(AiPrefKeys.keyEnc(id) to "CT=="), false)
+        assertEquals(OpenRouterTier.FREE, fresh.of(id).openRouterTier)
+        assertTrue(fresh.isOpenRouterFree(id))
+        assertTrue(fresh.costsNothing(id))
+        assertFalse(fresh.isOpenRouterFree(AiProviderId.GEMINI))
+        val stored = readAiSettings(
+            preferencesOf(
+                AiPrefKeys.OPENROUTER_TIER to "credits",
+                AiPrefKeys.OPENROUTER_FREE_MODEL to "  google/gemma-4-26b-a4b-it:free ",
+                AiPrefKeys.model(id) to "openai/gpt-6-luna",
+            ),
+            false,
+        )
+        assertEquals(OpenRouterTier.CREDITS, stored.of(id).openRouterTier)
+        assertFalse(stored.costsNothing(id))
+        assertEquals("google/gemma-4-26b-a4b-it:free", stored.of(id).freeModel)
+        assertEquals("openai/gpt-6-luna", stored.of(id).model)
+        // An unknown tariff is the safe default; nobody else has a free model.
+        assertTrue(readAiSettings(preferencesOf(AiPrefKeys.OPENROUTER_TIER to "gold"), false).isOpenRouterFree(id))
+        assertNull(stored.of(AiProviderId.GEMINI).freeModel)
+
+        // Writing keeps both models and leaves the tariff to its setter.
+        val picked = fresh.withModel(id, "nvidia/nemotron-3-ultra-550b-a55b:free")
+        val after = preferencesOf(AiPrefKeys.OPENROUTER_TIER to "free", AiPrefKeys.model(id) to "openai/gpt-6-luna")
+            .toMutablePreferences().apply { writeAiSettings(picked.with(id, picked.of(id).copy(model = "openai/gpt-6-luna"))) }
+        assertEquals("nvidia/nemotron-3-ultra-550b-a55b:free", after[AiPrefKeys.OPENROUTER_FREE_MODEL])
+        assertEquals("openai/gpt-6-luna", after[AiPrefKeys.model(id)])
+        assertEquals("free", after[AiPrefKeys.OPENROUTER_TIER])
+        after.apply { writeAiSettings(picked.withModel(id, null)) }
+        assertNull(after[AiPrefKeys.OPENROUTER_FREE_MODEL])
     }
 
     @Test

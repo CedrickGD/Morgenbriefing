@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.preferencesOf
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -40,7 +41,7 @@ class AiProvidersMigrationTest {
         assertEquals(true, migrated[AiPrefKeys.rejected(anthropic)])
         assertEquals("claude-opus-5-5", migrated[AiPrefKeys.model(anthropic)])
         assertEquals("anthropic", migrated[AiPrefKeys.PROVIDER])
-        assertEquals(2, migrated[AiPrefKeys.SCHEMA])
+        assertEquals(3, migrated[AiPrefKeys.SCHEMA])
         // The legacy keys are gone.
         assertNull(migrated[AiPrefKeys.LEGACY_KEY])
         assertNull(migrated[AiPrefKeys.LEGACY_UNTESTED])
@@ -82,10 +83,10 @@ class AiProvidersMigrationTest {
     }
 
     @Test
-    fun `a fresh install ends up with Anthropic and schema 2`() {
+    fun `a fresh install ends up with Anthropic and the current schema`() {
         val migrated = migrateAiPrefs(emptyPreferences())
         assertEquals("anthropic", migrated[AiPrefKeys.PROVIDER])
-        assertEquals(2, migrated[AiPrefKeys.SCHEMA])
+        assertEquals(AiPrefKeys.SCHEMA_VERSION, migrated[AiPrefKeys.SCHEMA])
         assertNull(migrated[AiPrefKeys.keyEnc(anthropic)])
         assertEquals(2, migrated.asMap().size)
         assertFalse(readAiSettings(migrated, debugOverrides = false).isConfigured(anthropic))
@@ -125,11 +126,46 @@ class AiProvidersMigrationTest {
     }
 
     @Test
-    fun `the DataStore migration only runs below schema 2`() = runBlocking<Unit> {
+    fun `the DataStore migration only runs below the current schema`() = runBlocking<Unit> {
         assertTrue(AiProvidersMigration.shouldMigrate(emptyPreferences()))
         assertTrue(AiProvidersMigration.shouldMigrate(v12))
+        assertTrue(AiProvidersMigration.shouldMigrate(preferencesOf(AiPrefKeys.SCHEMA to 2)))
         val migrated: Preferences = AiProvidersMigration.migrate(v12)
         assertFalse(AiProvidersMigration.shouldMigrate(migrated))
         assertEquals(migrateAiPrefs(v12), migrated)
+    }
+
+    /** A v1.3.1 settings file (schema 2) with an OpenRouter key set up for its credits. */
+    private val v131 = preferencesOf(
+        AiPrefKeys.SCHEMA to 2,
+        AiPrefKeys.PROVIDER to "openrouter",
+        AiPrefKeys.keyEnc(AiProviderId.OPENROUTER) to "OPENROUTER==",
+        AiPrefKeys.model(AiProviderId.OPENROUTER) to "anthropic/claude-sonnet-5.5",
+    )
+
+    @Test
+    fun `an openrouter key of v1_3_1 stays on its credits, a new setup starts free`() = runBlocking<Unit> {
+        assertTrue(AiProvidersMigration.shouldMigrate(v131))
+        val migrated = AiProvidersMigration.migrate(v131)
+        assertEquals(3, migrated[AiPrefKeys.SCHEMA])
+        assertEquals("credits", migrated[AiPrefKeys.OPENROUTER_TIER])
+        val ai = readAiSettings(migrated, debugOverrides = false)
+        assertEquals(OpenRouterTier.CREDITS, ai.of(AiProviderId.OPENROUTER).openRouterTier)
+        assertFalse(ai.isOpenRouterFree(AiProviderId.OPENROUTER))
+        // The chosen model and the key are untouched.
+        assertEquals("anthropic/claude-sonnet-5.5", ai.of(AiProviderId.OPENROUTER).model)
+        assertEquals("OPENROUTER==", migrated[AiPrefKeys.keyEnc(AiProviderId.OPENROUTER)])
+        assertEquals(migrated, migrateAiPrefs(migrated))
+
+        // Without an OpenRouter key nothing is set: the first setup chooses (free by default).
+        val noKey = migrateAiPrefs(preferencesOf(AiPrefKeys.SCHEMA to 2))
+        assertNull(noKey[AiPrefKeys.OPENROUTER_TIER])
+        assertEquals(OpenRouterTier.FREE, readAiSettings(noKey, debugOverrides = false).of(AiProviderId.OPENROUTER).openRouterTier)
+        // A tariff stored already is kept, and from schema 3 on a key saved later is never touched.
+        val chosen = migrateAiPrefs(v131.toMutablePreferences().apply { this[AiPrefKeys.OPENROUTER_TIER] = "free" }.toPreferences())
+        assertEquals("free", chosen[AiPrefKeys.OPENROUTER_TIER])
+        val later = preferencesOf(AiPrefKeys.SCHEMA to 3, AiPrefKeys.keyEnc(AiProviderId.OPENROUTER) to "NEW==")
+        assertFalse(AiProvidersMigration.shouldMigrate(later))
+        assertNull(migrateAiPrefs(later)[AiPrefKeys.OPENROUTER_TIER])
     }
 }

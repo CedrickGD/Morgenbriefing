@@ -69,7 +69,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
-import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
@@ -486,9 +485,8 @@ private fun ServerModelPicker(ai: AiSettings, models: ServerModels, actions: AiA
 private fun LiveProviderRow(ai: AiSettings, sdkAvailable: Boolean, onChange: () -> Unit) {
     val line = liveProviderLine(ai)
     if (line == null) {
-        val chat = ProviderCatalog.spec(ai.effectiveLiveProvider)
         Text(
-            chat.liveUnavailableText ?: "Live ist gerade nicht verfügbar.",
+            ProviderCatalog.liveUnavailableText(ai, ai.effectiveLiveProvider) ?: "Live ist gerade nicht verfügbar.",
             style = MaterialTheme.typography.bodyMedium,
             color = StatusPalette.attention(),
         )
@@ -499,7 +497,7 @@ private fun LiveProviderRow(ai: AiSettings, sdkAvailable: Boolean, onChange: () 
     val live = ai.effectiveLiveProvider
     val liveSpec = ProviderCatalog.spec(live)
     val supported = !liveSpec.needsSdk || sdkAvailable
-    val ready = supported && ai.isConfigured(live) && liveSpec.live == LiveSupport.YES
+    val ready = supported && ai.isConfigured(live) && ProviderCatalog.canRunLive(ai, live)
     SettingRow(
         icon = Icons.Rounded.Bolt,
         iconTint = if (ready) StatusPalette.ok() else StatusPalette.attention(),

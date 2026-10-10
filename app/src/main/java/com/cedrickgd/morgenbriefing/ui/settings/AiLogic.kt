@@ -370,31 +370,42 @@ internal data class Capability(val label: String, val available: Boolean, val sp
 
 /**
  * What [spec] can do, as the provider cards show it: Chat, Websuche, Live, Android 7. [ai] makes
- * it concrete for the stored settings: a Gemini key on the free tier searches nothing.
+ * it concrete for the stored settings: a Gemini key on the free tier searches nothing, OpenRouter
+ * on the free tariff neither searches nor runs Live.
  */
 internal fun capabilities(spec: ProviderSpec, ai: AiSettings? = null): List<Capability> {
     val geminiFree = ai?.isGeminiFree(spec.id) == true
-    val search = spec.chatWebSearch && !geminiFree
+    val openRouterFree = ai?.isOpenRouterFree(spec.id) == true
+    val search = spec.chatWebSearch && !geminiFree && !openRouterFree
     val searchLabel = when {
         geminiFree -> "Websuche nur mit Abrechnung"
+        openRouterFree -> "Websuche nur mit Guthaben"
         spec.id == AiProviderId.GEMINI -> "Google-Suche"
         else -> "Websuche"
     }
-    val live = spec.live == LiveSupport.YES
+    val live = spec.live == LiveSupport.YES && !openRouterFree
     val android7 = !spec.needsSdk
     return listOf(
         Capability("Chat", available = true, spoken = "Chat verfügbar"),
         Capability(
             searchLabel,
             available = search,
-            // TalkBack hears what the pill shows: a free Gemini key gets search with billing.
+            // TalkBack hears what the pill shows: a free key gets search with billing or credits.
             spoken = when {
                 search -> "Websuche verfügbar"
-                geminiFree -> "Websuche nur mit Abrechnung"
+                geminiFree || openRouterFree -> searchLabel
                 else -> "Websuche nicht verfügbar"
             },
         ),
-        Capability("Live", available = live, spoken = if (live) "Live verfügbar" else "Live nicht verfügbar"),
+        Capability(
+            if (openRouterFree) "Live nur mit Guthaben" else "Live",
+            available = live,
+            spoken = when {
+                live -> "Live verfügbar"
+                openRouterFree -> "Live nur mit Guthaben"
+                else -> "Live nicht verfügbar"
+            },
+        ),
         Capability(
             if (android7) "Android 7" else "ab Android 8",
             available = android7,
@@ -418,11 +429,16 @@ internal fun providerStatusLine(ai: AiSettings, id: AiProviderId, supported: Boo
         p.keyUntested -> "Key gespeichert · noch nicht getestet"
         else -> "Key gespeichert ✓"
     }
-    return if (id == AiProviderId.GEMINI && supported && p.hasKey) "$base · ${tierShort(ai)}" else base
+    val tier = tierShort(ai, id)
+    return if (tier != null && supported && p.hasKey) "$base · $tier" else base
 }
 
-/** "kostenlos" / "mit Abrechnung" for the stored Gemini tariff. */
-private fun tierShort(ai: AiSettings): String = if (ai.isGeminiFree(AiProviderId.GEMINI)) "kostenlos" else "mit Abrechnung"
+/** "kostenlos" / "mit Abrechnung" (Gemini) / "mit Guthaben" (OpenRouter) for the stored tariff; null without one. */
+private fun tierShort(ai: AiSettings, id: AiProviderId): String? = when (id) {
+    AiProviderId.GEMINI -> if (ai.isGeminiFree(id)) "kostenlos" else "mit Abrechnung"
+    AiProviderId.OPENROUTER -> if (ai.isOpenRouterFree(id)) "kostenlos" else "mit Guthaben"
+    else -> null
+}
 
 /** Under the summary card when the chosen provider cannot run here (Claude below Android 8). */
 internal fun unsupportedProviderHint(spec: ProviderSpec): String = "${spec.brand} braucht Android 8 – wähl einen anderen Anbieter."
@@ -433,13 +449,14 @@ internal fun unsupportedProviderHint(spec: ProviderSpec): String = "${spec.brand
 
 /**
  * Settings → KI → "⚡ Live": who researches. Null when the effective Live provider cannot run Live
- * (the chat provider has none and no own Live provider is chosen) — the section then explains
- * why ([ProviderSpec.liveUnavailableText]) and offers "Live-Anbieter wählen". Names the brand
- * ("Claude", not "Claude (Anthropic)"), so "(wie Chat)" never nests in another bracket.
+ * (the chat provider has none — or OpenRouter is on its free tariff — and no own Live provider is
+ * chosen) — the section then explains why ([ProviderCatalog.liveUnavailableText]) and offers
+ * "Live-Anbieter wählen". Names the brand ("Claude", not "Claude (Anthropic)"), so "(wie Chat)"
+ * never nests in another bracket.
  */
 internal fun liveProviderLine(ai: AiSettings): String? {
     val spec = ProviderCatalog.spec(ai.effectiveLiveProvider)
-    if (spec.live != LiveSupport.YES) return null
+    if (!ProviderCatalog.canRunLive(ai, spec.id)) return null
     val sameAsChat = ai.liveProvider == null || ai.liveProvider == ai.provider
     return if (sameAsChat) "Live über ${spec.brand} (wie Chat)" else "Live über ${spec.brand}"
 }
@@ -449,14 +466,23 @@ internal fun sameAsChatLabel(chat: ProviderSpec): String = "Wie Chat (${chat.bra
 
 /**
  * The choices of the Live provider picker: null = "Wie Chat" (only when the chat provider can
- * research itself), then every provider with Live that runs on this device ([sdkAvailable]).
+ * research itself as configured), then every provider with Live that runs on this device
+ * ([sdkAvailable]) — OpenRouter also on the free tariff: picking it there opens its key dialog
+ * on "Mit Guthaben" ([liveNeedsSetup]).
  */
 internal fun liveProviderChoices(ai: AiSettings, sdkAvailable: Boolean): List<AiProviderId?> = buildList {
-    if (ProviderCatalog.spec(ai.provider).live == LiveSupport.YES) add(null)
+    if (ProviderCatalog.canRunLive(ai, ai.provider)) add(null)
     ProviderCatalog.all
         .filter { it.live == LiveSupport.YES && (!it.needsSdk || sdkAvailable) }
         .forEach { add(it.id) }
 }
+
+/**
+ * A Live provider picked in the Live picker still needs its key dialog: no key (own server: no
+ * address) yet, or OpenRouter on the free tariff, which researches only with credits.
+ */
+internal fun liveNeedsSetup(ai: AiSettings, picked: AiProviderId): Boolean =
+    !ai.isConfigured(picked) || !ProviderCatalog.canRunLive(ai, picked)
 
 /**
  * The stored Live provider for a pick in the Live picker: "Wie Chat" (null) and the chat provider
@@ -657,7 +683,7 @@ internal object AiLimit {
         "Ohne Limit schickt die App jede KI-Anfrage – die Kosten trägt dein Konto beim Anbieter."
     } else {
         "Ist es erreicht, schickt die App bis zum Monatsende keine KI-Anfragen mehr. Es gilt für alle Anbieter zusammen; " +
-            "der eigene Server und Gemini kostenlos laufen immer weiter."
+            "der eigene Server und die kostenlosen Tarife von Gemini und OpenRouter laufen immer weiter."
     }
 }
 

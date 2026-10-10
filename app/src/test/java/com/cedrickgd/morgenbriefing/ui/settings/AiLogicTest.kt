@@ -9,6 +9,7 @@ import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.ModelFallback
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -29,6 +30,13 @@ class AiLogicTest {
     private companion object {
         const val NBSP = ' '
     }
+
+    /** OpenRouter as the chat provider with a key on [tier]. */
+    private fun openRouter(tier: OpenRouterTier, provider: AiProviderId = AiProviderId.OPENROUTER, live: AiProviderId? = null) = AiSettings(
+        provider = provider,
+        liveProvider = live,
+        providers = mapOf(AiProviderId.OPENROUTER to ProviderSettings(hasKey = true, openRouterTier = tier)),
+    )
 
     private fun gemini(tier: GeminiTier, model: String? = null, hasKey: Boolean = true) = AiSettings(
         provider = AiProviderId.GEMINI,
@@ -89,7 +97,7 @@ class AiLogicTest {
         assertFalse(AiLimit.hint(0.0).contains("Anthropic"))
         val capped = AiLimit.hint(5.0)
         assertTrue(capped.contains("alle Anbieter zusammen"))
-        assertTrue(capped.contains("Gemini kostenlos"))
+        assertTrue(capped.contains("kostenlosen Tarife von Gemini und OpenRouter"))
     }
 
     @Test
@@ -411,6 +419,38 @@ class AiLogicTest {
     }
 
     @Test
+    fun `openrouter on the free tariff shows what it lacks and needs credits for live`() {
+        val free = openRouter(OpenRouterTier.FREE)
+        val pills = capabilities(ProviderCatalog.OPENROUTER, free)
+        assertEquals(listOf(true, false, false, true), pills.map { it.available })
+        assertEquals("Websuche nur mit Guthaben", pills[1].label)
+        assertEquals("Live nur mit Guthaben", pills[2].label)
+        assertEquals(
+            "Chat verfügbar, Websuche nur mit Guthaben, Live nur mit Guthaben, läuft auf Android 7",
+            capabilitySemantics(pills),
+        )
+        // With credits (and without settings) OpenRouter can do everything.
+        assertEquals(listOf(true, true, true, true), capabilities(ProviderCatalog.OPENROUTER, openRouter(OpenRouterTier.CREDITS)).map { it.available })
+        assertEquals("Live", capabilities(ProviderCatalog.OPENROUTER)[2].label)
+        // The picker names the tariff.
+        assertEquals("Key gespeichert ✓ · kostenlos", providerStatusLine(free, AiProviderId.OPENROUTER, supported = true))
+        assertEquals("Key gespeichert ✓ · mit Guthaben", providerStatusLine(openRouter(OpenRouterTier.CREDITS), AiProviderId.OPENROUTER, supported = true))
+        assertEquals("Kein Key", providerStatusLine(AiSettings(), AiProviderId.OPENROUTER, supported = true))
+        // Live: no "wie Chat" on the free tariff; picking OpenRouter for Live asks for its credits.
+        assertNull(liveProviderLine(free))
+        assertEquals("Live über OpenRouter (wie Chat)", liveProviderLine(openRouter(OpenRouterTier.CREDITS)))
+        assertEquals("Live über OpenAI", liveProviderLine(openRouter(OpenRouterTier.FREE, live = AiProviderId.OPENAI)))
+        val choices = liveProviderChoices(free, sdkAvailable = true)
+        assertFalse(null in choices)
+        assertTrue(AiProviderId.OPENROUTER in choices)
+        assertEquals(null, liveProviderChoices(openRouter(OpenRouterTier.CREDITS), sdkAvailable = true).first())
+        assertTrue(liveNeedsSetup(free, AiProviderId.OPENROUTER))
+        assertFalse(liveNeedsSetup(openRouter(OpenRouterTier.CREDITS), AiProviderId.OPENROUTER))
+        assertTrue(liveNeedsSetup(free, AiProviderId.OPENAI))
+        assertFalse(liveNeedsSetup(free.with(AiProviderId.OPENAI, ProviderSettings(hasKey = true)), AiProviderId.OPENAI))
+    }
+
+    @Test
     fun `live provider line - same as chat, separate, or none`() {
         assertEquals("Live über OpenAI (wie Chat)", liveProviderLine(AiSettings(provider = AiProviderId.OPENAI)))
         assertEquals(
@@ -428,9 +468,10 @@ class AiLogicTest {
         assertEquals("Wie Chat (Claude)", sameAsChatLabel(ProviderCatalog.ANTHROPIC))
         assertEquals("Live über Grok", liveProviderLine(AiSettings(provider = AiProviderId.OPENAI, liveProvider = AiProviderId.XAI)))
         ProviderCatalog.all.filter { it.live == LiveSupport.YES }.forEach { spec ->
+            // OpenRouter researches with credits.
             val labels = listOfNotNull(
-                liveProviderLine(AiSettings(provider = spec.id)),
-                liveProviderLine(AiSettings(provider = AiProviderId.GEMINI, liveProvider = spec.id)),
+                liveProviderLine(openRouter(OpenRouterTier.CREDITS, provider = spec.id)),
+                liveProviderLine(openRouter(OpenRouterTier.CREDITS, provider = AiProviderId.GEMINI, live = spec.id)),
                 sameAsChatLabel(spec),
             )
             assertEquals(spec.id.key, 3, labels.size)

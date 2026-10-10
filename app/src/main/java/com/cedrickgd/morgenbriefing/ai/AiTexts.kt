@@ -3,6 +3,7 @@ package com.cedrickgd.morgenbriefing.ai
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiLinks
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
 import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
+import com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 
@@ -50,7 +51,9 @@ object AiTexts {
         AiBlock.LIMIT_REACHED ->
             "Dein KI-Budget für diesen Monat ist aufgebraucht. Du kannst das Limit in den Einstellungen anheben – " +
                 "oder am Monatsersten geht es von selbst weiter."
-        AiBlock.LIVE_UNAVAILABLE -> spec.liveUnavailableText ?: "Live ist mit ${spec.dativeName} gerade nicht verfügbar."
+        // A provider that has Live in general lacks it only on its free tariff (OpenRouter).
+        AiBlock.LIVE_UNAVAILABLE -> spec.liveUnavailableText
+            ?: if (spec.id == AiProviderId.OPENROUTER) OpenRouterTiers.LIVE_UNAVAILABLE else "Live ist mit ${spec.dativeName} gerade nicht verfügbar."
     }
 
     /** What went wrong, in one sentence. */
@@ -59,9 +62,17 @@ object AiTexts {
         return when (error) {
             AiError.InvalidKey -> spec.invalidKeyText
                 ?: "${brand.sentence()} hat deinen API-Key abgelehnt. Prüf ihn bitte oder trag einen neuen ein."
-            AiError.NoCredit -> "Dein Guthaben bei $brand ist aufgebraucht. Lade es in der Konsole auf, dann geht es weiter."
+            AiError.NoCredit -> if (spec.id == AiProviderId.OPENROUTER) {
+                OpenRouterTiers.NO_CREDIT
+            } else {
+                "Dein Guthaben bei $brand ist aufgebraucht. Lade es in der Konsole auf, dann geht es weiter."
+            }
             AiError.RateLimited -> "Gerade kommen zu viele Anfragen auf einmal an. Versuch es in einer Minute noch mal."
-            AiError.QuotaExhausted -> "$brand-Gratiskontingent für den Moment aufgebraucht – in ein paar Minuten bzw. morgen geht's weiter."
+            AiError.QuotaExhausted -> if (spec.id == AiProviderId.OPENROUTER) {
+                OpenRouterTiers.QUOTA_EXHAUSTED
+            } else {
+                "$brand-Gratiskontingent für den Moment aufgebraucht – in ein paar Minuten bzw. morgen geht's weiter."
+            }
             AiError.Overloaded -> "${brand.sentence()} ist im Moment überlastet. Versuch es gleich noch einmal."
             AiError.Network -> if (spec.id == AiProviderId.CUSTOM) {
                 "Keine Verbindung zu deinem Server. Prüf dein Netz und versuch es noch mal."
@@ -141,11 +152,12 @@ object AiTexts {
     }
 
     /**
-     * The calm note of a chat that cannot search the web: a free Gemini key ([freeTier]), or a
-     * provider without web search. Null when the chat searches.
+     * The calm note of a chat that cannot search the web: a key on a free tariff ([freeTier]:
+     * Gemini, OpenRouter), or a provider without web search. Null when the chat searches.
      */
     fun chatNote(spec: ProviderSpec, webSearch: Boolean, freeTier: Boolean): String? = when {
         webSearch -> null
+        freeTier && spec.id == AiProviderId.OPENROUTER -> OpenRouterTiers.NO_WEB_SEARCH_NOTE
         freeTier -> GeminiTiers.NO_WEB_SEARCH_NOTE
         else -> "Ohne Websuche – mit ${spec.dativeName} nicht verfügbar"
     }

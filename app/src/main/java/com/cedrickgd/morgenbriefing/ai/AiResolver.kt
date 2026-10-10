@@ -22,8 +22,8 @@ internal fun AiSettings.providerFor(purpose: AiPurpose): AiProviderId =
 
 /**
  * Why AI can't run for [purpose] right now; null = go. Order: device (or no backend for the
- * provider in this build), Live support, configuration, monthly limit. Free providers (own
- * server, a free Gemini key) are never stopped by the limit.
+ * provider in this build), Live support (OpenRouter on the free tariff has none), configuration,
+ * monthly limit. Free providers (own server, a key on a free tariff) are never stopped by the limit.
  */
 internal fun aiBlock(
     ai: AiSettings,
@@ -36,7 +36,7 @@ internal fun aiBlock(
     val spec = ProviderCatalog.spec(id)
     return when {
         (spec.needsSdk && !sdkAvailable) || !hasBackend -> AiBlock.UNSUPPORTED_DEVICE
-        purpose == AiPurpose.LIVE && spec.live != LiveSupport.YES -> AiBlock.LIVE_UNAVAILABLE
+        purpose == AiPurpose.LIVE && ProviderCatalog.liveSupport(ai, id) != LiveSupport.YES -> AiBlock.LIVE_UNAVAILABLE
         !ai.isConfigured(id) -> AiBlock.NO_KEY
         !ai.costsNothing(id) && usage.limitUsd > 0.0 && usage.spentUsd >= usage.limitUsd -> AiBlock.LIMIT_REACHED
         else -> null
@@ -45,8 +45,8 @@ internal fun aiBlock(
 
 /**
  * What a chat or Live view needs to know about its provider before a request: who it is,
- * whether it is blocked, and whether the chat searches the web ([freeTier]: a free Gemini key,
- * the reason it does not).
+ * whether it is blocked, and whether the chat searches the web ([freeTier]: a key on a free
+ * tariff — Gemini or OpenRouter — the reason it does not).
  */
 internal data class AiStatus(
     val spec: ProviderSpec,
@@ -68,7 +68,7 @@ internal fun aiStatus(
         spec = ProviderCatalog.spec(id),
         block = aiBlock(ai, purpose, sdkAvailable, usage, hasBackend),
         webSearch = ProviderCatalog.chatWebSearch(ai, id),
-        freeTier = ai.isGeminiFree(id),
+        freeTier = ai.isFreeTier(id),
     )
 }
 
@@ -150,7 +150,7 @@ internal fun AiKeyCheck.rejectsKey(): Boolean =
 
 /**
  * The usage sink of one provider over the shared monthly [store]. A [free] provider (own
- * server, free Gemini key) is never stopped by the limit and costs 0 $ (its requests and
+ * server, a key on a free tariff) is never stopped by the limit and costs 0 $ (its requests and
  * searches still count). [onRecorded] runs after each recorded request — usage only exists for
  * a request the provider accepted, so it confirms the key.
  */

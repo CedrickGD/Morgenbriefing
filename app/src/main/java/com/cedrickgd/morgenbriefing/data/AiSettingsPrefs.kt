@@ -10,6 +10,7 @@ import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AiSettings
 import com.cedrickgd.morgenbriefing.data.model.GeminiTier
 import com.cedrickgd.morgenbriefing.data.model.ModelFallback
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.ProviderSettings
 import java.net.URI
 import java.net.URISyntaxException
@@ -22,7 +23,7 @@ import java.net.URISyntaxException
 
 /** Preference keys of the AI settings; `<p>` is [AiProviderId.key]. */
 internal object AiPrefKeys {
-    /** `2` once [AiProvidersMigration] ran. */
+    /** [SCHEMA_VERSION] once [AiProvidersMigration] ran. */
     val SCHEMA = intPreferencesKey("ai_schema")
     val PROVIDER = stringPreferencesKey("ai_provider")
 
@@ -35,6 +36,12 @@ internal object AiPrefKeys {
 
     /** [GeminiTier.key]; absent = [GeminiTier.FREE]. */
     val GEMINI_TIER = stringPreferencesKey("ai_gemini_tier")
+
+    /** [OpenRouterTier.key]; absent = [OpenRouterTier.FREE] (a key stored before schema 3 was migrated to credits). */
+    val OPENROUTER_TIER = stringPreferencesKey("ai_openrouter_tier")
+
+    /** [ProviderSettings.freeModel] of OpenRouter: the model of the free tariff. */
+    val OPENROUTER_FREE_MODEL = stringPreferencesKey("ai_openrouter_free_model")
 
     /** `TokenCipher` ciphertext of the key (never logged, never in AppSettings). */
     fun keyEnc(p: AiProviderId) = stringPreferencesKey("ai_${p.key}_key_enc")
@@ -57,13 +64,15 @@ internal object AiPrefKeys {
     val LEGACY_REJECTED = booleanPreferencesKey("ai_key_rejected")
     val LEGACY_MODEL = stringPreferencesKey("ai_model")
 
-    const val SCHEMA_VERSION = 2
+    /** 2: one slot per provider (v1.3.0). 3: the OpenRouter tariff (v1.3.2). */
+    const val SCHEMA_VERSION = 3
 }
 
 /**
  * Moves the v1.2 Claude key, its flags and the model into the Anthropic slot before the first
- * read (DataStore runs migrations atomically). Fresh installs take the same path and end up
- * with provider Anthropic and schema 2.
+ * read (DataStore runs migrations atomically), and keeps an OpenRouter key of v1.3.0/1.3.1 on
+ * the credits it was set up for (schema 3). Fresh installs take the same path and end up with
+ * provider Anthropic and the current schema.
  */
 internal object AiProvidersMigration : DataMigration<Preferences> {
     override suspend fun shouldMigrate(currentData: Preferences): Boolean =
@@ -78,9 +87,16 @@ internal object AiProvidersMigration : DataMigration<Preferences> {
  * Pure and idempotent. The ciphertext does not depend on the preference name (one keystore
  * alias in TokenCipher), so the key moves as it is. An Anthropic key stored already is never
  * overwritten. Old model names map to the new ids; anything else falls back to the catalog
- * default. The global monthly limit and the Live auto-refresh switch are not touched.
+ * default. An OpenRouter key stored before schema 3 ran on credits (there was no free tariff):
+ * it stays on [OpenRouterTier.CREDITS], while a new OpenRouter setup starts on the free tariff.
+ * The global monthly limit and the Live auto-refresh switch are not touched.
  */
 internal fun migrateAiPrefs(old: Preferences): Preferences = old.toMutablePreferences().apply {
+    val schema = this[AiPrefKeys.SCHEMA] ?: 0
+    val openRouter = AiProviderId.OPENROUTER
+    if (schema < 3 && !this[AiPrefKeys.keyEnc(openRouter)].isNullOrBlank() && this[AiPrefKeys.OPENROUTER_TIER] == null) {
+        this[AiPrefKeys.OPENROUTER_TIER] = OpenRouterTier.CREDITS.key
+    }
     val anthropic = AiProviderId.ANTHROPIC
     val legacyKey = this[AiPrefKeys.LEGACY_KEY]
     if (!legacyKey.isNullOrBlank() && this[AiPrefKeys.keyEnc(anthropic)] == null) {
@@ -123,6 +139,16 @@ internal fun readAiSettings(prefs: Preferences, debugOverrides: Boolean): AiSett
                 null
             },
             geminiTier = if (id == AiProviderId.GEMINI) GeminiTier.fromKey(prefs[AiPrefKeys.GEMINI_TIER]) ?: GeminiTier.FREE else GeminiTier.FREE,
+            openRouterTier = if (id == AiProviderId.OPENROUTER) {
+                OpenRouterTier.fromKey(prefs[AiPrefKeys.OPENROUTER_TIER]) ?: OpenRouterTier.FREE
+            } else {
+                OpenRouterTier.FREE
+            },
+            freeModel = if (id == AiProviderId.OPENROUTER) {
+                prefs[AiPrefKeys.OPENROUTER_FREE_MODEL]?.trim()?.takeIf { it.isNotEmpty() }?.take(AiSettings.MAX_MODEL_LENGTH)
+            } else {
+                null
+            },
             debugBaseUrl = if (debugOverrides) prefs[AiPrefKeys.debugBaseUrl(id)]?.let(::normalizeBaseUrl) else null,
             modelFallback = readModelFallback(prefs, id).takeIf { hasKey },
         )
@@ -156,10 +182,10 @@ internal fun MutablePreferences.writeModelFallback(id: AiProviderId, fallback: M
 
 /**
  * Writes the plain AI fields of [ai]: the chat and Live provider and the model of every provider
- * in [AiSettings.providers] (null removes it, providers not in the map stay untouched). A model
- * that changes drops the provider's model fallback: the user's new choice is tried again. Keys,
- * their flags, the base URLs, the workspace id, the Gemini tier and the fallback itself only
- * change through the dedicated setters of SettingsRepository.
+ * in [AiSettings.providers] (null removes it, providers not in the map stay untouched), and
+ * OpenRouter's free model. A model that changes drops the provider's model fallback: the user's
+ * new choice is tried again. Keys, their flags, the base URLs, the workspace id, the tariffs and
+ * the fallback itself only change through the dedicated setters of SettingsRepository.
  */
 internal fun MutablePreferences.writeAiSettings(ai: AiSettings) {
     this[AiPrefKeys.PROVIDER] = ai.provider.key
@@ -169,6 +195,10 @@ internal fun MutablePreferences.writeAiSettings(ai: AiSettings) {
         val model = settings.model?.trim()?.take(AiSettings.MAX_MODEL_LENGTH)?.takeIf { it.isNotEmpty() }
         if (model != this[AiPrefKeys.model(id)]) writeModelFallback(id, null)
         if (model == null) remove(AiPrefKeys.model(id)) else this[AiPrefKeys.model(id)] = model
+        if (id == AiProviderId.OPENROUTER) {
+            val free = settings.freeModel?.trim()?.take(AiSettings.MAX_MODEL_LENGTH)?.takeIf { it.isNotEmpty() }
+            if (free == null) remove(AiPrefKeys.OPENROUTER_FREE_MODEL) else this[AiPrefKeys.OPENROUTER_FREE_MODEL] = free
+        }
     }
 }
 

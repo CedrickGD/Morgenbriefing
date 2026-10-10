@@ -39,8 +39,8 @@ internal class AiBlockedException(val block: AiBlock) : Exception(block.name)
  * @property baseUrl the own server's address, or (debug builds only) a QA override of the
  *   catalog endpoint; null = the catalog default (for Claude: the SDK default).
  * @property workspaceId Anthropic: sent as `anthropic-workspace-id` when not blank.
- * @property freeTier a Gemini key on the free tier: never send Google Search; a 429 means the
- *   free quota is used up ([AiError.QuotaExhausted]).
+ * @property freeTier a key on a free tariff (Gemini, OpenRouter): never send web search; a 429
+ *   means the free quota is used up ([AiError.QuotaExhausted]).
  */
 internal class ProviderAuth(
     val provider: AiProviderId,

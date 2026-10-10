@@ -223,7 +223,7 @@ class AiServices(private val context: Context, private val container: AppContain
             apiKey = key,
             baseUrl = if (id == AiProviderId.CUSTOM) p.baseUrl else p.debugBaseUrl,
             workspaceId = p.workspaceId.takeIf { id == AiProviderId.ANTHROPIC },
-            freeTier = ai.isGeminiFree(id),
+            freeTier = ai.isFreeTier(id),
         )
     }
 
