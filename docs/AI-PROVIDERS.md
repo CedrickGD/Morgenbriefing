@@ -1543,6 +1543,7 @@ OpenRouter key removes the tariff too (like Gemini's).
 | f | Every Gemini 400 `FAILED_PRECONDITION` became the free-tier/region text | only when the message names the free tier, billing, the location or the country (`ApiErrorBody.namesFreeTierOrRegion`); any other precondition is the plain refusal with its Details |
 | g | After a provider error the chat offered no way to resend once the cause was fixed | `errorActions`: under the last failed answer, while the chat can send, „Nochmal senden“ for errors a retry alone does not fix (key, credits, model, project), „Nochmal versuchen“ for the others; not for a refusal |
 | h | An answer finishing after a Gemini tariff switch stored the model fallback the switch had dropped | `AiProviderAccess.modelFallback(…, freeTier)`; the fallback is stored only while the key (ciphertext), the tariff the request ran on (`fallbackStillFits`, atomic in the DataStore edit) and the chosen model are still the stored ones |
+| i | While it already snowed on a snowy day the headline said „Frostiger Start, später Schnee bei -1°.“ (older than v1.3.2) | `WeatherInsights.todayStart`: a frosty start that is already wet on a wet day links the day with „dazu“ — „Frostiger Start, dazu Schnee bei -1°.“ |
 
 ### 16.8 Tests and QA
 

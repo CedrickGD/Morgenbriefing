@@ -328,6 +328,31 @@ class WeatherInsightsTest {
     }
 
     @Test
+    fun `snow that already falls on a snowy day is no later snow`() {
+        val hours = WeatherFixtures.window(
+            "2026-12-02", 15,
+            temps = listOf(-2.0, -1.5, -1.0, -1.0, -1.5, -2.0, -2.0),
+            codes = List(7) { 73 },
+            pops = List(7) { 90 },
+            precip = List(7) { 0.6 },
+        )
+        val snowing = foggyAutumn.copy(
+            home = foggyAutumn.home.copy(
+                current = CurrentConditions(
+                    time = "2026-12-02T15:15", temp = -2.0, feels = -6.0, code = 73, isDay = true,
+                    windKmh = 10.0, gustKmh = 20.0, precipMm = 0.6, humidity = 92, visibilityM = 3_000.0,
+                ),
+                nextHours = foggyAutumn.home.nextHours.map { it.copy(code = 73, temp = -2.0, visibilityM = 3_000.0) },
+            ),
+            day = WeatherFixtures.day("2026-12-02", hours),
+        )
+        val headline = WeatherInsights.headline(snowing)
+        assertNotContains(headline, "später")
+        assertContains(headline, "Schnee")
+        assertEquals("Frostiger Start, dazu Schnee bei -1°.", headline)
+    }
+
+    @Test
     fun `falling temperatures suggest taking a jacket along`() {
         val hours = WeatherFixtures.window(
             "2026-09-01", 10,
