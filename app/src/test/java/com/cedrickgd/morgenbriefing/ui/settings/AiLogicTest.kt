@@ -185,11 +185,20 @@ class AiLogicTest {
         val gemini = ProviderCatalog.GEMINI
         val auth = AiKeyState.Failed(AiKeyProblem.AUTH_KEY_REJECTED, "HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED")
         val text = aiKeyMessage(auth, gemini)!!
-        assertTrue(text.startsWith("✗ Google nimmt deinen Key gerade nicht an."))
-        assertTrue(text.contains("neuen Key"))
+        assertEquals(
+            "✗ Google nimmt deinen Key gerade nicht an – ein bekannter Fehler bei Google, der viele neue Keys („AQ.…“) trifft, " +
+                "auch wenn AI Studio sie als gültig zeigt. Was hilft: ein älterer Key, der mit „AIza“ beginnt – " +
+                "oder OpenRouter kostenlos mit Gemma 4, Googles offenem Modell.",
+            text,
+        )
         assertEquals("HTTP 401 · UNAUTHENTICATED · ACCESS_TOKEN_TYPE_UNSUPPORTED", auth.diagnostic)
-        assertEquals(KeyFixLink("Neuen Key in AI Studio", "https://aistudio.google.com/apikey"), aiKeyFixLink(auth))
+        assertEquals(KeyFixLink("Keys in AI Studio", "https://aistudio.google.com/apikey"), aiKeyFixLink(auth))
         assertFalse(canSaveUntested(auth))
+        // The way out without a Google key: OpenRouter's free tariff.
+        assertTrue(aiKeyOffersOpenRouter(auth))
+        assertFalse(aiKeyOffersOpenRouter(AiKeyState.Failed(AiKeyProblem.KEY_LEAKED)))
+        assertFalse(aiKeyOffersOpenRouter(AiKeyState.Failed(AiKeyProblem.INVALID)))
+        assertFalse(aiKeyOffersOpenRouter(AiKeyState.Saved))
 
         val blocked = AiKeyState.Failed(AiKeyProblem.API_BLOCKED, "HTTP 403 · PERMISSION_DENIED · SERVICE_DISABLED")
         assertTrue(aiKeyMessage(blocked, gemini)!!.startsWith("✗ Die Gemini API ist für dein Google-Projekt gesperrt oder nicht aktiviert"))

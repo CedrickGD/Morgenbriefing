@@ -516,6 +516,7 @@ internal fun ErrorCard(
     modifier: Modifier = Modifier,
     detail: String? = null,
     onOpenLink: (String) -> Unit = {},
+    onSetUpOpenRouter: () -> Unit = {},
 ) {
     val refusal = error is AiError.Refusal
     val textColor = if (refusal) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onErrorContainer
@@ -550,22 +551,24 @@ internal fun ErrorCard(
         if (detail != null) {
             ErrorDetails(detail, modifier = Modifier.padding(start = 32.dp, end = 8.dp), color = textColor)
         }
-        // Wraps on narrow screens: a link, "Key ändern" and "Nochmal" may all be there.
+        // Wraps on narrow screens: a link, OpenRouter, "Key ändern" and "Nochmal" may all be there.
+        val actions = errorActions(error, canRetry)
         FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            link?.let { (label, url) ->
-                TextButton(onClick = { onOpenLink(url) }) {
-                    Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text(label)
+            actions.forEach { action ->
+                when (action) {
+                    ErrorAction.OPEN_LINK -> link?.let { (label, url) ->
+                        TextButton(onClick = { onOpenLink(url) }) {
+                            Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text(label)
+                        }
+                    }
+                    ErrorAction.SET_UP_OPENROUTER -> TextButton(onClick = onSetUpOpenRouter) { Text(action.label.orEmpty()) }
+                    ErrorAction.CHANGE_KEY -> TextButton(onClick = onOpenSettings) { Text(action.label.orEmpty()) }
+                    ErrorAction.RETRY -> TextButton(onClick = onRetry) { Text(action.label.orEmpty()) }
                 }
             }
-            if (AiTexts.needsKeyChange(error)) {
-                TextButton(onClick = onOpenSettings) { Text("Key ändern") }
-            } else if (canRetry && AiTexts.isRetryable(error)) {
-                TextButton(onClick = onRetry) { Text("Nochmal versuchen") }
-            } else if (link == null) {
-                Spacer(Modifier.height(8.dp))
-            }
+            if (actions.isEmpty()) Spacer(Modifier.height(8.dp))
         }
     }
 }

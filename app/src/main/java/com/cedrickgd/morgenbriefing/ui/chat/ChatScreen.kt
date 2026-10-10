@@ -89,6 +89,7 @@ import com.cedrickgd.morgenbriefing.ai.RetryableChatSession
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
+import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.ui.components.entrance
 import com.cedrickgd.morgenbriefing.ui.components.rememberEntrance
 import com.cedrickgd.morgenbriefing.ui.glass.GlassCard
@@ -127,6 +128,12 @@ fun ChatScreen(
     val settingsLink = LocalSettingsLink.current
     // The provider whose key dialog is open ([AiProviderId.key]), or null.
     var keyDialog by rememberSaveable { mutableStateOf<String?>(null) }
+    // The open key dialog is OpenRouter set up as the way out of a refused Gemini key.
+    var planB by rememberSaveable { mutableStateOf(false) }
+    val setUpOpenRouter = {
+        keyDialog = AiProviderId.OPENROUTER.key
+        planB = true
+    }
     ChatContent(
         state = state,
         aboutArticle = articleKey != null,
@@ -151,14 +158,29 @@ fun ChatScreen(
             }
         },
         // "Key ändern" under an answer: the key of the provider that wrote it.
-        onChangeKey = { provider -> keyDialog = provider.key },
+        onChangeKey = { provider ->
+            keyDialog = provider.key
+            planB = false
+        },
+        onSetUpOpenRouter = setUpOpenRouter,
         onSend = session::send,
         onStop = session::stop,
         onRetry = { (session as? RetryableChatSession)?.retry() },
         onClear = session::clear,
         modifier = modifier,
     )
-    AiProviderId.fromKey(keyDialog)?.let { provider -> InlineAiKeyDialog(provider = provider, onDismiss = { keyDialog = null }) }
+    AiProviderId.fromKey(keyDialog)?.let { provider ->
+        InlineAiKeyDialog(
+            provider = provider,
+            onDismiss = {
+                keyDialog = null
+                planB = false
+            },
+            openRouterTier = OpenRouterTier.FREE.takeIf { planB },
+            selectOnSave = planB,
+            onSetUpOpenRouter = setUpOpenRouter,
+        )
+    }
 }
 
 /**
@@ -177,7 +199,8 @@ internal class ChatLeaveStopper(private val session: ChatSession) : ViewModel() 
  * The chat layout, stateless: messages over the sky, a glass top bar, a floating glass input
  * (or a friendly card when AI is blocked). The message list is a second blur source above the
  * sky, so both bars frost the text that scrolls beneath them. [onOpenSettings] is the blocked
- * card's way forward, [onChangeKey] the "Key ändern" of an answer (for the provider that wrote it).
+ * card's way forward, [onChangeKey] the "Key ändern" of an answer (for the provider that wrote it),
+ * [onSetUpOpenRouter] the way out of a Gemini key Google refuses.
  */
 @Composable
 internal fun ChatContent(
@@ -191,6 +214,7 @@ internal fun ChatContent(
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
     onChangeKey: (AiProviderId) -> Unit = {},
+    onSetUpOpenRouter: () -> Unit = {},
 ) {
     val density = LocalDensity.current
     val haptics = LocalHapticFeedback.current
@@ -228,6 +252,7 @@ internal fun ChatContent(
                 state = state,
                 onRetry = onRetry,
                 onChangeKey = onChangeKey,
+                onSetUpOpenRouter = onSetUpOpenRouter,
                 contentPadding = PaddingValues(top = topPadding, bottom = bottomPadding),
             )
         }
@@ -369,6 +394,7 @@ private fun MessageList(
     state: ChatUiState,
     onRetry: () -> Unit,
     onChangeKey: (AiProviderId) -> Unit,
+    onSetUpOpenRouter: () -> Unit,
     contentPadding: PaddingValues,
 ) {
     val context = LocalContext.current
@@ -465,6 +491,7 @@ private fun MessageList(
                         onSuggestionsResized = { height -> if (isLast) lastSuggestionsHeight = height },
                         onRetry = onRetry,
                         onChangeKey = { onChangeKey(spec.id) },
+                        onSetUpOpenRouter = onSetUpOpenRouter,
                         onOpenSource = links::open,
                         onCopy = {
                             scope.launch {
@@ -504,6 +531,7 @@ private fun AssistantMessage(
     isLast: Boolean,
     onRetry: () -> Unit,
     onChangeKey: () -> Unit,
+    onSetUpOpenRouter: () -> Unit,
     onOpenSource: (String) -> Unit,
     onCopy: () -> Unit,
     onShare: () -> Unit,
@@ -545,6 +573,7 @@ private fun AssistantMessage(
                 canRetry = isLast,
                 onRetry = onRetry,
                 onOpenSettings = onChangeKey,
+                onSetUpOpenRouter = onSetUpOpenRouter,
                 detail = message.errorDetail,
                 // The fix of a Gemini project problem (AI Studio, Cloud Console) opens like a source.
                 onOpenLink = onOpenSource,

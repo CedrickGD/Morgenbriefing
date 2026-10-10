@@ -308,6 +308,12 @@ private val UNTESTED_SAVE_PROBLEMS = setOf(
     AiKeyProblem.MODEL_UNAVAILABLE,
 )
 
+/**
+ * The key test failed because Google refuses the (auth) key: the dialog offers OpenRouter's free
+ * tariff as the way out ([AiTexts.OPENROUTER_PLAN_B]).
+ */
+internal fun aiKeyOffersOpenRouter(state: AiKeyState): Boolean = state.failedWith(AiKeyProblem.AUTH_KEY_REJECTED)
+
 /** A page that fixes a failed key test, as the pill under the message shows it. */
 @Immutable
 internal data class KeyFixLink(val label: String, val url: String)

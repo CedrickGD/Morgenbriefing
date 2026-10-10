@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Dns
 import androidx.compose.material.icons.rounded.ExpandLess
@@ -63,6 +64,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.KeyExtras
 import com.cedrickgd.morgenbriefing.ai.compat.CustomServer
 import com.cedrickgd.morgenbriefing.ai.compat.CustomUrlIssue
@@ -101,7 +103,9 @@ private val GEMINI_KEY_SHAPES: AnnotatedString = buildAnnotatedString {
  * a stored key the field may stay blank: then the stored key is tested with the new settings.
  * OpenRouter has its "Tarif" like Gemini: [initialOpenRouterTier] preselects one (credits when it
  * was picked for Live), else the stored one. [selectOnSave] makes the provider the chat provider
- * once the key is stored. [onRemove] (settings only) offers removing what is stored.
+ * once the key is stored. [onSetUpOpenRouter]: the way out when Google refuses a Gemini key —
+ * OpenRouter's key dialog on the free tariff. [onRemove] (settings only) offers removing what is
+ * stored.
  */
 @Composable
 internal fun AiKeyDialog(
@@ -114,6 +118,7 @@ internal fun AiKeyDialog(
     onDismiss: () -> Unit,
     initialOpenRouterTier: OpenRouterTier? = null,
     selectOnSave: Boolean = false,
+    onSetUpOpenRouter: (() -> Unit)? = null,
 ) {
     val custom = spec.id == AiProviderId.CUSTOM
     val anthropic = spec.id == AiProviderId.ANTHROPIC
@@ -292,6 +297,10 @@ internal fun AiKeyDialog(
         aiKeyFixLink(state)?.let { fix ->
             Spacer(Modifier.height(4.dp))
             GlassPillButton(text = fix.label, onClick = { onOpenLink(fix.url) }, icon = Icons.AutoMirrored.Rounded.OpenInNew, style = PillStyle.Quiet)
+        }
+        if (onSetUpOpenRouter != null && aiKeyOffersOpenRouter(state)) {
+            Spacer(Modifier.height(8.dp))
+            GlassPillButton(text = AiTexts.OPENROUTER_PLAN_B, onClick = onSetUpOpenRouter, icon = Icons.Rounded.AutoAwesome, style = PillStyle.Tonal)
         }
         if (canSaveUntested(state) && (key.isNotBlank() || custom)) {
             Spacer(Modifier.height(8.dp))

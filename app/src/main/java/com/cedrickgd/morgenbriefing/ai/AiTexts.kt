@@ -19,6 +19,12 @@ object AiTexts {
     /** Button that leads from [AiBlock.UNSUPPORTED_DEVICE] to the provider choice. */
     const val PROVIDER_ACTION = "Anbieter wählen"
 
+    /**
+     * Button under a Gemini key Google refuses ([GeminiProblem.AUTH_KEY_REJECTED]): the OpenRouter
+     * key dialog on the free tariff, which makes OpenRouter the chat provider once the key works.
+     */
+    const val OPENROUTER_PLAN_B = "OpenRouter kostenlos einrichten"
+
     /** Under an answer that came without web search although it was asked for (Gemini fallback). */
     const val WITHOUT_WEB_SEARCH_NOTE = GeminiTiers.FALLBACK_NOTE
 
@@ -103,8 +109,9 @@ object AiTexts {
     /** Why Google refused a Gemini request, and what fixes it (docs/providers/gemini.md §12.4). */
     fun gemini(problem: GeminiProblem): String = when (problem) {
         GeminiProblem.AUTH_KEY_REJECTED ->
-            "Google nimmt deinen Key gerade nicht an. Das passiert derzeit bei manchen neuen Keys („AQ.…“), auch wenn " +
-                "AI Studio sie als gültig zeigt: Erstell in AI Studio einen neuen Key und prüf, dass sein Projekt die Gemini API nutzen darf."
+            "Google nimmt deinen Key gerade nicht an – ein bekannter Fehler bei Google, der viele neue Keys („AQ.…“) trifft, " +
+                "auch wenn AI Studio sie als gültig zeigt. Was hilft: ein älterer Key, der mit „AIza“ beginnt – " +
+                "oder OpenRouter kostenlos mit Gemma 4, Googles offenem Modell."
         GeminiProblem.KEY_LEAKED ->
             "Google hat deinen Key gesperrt, weil er öffentlich aufgetaucht ist. Erstell in AI Studio einen neuen Key – und gib ihn nicht weiter."
         GeminiProblem.API_BLOCKED ->
@@ -123,12 +130,20 @@ object AiTexts {
      * the Cloud Console for a blocked API or a restricted key; null when there is none.
      */
     fun errorLink(error: AiError): Pair<String, String>? = when ((error as? AiError.GeminiAccess)?.problem) {
-        GeminiProblem.AUTH_KEY_REJECTED, GeminiProblem.KEY_LEAKED -> "Neuen Key in AI Studio" to GeminiLinks.API_KEYS
+        // An older "AIza…" key is listed there too.
+        GeminiProblem.AUTH_KEY_REJECTED -> "Keys in AI Studio" to GeminiLinks.API_KEYS
+        GeminiProblem.KEY_LEAKED -> "Neuen Key in AI Studio" to GeminiLinks.API_KEYS
         GeminiProblem.API_BLOCKED -> "Gemini API aktivieren" to GeminiLinks.API_LIBRARY
         GeminiProblem.KEY_RESTRICTED -> "Key-Beschränkung prüfen" to GeminiLinks.CREDENTIALS
         GeminiProblem.FREE_TIER_UNAVAILABLE -> "Abrechnung in AI Studio" to GeminiLinks.PROJECTS
         null -> null
     }
+
+    /**
+     * The way out of [error] that needs no Google key: OpenRouter's free tariff with Gemma 4
+     * ([OPENROUTER_PLAN_B]) — offered while Google refuses new auth keys.
+     */
+    fun offersOpenRouter(error: AiError): Boolean = error == AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED)
 
     /** True when trying the same request again (by hand) can help. */
     fun isRetryable(error: AiError): Boolean = when (error) {

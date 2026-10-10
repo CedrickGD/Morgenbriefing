@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -211,7 +212,8 @@ internal class AiKeyViewModel(container: AppContainer, ai: () -> AiServices) : V
  * entering a key never sends them hunting through the settings — and closing it returns them
  * exactly where they were. Removing a stored key stays in the settings. [openRouterTier]
  * preselects OpenRouter's tariff; [selectOnSave] makes [provider] the chat provider once its key
- * is stored.
+ * is stored. [onSetUpOpenRouter] is offered when Google refuses a Gemini key: the caller shows
+ * OpenRouter's dialog instead (free tariff, chosen as chat provider once its key works).
  */
 @Composable
 fun InlineAiKeyDialog(
@@ -219,6 +221,7 @@ fun InlineAiKeyDialog(
     onDismiss: () -> Unit,
     openRouterTier: OpenRouterTier? = null,
     selectOnSave: Boolean = false,
+    onSetUpOpenRouter: (() -> Unit)? = null,
 ) {
     val viewModel: AiKeyViewModel = viewModel(factory = AiKeyViewModel.Factory)
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -226,18 +229,27 @@ fun InlineAiKeyDialog(
     val links = rememberLinkActions()
     // A frame later instead of a dialog that guesses what is stored.
     val ai = settings ?: return
-    AiKeyDialog(
-        spec = ProviderCatalog.spec(provider),
-        stored = ai.of(provider),
-        state = state,
-        onSave = { viewModel.saveAndTest(provider, it) },
-        onOpenLink = links::open,
-        onRemove = null,
-        onDismiss = {
-            viewModel.reset()
-            onDismiss()
-        },
-        initialOpenRouterTier = openRouterTier,
-        selectOnSave = selectOnSave,
-    )
+    // Another provider is another dialog: nothing typed for one may show up in the other.
+    key(provider) {
+        AiKeyDialog(
+            spec = ProviderCatalog.spec(provider),
+            stored = ai.of(provider),
+            state = state,
+            onSave = { viewModel.saveAndTest(provider, it) },
+            onOpenLink = links::open,
+            onRemove = null,
+            onDismiss = {
+                viewModel.reset()
+                onDismiss()
+            },
+            initialOpenRouterTier = openRouterTier,
+            selectOnSave = selectOnSave,
+            onSetUpOpenRouter = onSetUpOpenRouter?.let { setUp ->
+                {
+                    viewModel.reset()
+                    setUp()
+                }
+            },
+        )
+    }
 }

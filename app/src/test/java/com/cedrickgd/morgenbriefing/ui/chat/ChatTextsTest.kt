@@ -73,4 +73,15 @@ class ChatTextsTest {
         // A redirect without a title still shows something.
         assertEquals("vertexaisearch.cloud.google.com" to null, sourceChipParts(SourceRef("", grounded.url)))
     }
+
+    @Test
+    fun `a refused gemini auth key offers openrouter for free next to the key`() {
+        val auth = com.cedrickgd.morgenbriefing.ai.AiError.GeminiAccess(com.cedrickgd.morgenbriefing.ai.GeminiProblem.AUTH_KEY_REJECTED)
+        assertEquals(listOf(ErrorAction.OPEN_LINK, ErrorAction.SET_UP_OPENROUTER, ErrorAction.CHANGE_KEY), errorActions(auth, canRetry = true))
+        assertEquals("OpenRouter kostenlos einrichten", ErrorAction.SET_UP_OPENROUTER.label)
+        // Other errors keep their buttons.
+        assertEquals(listOf(ErrorAction.CHANGE_KEY), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.InvalidKey, canRetry = true))
+        assertEquals(listOf(ErrorAction.RETRY), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.Network, canRetry = true))
+        assertEquals(emptyList<ErrorAction>(), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.Network, canRetry = false))
+    }
 }

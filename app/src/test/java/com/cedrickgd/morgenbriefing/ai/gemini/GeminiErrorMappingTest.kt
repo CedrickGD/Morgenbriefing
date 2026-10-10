@@ -222,11 +222,22 @@ class GeminiErrorMappingTest {
     fun `each cause has its German text and the page that fixes it`() {
         val gemini = ProviderCatalog.GEMINI
         val auth = AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED)
-        assertTrue(AiTexts.error(auth, gemini).contains("neuen Key"))
-        assertTrue(AiTexts.error(auth, gemini).contains("AQ."))
-        assertEquals("Neuen Key in AI Studio" to GeminiLinks.API_KEYS, AiTexts.errorLink(auth))
+        // A known Google issue with new auth keys: an older AIza key, or OpenRouter for free.
+        val text = AiTexts.error(auth, gemini)
+        assertTrue(text, text.contains("bekannter Fehler bei Google"))
+        assertTrue(text, text.contains("AQ."))
+        assertTrue(text, text.contains("„AIza“"))
+        assertTrue(text, text.contains("OpenRouter kostenlos mit Gemma 4"))
+        assertEquals("Keys in AI Studio" to GeminiLinks.API_KEYS, AiTexts.errorLink(auth))
+        assertTrue(AiTexts.offersOpenRouter(auth))
+        assertEquals("OpenRouter kostenlos einrichten", AiTexts.OPENROUTER_PLAN_B)
         assertTrue(auth.rejectsKey)
         assertTrue(AiTexts.needsKeyChange(auth))
+        // Only that refusal: a leaked key needs a new Google key.
+        val leakedKey = AiError.GeminiAccess(GeminiProblem.KEY_LEAKED)
+        assertFalse(AiTexts.offersOpenRouter(leakedKey))
+        assertEquals("Neuen Key in AI Studio" to GeminiLinks.API_KEYS, AiTexts.errorLink(leakedKey))
+        assertFalse(AiTexts.offersOpenRouter(AiError.InvalidKey))
 
         val blocked = AiError.GeminiAccess(GeminiProblem.API_BLOCKED)
         assertTrue(AiTexts.error(blocked, gemini).startsWith("Die Gemini API ist für dein Google-Projekt gesperrt oder nicht aktiviert"))

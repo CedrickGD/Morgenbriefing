@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -492,7 +493,7 @@ fun SettingsScreen(
             )
         }
 
-        SettingsDialog.AI_KEY -> {
+        SettingsDialog.AI_KEY -> key(dialogProvider) {
             val provider = AiProviderId.fromKey(dialogProvider) ?: current.ai.provider
             AiKeyDialog(
                 spec = ProviderCatalog.spec(provider),
@@ -507,6 +508,8 @@ fun SettingsScreen(
                 },
                 initialOpenRouterTier = OpenRouterTier.fromKey(dialogTier),
                 selectOnSave = dialogSelect,
+                // Google refuses the Gemini key: OpenRouter's free tariff, the chat provider once it works.
+                onSetUpOpenRouter = { openAiKeyDialog(AiProviderId.OPENROUTER, openRouterTier = OpenRouterTier.FREE, select = true) },
             )
         }
 
