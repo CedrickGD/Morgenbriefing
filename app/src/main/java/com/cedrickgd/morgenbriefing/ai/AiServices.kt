@@ -152,6 +152,18 @@ class AiServices(private val context: Context, private val container: AppContain
 
         override suspend fun keyRejected(provider: AiProviderId, key: String?) = markKeyRejected(provider, key)
 
+        override suspend fun modelUnavailable(provider: AiProviderId, freeTier: Boolean) {
+            if (provider != AiProviderId.OPENROUTER || !freeTier) return
+            try {
+                // The free model may have left OpenRouter's list: the next request falls back.
+                openRouterFree.refreshInBackground(scope, openRouterBase(settingsOrDefault().ai), force = true)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Free model list could not be refreshed", e)
+            }
+        }
+
         override suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String, freeTier: Boolean) {
             try {
                 // Another model was chosen while the answer ran: the fallback was the old choice's.
@@ -228,11 +240,15 @@ class AiServices(private val context: Context, private val container: AppContain
     /**
      * The model a request with [id] runs and the one the user chose ([Resolution.Ready]). On
      * OpenRouter's free tariff a chosen model that the last loaded list no longer has gives way to
-     * that list's default — OpenRouter's free variants come and go.
+     * that list's default — OpenRouter's free variants come and go. The chat keeps that list
+     * fresh itself (it may be set up from the chat, Settings → KI never opened): a list that is
+     * missing or older than a day loads in the background, this request uses what is known.
      */
     private suspend fun modelsFor(ai: AiSettings, id: AiProviderId): Pair<String, String> {
         if (ai.isOpenRouterFree(id)) {
-            val model = OpenRouterFree.effective(ProviderCatalog.selectedModel(ai, id), openRouterFree.known(openRouterBase(ai)))
+            val base = openRouterBase(ai)
+            openRouterFree.refreshInBackground(scope, base)
+            val model = OpenRouterFree.effective(ProviderCatalog.selectedModel(ai, id), openRouterFree.known(base))
             return model to model
         }
         return ProviderCatalog.effectiveModel(ai, id) to ProviderCatalog.selectedModel(ai, id)

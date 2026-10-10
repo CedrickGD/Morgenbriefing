@@ -228,6 +228,19 @@ class ChatServiceTest {
         session.send("Noch eine")
         assertEquals(AiError.InvalidKey, session.await { it.settled(4) }.messages.last().error)
         assertEquals(listOf(AiProviderId.ANTHROPIC to "sk-ant-old"), access.rejected)
+        assertTrue(access.unavailable.isEmpty())
+    }
+
+    @Test
+    fun `a model OpenRouter does not serve on the free tariff is reported, so the list loads anew`() = runBlocking<Unit> {
+        settings.value = AppSettings().withAiKey(AiProviderId.OPENROUTER)
+        val access = access()
+        engine.scripts += { throw AiException(AiError.ModelUnavailable("google/gemma-4-31b-it:free")) }
+        val session = service(access = access).session(article)
+        session.await { it.provider == AiProviderId.OPENROUTER }
+        session.send("Frage")
+        assertTrue(session.await { it.settled(2) }.messages.last().error is AiError.ModelUnavailable)
+        assertEquals(listOf(AiProviderId.OPENROUTER to true), access.unavailable)
     }
 
     @Test

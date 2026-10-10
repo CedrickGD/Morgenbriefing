@@ -242,4 +242,71 @@ class OpenRouterFreeModelsTest {
         assertEquals(listOf("google/gemma-4-31b-it:free"), list.models.map { it.id })
         assertEquals(0, server.requestCount)
     }
+
+    @Test
+    fun `a model's expiry is kept and drops it from the stored list once the day has come`() = runBlocking<Unit> {
+        val laguna = OpenRouterFree.parse(list, today)!!.single { it.id == "poolside/laguna-s-2.1:free" }
+        assertEquals("2026-10-31", laguna.expiresOn)
+        assertNull(OpenRouterFree.parse(list, today)!!.first().expiresOn)
+        assertEquals(listOf(laguna), OpenRouterFree.current(listOf(laguna), LocalDate.of(2026, 10, 31)))
+        assertEquals(emptyList<FreeModel>(), OpenRouterFree.current(listOf(laguna), LocalDate.of(2026, 11, 1)))
+        // A time after the date and an unreadable date.
+        val timed = """{"data":[${model("vendor/timed:free", "Vendor: Timed (free)", extra = ""","expiration_date":"2026-10-12T00:00:00Z"""")}]}"""
+        assertEquals("2026-10-12", OpenRouterFree.parse(timed, today)!!.single().expiresOn)
+        val broken = """{"data":[${model("vendor/broken:free", "Vendor: Broken (free)", extra = ""","expiration_date":"soon"""")}]}"""
+        assertNull(OpenRouterFree.parse(broken, today)!!.single().expiresOn)
+
+        // The day's list was loaded on 2026-10-30; on 2026-11-01 Laguna is gone from what the chat
+        // and the settings see, also when OpenRouter cannot be reached for a new list.
+        val clock = MovableClock(Instant.parse("2026-10-30T08:00:00Z"))
+        val base = server.local("/api/v1")
+        val models = OpenRouterFreeModels(http, folder.root.resolve("expiry.json"), AppJson, clock)
+        server.enqueue(CompatSse.json(200, list))
+        assertTrue(models.list(base).models.any { it.id == laguna.id })
+        clock.now = Instant.parse("2026-11-01T08:00:00Z")
+        assertFalse(models.known(base)!!.any { it.id == laguna.id })
+        server.enqueue(CompatSse.httpError(503))
+        val stale = models.list(base)
+        assertEquals(FreeModelSource.CACHE, stale.source)
+        assertFalse(stale.models.any { it.id == laguna.id })
+        // Chosen and retired: requests fall back to the default.
+        assertEquals("google/gemma-4-31b-it:free", OpenRouterFree.effective(laguna.id, models.known(base)))
+    }
+
+    @Test
+    fun `the chat loads a missing or day-old list in the background, not with every question`() = runBlocking<Unit> {
+        val clock = MovableClock(Instant.parse("2026-10-10T08:00:00Z"))
+        val base = server.local("/api/v1")
+        val models = OpenRouterFreeModels(http, folder.root.resolve("chat.json"), AppJson, clock)
+
+        // No list yet: one load starts, and none again right after (offline it would fail each time).
+        server.enqueue(CompatSse.json(200, list))
+        models.refreshInBackground(this, base)!!.join()
+        assertEquals(1, server.requestCount)
+        assertEquals("google/gemma-4-31b-it:free", models.known(base)!!.first().id)
+        // The day's list: nothing to load.
+        clock.now = clock.now.plusSeconds(3600)
+        assertNull(models.refreshInBackground(this, base))
+
+        // A day later the list is stale: one load in the background.
+        clock.now = clock.now.plusSeconds(24 * 3600)
+        server.enqueue(CompatSse.httpError(503))
+        models.refreshInBackground(this, base)!!.join()
+        assertEquals(2, server.requestCount)
+        // It failed: no new attempt within the pause, then one.
+        assertNull(models.refreshInBackground(this, base))
+        clock.now = clock.now.plusMillis(OpenRouterFreeModels.BACKGROUND_PAUSE_MILLIS)
+        server.enqueue(CompatSse.json(200, """{"data":[${model("google/gemma-4-26b-a4b-it:free", "Google: Gemma 4 26B A4B (free)")}]}"""))
+        models.refreshInBackground(this, base)!!.join()
+        assertEquals(3, server.requestCount)
+        assertEquals(listOf("google/gemma-4-26b-a4b-it:free"), models.known(base)!!.map { it.id })
+
+        // OpenRouter no longer serves the chosen model: force loads the day's list anew (after the pause).
+        assertNull(models.refreshInBackground(this, base, force = true))
+        clock.now = clock.now.plusMillis(OpenRouterFreeModels.BACKGROUND_PAUSE_MILLIS)
+        server.enqueue(CompatSse.json(200, list))
+        models.refreshInBackground(this, base, force = true)!!.join()
+        assertEquals(4, server.requestCount)
+        assertEquals("google/gemma-4-31b-it:free", models.known(base)!!.first().id)
+    }
 }

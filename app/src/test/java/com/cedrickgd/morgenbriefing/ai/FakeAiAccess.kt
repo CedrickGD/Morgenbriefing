@@ -71,4 +71,11 @@ internal class FakeAiAccess(
     override suspend fun keyRejected(provider: AiProviderId, key: String?) {
         synchronized(rejected) { rejected += provider to key }
     }
+
+    /** (provider, free tariff) of every model the chat reported as not served. */
+    val unavailable = mutableListOf<Pair<AiProviderId, Boolean>>()
+
+    override suspend fun modelUnavailable(provider: AiProviderId, freeTier: Boolean) {
+        synchronized(unavailable) { unavailable += provider to freeTier }
+    }
 }

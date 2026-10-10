@@ -11,7 +11,10 @@ import com.cedrickgd.morgenbriefing.ai.http.str
 import com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -26,6 +29,7 @@ import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
+import java.util.concurrent.atomic.AtomicLong
 
 /*
  * OpenRouter's free models for the "Kostenlos" tariff (docs/AI-PROVIDERS.md §16): loaded live
@@ -33,9 +37,12 @@ import java.time.format.DateTimeParseException
  * nothing, kept for a day, and a small built-in list when nothing could be loaded yet.
  */
 
-/** One zero-price model of OpenRouter. [name] is OpenRouter's, e.g. "Google: Gemma 4 31B (free)". */
+/**
+ * One free model of OpenRouter. [name] is OpenRouter's, e.g. "Google: Gemma 4 31B (free)";
+ * [expiresOn] its `expiration_date` (YYYY-MM-DD), the day OpenRouter retires it — or null.
+ */
 @Serializable
-data class FreeModel(val id: String, val name: String, val contextLength: Int? = null)
+data class FreeModel(val id: String, val name: String, val contextLength: Int? = null, val expiresOn: String? = null)
 
 /** Where a [FreeModelList] came from. */
 enum class FreeModelSource {
@@ -87,7 +94,8 @@ object OpenRouterFree {
      * The free chat models of a `GET /models` answer in picker order ([ordered]); null when
      * [body] is no model list. A model counts when it is one of OpenRouter's free variants by id
      * ([OpenRouterTiers.looksFree]: `…:free` or the free router), costs nothing ([isFree]), reads
-     * and writes text only ([isChatModel]) and has not expired before [today].
+     * and writes text only ([isChatModel]) and has not expired before [today] (its expiry is
+     * kept: [current] drops it from a stored list once the day has come).
      *
      * The id matters: OpenRouter also lists models at price 0 for a launch promotion
      * (`inclusionai/ling-3.1-flash` on 2026-10-10) and keeps their id when the promotion ends —
@@ -102,11 +110,22 @@ object OpenRouterFree {
         if (root.array("data") == null) return null
         val models = root.objects("data").mapNotNull { model ->
             val id = model.str("id")?.trim()?.takeIf { it.isNotEmpty() } ?: return@mapNotNull null
-            if (!OpenRouterTiers.looksFree(id) || !isFree(model) || !isChatModel(model) || expired(model, today)) return@mapNotNull null
-            FreeModel(id = id, name = model.str("name")?.trim()?.takeIf { it.isNotEmpty() } ?: id, contextLength = model.str("context_length")?.toIntOrNull())
+            if (!OpenRouterTiers.looksFree(id) || !isFree(model) || !isChatModel(model)) return@mapNotNull null
+            FreeModel(
+                id = id,
+                name = model.str("name")?.trim()?.takeIf { it.isNotEmpty() } ?: id,
+                contextLength = model.str("context_length")?.toIntOrNull(),
+                expiresOn = expirationOf(model),
+            )
         }
-        return ordered(models.distinctBy { it.id })
+        return current(ordered(models.distinctBy { it.id }), today)
     }
+
+    /**
+     * [models] without the ones OpenRouter retires before [today] ([FreeModel.expiresOn]): a list
+     * kept for a day — or longer, offline — must not offer a model that is gone by now.
+     */
+    fun current(models: List<FreeModel>, today: LocalDate): List<FreeModel> = models.filterNot { expired(it, today) }
 
     /**
      * Prompt and completion cost 0 (OpenRouter writes prices as decimal strings, "0"); a price per
@@ -153,14 +172,20 @@ object OpenRouterFree {
         return textOut && textIn && (parameters == null || "tools" in parameters)
     }
 
-    /** `expiration_date` (YYYY-MM-DD) lies before [today]. */
-    private fun expired(model: JsonObject, today: LocalDate): Boolean {
-        val date = model.str("expiration_date")?.trim()?.takeIf { it.length >= 10 } ?: return false
-        return try {
-            LocalDate.parse(date.take(10)).isBefore(today)
-        } catch (_: DateTimeParseException) {
-            false
-        }
+    /** `expiration_date` as YYYY-MM-DD (also when OpenRouter adds a time); null when missing or unreadable. */
+    private fun expirationOf(model: JsonObject): String? {
+        val date = model.str("expiration_date")?.trim()?.takeIf { it.length >= 10 } ?: return null
+        return dateOrNull(date.take(10))?.toString()
+    }
+
+    /** [FreeModel.expiresOn] lies before [today]. */
+    private fun expired(model: FreeModel, today: LocalDate): Boolean =
+        model.expiresOn?.let(::dateOrNull)?.isBefore(today) == true
+
+    private fun dateOrNull(text: String): LocalDate? = try {
+        LocalDate.parse(text)
+    } catch (_: DateTimeParseException) {
+        null
     }
 
     /** [PREFERRED] first in their order, then the rest by title. */
@@ -219,7 +244,8 @@ internal data class StoredFreeModels(
 /**
  * OpenRouter's free models, loaded with [http] from `{base}/models` (public, sent without a key)
  * and kept in memory and in [file] for [maxAgeMillis] (a day). Never throws except for
- * cancellation: without network the last list (of any age) or [OpenRouterFree.FALLBACK] is used.
+ * cancellation: without network the last list (of any age, without the models retired by now)
+ * or [OpenRouterFree.FALLBACK] is used.
  */
 internal class OpenRouterFreeModels(
     private val http: AiHttp,
@@ -233,13 +259,17 @@ internal class OpenRouterFreeModels(
     @Volatile
     private var memory: StoredFreeModels? = null
 
+    /** Epoch millis of the last load [refreshInBackground] started; [NEVER] before the first. */
+    private val lastBackgroundLoad = AtomicLong(NEVER)
+
     /** The free models for the API at [baseUrl]: the day's list, else a new one, else what is known. */
     suspend fun list(baseUrl: String, force: Boolean = false): FreeModelList = lock.withLock {
         val base = baseUrl.trimEnd('/')
         val now = clock.millis()
         val cached = cached(base)
-        if (!force && cached != null && now - cached.fetchedAt in 0 until maxAgeMillis) {
-            return@withLock FreeModelList(cached.models, FreeModelSource.CACHE)
+        val known = cached?.let(::current).orEmpty()
+        if (!force && cached != null && known.isNotEmpty() && fresh(cached, now)) {
+            return@withLock FreeModelList(known, FreeModelSource.CACHE)
         }
         val fetched = fetch(base)
         if (!fetched.isNullOrEmpty()) {
@@ -248,16 +278,52 @@ internal class OpenRouterFreeModels(
             save(stored)
             return@withLock FreeModelList(fetched, FreeModelSource.LIVE)
         }
-        if (cached != null) return@withLock FreeModelList(cached.models, FreeModelSource.CACHE)
+        if (known.isNotEmpty()) return@withLock FreeModelList(known, FreeModelSource.CACHE)
         FreeModelList(OpenRouterFree.FALLBACK, FreeModelSource.FALLBACK)
     }
 
     /**
-     * The last list loaded from [baseUrl] (of any age) without going online; null when there is
-     * none. Never waits for a download that is under way: a chat request must not stall behind
-     * the settings loading the list (the file is replaced atomically, the memory copy is volatile).
+     * The last list loaded from [baseUrl] (of any age, without the models OpenRouter retired by
+     * now) without going online; null when there is none. Never waits for a download that is
+     * under way: a chat request must not stall behind the settings loading the list (the file is
+     * replaced atomically, the memory copy is volatile).
      */
-    suspend fun known(baseUrl: String): List<FreeModel>? = cached(baseUrl.trimEnd('/'))?.models
+    suspend fun known(baseUrl: String): List<FreeModel>? = cached(baseUrl.trimEnd('/'))?.let(::current)?.ifEmpty { null }
+
+    /**
+     * Starts loading a new list from [baseUrl] in [scope] and returns at once — for the chat,
+     * which may be the only place the list is used (set up from the chat, Settings → KI never
+     * opened): when the known list is missing, older than [maxAgeMillis] or retired by now, and
+     * with [force] in any case (OpenRouter no longer serves the chosen free model, which may have
+     * left the list). At most one such load every [BACKGROUND_PAUSE_MILLIS]: a chat without
+     * network does not try again with every question. Returns the load, or null when none started.
+     */
+    suspend fun refreshInBackground(scope: CoroutineScope, baseUrl: String, force: Boolean = false): Job? {
+        val base = baseUrl.trimEnd('/')
+        val now = clock.millis()
+        if (!force) {
+            val cached = cached(base)
+            if (cached != null && fresh(cached, now) && current(cached).isNotEmpty()) return null
+        }
+        val last = lastBackgroundLoad.get()
+        if (last != NEVER && now - last in 0 until BACKGROUND_PAUSE_MILLIS) return null
+        if (!lastBackgroundLoad.compareAndSet(last, now)) return null
+        return scope.launch {
+            try {
+                list(base, force)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // list() reports no failure; the next question tries again after the pause.
+            }
+        }
+    }
+
+    /** Loaded less than [maxAgeMillis] ago (and not in the future: a clock set back). */
+    private fun fresh(stored: StoredFreeModels, now: Long): Boolean = now - stored.fetchedAt in 0 until maxAgeMillis
+
+    /** [stored]'s models without the ones retired before today. */
+    private fun current(stored: StoredFreeModels): List<FreeModel> = OpenRouterFree.current(stored.models, LocalDate.now(clock))
 
     private suspend fun cached(base: String): StoredFreeModels? {
         memory?.let { if (it.baseUrl == base) return it }
@@ -300,5 +366,10 @@ internal class OpenRouterFreeModels(
 
     companion object {
         const val DAY_MILLIS = 24L * 60 * 60 * 1000
+
+        /** The least time between two loads the chat starts ([refreshInBackground]). */
+        const val BACKGROUND_PAUSE_MILLIS = 10L * 60 * 1000
+
+        private const val NEVER = Long.MIN_VALUE
     }
 }

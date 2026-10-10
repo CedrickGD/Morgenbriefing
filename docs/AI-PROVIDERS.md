@@ -1449,7 +1449,9 @@ OpenRouter's attribution headers) when:
   `modality` string decides) — music models (Lyria: text+audio out) are out;
 * `supported_parameters` lists `tools` — the proxy for an instruction/chat model; guardrail
   classifiers (Nemotron Content Safety) are out (missing fields are not held against a model);
-* `expiration_date` is not before today.
+* `expiration_date` is not before today; the date is kept (`FreeModel.expiresOn`) and
+  `OpenRouterFree.current` drops the model from a stored list once the day has come (`known()` and a
+  cached `list()` both apply it, also offline).
 
 Order: Gemma 4 31B, Gemma 4 26B A4B, Nemotron 3 Ultra, Nemotron 3 Super, `openrouter/free` (when
 listed), then the rest by name. Titles drop the maker and „(free)“ („Gemma 4 31B“), the router reads
@@ -1460,6 +1462,14 @@ the last one of any age is used, without any the built-in `OpenRouterFree.FALLBA
 preferred models). `AiServices.openRouterFreeModels(force)` serves the settings;
 `AiServices.resolve` runs `OpenRouterFree.effective(selected, known list)`: a chosen free model that
 left the list gives way to the list's default (Gemma 4 31B when listed, else the first).
+
+The chat keeps the list fresh itself — it may be set up from the chat's plan B, Settings → KI never
+opened: `resolve` calls `OpenRouterFreeModels.refreshInBackground`, which loads a new list in the
+background when the known one is missing, older than a day or retired (the request does not wait
+and uses what is known), and a 404 `ModelUnavailable` on the free tariff
+(`AiProviderAccess.modelUnavailable`) forces one, so the next question falls back to the default. At
+most one such background load every 10 minutes (`BACKGROUND_PAUSE_MILLIS`): an offline chat does not
+try with every question.
 
 Settings → KI: „Tarif“ under the key row (like Gemini); on FREE the model picker shows the first five
 free models, the selected one when it is further down, „Alle N Gratis-Modelle zeigen“, and a quiet

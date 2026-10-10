@@ -141,6 +141,13 @@ internal interface AiProviderAccess {
      * on the free one) or the chosen model changed while the answer ran. Must not throw.
      */
     suspend fun modelFallback(provider: AiProviderId, key: String?, from: String, to: String, freeTier: Boolean) {}
+
+    /**
+     * A chat request to [provider] ended in [AiError.ModelUnavailable] ([freeTier]: on a free
+     * tariff). On OpenRouter's free tariff the free model may have left OpenRouter's list: the
+     * list loads anew, so the next request falls back to its default. Must not throw.
+     */
+    suspend fun modelUnavailable(provider: AiProviderId, freeTier: Boolean) {}
 }
 
 /**
