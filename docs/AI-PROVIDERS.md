@@ -1520,7 +1520,9 @@ error card (`ErrorAction.SET_UP_OPENROUTER`): OpenRouter's key dialog on FREE wi
 `KeySubmission.selectProvider` — once the key works, OpenRouter is the chat provider, and „Nochmal
 senden“ (§16.7 g) asks the question again with Gemma 4. In the key dialog the action is a pill that
 may wrap to two lines (one line cut it off at 360 dp) and is scrolled into view together with the
-refusal after „Speichern & testen“.
+refusal after „Speichern & testen“. The dialog's line about the key shapes no longer promises that
+both work: „Neue Keys beginnen mit „AQ.“, ältere mit „AIza“ – die App nimmt beide. Lehnt Google einen
+neuen ab, hilft ein älterer oder OpenRouter kostenlos.“
 
 ### 16.6 Migration (schema 3)
 

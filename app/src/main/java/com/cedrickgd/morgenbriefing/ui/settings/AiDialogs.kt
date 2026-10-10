@@ -84,14 +84,18 @@ import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
 /** Where Anthropic lists the workspaces and their ids. */
 private const val ANTHROPIC_WORKSPACES_URL = "https://platform.claude.com/settings/workspaces"
 
-/** The two Gemini key shapes, the prefixes in monospace: "AIza" never reads as "Alza". */
+/**
+ * The two Gemini key shapes, the prefixes in monospace: "AIza" never reads as "Alza". The app
+ * takes both, but Google currently refuses many new "AQ." keys (docs/AI-PROVIDERS.md §16): the
+ * line names the way out instead of promising that both work.
+ */
 private val GEMINI_KEY_SHAPES: AnnotatedString = buildAnnotatedString {
     val code = SpanStyle(fontFamily = FontFamily.Monospace)
     append("Neue Keys beginnen mit „")
     withStyle(code) { append("AQ.") }
     append("“, ältere mit „")
     withStyle(code) { append("AIza") }
-    append("“ – beide gehen.")
+    append("“ – die App nimmt beide. Lehnt Google einen neuen ab, hilft ein älterer oder OpenRouter kostenlos.")
 }
 
 /**
