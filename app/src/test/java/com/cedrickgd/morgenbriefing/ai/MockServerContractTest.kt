@@ -292,6 +292,9 @@ class MockServerContractTest {
         // The day's free requests used up: said at once; the minute's limit is a short wait.
         expectError(AiError.QuotaExhausted) { chat(backend, auth("429-free"), model, search = false) }
         expectError(AiError.RateLimited) { chat(backend, auth("429-free-min"), model, search = false) }
+        // A busy upstream ("Provider returned error" + metadata.raw) is no used-up day: retried, then "busy".
+        expectError(AiError.RateLimited) { chat(backend, auth("429-free-upstream"), model, search = false) }
+        expectError(AiError.RateLimited) { chat(backend, auth("429-free-upstream", freeTier = false), model, search = false) }
     }
 
     @Test

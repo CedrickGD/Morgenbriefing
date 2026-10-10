@@ -771,7 +771,10 @@ Always included ("`usage: { include: true }` and `stream_options: { include_usag
 * **Open (record with a real free account):** the exact 429 body when the 50 daily free requests are
   used up (reported in the wild as "Rate limit exceeded: free-models-per-day. Add 10 credits to
   unlock 1000 free model requests per day"), and whether `free_model_daily_requests` is in every
-  `GET /key` answer.
+  `GET /key` answer. The most common free-model 429 in the wild is a busy upstream, not the quota:
+  `{"error":{"message":"Provider returned error","code":429,"metadata":{"raw":"<model> is temporarily
+  rate-limited upstream. Please retry shortly, …","provider_name":"Google AI Studio"}}}` — `metadata.raw`
+  carries the provider's verbatim payload [R6]; the app retries it like any busy moment.
 
 ---
 

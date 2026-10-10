@@ -271,9 +271,10 @@ class ProviderErrorsTest {
         val upstream = """{"error":{"code":429,"message":"google/gemma-4-31b-it:free is temporarily rate-limited upstream. Please retry shortly."}}"""
         // The free tariff: the day's quota, never retried.
         assertEquals(MappedError(AiError.QuotaExhausted), http(OPENROUTER, 429, day, freeTier = true))
-        assertEquals(MappedError(AiError.QuotaExhausted), http(OPENROUTER, 429, "", freeTier = true))
         assertEquals(MappedError(AiError.RateLimited, retryable = true, retryAfter = 5.seconds), http(OPENROUTER, 429, minute, 5.seconds, freeTier = true))
         assertEquals(MappedError(AiError.RateLimited, retryable = true), http(OPENROUTER, 429, upstream, freeTier = true))
+        // A 429 that names no daily limit is a busy moment, retried as before.
+        assertEquals(MappedError(AiError.RateLimited, retryable = true), http(OPENROUTER, 429, "", freeTier = true))
         // A free model on the credits tariff: 1,000 a day.
         val credits = ProviderErrors.http(OPENROUTER, 429, day, null, model = "google/gemma-4-31b-it:free")
         assertEquals(AiError.Unknown(com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers.QUOTA_EXHAUSTED_WITH_CREDITS), credits.error)
@@ -290,6 +291,50 @@ class ProviderErrorsTest {
             http(OPENROUTER, 404, """{"error":{"code":404,"message":"No endpoints found matching your data policy (Free model training)."}}""").error,
         )
         assertEquals(MappedError(AiError.ModelUnavailable("m-1")), http(OPENROUTER, 404, """{"error":{"code":404,"message":"No endpoints found for m-1."}}"""))
+    }
+
+    @Test
+    fun `a free model busy upstream is retried, not reported as the day's quota`() {
+        // OpenRouter's usual shape: a generic message, the provider's own words in metadata.raw.
+        val raw = """{"error":{"message":"Provider returned error","code":429,"metadata":{"raw":"google/gemma-4-31b-it:free is temporarily """ +
+            """rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations",""" +
+            """"provider_name":"Google AI Studio"}}}"""
+        val parsed = ApiErrorBody.parse(raw)
+        assertEquals("Provider returned error", parsed.message)
+        assertTrue(parsed.upstream!!.contains("rate-limited upstream"))
+        val busy = MappedError(AiError.RateLimited, retryable = true, retryAfter = 2.seconds)
+        assertEquals(busy, http(OPENROUTER, 429, raw, 2.seconds, freeTier = true))
+        assertEquals(busy.copy(retryAfter = null), http(OPENROUTER, 429, raw, freeTier = true))
+        // On credits with a ":free" model: busy too, not the 1,000-a-day text.
+        val credits = ProviderErrors.http(OPENROUTER, 429, raw, null, model = "google/gemma-4-31b-it:free")
+        assertEquals(MappedError(AiError.RateLimited, retryable = true), credits)
+        // metadata.raw as an object.
+        val nested = """{"error":{"message":"Provider returned error","code":429,"metadata":{"raw":{"error":{"code":429,"status":"RESOURCE_EXHAUSTED"}}}}}"""
+        assertTrue(ApiErrorBody.parse(nested).upstream!!.contains("RESOURCE_EXHAUSTED"))
+        assertEquals(MappedError(AiError.RateLimited, retryable = true), http(OPENROUTER, 429, nested, freeTier = true))
+        // Inside a 200 stream.
+        assertEquals(AiError.RateLimited, ProviderErrors.streamError(OPENROUTER, Json.parseToJsonElement(raw).jsonObject, "google/gemma-4-31b-it:free", freeTier = true))
+    }
+
+    @Test
+    fun `the day's quota is told by its rate-limit headers too`() {
+        val plain = """{"error":{"code":429,"message":"Rate limit exceeded"}}"""
+        // The body's metadata.headers: a daily limit with nothing left.
+        val inBody = """{"error":{"code":429,"message":"Rate limit exceeded","metadata":{"headers":{"X-RateLimit-Limit":"1000","X-RateLimit-Remaining":"0"}}}}"""
+        assertEquals(mapOf("x-ratelimit-limit" to "1000", "x-ratelimit-remaining" to "0"), ApiErrorBody.parse(inBody).rateLimit)
+        assertEquals(MappedError(AiError.QuotaExhausted), http(OPENROUTER, 429, inBody, freeTier = true))
+        // The response's headers.
+        val day = mapOf("x-ratelimit-limit" to "50", "x-ratelimit-remaining" to "0")
+        assertEquals(MappedError(AiError.QuotaExhausted), ProviderErrors.http(OPENROUTER, 429, plain, null, "m", freeTier = true, rateLimit = day))
+        assertEquals(AiError.QuotaExhausted, ProviderErrors.map(OPENROUTER, HttpFailure(429, plain, null, day), "m", freeTier = true)!!.error)
+        // The minute's limit (20) or requests left are no day's quota.
+        val minute = mapOf("x-ratelimit-limit" to "20", "x-ratelimit-remaining" to "0")
+        assertEquals(AiError.RateLimited, ProviderErrors.http(OPENROUTER, 429, plain, null, "m", freeTier = true, rateLimit = minute).error)
+        val left = mapOf("x-ratelimit-limit" to "50", "x-ratelimit-remaining" to "12")
+        assertEquals(AiError.RateLimited, ProviderErrors.http(OPENROUTER, 429, plain, null, "m", freeTier = true, rateLimit = left).error)
+        // "per-min" wins over headers that look daily.
+        val perMinute = """{"error":{"code":429,"message":"Rate limit exceeded: free-models-per-min."}}"""
+        assertEquals(AiError.RateLimited, ProviderErrors.http(OPENROUTER, 429, perMinute, null, "m", freeTier = true, rateLimit = day).error)
     }
 
     @Test

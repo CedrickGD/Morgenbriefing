@@ -24,7 +24,8 @@
 //            403-disabled (SERVICE_DISABLED), 403-restricted (API_KEY_ANDROID_APP_BLOCKED), 400-region
 //            (FAILED_PRECONDITION: free tier not in your country), 400-precondition (FAILED_PRECONDITION about
 //            something else), 400-key-echo (an invalid key echoed into every field of the error body, GE §12.6);
-//            OpenRouter: 429-free (the day's 50 free requests used up), 429-free-min (20 a minute); other
+//            OpenRouter: 429-free (the day's 50 free requests used up), 429-free-min (20 a minute),
+//            429-free-upstream ("Provider returned error", busy upstream in metadata.raw); other
 //            families answer them with the base status
 //   modes    slow, no-search, free-tier-search, free-tier-search-400, refusal, truncated, midstream-error,
 //            live-reject, live-empty, free-tier (OpenRouter's GET /key: an account without bought credits),
@@ -50,7 +51,7 @@ const DELAY_MS = Number(args.delay ?? process.env.MOCK_DELAY_MS ?? 35);
 const ERROR_SWITCHES = new Set(['400', '401', '402', '403', '404', '429', '500', '503', '529',
   '400-workspace', '400-model', '429-quota', '429-short',
   '401-auth-key', '403-blocked', '403-disabled', '403-restricted', '400-region', '400-precondition', '400-key-echo',
-  '429-free', '429-free-min']);
+  '429-free', '429-free-min', '429-free-upstream']);
 const MODE_SWITCHES = new Set(['slow', 'no-search', 'free-tier-search', 'free-tier-search-400', 'refusal', 'truncated',
   'midstream-error', 'live-reject', 'live-empty', 'model-gone', 'model-no-quota', 'free-tier']);
 
@@ -491,6 +492,10 @@ function responsesError(ctx, error, model) {
       metadata: { headers: { 'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': String(nextMidnightUtc()) } } } },
       { 'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': String(nextMidnightUtc()) }],
     '429-free-min': [429, { error: { code: 429, message: 'Rate limit exceeded: free-models-per-min.' } }, { 'Retry-After': '1' }],
+    // The usual one: the upstream provider of a free model is busy (its own words in metadata.raw).
+    '429-free-upstream': [429, { error: { code: 429, message: 'Provider returned error', metadata: {
+      raw: `${model || 'google/gemma-4-31b-it:free'} is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations`,
+      provider_name: 'Google AI Studio' } } }],
     '500': [500, body(500, 'server_error', 'server_error', 'The server had an error while processing your request.')],
     '503': [503, body(503, 'server_error', 'service_unavailable', 'The engine is currently overloaded, please try again later.')],
     '529': [503, body(503, 'server_error', 'service_unavailable', 'The engine is currently overloaded, please try again later.')],

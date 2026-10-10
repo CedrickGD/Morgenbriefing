@@ -51,18 +51,18 @@ internal object ProviderErrors {
     /**
      * Any failure of a request to [provider]. An [AiException] keeps its error, an
      * [AiBlockedException] is no API failure (null), anything unexpected is [AiError.Unknown].
-     * [freeTier]: a key on a free tariff, Gemini or OpenRouter (a 429 then means the free quota
-     * is used up).
+     * [freeTier]: a key on a free tariff, Gemini or OpenRouter (a 429 may then mean the free
+     * quota is used up).
      */
     fun map(provider: AiProviderId, failure: Throwable, model: String?, freeTier: Boolean = false): MappedError? = when (failure) {
         is AiException -> MappedError(failure.error)
         is AiBlockedException -> null
-        is HttpFailure -> http(provider, failure.code, failure.body, failure.retryAfter, model, freeTier)
+        is HttpFailure -> http(provider, failure.code, failure.body, failure.retryAfter, model, freeTier, failure.rateLimit)
         is IOException -> io(provider, failure)
         else -> MappedError(AiError.Unknown(null))
     }
 
-    /** A non-2xx answer (§8.1). */
+    /** A non-2xx answer (§8.1); [rateLimit] are its `X-RateLimit-*` headers ([HttpFailure.rateLimit]). */
     fun http(
         provider: AiProviderId,
         code: Int,
@@ -70,9 +70,10 @@ internal object ProviderErrors {
         retryAfter: Duration?,
         model: String?,
         freeTier: Boolean = false,
+        rateLimit: Map<String, String> = emptyMap(),
     ): MappedError {
         val e = ApiErrorBody.parse(body)
-        specific(provider, code, e, retryAfter, model, freeTier)?.let { return it }
+        specific(provider, code, e, retryAfter, model, freeTier, rateLimit)?.let { return it }
         val brand = brand(provider)
         return when {
             code == 401 -> MappedError(AiError.InvalidKey)
@@ -94,6 +95,7 @@ internal object ProviderErrors {
         retryAfter: Duration?,
         model: String?,
         freeTier: Boolean,
+        rateLimit: Map<String, String>,
     ): MappedError? = when (provider) {
         AiProviderId.OPENAI -> when {
             code == 400 && e.namesUnknownModel() -> MappedError(AiError.ModelUnavailable(model))
@@ -142,7 +144,7 @@ internal object ProviderErrors {
             // "No endpoints found matching your data policy": the account's privacy settings
             // exclude every provider of a free model (UNVERIFIED wording, seen in the wild).
             code == 404 && e.message.orEmpty().contains("data policy", ignoreCase = true) -> MappedError(AiError.Unknown(OPENROUTER_DATA_POLICY_TEXT))
-            code == 429 && (freeTier || OpenRouterTiers.looksFree(model.orEmpty())) -> openRouterFreeQuota(e, retryAfter, freeTier)
+            code == 429 && (freeTier || OpenRouterTiers.looksFree(model.orEmpty())) -> openRouterFreeQuota(e, retryAfter, freeTier, rateLimit)
             else -> null
         }
         AiProviderId.CUSTOM -> when (code) {
@@ -157,17 +159,33 @@ internal object ProviderErrors {
 
     /**
      * A 429 for a free OpenRouter model (OC §7.9: 20 requests a minute, 50 a day without bought
-     * credits, 1,000 with). The minute's limit ("free-models-per-min") and a busy upstream pass
-     * after a short wait; anything else is the day's quota — reported at once, never hammered.
-     * [freeTariff] false: a free model on the credits tariff, where the day has 1,000 requests.
+     * credits, 1,000 with). Only the day's quota waits for tomorrow — reported at once, never
+     * hammered ([isOpenRouterDayQuota]). Every other 429 passes after a short wait: the minute's
+     * limit ("free-models-per-min") and, most often, a busy upstream — "Provider returned error"
+     * with the provider's own words in `metadata.raw` ("… is temporarily rate-limited upstream.
+     * Please retry shortly …"). [freeTariff] false: a free model on the credits tariff.
      */
-    private fun openRouterFreeQuota(e: ApiErrorBody, retryAfter: Duration?, freeTariff: Boolean): MappedError {
-        val text = e.message.orEmpty().lowercase()
-        return when {
-            "per-min" in text || "per min" in text || "upstream" in text -> MappedError(AiError.RateLimited, retryable = true, retryAfter = retryAfter)
+    private fun openRouterFreeQuota(e: ApiErrorBody, retryAfter: Duration?, freeTariff: Boolean, rateLimit: Map<String, String>): MappedError =
+        when {
+            !isOpenRouterDayQuota(e, rateLimit) -> MappedError(AiError.RateLimited, retryable = true, retryAfter = retryAfter)
             freeTariff -> MappedError(AiError.QuotaExhausted)
             else -> MappedError(AiError.Unknown(OpenRouterTiers.QUOTA_EXHAUSTED_WITH_CREDITS))
         }
+
+    /**
+     * OpenRouter's daily free quota is used up: its message (or the upstream's) names the day's
+     * limit ("Rate limit exceeded: free-models-per-day. …"), or the rate-limit headers — the body's
+     * `metadata.headers`, else the response's [rateLimit] — show a daily limit (50 or 1,000) with
+     * nothing left. The minute's limit (20, "free-models-per-min") never counts as the day's.
+     */
+    private fun isOpenRouterDayQuota(e: ApiErrorBody, rateLimit: Map<String, String>): Boolean {
+        val text = listOfNotNull(e.message, e.upstream).joinToString(" ").lowercase()
+        if ("per-min" in text) return false
+        if ("per-day" in text) return true
+        val headers = rateLimit + e.rateLimit
+        val limit = headers["x-ratelimit-limit"]?.trim()?.toIntOrNull()
+        val remaining = headers["x-ratelimit-remaining"]?.trim()?.toIntOrNull()
+        return remaining == 0 && (limit == OpenRouterTiers.FREE_PER_DAY || limit == OpenRouterTiers.FREE_PER_DAY_WITH_CREDITS)
     }
 
     /**
@@ -345,6 +363,13 @@ internal class ApiErrorBody(
     val helpLinks: List<String> = emptyList(),
     /** google.rpc `QuotaFailure.violations`. */
     val quotaViolations: List<QuotaViolation> = emptyList(),
+    /**
+     * OpenRouter's `error.metadata.raw`: the upstream provider's own error behind "Provider
+     * returned error" — a string as it is, an object as its JSON.
+     */
+    val upstream: String? = null,
+    /** OpenRouter's `error.metadata.headers` (`X-RateLimit-Limit`, …), names lower-cased. */
+    val rateLimit: Map<String, String> = emptyMap(),
 ) {
     fun hasCode(vararg codes: String): Boolean = codes.any { it == code || it == type }
 
@@ -414,6 +439,8 @@ internal class ApiErrorBody(
             val details = (o["details"] as? JsonArray).orEmpty().mapNotNull { it as? JsonObject }
             fun detailsOf(type: String) = details.filter { it["@type"].text().orEmpty().endsWith(type) }
             val errorInfos = detailsOf("ErrorInfo")
+            // OpenRouter: {"error": {code, message, metadata: {raw, provider_name, headers}}}.
+            val openRouter = o["metadata"] as? JsonObject
             return ApiErrorBody(
                 message = o["message"].text() ?: o["detail"].text(),
                 type = o["type"].text(),
@@ -437,6 +464,8 @@ internal class ApiErrorBody(
                         )
                     }
                 },
+                upstream = openRouter?.get("raw")?.let { raw -> raw.text() ?: (raw as? JsonObject)?.toString() ?: (raw as? JsonArray)?.toString() },
+                rateLimit = openRouter?.get("headers").textMap().mapKeys { it.key.lowercase() },
             )
         }
 

@@ -1331,7 +1331,7 @@ and the row and its dialog only exist when `BuildConfig.DEBUG`.
 | `401-auth-key`, `403-blocked`, `403-disabled`, `403-restricted`, `400-region` | Gemini's refusals of GE §12.4 on every Gemini route, the model list included: `ACCESS_TOKEN_TYPE_UNSUPPORTED`, `API_KEY_SERVICE_BLOCKED`, `SERVICE_DISABLED` (with Help link), `API_KEY_ANDROID_APP_BLOCKED`, `FAILED_PRECONDITION` (free tier not in your country). Other families answer them with the base status (`403-blocked` → their `403`). |
 | `400-key-echo` | Gemini: 400 for an invalid key whose body echoes the key it got into every field (code, type, `ErrorInfo.reason` and metadata, quota id, message, Help link) — the Details must stay key-free (GE §12.6). Other families: their `400`. |
 | `400-precondition` | Gemini: 400 `FAILED_PRECONDITION` about something else than the free tier („Precondition check failed.“) — the app shows the plain refusal with its Details, not the billing text (§16.7). |
-| `free-tier`, `429-free`, `429-free-min` | OpenRouter (§16): `GET …/key` reports an account without bought credits (`is_free_tier: true`, 37 of 50 free requests left; with `429-free` none left); `429-free` answers chat requests with OpenRouter's „Rate limit exceeded: free-models-per-day …“, `429-free-min` with the minute's limit and `Retry-After: 1`. Free models (`…:free`, `openrouter/free`) report `usage.cost: 0`. |
+| `free-tier`, `429-free`, `429-free-min`, `429-free-upstream` | OpenRouter (§16): `GET …/key` reports an account without bought credits (`is_free_tier: true`, 37 of 50 free requests left; with `429-free` none left); `429-free` answers chat requests with OpenRouter's „Rate limit exceeded: free-models-per-day …“, `429-free-min` with the minute's limit and `Retry-After: 1`, `429-free-upstream` with „Provider returned error“ and the busy upstream in `metadata.raw` (no Retry-After). Free models (`…:free`, `openrouter/free`) report `usage.cost: 0`. |
 | `model-gone`, `model-no-quota` | Gemini: `gemini-3.8-flash` answers 404 `NOT_FOUND` (and is missing from the model list), or 429 with a free-tier quota of 0; every other model works. The chat and the key test fall back to `gemini-3.7-flash` (GE §12.5). |
 | `no-search` | Never search, even when asked. |
 | `refusal`, `truncated`, `midstream-error` | A refusal, a cut-off answer, an error after the first words. |
@@ -1498,9 +1498,9 @@ Tarif „Kostenlos“.“
 
 | Answer | With | AiError / text |
 |---|---|---|
-| 429 „free-models-per-day“ (or any other 429) | FREE | `QuotaExhausted`: „Gratis-Kontingent von OpenRouter für heute aufgebraucht (50 Anfragen/Tag) – morgen geht's weiter.“ — never retried |
-| 429 „free-models-per-min“ or „… rate-limited upstream …“ | a free model | `RateLimited`, retried before the first event (Retry-After) |
-| 429 on a `:free` model | CREDITS | „… (1.000 Anfragen/Tag) – morgen geht's weiter, oder wähl ein Modell mit Preis.“ |
+| 429 that names the day's quota: „free-models-per-day“ in the message (or in `metadata.raw`), or `X-RateLimit-Remaining: 0` with a daily `X-RateLimit-Limit` (50 or 1,000) in the body's `metadata.headers` or the response headers (`HttpFailure.rateLimit`) | FREE | `QuotaExhausted`: „Gratis-Kontingent von OpenRouter für heute aufgebraucht (50 Anfragen/Tag) – morgen geht's weiter.“ — never retried |
+| any other 429: „free-models-per-min“, and OpenRouter's usual „Provider returned error“ whose `metadata.raw` (string or object, `ApiErrorBody.upstream`) says „… is temporarily rate-limited upstream. Please retry shortly …“, or a body without hints | a free model | `RateLimited`, retried before the first event (Retry-After) |
+| 429 that names the day's quota on a `:free` model | CREDITS | „… (1.000 Anfragen/Tag) – morgen geht's weiter, oder wähl ein Modell mit Preis.“ |
 | 402 without Retry-After | any | `NoCredit`: „Dein Guthaben bei OpenRouter ist aufgebraucht oder im Minus – dann gehen auch die Gratis-Modelle nicht. Lade es unter „Credits“ auf, dann geht es weiter.“ |
 | 404 „No endpoints found matching your data policy“ | any | „Für dieses Modell findet OpenRouter keinen Anbieter, der zu deinen Datenschutz-Einstellungen passt. Erlaub unter openrouter.ai/settings/privacy die Gratis-Modelle – oder wähl ein anderes.“ (**UNVERIFIED** wording, seen in the wild) |
 
