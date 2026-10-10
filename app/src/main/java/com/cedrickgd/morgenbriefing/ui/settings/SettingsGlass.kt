@@ -22,14 +22,18 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
@@ -60,14 +64,18 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -504,6 +512,26 @@ internal fun GlassDialog(
             }
         }
     }
+}
+
+/**
+ * Keeps a text field with everything under it — its supporting text — in view while it has the
+ * focus: when the keyboard opens or changes height, and when one of [keys] (the hint's text)
+ * changes. A text field brings only its cursor line into view, so in a [GlassDialog] the second
+ * line of the key's format hint stayed cut off by the keyboard.
+ */
+internal fun Modifier.keepInViewWhileTyping(vararg keys: Any?): Modifier = composed {
+    val requester = remember { BringIntoViewRequester() }
+    var focused by remember { mutableStateOf(false) }
+    val keyboard = WindowInsets.ime.getBottom(LocalDensity.current)
+    LaunchedEffect(*arrayOf<Any?>(focused, keyboard, *keys)) {
+        if (focused) {
+            // After this frame's layout: the pane has its height above the keyboard.
+            withFrameNanos { }
+            requester.bringIntoView()
+        }
+    }
+    bringIntoViewRequester(requester).onFocusChanged { focused = it.hasFocus }
 }
 
 /** Enables the system blur behind the current dialog window (API 31+, if the device allows). */

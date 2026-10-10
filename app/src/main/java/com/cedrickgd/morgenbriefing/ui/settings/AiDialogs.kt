@@ -210,26 +210,36 @@ internal fun AiKeyDialog(
         }
         if (custom) {
             Spacer(Modifier.height(14.dp))
+            val addressHint = addressIssue?.let(CustomServer::hint) ?: "Ollama nutzt Port 11434, LM Studio Port 1234."
             OutlinedTextField(
                 value = address,
                 onValueChange = { address = it },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .keepInViewWhileTyping(addressHint),
                 label = { Text("Server-Adresse") },
                 placeholder = { Text("http://nas.fritz.box:11434/v1") },
                 singleLine = true,
                 enabled = !checking,
                 isError = addressIssue != null && addressIssue != CustomUrlIssue.BLANK,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
-                supportingText = {
-                    Text(addressIssue?.let(CustomServer::hint) ?: "Ollama nutzt Port 11434, LM Studio Port 1234.")
-                },
+                supportingText = { Text(addressHint) },
             )
         }
         Spacer(Modifier.height(if (custom) 4.dp else 14.dp))
+        val keyHint = when {
+            formatIssue != null -> aiKeyFormatHint(formatIssue, spec)
+            key.isBlank() && stored.hasKey -> "Leer lassen, um den gespeicherten Key zu behalten."
+            custom -> "Nur nötig, wenn dein Server einen verlangt. Wird verschlüsselt gespeichert."
+            else -> "Wird verschlüsselt nur auf diesem Gerät gespeichert."
+        }
         OutlinedTextField(
             value = key,
             onValueChange = { key = it },
-            modifier = Modifier.fillMaxWidth(),
+            // The hint under the field may take two lines: it stays above the keyboard too.
+            modifier = Modifier
+                .fillMaxWidth()
+                .keepInViewWhileTyping(keyHint),
             label = { Text(if (custom) "API-Key (optional)" else "API-Key") },
             placeholder = { Text(spec.keyPlaceholder) },
             singleLine = true,
@@ -245,16 +255,7 @@ internal fun AiKeyDialog(
                     )
                 }
             },
-            supportingText = {
-                Text(
-                    when {
-                        formatIssue != null -> aiKeyFormatHint(formatIssue, spec)
-                        key.isBlank() && stored.hasKey -> "Leer lassen, um den gespeicherten Key zu behalten."
-                        custom -> "Nur nötig, wenn dein Server einen verlangt. Wird verschlüsselt gespeichert."
-                        else -> "Wird verschlüsselt nur auf diesem Gerät gespeichert."
-                    },
-                )
-            },
+            supportingText = { Text(keyHint) },
         )
         if (anthropic) {
             WorkspaceSection(
@@ -459,16 +460,19 @@ private fun WorkspaceSection(
                 color = colors.onSurfaceVariant,
             )
             Spacer(Modifier.height(8.dp))
+            val hint = workspaceIdHint(workspace)
             OutlinedTextField(
                 value = workspace,
                 onValueChange = onWorkspace,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .keepInViewWhileTyping(hint),
                 label = { Text("Workspace-ID") },
                 placeholder = { Text("wrkspc_…") },
                 singleLine = true,
                 enabled = enabled,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii, imeAction = ImeAction.Done),
-                supportingText = workspaceIdHint(workspace)?.let { hint -> { Text(hint) } },
+                supportingText = hint?.let { { Text(it) } },
             )
             GlassPillButton(
                 text = "Workspaces öffnen",
