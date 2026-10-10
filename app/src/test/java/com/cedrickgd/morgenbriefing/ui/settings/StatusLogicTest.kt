@@ -122,6 +122,33 @@ class StatusLogicTest {
     }
 
     @Test
+    fun `the count matches the yellow pills, a refused ki key included`() {
+        fun yellow(items: List<StatusItem>) = items.count { it.level == StatusLevel.ATTENTION }
+        // Battery, news and a refused KI key: three yellow pills, three in the sentence.
+        val three = statusItems(allGood.copy(batteryUnrestricted = false), SourceStatus.NoToken, keyed(rejected = true), true)
+        assertEquals(3, yellow(three))
+        val hero = heroText(true, three, "morgen", "05:30")
+        assertFalse(hero.ready)
+        assertEquals("3 Kleinigkeiten fehlen noch – tippe auf die gelben Punkte.", hero.subtitle)
+        // One briefing problem and the KI: two, so no single hint that ignores the KI pill.
+        val two = statusItems(allGood.copy(batteryUnrestricted = false), connected, keyed(rejected = true), true)
+        assertEquals(2, yellow(two))
+        assertEquals("2 Kleinigkeiten fehlen noch – tippe auf die gelben Punkte.", heroText(true, two, "morgen", "05:30").subtitle)
+        // Only the KI: the briefing is ready, and the sentence points at the one yellow pill.
+        val ai = statusItems(allGood, connected, keyed(rejected = true), true)
+        assertEquals(1, yellow(ai))
+        val ready = heroText(true, ai, "morgen", "05:30")
+        assertTrue(ready.ready)
+        assertEquals("Alles bereit für morgen, 05:30", ready.title)
+        assertEquals("Wetter und News kommen pünktlich. Nur die KI braucht dich – tippe auf den gelben Punkt.", ready.subtitle)
+        // Without a yellow pill nothing is asked.
+        assertEquals(
+            "Wetter und News kommen pünktlich – du musst nichts weiter tun.",
+            heroText(true, statusItems(allGood, connected, keyed(), true), "morgen", "05:30").subtitle,
+        )
+    }
+
+    @Test
     fun `news connection states`() {
         assertEquals(StatusLevel.ATTENTION, levels(statusItems(allGood, SourceStatus.NoToken, AiSettings(), true))[StatusKind.NEWS])
         assertEquals(StatusLevel.NEUTRAL, levels(statusItems(allGood, SourceStatus.Checking, AiSettings(), true))[StatusKind.NEWS])
