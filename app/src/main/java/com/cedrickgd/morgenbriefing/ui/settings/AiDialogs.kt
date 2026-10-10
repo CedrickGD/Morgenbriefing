@@ -147,11 +147,15 @@ internal fun AiKeyDialog(
     val colors = MaterialTheme.colorScheme
     // The check's line sits under the key field: with the Gemini tariff texts above it, it can be
     // below the fold when "Speichern & testen" was tapped — scrolled into view once it changes.
+    // A refused Gemini auth key also brings its way out ("OpenRouter kostenlos einrichten") along.
     val messageInView = remember { BringIntoViewRequester() }
+    val planBInView = remember { BringIntoViewRequester() }
+    val offersPlanB = onSetUpOpenRouter != null && aiKeyOffersOpenRouter(state)
     LaunchedEffect(state) {
         if (state != AiKeyState.Idle) {
             withFrameNanos { }
             messageInView.bringIntoView()
+            if (offersPlanB) planBInView.bringIntoView()
         }
     }
 
@@ -299,9 +303,17 @@ internal fun AiKeyDialog(
             Spacer(Modifier.height(4.dp))
             GlassPillButton(text = fix.label, onClick = { onOpenLink(fix.url) }, icon = Icons.AutoMirrored.Rounded.OpenInNew, style = PillStyle.Quiet)
         }
-        if (onSetUpOpenRouter != null && aiKeyOffersOpenRouter(state)) {
+        if (offersPlanB && onSetUpOpenRouter != null) {
             Spacer(Modifier.height(8.dp))
-            GlassPillButton(text = AiTexts.OPENROUTER_PLAN_B, onClick = onSetUpOpenRouter, icon = Icons.Rounded.AutoAwesome, style = PillStyle.Tonal)
+            GlassPillButton(
+                text = AiTexts.OPENROUTER_PLAN_B,
+                onClick = onSetUpOpenRouter,
+                modifier = Modifier.bringIntoViewRequester(planBInView),
+                icon = Icons.Rounded.AutoAwesome,
+                style = PillStyle.Tonal,
+                // The way out must read in full: one line is too narrow for it in a 360 dp wide dialog.
+                maxLines = 2,
+            )
         }
         if (canSaveUntested(state) && (key.isNotBlank() || custom)) {
             Spacer(Modifier.height(8.dp))

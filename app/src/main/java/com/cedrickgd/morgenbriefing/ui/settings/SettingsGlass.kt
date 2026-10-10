@@ -91,6 +91,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -172,7 +173,8 @@ internal enum class PillStyle {
 
 /**
  * Fully rounded glass button, at least 48 dp high. [onGlass] = it sits on a glass card (uses a
- * lamina instead of a second blur).
+ * lamina instead of a second blur). [maxLines] > 1 lets a long label wrap instead of being cut
+ * off in a narrow dialog.
  */
 @Composable
 internal fun GlassPillButton(
@@ -184,6 +186,7 @@ internal fun GlassPillButton(
     enabled: Boolean = true,
     onGlass: Boolean = true,
     contentDescription: String? = null,
+    maxLines: Int = 1,
 ) {
     val colors = MaterialTheme.colorScheme
     val interaction = remember { MutableInteractionSource() }
@@ -237,7 +240,8 @@ internal fun GlassPillButton(
             text = text,
             style = MaterialTheme.typography.labelLarge,
             color = content,
-            maxLines = 1,
+            textAlign = TextAlign.Center,
+            maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,
         )
     }

@@ -1500,7 +1500,9 @@ offenem Modell.“ The link is „Keys in AI Studio“ (an older key is listed t
 adds **„OpenRouter kostenlos einrichten“** to the key dialog (`aiKeyOffersOpenRouter`) and the chat's
 error card (`ErrorAction.SET_UP_OPENROUTER`): OpenRouter's key dialog on FREE with
 `KeySubmission.selectProvider` — once the key works, OpenRouter is the chat provider, and „Nochmal
-senden“ (§16.7 g) asks the question again with Gemma 4.
+senden“ (§16.7 g) asks the question again with Gemma 4. In the key dialog the action is a pill that
+may wrap to two lines (one line cut it off at 360 dp) and is scrolled into view together with the
+refusal after „Speichern & testen“.
 
 ### 16.6 Migration (schema 3)
 
