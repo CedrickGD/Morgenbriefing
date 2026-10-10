@@ -11,6 +11,7 @@ import com.cedrickgd.morgenbriefing.domain.WeatherFixtures.summerThunder
 import com.cedrickgd.morgenbriefing.domain.WeatherFixtures.tomorrowEvening
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -227,6 +228,9 @@ class WeatherInsightsTest {
         assertFalse(labels.toString(), "Schirm" in labels)
         assertContains(advice.text, "Regenjacke statt Schirm – zu windig")
         assertTrue(advice.short, advice.short.wordCount() <= 8)
+        // The rain jacket has its own pictogram, never the coat of the warm jacket next to it.
+        val rainJacket = advice.items.single { it.label == "Regenjacke" }
+        advice.items.filter { it.label != "Regenjacke" }.forEach { assertNotEquals(it.label, rainJacket.emoji, it.emoji) }
     }
 
     @Test
