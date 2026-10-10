@@ -291,4 +291,32 @@ class ProviderErrorsTest {
         )
         assertEquals(MappedError(AiError.ModelUnavailable("m-1")), http(OPENROUTER, 404, """{"error":{"code":404,"message":"No endpoints found for m-1."}}"""))
     }
+
+    @Test
+    fun `a gemini precondition is the free tier only when it says so`() {
+        val freeTier = AiError.GeminiAccess(GeminiProblem.FREE_TIER_UNAVAILABLE)
+        listOf(
+            "Gemini API free tier is not available in your country. Please enable billing on your project in Google AI Studio.",
+            "User location is not supported for the API use without a billing account linked.",
+            "The free_tier quota is not offered for this project.",
+            "Please enable Billing for this project.",
+        ).forEach { message ->
+            assertEquals(message, freeTier, http(GEMINI, 400, rpc(400, "FAILED_PRECONDITION", message)).error)
+        }
+        // Any other precondition: the refused request with its Details, no billing text.
+        listOf(
+            "Precondition check failed.",
+            "The cached content has expired.",
+            "",
+        ).forEach { message ->
+            val mapped = http(GEMINI, 400, rpc(400, "FAILED_PRECONDITION", message))
+            assertEquals(message, AiError.Unknown("Gemini hat die Anfrage abgelehnt (HTTP 400)."), mapped.error)
+            assertFalse(mapped.retryable)
+        }
+        // A model refusal is never read from a precondition either.
+        assertEquals(
+            AiError.Unknown("Gemini hat die Anfrage abgelehnt (HTTP 400)."),
+            http(GEMINI, 400, rpc(400, "FAILED_PRECONDITION", "models/gemini-9 is not found for API version v1beta")).error,
+        )
+    }
 }

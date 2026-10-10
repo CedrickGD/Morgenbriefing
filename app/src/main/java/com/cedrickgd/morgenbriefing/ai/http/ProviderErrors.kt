@@ -119,7 +119,10 @@ internal object ProviderErrors {
             e.hasReason(*GEMINI_API_BLOCKED) -> MappedError(AiError.GeminiAccess(GeminiProblem.API_BLOCKED))
             e.reasons.any { it in GEMINI_KEY_RESTRICTED } -> MappedError(AiError.GeminiAccess(GeminiProblem.KEY_RESTRICTED))
             code == 401 && e.hasReason("ACCESS_TOKEN_TYPE_UNSUPPORTED") -> MappedError(AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED))
-            code == 400 && e.status == "FAILED_PRECONDITION" -> MappedError(AiError.GeminiAccess(GeminiProblem.FREE_TIER_UNAVAILABLE))
+            // Only a precondition about the free tier, billing or the country: any other one stays
+            // a refused request with its Details instead of a wrong "enable billing" text.
+            code == 400 && e.status == "FAILED_PRECONDITION" && e.namesFreeTierOrRegion() ->
+                MappedError(AiError.GeminiAccess(GeminiProblem.FREE_TIER_UNAVAILABLE))
             e.isGeminiModelProblem(code) -> MappedError(AiError.ModelUnavailable(model))
             code == 403 -> MappedError(AiError.Unknown("Der Key darf die Gemini API nicht nutzen."))
             code == 429 && freeTier -> {
@@ -373,6 +376,13 @@ internal class ApiErrorBody(
     fun isGeminiKeyInvalid(): Boolean =
         "API_KEY_INVALID" in reasons || message.orEmpty().contains("API key not valid", ignoreCase = true)
 
+    /**
+     * Gemini's precondition names the free tier, billing or where the user is: "Gemini API free tier
+     * is not available in your country. Please enable billing …", "User location is not supported
+     * for the API use without a billing account linked."
+     */
+    fun namesFreeTierOrRegion(): Boolean = FREE_TIER_OR_REGION.containsMatchIn(message.orEmpty())
+
     /** The message is about the API key, e.g. xAI's 400 "Incorrect API key provided. …". */
     fun namesApiKey(): Boolean = message.orEmpty().contains("API key", ignoreCase = true)
 
@@ -382,6 +392,7 @@ internal class ApiErrorBody(
         /** "limit: 0" in a google.rpc quota message (the QuotaFailure detail may be missing). */
         private val ZERO_LIMIT = Regex("""\blimit:\s*0\b(?![.,]\d)""")
         private val SEARCH_QUOTA = listOf("search", "grounding")
+        private val FREE_TIER_OR_REGION = Regex("""free[\s_-]*tier|billing|location|country""", RegexOption.IGNORE_CASE)
 
         fun parse(body: String): ApiErrorBody {
             if (body.isBlank()) return ApiErrorBody()
