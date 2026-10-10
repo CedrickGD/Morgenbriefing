@@ -142,7 +142,8 @@ internal fun AiKeyDialog(
     val saved = state.isSaved
     val addressIssue = if (custom) CustomServer.issue(address) else null
     val canSave = !checking && if (custom) addressIssue == null else key.isNotBlank() || stored.hasKey
-    val message = aiKeyMessage(state, spec)
+    val formatIssue = if (key.isNotBlank()) aiKeyFormatIssue(key, spec) else null
+    val message = aiKeyMessage(state, spec, formatIssue)
     val colors = MaterialTheme.colorScheme
     // The check's line sits under the key field: with the Gemini tariff texts above it, it can be
     // below the fold when "Speichern & testen" was tapped — scrolled into view once it changes.
@@ -245,10 +246,9 @@ internal fun AiKeyDialog(
                 }
             },
             supportingText = {
-                val issue = if (key.isNotBlank()) aiKeyFormatIssue(key, spec) else null
                 Text(
                     when {
-                        issue != null -> aiKeyFormatHint(issue, spec)
+                        formatIssue != null -> aiKeyFormatHint(formatIssue, spec)
                         key.isBlank() && stored.hasKey -> "Leer lassen, um den gespeicherten Key zu behalten."
                         custom -> "Nur nötig, wenn dein Server einen verlangt. Wird verschlüsselt gespeichert."
                         else -> "Wird verschlüsselt nur auf diesem Gerät gespeichert."

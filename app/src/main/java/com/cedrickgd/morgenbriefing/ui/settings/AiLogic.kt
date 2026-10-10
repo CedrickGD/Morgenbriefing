@@ -236,8 +236,12 @@ internal fun aiKeyIntro(spec: ProviderSpec): String = when (spec.id) {
     else -> "Der Key gehört dir: Anfragen laufen über dein eigenes ${keyOwner(spec)}-Konto und werden dort abgerechnet."
 }
 
-/** German feedback line under the key field of [spec]'s dialog; null while idle. */
-internal fun aiKeyMessage(state: AiKeyState, spec: ProviderSpec): String? {
+/**
+ * German feedback line under the key field of [spec]'s dialog; null while idle. [formatIssue] is
+ * what the hint right above already says about the typed key: a refused key then gets no second
+ * "hast du ihn vollständig kopiert?".
+ */
+internal fun aiKeyMessage(state: AiKeyState, spec: ProviderSpec, formatIssue: AiKeyFormatIssue? = null): String? {
     val custom = spec.id == AiProviderId.CUSTOM
     val owner = keyOwner(spec)
     return when (state) {
@@ -264,7 +268,12 @@ internal fun aiKeyMessage(state: AiKeyState, spec: ProviderSpec): String? {
         }
         is AiKeyState.Failed -> when (state.problem) {
             AiKeyProblem.INVALID -> spec.invalidKeyText?.let { "✗ $it" }
-                ?: if (custom) "✗ Dein Server lehnt den Key ab – stimmt er?" else "✗ $owner lehnt den Key ab – hast du ihn vollständig kopiert?"
+                ?: when {
+                    custom -> "✗ Dein Server lehnt den Key ab – stimmt er?"
+                    // The hint above the message already asks about the copy.
+                    formatIssue != null -> "✗ $owner lehnt den Key ab."
+                    else -> "✗ $owner lehnt den Key ab – hast du ihn vollständig kopiert?"
+                }
             AiKeyProblem.NETWORK ->
                 if (custom) "✗ Keine Verbindung zu deinem Server – ist dein Handy im selben Netz?" else "✗ Keine Verbindung zu $owner – bist du online?"
             AiKeyProblem.UNSUPPORTED -> "✗ ${spec.brand} läuft erst ab Android 8."

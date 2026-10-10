@@ -733,4 +733,24 @@ class AiLogicTest {
             aiKeyIntro(ProviderCatalog.OPENROUTER),
         )
     }
+
+    @Test
+    fun `a short key that is refused is asked about its copy only once`() {
+        val refused = AiKeyState.Failed(AiKeyProblem.INVALID)
+        val short = aiKeyFormatIssue("sk-ant-api03-short", claude)
+        assertEquals(AiKeyFormatIssue.TOO_SHORT, short)
+        val hint = aiKeyFormatHint(short!!, claude)
+        val message = aiKeyMessage(refused, claude, short)!!
+        assertEquals("Der Key wirkt zu kurz – hast du ihn vollständig kopiert?", hint)
+        assertEquals("✗ Anthropic lehnt den Key ab.", message)
+        val phrase = "hast du ihn vollständig kopiert?"
+        assertEquals(1, listOf(hint, message).sumOf { it.split(phrase).size - 1 })
+        // A key without a hint keeps the question; the own server and Perplexity keep their sentences.
+        assertEquals("✗ Anthropic lehnt den Key ab – hast du ihn vollständig kopiert?", aiKeyMessage(refused, claude))
+        assertEquals("✗ Dein Server lehnt den Key ab – stimmt er?", aiKeyMessage(refused, ProviderCatalog.CUSTOM, AiKeyFormatIssue.WHITESPACE))
+        assertEquals(
+            "✗ Perplexity lehnt den Key ab – er ist ungültig oder dein Guthaben ist leer.",
+            aiKeyMessage(refused, ProviderCatalog.PERPLEXITY, AiKeyFormatIssue.WHITESPACE),
+        )
+    }
 }
