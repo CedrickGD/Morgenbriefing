@@ -74,7 +74,8 @@ internal fun aiStatus(
 
 /**
  * The setup a key test of [provider] runs with: [ai] with the candidate [extras] — a null field
- * keeps the stored workspace id or server address, "" clears it.
+ * keeps the stored workspace id or server address, "" clears it; an OpenRouter tariff replaces the
+ * stored one (the dialog tests the key for the tariff it is about to store).
  */
 internal fun keyTestSettings(ai: AiSettings, provider: AiProviderId, extras: KeyExtras): AiSettings {
     val stored = ai.of(provider)
@@ -83,6 +84,7 @@ internal fun keyTestSettings(ai: AiSettings, provider: AiProviderId, extras: Key
         stored.copy(
             workspaceId = extras.workspaceId?.let { it.trim().ifEmpty { null } } ?: stored.workspaceId.takeIf { extras.workspaceId == null },
             baseUrl = extras.baseUrl?.let { it.trim().ifEmpty { null } } ?: stored.baseUrl.takeIf { extras.baseUrl == null },
+            openRouterTier = extras.openRouterTier?.takeIf { provider == AiProviderId.OPENROUTER } ?: stored.openRouterTier,
         ),
     )
 }

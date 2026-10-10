@@ -17,6 +17,7 @@ import com.cedrickgd.morgenbriefing.ai.LivePublish
 import com.cedrickgd.morgenbriefing.ai.LiveResearchListener
 import com.cedrickgd.morgenbriefing.ai.LiveResearchRequest
 import com.cedrickgd.morgenbriefing.ai.LiveResearchResult
+import com.cedrickgd.morgenbriefing.ai.OpenRouterKeyInfo
 import com.cedrickgd.morgenbriefing.ai.ProviderAuth
 import com.cedrickgd.morgenbriefing.ai.SourceCollector
 import com.cedrickgd.morgenbriefing.ai.TokenUsage
@@ -26,10 +27,13 @@ import com.cedrickgd.morgenbriefing.ai.http.AiHttp
 import com.cedrickgd.morgenbriefing.ai.http.RetryPolicy
 import com.cedrickgd.morgenbriefing.ai.http.bool
 import com.cedrickgd.morgenbriefing.ai.http.fetch
+import com.cedrickgd.morgenbriefing.ai.http.long
+import com.cedrickgd.morgenbriefing.ai.http.obj
 import com.cedrickgd.morgenbriefing.ai.http.objects
 import com.cedrickgd.morgenbriefing.ai.http.str
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.SourceRef
+import com.cedrickgd.morgenbriefing.data.remote.HttpText
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -160,7 +164,7 @@ internal class CompatLiveEngine(
 
 /**
  * Key checks without tokens (§7.3): Mistral lists the models, OpenRouter reads the key's own
- * status, DeepSeek its balance. The own server is a connection test (§7.6): its model list
+ * status (free tier, free requests left today: [KeyCheckOutcome.openRouter]), DeepSeek its balance. The own server is a connection test (§7.6): its model list
  * proves an OpenAI-compatible API and fills [KeyCheckOutcome.serverModels].
  */
 internal class CompatKeyChecker(
@@ -174,15 +178,16 @@ internal class CompatKeyChecker(
         return try {
             val base = CompatRequests.baseUrl(dialect, auth)
             val headers = CompatRequests.headers(dialect, auth)
-            val check = when (dialect.keyCheck) {
-                KeyCheckKind.MODELS -> verdict(http.fetch(http.get("$base/models", headers)).code)
-                KeyCheckKind.OPENROUTER_KEY -> verdict(http.fetch(http.get("$base/key", headers)).code)
+            when (dialect.keyCheck) {
+                KeyCheckKind.MODELS -> KeyCheckOutcome(verdict(http.fetch(http.get("$base/models", headers)).code))
+                KeyCheckKind.OPENROUTER_KEY -> openRouterKey(http.fetch(http.get("$base/key", headers)), auth.freeTier)
                 KeyCheckKind.DEEPSEEK_BALANCE -> {
                     val reply = http.fetch(http.get("$base/user/balance", headers))
-                    if (reply.code in 200..299 && parse(reply.body)?.bool("is_available") == false) AiKeyCheck.OK_NO_CREDIT else verdict(reply.code)
+                    KeyCheckOutcome(
+                        if (reply.code in 200..299 && parse(reply.body)?.bool("is_available") == false) AiKeyCheck.OK_NO_CREDIT else verdict(reply.code),
+                    )
                 }
             }
-            KeyCheckOutcome(check)
         } catch (e: CancellationException) {
             throw e
         } catch (_: IOException) {
@@ -191,6 +196,18 @@ internal class CompatKeyChecker(
             // Nothing was asked: a key that cannot travel in a header, or an unusable base URL.
             KeyCheckOutcome(if (e.error == AiError.InvalidKey) AiKeyCheck.INVALID else AiKeyCheck.NETWORK)
         }
+    }
+
+    /**
+     * OpenRouter's `GET /key` (OC §7.9): the verdict of its status code, plus what the body says
+     * about the account. A key tested for the credits tariff ([freeTariff] false) on an account
+     * that never bought credits works, but paid requests would fail with 402: OK_NO_CREDIT.
+     */
+    private fun openRouterKey(reply: HttpText, freeTariff: Boolean): KeyCheckOutcome {
+        if (reply.code !in 200..299) return KeyCheckOutcome(verdict(reply.code))
+        val info = OpenRouterKeyStatus.parse(reply.body)
+        val check = if (!freeTariff && info?.freeTier == true) AiKeyCheck.OK_NO_CREDIT else AiKeyCheck.OK
+        return KeyCheckOutcome(check, openRouter = info)
     }
 
     /** 2xx and 429 (authenticated, just busy) prove the key; 401/403 refuse it; 402 means no credit (or payment method). */
@@ -252,6 +269,33 @@ internal class CompatKeyChecker(
 
     private companion object {
         val JSON = Json { ignoreUnknownKeys = true; isLenient = true }
+    }
+}
+
+/**
+ * The body of OpenRouter's `GET /key` (OC §7.9):
+ * `{"data": {"is_free_tier": true, "free_model_daily_requests": {"limit": 50, "remaining": 37, "used": 13}, …}}`.
+ */
+internal object OpenRouterKeyStatus {
+    private val JSON = Json { ignoreUnknownKeys = true; isLenient = true }
+
+    /** The account facts of [body]; null when it is no key status. A missing `remaining` is `limit - used`. */
+    fun parse(body: String): OpenRouterKeyInfo? {
+        val root = try {
+            JSON.parseToJsonElement(body) as? JsonObject
+        } catch (_: Exception) {
+            null
+        } ?: return null
+        val data = root.obj("data") ?: return null
+        val daily = data.obj("free_model_daily_requests")
+        val limit = daily?.long("limit")?.toInt()?.takeIf { it >= 0 }
+        val used = daily?.long("used")?.toInt()?.takeIf { it >= 0 }
+        val remaining = daily?.long("remaining")?.toInt() ?: if (limit != null && used != null) limit - used else null
+        return OpenRouterKeyInfo(
+            freeTier = data.bool("is_free_tier"),
+            freeRequestsLeft = remaining?.coerceAtLeast(0),
+            freeRequestsPerDay = limit,
+        )
     }
 }
 

@@ -110,4 +110,22 @@ class AiTextsTest {
         assertEquals("Live mit Gemini nicht verfügbar", AiTexts.blockTitle(AiBlock.LIVE_UNAVAILABLE, gemini))
         assertEquals("Ohne Websuche – mit deinem eigenen Server nicht verfügbar", AiTexts.chatNote(server, webSearch = false, freeTier = false))
     }
+
+    @Test
+    fun `openrouter's free quota and credits are said in their own words`() {
+        val openRouter = com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog.OPENROUTER
+        assertEquals(
+            "Gratis-Kontingent von OpenRouter für heute aufgebraucht (50 Anfragen/Tag) – morgen geht's weiter.",
+            AiTexts.error(AiError.QuotaExhausted, openRouter),
+        )
+        assertEquals(
+            "Dein Guthaben bei OpenRouter ist aufgebraucht oder im Minus – dann gehen auch die Gratis-Modelle nicht. " +
+                "Lade es unter „Credits“ auf, dann geht es weiter.",
+            AiTexts.error(AiError.NoCredit, openRouter),
+        )
+        // Others keep theirs.
+        val gemini = com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog.GEMINI
+        assertTrue(AiTexts.error(AiError.QuotaExhausted, gemini).startsWith("Gemini-Gratiskontingent"))
+        assertTrue(AiTexts.error(AiError.NoCredit, com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog.OPENAI).startsWith("Dein Guthaben bei OpenAI"))
+    }
 }

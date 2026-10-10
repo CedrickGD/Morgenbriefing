@@ -7,11 +7,13 @@ import com.cedrickgd.morgenbriefing.ai.AiPricing
 import com.cedrickgd.morgenbriefing.ai.AiTexts
 import com.cedrickgd.morgenbriefing.ai.GeminiProblem
 import com.cedrickgd.morgenbriefing.ai.KeyCheckOutcome
+import com.cedrickgd.morgenbriefing.ai.OpenRouterKeyInfo
 import com.cedrickgd.morgenbriefing.ai.provider.EngineKind
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiLinks
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiModels
 import com.cedrickgd.morgenbriefing.ai.provider.GeminiTiers
 import com.cedrickgd.morgenbriefing.ai.provider.LiveSupport
+import com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderSpec
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
@@ -84,6 +86,12 @@ sealed interface AiKeyState {
      */
     data class SavedWithFallback(val from: String, val to: String) : AiKeyState
 
+    /**
+     * Tested and stored (OpenRouter): [info] is what OpenRouter says about the account — whether
+     * it bought credits, and how many free requests are left today.
+     */
+    data class SavedWithKeyInfo(val info: OpenRouterKeyInfo) : AiKeyState
+
     /** Tested and stored, but the key's quota is used up right now (Gemini 429); [diagnostic] under "Details". */
     data class SavedQuotaExhausted(val diagnostic: String? = null) : AiKeyState
 
@@ -97,7 +105,8 @@ sealed interface AiKeyState {
 /** The dialog's work is done: it offers "Fertig" instead of another test. */
 internal val AiKeyState.isSaved: Boolean
     get() = this == AiKeyState.Saved || this == AiKeyState.SavedUntested || this == AiKeyState.SavedNoCredit ||
-        this is AiKeyState.SavedWithFallback || this is AiKeyState.SavedQuotaExhausted || this is AiKeyState.ServerConnected
+        this is AiKeyState.SavedWithFallback || this is AiKeyState.SavedQuotaExhausted || this is AiKeyState.ServerConnected ||
+        this is AiKeyState.SavedWithKeyInfo
 
 /** The technical line under "Details" of [this] state, if any. */
 internal val AiKeyState.diagnostic: String?
@@ -122,17 +131,41 @@ internal fun savedKeyState(tested: Boolean, noCredit: Boolean = false): AiKeySta
 
 /**
  * What the dialog says once the key is stored after [outcome] (null: stored without a test): no
- * credit, a quota used up right now, or a model fallback (Gemini) are said; else a plain "works".
+ * credit, a quota used up right now, or a model fallback (Gemini) are said; OpenRouter's account
+ * facts (free tier, free requests left today) when it sent them; else a plain "works".
  */
 internal fun savedKeyState(outcome: KeyCheckOutcome?): AiKeyState {
     val fallback = outcome?.fallback
+    val openRouter = outcome?.openRouter
     return when {
         outcome == null -> AiKeyState.SavedUntested
         outcome.check == AiKeyCheck.OK_NO_CREDIT -> AiKeyState.SavedNoCredit
         outcome.check == AiKeyCheck.OK_QUOTA_EXHAUSTED -> AiKeyState.SavedQuotaExhausted(outcome.diagnostic)
         fallback != null -> AiKeyState.SavedWithFallback(fallback.from, fallback.to)
+        openRouter != null -> AiKeyState.SavedWithKeyInfo(openRouter)
         else -> AiKeyState.Saved
     }
+}
+
+/**
+ * What a passed OpenRouter key test says about the account after "✓ Der Key funktioniert und ist
+ * gespeichert": "– Gratis-Konto ohne gekauftes Guthaben. Heute noch 37 von 50 Gratis-Anfragen."
+ * Only what OpenRouter sent.
+ */
+internal fun openRouterKeyNote(info: OpenRouterKeyInfo): String {
+    val account = when (info.freeTier) {
+        true -> " – Gratis-Konto ohne gekauftes Guthaben"
+        false -> " – Konto mit Guthaben"
+        null -> ""
+    }
+    val left = info.freeRequestsLeft
+    val perDay = info.freeRequestsPerDay
+    val quota = when {
+        left == null || perDay == null -> ""
+        left <= 0 -> " Heute keine Gratis-Anfragen mehr (${OpenRouterTiers.count(perDay)} am Tag) – morgen geht's weiter."
+        else -> " Heute noch ${OpenRouterTiers.count(left)} von ${OpenRouterTiers.count(perDay)} Gratis-Anfragen."
+    }
+    return "$account.$quota"
 }
 
 /** Maps the facade's check result; null = the key works (store it, also without credit or quota). */
@@ -206,11 +239,15 @@ internal fun aiKeyMessage(state: AiKeyState, spec: ProviderSpec): String? {
         AiKeyState.Checking -> if (custom) "Verbinde mit deinem Server …" else "Prüfe den Key bei $owner …"
         AiKeyState.Saved -> "✓ Der Key funktioniert und ist gespeichert."
         AiKeyState.SavedUntested -> "Gespeichert – noch nicht getestet. Die erste Anfrage zeigt, ob er funktioniert."
-        AiKeyState.SavedNoCredit -> if (spec.id == AiProviderId.GEMINI) {
-            "Gespeichert ✓ – aber das Prepay-Guthaben deines Google-Projekts ist aufgebraucht. Lade es in AI Studio auf, sonst schlagen Anfragen fehl."
-        } else {
-            "Gespeichert ✓ – aber dein Guthaben ist leer. Lade es auf, sonst schlagen Anfragen fehl."
+        AiKeyState.SavedNoCredit -> when (spec.id) {
+            AiProviderId.GEMINI ->
+                "Gespeichert ✓ – aber das Prepay-Guthaben deines Google-Projekts ist aufgebraucht. Lade es in AI Studio auf, sonst schlagen Anfragen fehl."
+            AiProviderId.OPENROUTER ->
+                "Gespeichert ✓ – aber auf deinem OpenRouter-Konto ist noch kein Guthaben. Kauf unter „Credits“ welches – " +
+                    "oder nimm den Tarif „Kostenlos“."
+            else -> "Gespeichert ✓ – aber dein Guthaben ist leer. Lade es auf, sonst schlagen Anfragen fehl."
         }
+        is AiKeyState.SavedWithKeyInfo -> "✓ Der Key funktioniert und ist gespeichert${openRouterKeyNote(state.info)}"
         is AiKeyState.SavedWithFallback -> "✓ Der Key funktioniert und ist gespeichert. ${GeminiModels.fallbackNote(state.from, state.to)}"
         is AiKeyState.SavedQuotaExhausted ->
             "Gespeichert ✓ – aber das Kontingent deines Keys ist gerade aufgebraucht. In ein paar Minuten bzw. morgen geht's weiter."

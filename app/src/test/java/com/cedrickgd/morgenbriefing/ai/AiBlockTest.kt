@@ -202,4 +202,15 @@ class AiBlockTest {
         assertTrue(keyTestRejectsStoredKey(AiKeyCheck.INVALID, server, keyTestSettings(server, custom, KeyExtras(baseUrl = "http://nas.local:11434/v1")), custom))
         assertFalse(keyTestRejectsStoredKey(AiKeyCheck.INVALID, server, keyTestSettings(server, custom, KeyExtras(baseUrl = "http://pi.local:11434/v1")), custom))
     }
+
+    @Test
+    fun `a key test runs for the openrouter tariff the dialog is about to store`() {
+        val id = AiProviderId.OPENROUTER
+        val stored = openRouter(OpenRouterTier.CREDITS)
+        assertEquals(OpenRouterTier.FREE, keyTestSettings(stored, id, KeyExtras(openRouterTier = OpenRouterTier.FREE)).of(id).openRouterTier)
+        assertEquals(OpenRouterTier.CREDITS, keyTestSettings(stored, id, KeyExtras()).of(id).openRouterTier)
+        // Other providers ignore it.
+        val gemini = ai(AiProviderId.GEMINI)
+        assertEquals(gemini, keyTestSettings(gemini, AiProviderId.GEMINI, KeyExtras(openRouterTier = OpenRouterTier.CREDITS)))
+    }
 }

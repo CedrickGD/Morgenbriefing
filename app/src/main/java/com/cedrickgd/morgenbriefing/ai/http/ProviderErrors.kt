@@ -5,6 +5,7 @@ import com.cedrickgd.morgenbriefing.ai.AiError
 import com.cedrickgd.morgenbriefing.ai.AiException
 import com.cedrickgd.morgenbriefing.ai.GeminiProblem
 import com.cedrickgd.morgenbriefing.ai.ProviderAuth
+import com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers
 import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import kotlinx.serialization.json.Json
@@ -50,7 +51,8 @@ internal object ProviderErrors {
     /**
      * Any failure of a request to [provider]. An [AiException] keeps its error, an
      * [AiBlockedException] is no API failure (null), anything unexpected is [AiError.Unknown].
-     * [freeTier]: a free Gemini key (a 429 then means the free quota is used up).
+     * [freeTier]: a key on a free tariff, Gemini or OpenRouter (a 429 then means the free quota
+     * is used up).
      */
     fun map(provider: AiProviderId, failure: Throwable, model: String?, freeTier: Boolean = false): MappedError? = when (failure) {
         is AiException -> MappedError(failure.error)
@@ -130,9 +132,14 @@ internal object ProviderErrors {
             else -> null
         }
         AiProviderId.OPENROUTER -> when {
-            // 402 with Retry-After: an upstream's credit check, temporary (OC §9).
+            // 402 with Retry-After: an upstream's credit check, temporary (OC §9). Without it the
+            // credits are used up — or negative, which blocks the free models too (OC §7.9).
             code == 402 && retryAfter != null -> MappedError(AiError.RateLimited, retryable = true, retryAfter = retryAfter)
             code == 403 -> MappedError(AiError.Unknown("OpenRouter hat die Anfrage abgelehnt (Moderation oder Rechte)."))
+            // "No endpoints found matching your data policy": the account's privacy settings
+            // exclude every provider of a free model (UNVERIFIED wording, seen in the wild).
+            code == 404 && e.message.orEmpty().contains("data policy", ignoreCase = true) -> MappedError(AiError.Unknown(OPENROUTER_DATA_POLICY_TEXT))
+            code == 429 && (freeTier || OpenRouterTiers.looksFree(model.orEmpty())) -> openRouterFreeQuota(e, retryAfter, freeTier)
             else -> null
         }
         AiProviderId.CUSTOM -> when (code) {
@@ -143,6 +150,21 @@ internal object ProviderErrors {
             else -> null
         }
         AiProviderId.ANTHROPIC, AiProviderId.PERPLEXITY, AiProviderId.MISTRAL, AiProviderId.DEEPSEEK -> null
+    }
+
+    /**
+     * A 429 for a free OpenRouter model (OC §7.9: 20 requests a minute, 50 a day without bought
+     * credits, 1,000 with). The minute's limit ("free-models-per-min") and a busy upstream pass
+     * after a short wait; anything else is the day's quota — reported at once, never hammered.
+     * [freeTariff] false: a free model on the credits tariff, where the day has 1,000 requests.
+     */
+    private fun openRouterFreeQuota(e: ApiErrorBody, retryAfter: Duration?, freeTariff: Boolean): MappedError {
+        val text = e.message.orEmpty().lowercase()
+        return when {
+            "per-min" in text || "per min" in text || "upstream" in text -> MappedError(AiError.RateLimited, retryable = true, retryAfter = retryAfter)
+            freeTariff -> MappedError(AiError.QuotaExhausted)
+            else -> MappedError(AiError.Unknown(OpenRouterTiers.QUOTA_EXHAUSTED_WITH_CREDITS))
+        }
     }
 
     /**
@@ -264,6 +286,11 @@ internal object ProviderErrors {
 
     /** The longest wait a free Gemini quota is retried for; anything longer is reported at once. */
     private val FREE_QUOTA_MAX_WAIT = 20.seconds
+
+    /** OpenRouter found no provider for a model that fits the account's privacy settings. */
+    const val OPENROUTER_DATA_POLICY_TEXT =
+        "Für dieses Modell findet OpenRouter keinen Anbieter, der zu deinen Datenschutz-Einstellungen passt. " +
+            "Erlaub unter openrouter.ai/settings/privacy die Gratis-Modelle – oder wähl ein anderes."
 
     const val CLEARTEXT_TEXT =
         "http:// geht nur mit Namen wie nas.fritz.box oder nas.local – nicht mit einer IP-Adresse. Nimm den Namen oder https://."

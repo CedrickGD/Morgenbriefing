@@ -261,7 +261,9 @@ internal fun AiKeyDialog(
                     text = message,
                     style = MaterialTheme.typography.bodyMedium,
                     color = when (state) {
-                        AiKeyState.Saved, is AiKeyState.ServerConnected, is AiKeyState.SavedWithFallback -> StatusPalette.ok()
+                        AiKeyState.Saved, is AiKeyState.ServerConnected, is AiKeyState.SavedWithFallback,
+                        is AiKeyState.SavedWithKeyInfo,
+                        -> StatusPalette.ok()
                         AiKeyState.SavedNoCredit, is AiKeyState.SavedQuotaExhausted -> StatusPalette.attention()
                         AiKeyState.Checking, AiKeyState.SavedUntested -> colors.onSurfaceVariant
                         else -> colors.error

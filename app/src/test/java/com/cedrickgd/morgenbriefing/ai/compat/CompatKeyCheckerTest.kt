@@ -2,6 +2,7 @@ package com.cedrickgd.morgenbriefing.ai.compat
 
 import com.cedrickgd.morgenbriefing.ai.AiKeyCheck
 import com.cedrickgd.morgenbriefing.ai.KeyCheckOutcome
+import com.cedrickgd.morgenbriefing.ai.OpenRouterKeyInfo
 import com.cedrickgd.morgenbriefing.ai.ProviderAuth
 import com.cedrickgd.morgenbriefing.ai.RecordingUsage
 import com.cedrickgd.morgenbriefing.ai.http.AiHttp
@@ -37,8 +38,8 @@ class CompatKeyCheckerTest {
 
     private fun checker(dialect: CompatDialect) = CompatBackend(http, dialect).keys
 
-    private fun auth(provider: AiProviderId, key: String?, path: String) =
-        ProviderAuth(provider, key, baseUrl = server.local(path))
+    private fun auth(provider: AiProviderId, key: String?, path: String, freeTier: Boolean = false) =
+        ProviderAuth(provider, key, baseUrl = server.local(path), freeTier = freeTier)
 
     private val modelList = """{"object":"list","data":[{"id":"llama4:8b","object":"model","owned_by":"library"},{"id":"qwen3:14b","object":"model"},{"id":"llama4:8b"}]}"""
 
@@ -164,5 +165,40 @@ class CompatKeyCheckerTest {
         server.enqueue(CompatSse.httpError(401))
         assertEquals(emptyList<String>(), CompatModels.list(http, server.local("/v1"), CompatSse.SERVER_KEY))
         assertEquals(emptyList<String>(), CompatModels.list(http, "http://localhost:1/v1", null))
+    }
+
+    @Test
+    fun `OpenRouter says whether the account bought credits and how many free requests are left`() = runBlocking<Unit> {
+        val openRouter = checker(CompatDialect.OPENROUTER)
+        fun status(freeTier: Boolean, daily: String) =
+            CompatSse.json(200, """{"data":{"label":"sk-or-v1-au7...890","limit":null,"usage":0,"is_free_tier":$freeTier,"free_model_daily_requests":$daily}}""")
+
+        // The free tariff on an account without credits: works, 37 of 50 left today.
+        server.enqueue(status(true, """{"limit":50,"remaining":37,"used":13}"""))
+        val free = openRouter.check(auth(AiProviderId.OPENROUTER, CompatSse.OPENROUTER_KEY, "/api/v1", freeTier = true), "google/gemma-4-31b-it:free", usage)
+        assertEquals(KeyCheckOutcome(AiKeyCheck.OK, openRouter = OpenRouterKeyInfo(freeTier = true, freeRequestsLeft = 37, freeRequestsPerDay = 50)), free)
+        assertEquals("/api/v1/key", server.takeRequest().requestUrl!!.encodedPath)
+
+        // "Mit Guthaben" on an account that never bought credits: stored, with the no-credit note.
+        server.enqueue(status(true, """{"limit":50,"remaining":50,"used":0}"""))
+        assertEquals(AiKeyCheck.OK_NO_CREDIT, openRouter.check(auth(AiProviderId.OPENROUTER, CompatSse.OPENROUTER_KEY, "/api/v1"), "m", usage).check)
+        server.enqueue(status(false, """{"limit":1000,"used":20}"""))
+        val credits = openRouter.check(auth(AiProviderId.OPENROUTER, CompatSse.OPENROUTER_KEY, "/api/v1"), "m", usage)
+        assertEquals(AiKeyCheck.OK, credits.check)
+        // "remaining" missing: limit minus used.
+        assertEquals(OpenRouterKeyInfo(freeTier = false, freeRequestsLeft = 980, freeRequestsPerDay = 1000), credits.openRouter)
+        assertTrue(usage.records.isEmpty())
+    }
+
+    @Test
+    fun `the OpenRouter key status is read leniently`() {
+        assertEquals(OpenRouterKeyInfo(freeTier = false), OpenRouterKeyStatus.parse("""{"data":{"label":"x","usage":0.42,"is_free_tier":false}}"""))
+        assertEquals(OpenRouterKeyInfo(), OpenRouterKeyStatus.parse("""{"data":{}}"""))
+        assertEquals(
+            OpenRouterKeyInfo(freeTier = true, freeRequestsLeft = 0, freeRequestsPerDay = 50),
+            OpenRouterKeyStatus.parse("""{"data":{"is_free_tier":true,"free_model_daily_requests":{"limit":50,"remaining":-3,"used":53}}}"""),
+        )
+        assertNull(OpenRouterKeyStatus.parse("""{"error":{"code":401}}"""))
+        assertNull(OpenRouterKeyStatus.parse("not json"))
     }
 }

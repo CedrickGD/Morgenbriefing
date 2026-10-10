@@ -645,4 +645,36 @@ class AiLogicTest {
     fun `unsupported provider hint`() {
         assertEquals("Claude braucht Android 8 – wähl einen anderen Anbieter.", unsupportedProviderHint(claude))
     }
+
+    @Test
+    fun `an openrouter key test tells about credits and today's free requests`() {
+        val openRouter = ProviderCatalog.OPENROUTER
+        val free = com.cedrickgd.morgenbriefing.ai.OpenRouterKeyInfo(freeTier = true, freeRequestsLeft = 37, freeRequestsPerDay = 50)
+        val state = savedKeyState(KeyCheckOutcome(AiKeyCheck.OK, openRouter = free))
+        assertEquals(AiKeyState.SavedWithKeyInfo(free), state)
+        assertTrue(state.isSaved)
+        assertEquals(
+            "✓ Der Key funktioniert und ist gespeichert – Gratis-Konto ohne gekauftes Guthaben. Heute noch 37 von 50 Gratis-Anfragen.",
+            aiKeyMessage(state, openRouter),
+        )
+        val credits = com.cedrickgd.morgenbriefing.ai.OpenRouterKeyInfo(freeTier = false, freeRequestsLeft = 1000, freeRequestsPerDay = 1000)
+        assertEquals(
+            "✓ Der Key funktioniert und ist gespeichert – Konto mit Guthaben. Heute noch 1.000 von 1.000 Gratis-Anfragen.",
+            aiKeyMessage(AiKeyState.SavedWithKeyInfo(credits), openRouter),
+        )
+        assertEquals(
+            "✓ Der Key funktioniert und ist gespeichert – Gratis-Konto ohne gekauftes Guthaben. Heute keine Gratis-Anfragen mehr (50 am Tag) – morgen geht's weiter.",
+            aiKeyMessage(AiKeyState.SavedWithKeyInfo(free.copy(freeRequestsLeft = 0)), openRouter),
+        )
+        assertEquals(
+            "✓ Der Key funktioniert und ist gespeichert.",
+            aiKeyMessage(AiKeyState.SavedWithKeyInfo(com.cedrickgd.morgenbriefing.ai.OpenRouterKeyInfo()), openRouter),
+        )
+        // "Mit Guthaben" without any credits bought.
+        assertEquals(AiKeyState.SavedNoCredit, savedKeyState(KeyCheckOutcome(AiKeyCheck.OK_NO_CREDIT, openRouter = free)))
+        assertEquals(
+            "Gespeichert ✓ – aber auf deinem OpenRouter-Konto ist noch kein Guthaben. Kauf unter „Credits“ welches – oder nimm den Tarif „Kostenlos“.",
+            aiKeyMessage(AiKeyState.SavedNoCredit, openRouter),
+        )
+    }
 }

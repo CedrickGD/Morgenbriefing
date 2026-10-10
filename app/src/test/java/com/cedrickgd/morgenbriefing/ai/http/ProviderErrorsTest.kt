@@ -263,4 +263,32 @@ class ProviderErrorsTest {
         assertNull(ApiErrorBody.parse("<html>Bad Gateway</html>").message)
         assertNull(ApiErrorBody.parse("").code)
     }
+
+    @Test
+    fun `a used-up free OpenRouter quota waits for tomorrow, the minute's limit for a minute`() {
+        val day = """{"error":{"code":429,"message":"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day","metadata":{"headers":{"X-RateLimit-Limit":"50","X-RateLimit-Remaining":"0"}}}}"""
+        val minute = """{"error":{"code":429,"message":"Rate limit exceeded: free-models-per-min."}}"""
+        val upstream = """{"error":{"code":429,"message":"google/gemma-4-31b-it:free is temporarily rate-limited upstream. Please retry shortly."}}"""
+        // The free tariff: the day's quota, never retried.
+        assertEquals(MappedError(AiError.QuotaExhausted), http(OPENROUTER, 429, day, freeTier = true))
+        assertEquals(MappedError(AiError.QuotaExhausted), http(OPENROUTER, 429, "", freeTier = true))
+        assertEquals(MappedError(AiError.RateLimited, retryable = true, retryAfter = 5.seconds), http(OPENROUTER, 429, minute, 5.seconds, freeTier = true))
+        assertEquals(MappedError(AiError.RateLimited, retryable = true), http(OPENROUTER, 429, upstream, freeTier = true))
+        // A free model on the credits tariff: 1,000 a day.
+        val credits = ProviderErrors.http(OPENROUTER, 429, day, null, model = "google/gemma-4-31b-it:free")
+        assertEquals(AiError.Unknown(com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers.QUOTA_EXHAUSTED_WITH_CREDITS), credits.error)
+        assertFalse(credits.retryable)
+        // A paid model on credits is busy as before.
+        assertEquals(MappedError(AiError.RateLimited, retryable = true), http(OPENROUTER, 429, day))
+        // The same inside a 200 stream.
+        assertEquals(AiError.QuotaExhausted, ProviderErrors.streamError(OPENROUTER, Json.parseToJsonElement(day).jsonObject, "google/gemma-4-31b-it:free", freeTier = true))
+        // A negative balance blocks the free models too: the credits text (no Retry-After).
+        assertEquals(MappedError(AiError.NoCredit), http(OPENROUTER, 402, """{"error":{"code":402,"message":"Insufficient credits"}}""", freeTier = true))
+        // No provider fits the account's privacy settings.
+        assertEquals(
+            AiError.Unknown(ProviderErrors.OPENROUTER_DATA_POLICY_TEXT),
+            http(OPENROUTER, 404, """{"error":{"code":404,"message":"No endpoints found matching your data policy (Free model training)."}}""").error,
+        )
+        assertEquals(MappedError(AiError.ModelUnavailable("m-1")), http(OPENROUTER, 404, """{"error":{"code":404,"message":"No endpoints found for m-1."}}"""))
+    }
 }
