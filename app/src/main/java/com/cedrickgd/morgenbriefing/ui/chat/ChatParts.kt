@@ -553,7 +553,7 @@ internal fun ErrorCard(
             ErrorDetails(detail, modifier = Modifier.padding(start = 32.dp, end = 8.dp), color = textColor)
         }
         // Wraps on narrow screens: a link, OpenRouter, "Key ändern" and "Nochmal" may all be there.
-        val actions = errorActions(error, canRetry)
+        val actions = errorActions(error, canRetry, spec.id)
         FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             actions.forEach { action ->
                 when (action) {

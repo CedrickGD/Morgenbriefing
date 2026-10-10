@@ -105,5 +105,23 @@ class ChatTextsTest {
         assertEquals(emptyList<ErrorAction>(), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.Refusal("cyber"), canRetry = true))
         // A retry that may simply work keeps its own words.
         assertEquals(listOf(ErrorAction.RETRY), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.QuotaExhausted, canRetry = true))
+        assertEquals(
+            listOf(ErrorAction.RETRY),
+            errorActions(com.cedrickgd.morgenbriefing.ai.AiError.QuotaExhausted, canRetry = true, provider = AiProviderId.GEMINI),
+        )
+    }
+
+    @Test
+    fun `openrouter's used-up day is sent again once something changed, not retried`() {
+        val quota = com.cedrickgd.morgenbriefing.ai.AiError.QuotaExhausted
+        assertEquals(listOf(ErrorAction.RESEND), errorActions(quota, canRetry = true, provider = AiProviderId.OPENROUTER))
+        val credits = com.cedrickgd.morgenbriefing.ai.AiError.Unknown(com.cedrickgd.morgenbriefing.ai.provider.OpenRouterTiers.QUOTA_EXHAUSTED_WITH_CREDITS)
+        assertEquals(listOf(ErrorAction.RESEND), errorActions(credits, canRetry = true, provider = AiProviderId.OPENROUTER))
+        // A busy moment still offers a retry.
+        assertEquals(
+            listOf(ErrorAction.RETRY),
+            errorActions(com.cedrickgd.morgenbriefing.ai.AiError.RateLimited, canRetry = true, provider = AiProviderId.OPENROUTER),
+        )
+        assertEquals(listOf(ErrorAction.RETRY), errorActions(com.cedrickgd.morgenbriefing.ai.AiError.Unknown("x"), canRetry = true))
     }
 }

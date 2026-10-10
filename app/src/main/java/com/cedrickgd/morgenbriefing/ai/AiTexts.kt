@@ -145,10 +145,16 @@ object AiTexts {
      */
     fun offersOpenRouter(error: AiError): Boolean = error == AiError.GeminiAccess(GeminiProblem.AUTH_KEY_REJECTED)
 
-    /** True when trying the same request again (by hand) can help. */
-    fun isRetryable(error: AiError): Boolean = when (error) {
-        AiError.RateLimited, AiError.Overloaded, AiError.Network, AiError.ServerUnreachable,
-        AiError.QuotaExhausted, is AiError.Unknown -> true
+    /**
+     * True when trying the same request again (by hand) can help. [provider] wrote the answer:
+     * OpenRouter's used-up free quota is the day's ([AiError.QuotaExhausted] there, or its text on
+     * the credits tariff) and comes back only tomorrow — or after a switch to credits or another
+     * provider, which "Nochmal senden" covers. Gemini's free quota is often the minute's.
+     */
+    fun isRetryable(error: AiError, provider: AiProviderId? = null): Boolean = when (error) {
+        AiError.RateLimited, AiError.Overloaded, AiError.Network, AiError.ServerUnreachable -> true
+        AiError.QuotaExhausted -> provider != AiProviderId.OPENROUTER
+        is AiError.Unknown -> error.message != OpenRouterTiers.QUOTA_EXHAUSTED_WITH_CREDITS
         AiError.InvalidKey, AiError.NoCredit, AiError.WorkspaceRequired, AiError.WorkspaceNotFound,
         is AiError.ModelUnavailable, is AiError.Refusal, AiError.Truncated, is AiError.GeminiAccess -> false
     }

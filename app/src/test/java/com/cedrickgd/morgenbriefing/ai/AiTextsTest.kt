@@ -115,7 +115,8 @@ class AiTextsTest {
     fun `openrouter's free quota and credits are said in their own words`() {
         val openRouter = com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog.OPENROUTER
         assertEquals(
-            "Gratis-Kontingent von OpenRouter für heute aufgebraucht (50 Anfragen/Tag) – morgen geht's weiter.",
+            // No fixed number: the day has 50 requests, or 1,000 once credits were bought.
+            "Gratis-Kontingent von OpenRouter für heute aufgebraucht – morgen geht's weiter.",
             AiTexts.error(AiError.QuotaExhausted, openRouter),
         )
         assertEquals(

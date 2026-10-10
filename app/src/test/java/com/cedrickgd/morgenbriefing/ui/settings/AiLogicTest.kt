@@ -721,7 +721,10 @@ class AiLogicTest {
             com.cedrickgd.morgenbriefing.ai.compat.OpenRouterFree.FALLBACK,
             com.cedrickgd.morgenbriefing.ai.compat.FreeModelSource.LIVE,
         )
-        assertEquals("5 Gratis-Modelle von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag.", freeModelsNote(list, loading = false))
+        assertEquals(
+            "5 Gratis-Modelle von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag, ab 10 $ gekauftem Guthaben 1.000.",
+            freeModelsNote(list, loading = false),
+        )
         assertEquals(
             "Offline – eine kleine Auswahl. Die ganze Liste lädt, sobald du online bist.",
             freeModelsNote(list.copy(source = com.cedrickgd.morgenbriefing.ai.compat.FreeModelSource.FALLBACK), loading = false),

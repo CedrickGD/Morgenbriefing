@@ -81,16 +81,17 @@ internal enum class ErrorAction(val label: String?) {
 }
 
 /**
- * The buttons under a failed answer with [error]: the page that fixes it, OpenRouter as the way
- * out of a refused Gemini key, "Key ändern" where a key is the cause, and — only under the last
- * answer while the chat can send ([canRetry]) — "Nochmal versuchen" where a retry can help, else
- * "Nochmal senden" for once the cause is fixed. A refusal is not sent again unchanged.
+ * The buttons under a failed answer with [error] from [provider]: the page that fixes it,
+ * OpenRouter as the way out of a refused Gemini key, "Key ändern" where a key is the cause, and —
+ * only under the last answer while the chat can send ([canRetry]) — "Nochmal versuchen" where a
+ * retry can help ([AiTexts.isRetryable]; not OpenRouter's used-up day), else "Nochmal senden" for
+ * once the cause is fixed. A refusal is not sent again unchanged.
  */
-internal fun errorActions(error: AiError, canRetry: Boolean): List<ErrorAction> = buildList {
+internal fun errorActions(error: AiError, canRetry: Boolean, provider: AiProviderId? = null): List<ErrorAction> = buildList {
     if (AiTexts.errorLink(error) != null) add(ErrorAction.OPEN_LINK)
     if (AiTexts.offersOpenRouter(error)) add(ErrorAction.SET_UP_OPENROUTER)
     if (AiTexts.needsKeyChange(error)) add(ErrorAction.CHANGE_KEY)
-    if (canRetry && error !is AiError.Refusal) add(if (AiTexts.isRetryable(error)) ErrorAction.RETRY else ErrorAction.RESEND)
+    if (canRetry && error !is AiError.Refusal) add(if (AiTexts.isRetryable(error, provider)) ErrorAction.RETRY else ErrorAction.RESEND)
 }
 
 /** Gemini's grounding sources are Google redirects on this host; their title is the real domain (GE §6.2). */

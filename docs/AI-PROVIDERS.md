@@ -1473,8 +1473,9 @@ try with every question.
 
 Settings → KI: „Tarif“ under the key row (like Gemini); on FREE the model picker shows the first five
 free models, the selected one when it is further down, „Alle N Gratis-Modelle zeigen“, and a quiet
-line („19 Gratis-Modelle von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag.“ / offline
-note); no „Eigenes Modell …“. The list loads when OpenRouter on FREE is the chat provider
+line („15 Gratis-Modelle von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag, ab 10 $
+gekauftem Guthaben 1.000.“ — both limits, since the tariff does not tell which account it is /
+offline note); no „Eigenes Modell …“. The list loads when OpenRouter on FREE is the chat provider
 (`SettingsViewModel.loadFreeModels`) and again whenever the app comes back to the foreground on
 Settings: the day's list costs no download, the built-in list shown offline (or a list older than a
 day) is replaced as soon as OpenRouter answers.
@@ -1498,9 +1499,9 @@ Tarif „Kostenlos“.“
 
 | Answer | With | AiError / text |
 |---|---|---|
-| 429 that names the day's quota: „free-models-per-day“ in the message (or in `metadata.raw`), or `X-RateLimit-Remaining: 0` with a daily `X-RateLimit-Limit` (50 or 1,000) in the body's `metadata.headers` or the response headers (`HttpFailure.rateLimit`) | FREE | `QuotaExhausted`: „Gratis-Kontingent von OpenRouter für heute aufgebraucht (50 Anfragen/Tag) – morgen geht's weiter.“ — never retried |
+| 429 that names the day's quota: „free-models-per-day“ in the message (or in `metadata.raw`), or `X-RateLimit-Remaining: 0` with a daily `X-RateLimit-Limit` (50 or 1,000) in the body's `metadata.headers` or the response headers (`HttpFailure.rateLimit`) | FREE | `QuotaExhausted`: „Gratis-Kontingent von OpenRouter für heute aufgebraucht – morgen geht's weiter.“ (no number: 50, or 1,000 with bought credits also on this tariff) — never retried; the chat card offers „Nochmal senden“ (after a switch to credits or another provider), not „Nochmal versuchen“ (`AiTexts.isRetryable(error, provider)`) |
 | any other 429: „free-models-per-min“, and OpenRouter's usual „Provider returned error“ whose `metadata.raw` (string or object, `ApiErrorBody.upstream`) says „… is temporarily rate-limited upstream. Please retry shortly …“, or a body without hints | a free model | `RateLimited`, retried before the first event (Retry-After) |
-| 429 that names the day's quota on a `:free` model | CREDITS | „… (1.000 Anfragen/Tag) – morgen geht's weiter, oder wähl ein Modell mit Preis.“ |
+| 429 that names the day's quota on a `:free` model | CREDITS | „… – morgen geht's weiter, oder wähl ein Modell mit Preis.“, with „Nochmal senden“ |
 | 402 without Retry-After | any | `NoCredit`: „Dein Guthaben bei OpenRouter ist aufgebraucht oder im Minus – dann gehen auch die Gratis-Modelle nicht. Lade es unter „Credits“ auf, dann geht es weiter.“ |
 | 404 „No endpoints found matching your data policy“ | any | „Für dieses Modell findet OpenRouter keinen Anbieter, der zu deinen Datenschutz-Einstellungen passt. Erlaub unter openrouter.ai/settings/privacy die Gratis-Modelle – oder wähl ein anderes.“ (**UNVERIFIED** wording, seen in the wild) |
 

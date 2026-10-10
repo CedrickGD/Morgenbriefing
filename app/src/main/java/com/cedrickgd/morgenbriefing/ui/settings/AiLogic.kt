@@ -630,14 +630,22 @@ internal fun visibleFreeModels(choices: List<ModelChoice>, expanded: Boolean): L
     return first + selected
 }
 
-/** The quiet line under the free models: loading, offline, or how many there are today. */
+/**
+ * The quiet line under the free models: loading, offline, or how many there are today — and the
+ * daily limit, which depends on the account (50, or 1,000 once 10 $ of credits were bought).
+ */
 internal fun freeModelsNote(list: FreeModelList?, loading: Boolean): String? = when {
     list == null -> if (loading) "Lade die Gratis-Modelle von OpenRouter …" else null
     list.source == FreeModelSource.FALLBACK ->
         "Offline – eine kleine Auswahl. Die ganze Liste lädt, sobald du online bist."
-    list.models.size == 1 -> "1 Gratis-Modell von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag."
-    else -> "${list.models.size} Gratis-Modelle von OpenRouter, täglich aktualisiert. Bis 50 Anfragen am Tag."
+    list.models.size == 1 -> "1 Gratis-Modell von OpenRouter, täglich aktualisiert. $FREE_REQUESTS_PER_DAY"
+    else -> "${list.models.size} Gratis-Modelle von OpenRouter, täglich aktualisiert. $FREE_REQUESTS_PER_DAY"
 }
+
+/** OpenRouter's daily free requests for both kinds of account (OC §7.9). */
+private val FREE_REQUESTS_PER_DAY =
+    "Bis ${OpenRouterTiers.count(OpenRouterTiers.FREE_PER_DAY)} Anfragen am Tag, ab 10 $ gekauftem Guthaben " +
+        "${OpenRouterTiers.count(OpenRouterTiers.FREE_PER_DAY_WITH_CREDITS)}."
 
 /** The stored model of [id] when it is none of the curated ones ("Eigenes Modell …"), else null. */
 internal fun customModelOf(ai: AiSettings, id: AiProviderId): String? {

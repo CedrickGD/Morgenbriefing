@@ -413,13 +413,15 @@ object OpenRouterTiers {
     /** Why Live does not run on the free tariff. */
     const val LIVE_UNAVAILABLE = "Live braucht Websuche – mit dem kostenlosen OpenRouter-Tarif nicht verfügbar."
 
-    /** A free request after the daily free quota is used up (HTTP 429 on a free model). */
-    const val QUOTA_EXHAUSTED = "Gratis-Kontingent von OpenRouter für heute aufgebraucht (50 Anfragen/Tag) – morgen geht's weiter."
+    /**
+     * A free request after the daily free quota is used up (HTTP 429 on a free model). Without a
+     * number: the day has 50 requests, or 1,000 once 10 $ of credits were bought — also on this tariff.
+     */
+    const val QUOTA_EXHAUSTED = "Gratis-Kontingent von OpenRouter für heute aufgebraucht – morgen geht's weiter."
 
-    /** The same with credits bought: OpenRouter allows 1,000 free requests a day then. */
+    /** The same for a free model on the credits tariff, where models with a price still run. */
     const val QUOTA_EXHAUSTED_WITH_CREDITS =
-        "Gratis-Kontingent von OpenRouter für heute aufgebraucht (1.000 Anfragen/Tag) – morgen geht's weiter, " +
-            "oder wähl ein Modell mit Preis."
+        "Gratis-Kontingent von OpenRouter für heute aufgebraucht – morgen geht's weiter, oder wähl ein Modell mit Preis."
 
     /** 402: credits used up — with a negative balance OpenRouter blocks the free models too. */
     const val NO_CREDIT =
