@@ -1,0 +1,1555 @@
+{
+  "schema": 2,
+  "date": "2026-10-15",
+  "generatedAt": "2026-10-15T04:24:00+02:00",
+  "teaser": "Starlink-Drosselung trifft Ukraines Drohnen, Merz gibt sich in der Regierungserklärung versöhnlich, der Zusatzbeitrag bleibt 2027 bei 2,9 Prozent und der BVB verliert in Norwegen.",
+  "sections": [
+    {
+      "id": "ki",
+      "title": "KI & Tech",
+      "emoji": "🤖",
+      "items": [
+        {
+          "id": "ki-openai-ingenieur-abhoergeraet",
+          "tier": "top",
+          "headline": "OpenAI-Ingenieur soll Abhörgerät im Chefetagen-Konferenzraum versteckt haben",
+          "summary": "Ein Ingenieur von OpenAI ist festgenommen worden, weil er in San Francisco ein Aufnahmegerät hinter einem Fernseher im Konferenzraum der Geschäftsleitung installiert haben soll. Zugriff auf Modelle oder Kundendaten gab es laut OpenAI nicht.",
+          "body": "Die US-Justiz wirft einem Ingenieur des KI-Unternehmens OpenAI vor, im Konferenzraum der Führungsetage in San Francisco heimlich ein Audioaufnahmegerät installiert zu haben. Der 35-jährige saudische Staatsbürger Abdulrahman Alfozan wurde am 9. Oktober festgenommen. Ihm wird das Abfangen mündlicher Kommunikation mit einem Gerät zur Last gelegt. Bei einer Verurteilung drohen bis zu fünf Jahre Haft und 250.000 Dollar Geldstrafe. Es gilt die Unschuldsvermutung, die Vorwürfe stammen aus der Anklageschrift.\n\n## Was die Anklage schildert\n\nDas Gerät steckte laut The Decoder in Toilettenpapier gewickelt in einem USB-Anschluss auf der Rückseite eines Fernsehers. Mitarbeiter entdeckten es nach Angaben von The Hacker News um den 30. September. Alfozan arbeitet seit Juli 2025 bei OpenAI, hatte aber keine Berechtigung, an Besprechungen in diesem Raum teilzunehmen. Überwachungskameras sollen ihn an mehreren Tagen in der Nähe gezeigt haben. Am 5. Oktober soll er hinter den Fernseher geschaut und in einem anderen Raum eine Tasche mit einem zweiten Gerät, seiner Brieftasche und seinem Ausweis zurückgelassen haben.\n\nBesonders auffällig ist die Vorbereitung: Laut Anklage sammelte er mit einem Produktivitätswerkzeug Gebäudeadressen, Raumkalender und Aufenthaltsorte von Führungskräften. Zwischen dem 24. und 30. September wurden über ein Chatbot-Konto, das seiner Ehefrau zugeordnet wird, zahlreiche Anfragen zum Bau, zur Verschlüsselung und zum Fernzugriff auf ein solches Gerät gestellt. Welcher Chatbot das war, geht aus den Berichten nicht hervor.\n\n## Reaktion von OpenAI\n\nOpenAI erklärte, es gebe keine Hinweise darauf, dass auf Modellgewichte, Quellcode oder Kundendaten zugegriffen wurde. Das Gerät habe fortgeschrittene Verschlüsselung genutzt und sei darauf ausgelegt gewesen, Überwachung zu umgehen. Der Mitarbeiter wurde entlassen, der Fall an das FBI übergeben. FBI-Direktor Kash Patel nannte den Schutz amerikanischer KI-Innovationen laut The Decoder eine der höchsten Prioritäten der Spionageabwehr.\n\n## Einordnung\n\nDie Hintergründe, etwa ein mögliches Motiv oder Auftraggeber, sind offen. The Decoder verweist auf das Projekt Stargate UAE, das OpenAI und G42 im Mai 2025 ankündigten und das durch ein Abkommen mit der US-Regierung ermöglicht wurde, bis zu 500.000 Hochleistungs-KI-Chips pro Jahr in die Emirate zu liefern. Einen Zusammenhang belegen die Berichte nicht. Der Fall zeigt, wie begehrt Interna führender KI-Firmen sind und wie wichtig physische Sicherheit neben der digitalen ist. Für deutsche Unternehmen, die KI-Dienste von OpenAI nutzen, gibt es nach derzeitigem Stand keine Hinweise auf betroffene Daten.",
+          "source": "The Decoder",
+          "url": "https://the-decoder.de/mutmasslicher-interner-openai-spion-vibe-codete-abhoergeraet-im-chatbot-konto-seiner-ehefrau/",
+          "sources": [
+            {
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/mutmasslicher-interner-openai-spion-vibe-codete-abhoergeraet-im-chatbot-konto-seiner-ehefrau/"
+            },
+            {
+              "name": "The Hacker News",
+              "url": "https://thehackernews.com/2026/10/openai-employee-arrested-for-allegedly.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/1515_Third_Street.jpg/1280px-1515_Third_Street.jpg",
+            "credit": "Coolcaesar",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:1515_Third_Street.jpg",
+            "alt": "Bürogebäude in San Francisco, früher Sitz von OpenAI"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "ki-qualcomm-arm-geschworene",
+          "tier": "more",
+          "headline": "Qualcomm gegen ARM: Geschworene entscheiden für beide Seiten",
+          "summary": "Im zweiten Prozess zwischen den Chipfirmen in Delaware haben die Geschworenen teils für Qualcomm, teils für ARM votiert. Offen bleibt, ob Qualcomm Lizenzzahlungen in Milliardenhöhe erspart bleiben.",
+          "body": "Im Rechtsstreit zwischen dem Chipentwickler Qualcomm und dem Architekturlieferanten ARM gibt es ein gemischtes Ergebnis. Die Geschworenen des US-Bundesbezirksgerichts in Delaware entschieden am Dienstag in 32 Einzelfragen, wie heise online berichtet. Eine Begründung ist dabei nicht vorgesehen.\n\nFür Qualcomm fiel aus, dass ARM seine Pflichten aus dem Architecture License Agreement verletzt und Qualcomms Geschäfte mit Meta Platforms rechtswidrig behindert hat. Der zugesprochene Schadenersatz ist symbolisch: je ein US-Dollar für zwei Klagepunkte, zusammen also zwei Dollar. ARM setzte sich dagegen mit dem Vorwurf durch, Qualcomm habe keine Pflicht zu fairen Angeboten für Technology License Agreements verletzt. Dabei ging es um mehrere Cortex-Kerne wie A520, A720, M55 und X4 sowie einige CoreLink-Komponenten.\n\nNoch offen sind zwei Punkte. Die Richterin entscheidet ohne Geschworene über die Frage, ob ARM nach Klageerhebung in Verhandlungen unfair vorging. Außerdem könnte eine Vertragsstrafe folgen: Qualcomm könnte für die Jahre 2023 bis 2027 von Lizenzzahlungen befreit werden, was laut heise Milliarden Dollar ausmachen würde. Das Lizenzabkommen läuft bis 2033.\n\nFür Europa ist der Streit mehr als eine Konzernfehde, denn nahezu alle Smartphone-Chips und viele Server- und Autochips beruhen auf ARM-Architekturen. Wie ARM Lizenzen gestaltet und wie belastbar Verträge sind, betrifft damit auch Hersteller und Zulieferer in Deutschland, darunter die Chipbranche rund um Dresden.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/Qualcomm-v-ARM-Geschworene-entscheiden-fuer-beide-11488749.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/Qualcomm-v-ARM-Geschworene-entscheiden-fuer-beide-11488749.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T21:57:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Qualcomm_headquarters.jpg/1280px-Qualcomm_headquarters.jpg",
+            "credit": "Coolcaesar at en.wikipedia",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Qualcomm_headquarters.jpg",
+            "alt": "Qualcomm-Firmenzentrale in San Diego"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "ki-microsoft-patchday-rekord",
+          "tier": "more",
+          "headline": "Microsoft schließt Rekordzahl von 1.413 Sicherheitslücken",
+          "summary": "Der Oktober-Patchday bringt laut The Hacker News so viele Korrekturen wie nie zuvor. Eine Lücke in der Windows-Shell wird bereits aktiv ausgenutzt.",
+          "body": "Microsoft hat am Dienstag, dem 13. Oktober, Updates für 1.413 Schwachstellen veröffentlicht, ein neuer Rekord. Im Vormonat waren es knapp 1.000. Nach Angaben von The Hacker News entfallen 1.102 Lücken auf Windows, 134 auf Office, 61 auf Entwicklerwerkzeuge, 36 auf SharePoint Server und 22 auf SQL Server. Über 70 stuft Microsoft als kritisch ein. Mehr als 670 sind Rechteausweitungen, über 300 ermöglichen Codeausführung aus der Ferne.\n\nAm dringlichsten ist CVE-2026-96951 (CVSS 8,8), eine Command Injection in der Windows-Shell, die eine Sicherheitsfunktion umgeht. Laut Microsoft wird sie bereits angegriffen. Die US-Behörde CISA nahm sie in ihren Katalog ausgenutzter Lücken auf und setzte Bundesbehörden eine Frist bis zum 16. Oktober. Gemeldet wurde sie unter anderem von Fujitsu und von Anthropic. Eine weitere, öffentlich bekannte Lücke im .NET Framework (CVSS 8,8) kann die Anwendungskontrolle WDAC umgehen.\n\nSatnam Narang von Tenable verweist darauf, dass Microsoft allein in diesem Jahr schon mehr als 4.000 Schwachstellen behoben hat. Neu ist ein Konzept namens Risk Cohorts, mit dem Microsoft ähnlich zu bewertende Lücken gruppiert, um das Einspielen zu priorisieren.\n\nFür Administratoren in Sachsen und ganz Deutschland heißt das: Die schiere Menge macht Priorisierung zur Pflicht. Zuerst sollten die aktiv ausgenutzte Shell-Lücke und kritische Fehler auf exponierten Systemen geschlossen werden, danach der Rest.",
+          "source": "The Hacker News",
+          "url": "https://thehackernews.com/2026/10/microsoft-patches-record-1413-flaws.html",
+          "sources": [
+            {
+              "name": "The Hacker News",
+              "url": "https://thehackernews.com/2026/10/microsoft-patches-record-1413-flaws.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Backlit_keyboard.jpg/1280px-Backlit_keyboard.jpg",
+            "credit": "Colin",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Backlit_keyboard.jpg",
+            "alt": "Hände auf einer beleuchteten Laptop-Tastatur im Dunkeln"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "ki-nvidia-zwei-milliarden-europa",
+          "tier": "more",
+          "headline": "Nvidia kündigt zwei Milliarden Dollar für Europa an",
+          "summary": "Konzernchef Jensen Huang hat in Paris neue Beteiligungen und eine Forschungsspende in Großbritannien angekündigt. Die Details sollen laut Bloomberg nächste Woche folgen.",
+          "body": "Nvidia will in Europa rund zwei Milliarden Dollar investieren. Das kündigte Konzernchef Jensen Huang laut The Decoder auf seiner Europareise an, die ihn nach Paris, London und Berlin führt. Die Einzelheiten sollen Bloomberg zufolge in der kommenden Woche folgen. Im Vorjahr hatte der Chipkonzern nach diesen Angaben etwa acht Milliarden Dollar auf dem Kontinent investiert.\n\nIn Paris nannte Huang neue Beteiligungen an den französischen Start-ups Doctolib, Genesis AI, Pigment und Entalpic. Zugleich warb er für offene Modelle mit frei verfügbaren Gewichten als Weg, den Rückstand Europas in der KI aufzuholen, und wies Forderungen nach einer Bremse der KI-Entwicklung zurück.\n\nIn Großbritannien spendet Nvidia über fünf Jahre Rechenleistung im Wert von 250 Millionen Dollar für Forschung zur Sicherheit von KI-Agenten. Profitieren sollen das BOLD-Labor in Oxford, das SOFAIR-Labor am University College London und das Imperial College London. Der britische KI-Minister Kanishka Narayan lobte die Spende als Vertrauensbeweis.\n\nFür Deutschland ist vor allem der Berlin-Termin von Interesse: Ob und welche Investitionen hier folgen, ist bislang nicht bekannt. Europas Chip- und KI-Standorte, auch in Dresden, hängen stark von Nvidias Hardware ab, weshalb solche Zusagen die Verhandlungsposition der Region berühren.",
+          "source": "The Decoder",
+          "url": "https://the-decoder.de/nvidia-investiert-zwei-milliarden-in-europa-und-draengt-den-kontinent-zur-ki-aufholjagd/",
+          "sources": [
+            {
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/nvidia-investiert-zwei-milliarden-in-europa-und-draengt-den-kontinent-zur-ki-aufholjagd/"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Jensen_huang_stanford_2026-04-30_023.jpg/1280px-Jensen_huang_stanford_2026-04-30_023.jpg",
+            "credit": "Anderseidesvik",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jensen_huang_stanford_2026-04-30_023.jpg",
+            "alt": "Nvidia-Chef Jensen Huang bei einem Vortrag an der Stanford University"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "ki-eu-gericht-stripchat-dsa",
+          "tier": "more",
+          "headline": "EU-Gericht bestätigt DSA-Einstufung von Stripchat als Großplattform",
+          "summary": "Das Gericht der EU hat die Klage des Betreibers gegen die Einstufung als sehr große Online-Plattform abgewiesen. Strittig war eine Abzugsmethode bei den Nutzerzahlen.",
+          "body": "Das Gericht der EU hat am Mittwoch die Klage der Stripchat-Betreiberfirma Technius gegen die Einstufung als sehr große Online-Plattform nach dem Digital Services Act abgewiesen (Rechtssache T-134/24), wie heise online berichtet. Die EU-Kommission hatte Stripchat im Dezember 2023 entsprechend benannt.\n\nDer Streit drehte sich um die Nutzerzahlen. Ab 45 Millionen monatlichen Nutzern in der EU gelten die strengeren Regeln. Technius meldete im Februar 2023 rund 31,8 Millionen, nachdem das Unternehmen von den Similarweb-Daten eine geschätzte Absprungrate von etwa 49 Prozent abgezogen hatte. Die bereinigten Similarweb-Daten wiesen dagegen über 62 Millionen eindeutige monatliche Besucher aus. Das Gericht befand, Similarweb filtere unmittelbare Absprünge bereits heraus, der zusätzliche Abzug sei daher eine doppelte Bereinigung gewesen. Maßgeblich sei zudem die Lage zum Zeitpunkt des Beschlusses, nicht spätere Korrekturen des Datenanbieters aus dem Jahr 2024.\n\nDie Kommission hob den Status 2025 wieder auf. Stripchat führte die Klage dennoch fort, um die Rechtswidrigkeit für den Zeitraum feststellen zu lassen. Zusätzlich droht dem Anbieter wegen mangelhafter Altersprüfung ein Bußgeld.\n\nDas Urteil ist ein Signal für die Durchsetzung des DSA: Plattformen können sich nicht mit eigenen Rechenmodellen unter die Schwelle rechnen. Das betrifft auch Nutzer in Deutschland, denn die Pflichten für Großplattformen zielen auf Jugendschutz, Transparenz und den Umgang mit illegalen Inhalten.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/DSA-EU-Gericht-weist-Klage-von-Stripchat-gegen-Einstufung-als-Grossplattform-ab-11488595.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/DSA-EU-Gericht-weist-Klage-von-Stripchat-gegen-Einstufung-als-Grossplattform-ab-11488595.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T18:06:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Wikimedia_Foundation_Servers-8055_15.jpg/1280px-Wikimedia_Foundation_Servers-8055_15.jpg",
+            "credit": "Victorgrigas",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wikimedia_Foundation_Servers-8055_15.jpg",
+            "alt": "Server-Einschübe in einem Rechenzentrum, Nahaufnahme"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "wirtschaft",
+      "title": "Wirtschaft & Märkte",
+      "emoji": "📈",
+      "items": [
+        {
+          "id": "wirtschaft-wall-street-inflation-tech",
+          "tier": "top",
+          "headline": "Hohe US-Inflation schickt Technologiewerte auf Talfahrt",
+          "summary": "Der Dax schloss am Mittwoch fast unverändert, an der Wall Street belasteten unerwartet hohe Preise und Zinssorgen vor allem Tech-Aktien. Der Nasdaq 100 verlor über zwei Prozent.",
+          "body": "Der deutsche Leitindex Dax ist am Mittwoch nahezu unverändert aus dem Handel gegangen. Nach Angaben des Handelsblatts schloss er bei etwa 25.299 Punkten, im Tagesverlauf hatte er bis auf 25.449 Zähler zugelegt. Größter Verlierer war ein Chipwert. Auch am Dienstag hatte sich der Index kaum bewegt.\n\nDeutlich nervöser ging es in New York zu. Der Dow Jones verlor nur 0,09 Prozent auf 51.621 Punkte, der S&P 500 gab dagegen 1,11 Prozent auf 7.719 Zähler nach. Der technologielastige Nasdaq 100 büßte 2,02 Prozent auf 29.951 Punkte ein. Laut dpa-AFX, verbreitet über finanzen.net, lösten die US-Verbraucherpreise für September die Verkäufe aus.\n\n## Inflation und Zinsangst\n\nDie Teuerung in den USA lag im September bei 3,7 Prozent und damit stärker als erwartet. Treiber waren vor allem höhere Preise für Kraftstoffe und Heizöl. Ein im Bericht zitierter Analyst rechnet damit, dass die Inflationsrate in den kommenden Monaten über vier Prozent steigt, weil die Spritpreise Anfang Oktober weiter angezogen haben. An den Märkten wird wieder über eine mögliche Zinserhöhung der US-Notenbank Fed im Oktober gesprochen. Ein Stratege warnte, die Fed laufe Gefahr, der Preisentwicklung hinterherzuhinken.\n\nSteigende Zinsen treffen besonders Unternehmen, die ihre Investitionen in KI-Infrastruktur auf Kredit finanzieren. Der Cloud-Anbieter CoreWeave verlor 15,5 Prozent, nachdem seine Anleihen auf ein Niveau gefallen waren, das typischerweise auf finanzielle Schwierigkeiten hindeutet. Nvidia, Meta, Intel und Arm gaben zwischen rund drei und knapp sieben Prozent nach. Die Papiere von HP, NetApp und Dell fielen um bis zu 11,3 Prozent, nachdem die Bank Barclays alle drei nach den starken Kursgewinnen der vergangenen Zeit abgestuft hatte.\n\n## Bankenzahlen und Ölpreis\n\nIn der Berichtssaison der US-Banken fiel Bank of America mit einem Gewinnrückgang auf 6,9 Milliarden Dollar auf, nach 8,3 Milliarden ein Jahr zuvor. Belastend wirkten eine hohe Strafe wegen Verstößen gegen Geldwäsche- und Sanktionsregeln sowie schwächer als erwartet laufender Handel mit Anleihen und Aktien. Morgan Stanley steigerte den Gewinn auf 4,91 Milliarden Dollar, dennoch gab die Aktie nach, weil Analysten das Quartal insgesamt enttäuschend fanden. BlackRock legte dagegen 0,7 Prozent zu.\n\nDer Ölpreis bleibt hoch: Die Nordseesorte Brent kostete zuletzt gut 106 Dollar je Barrel, der Euro lag bei rund 1,12 Dollar. Für Verbraucher in Sachsen bedeutet das weiterhin hohe Preise an der Zapfsäule, und die Inflationssorgen aus den USA dürften auch die Zinserwartungen in Europa beeinflussen.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dow-jones-sp-500-nasdaq-us-boersen-schliessen-mit-verlusten-inflation-steigt-unerwartet-stark/100262180.html",
+          "sources": [
+            {
+              "name": "Handelsblatt (US-Börsen)",
+              "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dow-jones-sp-500-nasdaq-us-boersen-schliessen-mit-verlusten-inflation-steigt-unerwartet-stark/100262180.html"
+            },
+            {
+              "name": "Handelsblatt (Dax)",
+              "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dax-aktuell-dax-kaum-veraendert-chipwert-groesster-verlierer/100262096.html"
+            },
+            {
+              "name": "finanzen.net (dpa-AFX)",
+              "url": "https://www.finanzen.net/nachricht/aktien/roundup-aktien-new-york-schluss-hohe-inflation-laesst-techwerte-absacken-15985457"
+            }
+          ],
+          "publishedAt": "2026-10-14T22:32:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/New_York_Stock_Exchange_August_2017_02.jpg/1280px-New_York_Stock_Exchange_August_2017_02.jpg",
+            "credit": "Arild Vågen",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:New_York_Stock_Exchange_August_2017_02.jpg",
+            "alt": "Die New Yorker Börse an der Wall Street"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "wirtschaft-kerosin-engpass-frankfurt",
+          "tier": "top",
+          "headline": "Kerosin wird am Frankfurter Flughafen knapp, Lufthansa tankt vor",
+          "summary": "Am größten deutschen Flughafen könnte der Treibstoff vorübergehend knapp werden. Lufthansa lässt Maschinen vorsorglich zusätzlich befüllen und erwartet derzeit keine Flugausfälle.",
+          "body": "Am Frankfurter Flughafen könnte das Kerosin vorübergehend knapp werden. Die Lufthansa hat deshalb Vorkehrungen getroffen: Auf ausgewählten Strecken nehmen die Flugzeuge vor dem Flug nach Frankfurt zusätzlichen Treibstoff auf. Fachleute nennen das „Tankering“. Die Fluggesellschaft sagte gegenüber der Nachrichtenagentur dpa-AFX, dass sie derzeit nicht mit Flugstreichungen rechnet.\n\n## Mögliche Ursachen\n\nAls Hauptgrund nennt die Lufthansa eine reduzierte Kapazität der Pipeline-Anbindung des Flughafens. Der Betreiber Fraport erklärte dagegen, an einer Pipeline, die den Flughafen mitversorgt, laufe turnusmäßige Wartung. Wegen alternativer Versorgungswege und großer Lagerkapazitäten erwarte Fraport keinen Engpass, der Flugbetrieb sei nicht beeinträchtigt.\n\nNach Informationen der Bild-Zeitung spielt außerdem das niedrige Rhein-Niedrigwasser eine Rolle, weil Tankschiffe nur teilweise beladen fahren können. Laut Bild hat die Lufthansa ihre Piloten angewiesen, mehr Kraftstoff mitzunehmen, als die Strecke erfordert. Das betrifft vor allem Kurz- und Mittelstreckenflüge, zunehmend aber auch Langstrecken. Für Maschinen der Airbus-A320-Familie liegt die Obergrenze demnach bei acht Tonnen Zusatzkraftstoff. Die Planer sollen darauf achten, dass das Mehrgewicht weder Passagiere noch Fracht einschränkt. Die Maßnahmen gelten laut Bild bis auf Weiteres und werden der Lage angepasst.\n\n## Folgen für Reisende und Märkte\n\nZusätzliches Kerosin an Bord erhöht den Verbrauch, weil das Mehrgewicht selbst Treibstoff kostet. Für Fluggäste, auch aus Sachsen, die über Frankfurt umsteigen, ist bislang keine Einschränkung angekündigt. Sollte sich die Lage verschärfen, könnten Verspätungen oder Streichungen jedoch nicht ausgeschlossen werden. Das nennen weder Lufthansa noch Fraport als Erwartung, es ist eine reine Einordnung des Risikos.\n\nAn der Börse reagierten die Papiere unterschiedlich. Nach den auf der Seite von boerse.de ausgewiesenen Kursen schloss die Lufthansa-Aktie am Mittwoch bei 7,06 Euro und damit 1,95 Prozent im Minus, Fraport legte 0,78 Prozent auf 58,45 Euro zu. Die Ölpreise bleiben hoch: Brent lag bei rund 106 Dollar je Barrel. Parallel dazu hat die Lufthansa nach Angaben des Handelsblatts im Bieterrennen um die portugiesische TAP den Konkurrenten Air France-KLM ausgestochen, was ihre strategische Position in Europa stärken dürfte.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/unternehmen/industrie/luftfahrt-kerosin-mangel-am-flughafen-frankfurt-lufthansa-reagiert/100262332.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/unternehmen/industrie/luftfahrt-kerosin-mangel-am-flughafen-frankfurt-lufthansa-reagiert/100262332.html"
+            },
+            {
+              "name": "boerse.de (dpa-AFX)",
+              "url": "https://www.boerse.de/nachrichten/ROUNDUP-Kerosin-Mangel-am-Flughafen-Frankfurt-Lufthansa-reagiert/38669857"
+            }
+          ],
+          "publishedAt": "2026-10-14T23:06:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Leipzig_Halle_Airport_European_Air_Transport_Leipzig_DHL_Boeing_757-28A%28PCF%29_D-ALET_%28DSC01269%29.jpg/1280px-Leipzig_Halle_Airport_European_Air_Transport_Leipzig_DHL_Boeing_757-28A%28PCF%29_D-ALET_%28DSC01269%29.jpg",
+            "credit": "MarcelX42",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Leipzig_Halle_Airport_European_Air_Transport_Leipzig_DHL_Boeing_757-28A(PCF)_D-ALET_(DSC01269).jpg",
+            "alt": "Frachtflugzeug von DHL auf dem Flughafen Leipzig/Halle"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "wirtschaft-handelsdefizit-china-iw",
+          "tier": "more",
+          "headline": "Handelsdefizit mit China übersteigt 2026 erstmals 100 Milliarden Euro",
+          "summary": "Laut Institut der deutschen Wirtschaft wächst das Minus im Handel mit China auf einen Rekord. Vor dem EU-Gipfel wächst der Druck auf härtere Schutzinstrumente.",
+          "body": "Deutschlands Handelsdefizit mit China dürfte 2026 erstmals die Marke von 100 Milliarden Euro überschreiten. Das geht laut Handelsblatt aus einer Kurzstudie des Instituts der deutschen Wirtschaft (IW) hervor. Zum Vergleich: 2019 lag das Minus bei 14,1 Milliarden Euro, es wäre also mehr als siebenmal so hoch.\n\nDie IW-Schätzung beruht auf zwei gegenläufigen Entwicklungen: Die deutschen Exporte nach China liegen demnach rund 25 Prozent unter dem Niveau von 2019, die Importe aus China sind um etwa 62 Prozent gestiegen. Fast ein Viertel des Anstiegs entfällt auf die Autobranche, deren Handelsüberschuss von über 23 Milliarden Euro 2019 nahezu verschwunden sein dürfte. Die Elektroindustrie rutscht von einem Defizit von 4,8 Milliarden auf über 24 Milliarden Euro. Im Maschinenbau kippt ein Überschuss von knapp zehn Milliarden Euro in ein kleines Minus von rund einer Milliarde.\n\nIW-Forscher Jürgen Matthes spricht von einem „China-Schock 2.0“. Chinesische Firmen produzierten weit mehr, als der heimische Markt aufnehmen könne, und verkauften wegen staatlicher Subventionen und einer unterbewerteten Währung billig im Ausland. Peking führt die Lage dagegen auf hohe europäische Energiekosten zurück, was Matthes zurückweist: Die betroffenen Kernbranchen seien nicht energieintensiv. Der Industrieverband BDI nennt bis zu 15.000 verlorene Industriejobs pro Monat in Deutschland.\n\nAm Donnerstag beraten die EU-Staats- und Regierungschefs über ihre China-Politik. Erwartet wird, dass sie härtere Abwehrinstrumente gegen billige Importe beschließen. Matthes plädiert für Ausgleichszölle als Kern der Antwort. Für Sachsen mit seinen Auto- und Zulieferbetrieben in Leipzig und Zwickau ist die Debatte besonders relevant.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/politik/deutschland/exporte-handelsbilanzdefizit-mit-china-steigt-auf-100-milliarden-euro/100261383.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/politik/deutschland/exporte-handelsbilanzdefizit-mit-china-steigt-auf-100-milliarden-euro/100261383.html"
+            }
+          ],
+          "publishedAt": "2026-10-15T04:03:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Hamburg%2C_Hafen_--_2016_--_3090.jpg/1280px-Hamburg%2C_Hafen_--_2016_--_3090.jpg",
+            "credit": "Dietmar Rabich",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hamburg,_Hafen_--_2016_--_3090.jpg",
+            "alt": "Containerbrücken im Hamburger Hafen"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "wirtschaft-offshore-wind-jobs-gefahr",
+          "tier": "more",
+          "headline": "Offshore-Krise gefährdet bis zu 23.000 Industriejobs",
+          "summary": "Seit zwei Jahren wurde kein neuer Offshore-Windpark genehmigt. Eine Analyse im Auftrag der Branche warnt vor massivem Stellenabbau.",
+          "body": "Der Ausbau der Windenergie auf See stockt, und die Zulieferindustrie schlägt Alarm. Laut Handelsblatt wurde in Deutschland seit zwei Jahren kein neuer Offshore-Windpark genehmigt. Eine Analyse des Marktforschers wind:research im Auftrag des Bundesverbands Windenergie Offshore (BWO) kommt zu dem Schluss, dass bei anhaltendem Stillstand binnen vier Jahren bis zu 23.000 der 49.000 Arbeitsplätze der Branche wegfallen könnten. Zudem drohe ein Umsatzverlust von 24 Milliarden Euro.\n\nSiemens-Energy-Vorstand Vinod Philip warnte vor einer Entwicklung wie beim Zusammenbruch der Solarindustrie und sagte, auch sein Unternehmen müsste Stellen streichen. Die Rostocker Firma EEW will rund zehn Prozent ihrer Belegschaft, etwa 100 Stellen, abbauen. Beim Fundamentbauer Steelwind in Nordenham mit 400 Beschäftigten sollen die Auftragsbücher ab Dezember 2027 leer sein.\n\nHintergrund sind verschobene oder ohne Gebote gebliebene Ausschreibungen sowie ein Streit um die Reform des Windenergie-auf-See-Gesetzes. Die Branche fordert Differenzverträge mit garantiertem Preis, der Entwurf sieht sie nur vor, falls eine erste Auktion ohne Förderung scheitert. Installiert sind derzeit etwa 10,8 Gigawatt, das Ziel für 2030 liegt bei 30 Gigawatt. Der BWO-Chef Stefan Thimm warnt, bei Werksschließungen könnten bis zu 80 Prozent der Komponenten importiert werden.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/unternehmen/energie/energie-23.000-jobs-in-gefahr-offshore-krise-trifft-deutsche-industrie/100259714.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/unternehmen/energie/energie-23.000-jobs-in-gefahr-offshore-krise-trifft-deutsche-industrie/100259714.html"
+            }
+          ],
+          "publishedAt": "2026-10-15T00:00:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Middelgrunden_offshore_wind_farm_03.jpg/1280px-Middelgrunden_offshore_wind_farm_03.jpg",
+            "credit": "Kritzolina",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Middelgrunden_offshore_wind_farm_03.jpg",
+            "alt": "Windräder des Offshore-Windparks Middelgrunden vor Kopenhagen"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "wirtschaft-biontech-schliesst-tuebingen",
+          "tier": "more",
+          "headline": "Biontech schließt Curevac-Standort Tübingen trotz Kaufangebot",
+          "summary": "Gespräche mit Investoren über das frühere Curevac-Werk sind gescheitert. Ein Konsortium hatte bis zu 20 Millionen Euro geboten.",
+          "body": "Biontech schließt seinen mRNA-Forschungsstandort in Tübingen, der aus der 2025 übernommenen Firma Curevac stammt. Laut Handelsblatt scheiterten die Verhandlungen mit Interessenten, obwohl ein Investorenkonsortium um den Münchner Investor Peter Löw bis zu 20 Millionen Euro für den Standort geboten hatte.\n\nMit seriösen Interessenten sei bis zuletzt im Detail verhandelt worden, heißt es unter Berufung auf interne Dokumente. Biontech hatte Ende September die Schließung von drei deutschen Standorten angekündigt, Tübingen ist einer davon. Das Angebot war nach Angaben des Handelsblatts mit einem Haken verbunden, den der frei lesbare Teil des Berichts nicht näher erläutert.\n\nFür die Beschäftigten in Tübingen bedeutet die Entscheidung das Ende der Hoffnung auf eine Fortführung des Standorts. Der Fall zeigt, wie Biontech nach der Übernahme seine deutschen Aktivitäten neu ordnet.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/unternehmen/industrie/pharma-trotz-angebot-biontech-schliesst-das-fruehere-curevac-werk/100260007.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/unternehmen/industrie/pharma-trotz-angebot-biontech-schliesst-das-fruehere-curevac-werk/100260007.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T17:00:00+02:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Laboratory_pipettes.jpg/1280px-Laboratory_pipettes.jpg",
+            "credit": "J.N. Eskra",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Laboratory_pipettes.jpg",
+            "alt": "Pipetten auf einem Labortisch"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "politik",
+      "title": "Politik",
+      "emoji": "🏛️",
+      "items": [
+        {
+          "id": "politik-afd-bsw-ukraine-antrag-magdeburg",
+          "tier": "top",
+          "headline": "AfD und BSW setzen in Magdeburg Ukraine-Antrag durch",
+          "summary": "Im Landtag von Sachsen-Anhalt haben AfD und BSW erstmals gemeinsam einen Antrag beschlossen: weg mit Russland-Sanktionen, keine Waffenlieferungen. Die CDU warnt vor einem Vorgeschmack auf die Ministerpräsidentenwahl im Dezember.",
+          "body": "In Sachsen-Anhalt haben AfD und BSW am Mittwoch zum ersten Mal gemeinsam eine Mehrheit im Landtag genutzt. In einer außerordentlichen Sitzung in Magdeburg beschlossen beide Fraktionen einen Antrag mit dem Titel „Friedensgespräche statt Ausweitung des Krieges in der Ukraine“. Er fordert, die Russland-Sanktionen sofort aufzuheben, Hilfen für die Ukraine über humanitäre Unterstützung hinaus zu beenden und Waffenlieferungen auszusetzen.\n\nNach Angaben von t-online stimmte niemand außer AfD und BSW dafür. Zusammen kommen die beiden Fraktionen auf 44 der 83 Sitze, das reichte für die Annahme. Weil Sanktionen und Waffenlieferungen Sache von Bund und EU sind, gilt der Beschluss als Symbolantrag: Die geschäftsführende Landesregierung soll sich lediglich über eine Bundesratsinitiative für Diplomatie einsetzen.\n\n## Die Ministerpräsidentenwahl im Blick\n\nPolitisch wiegt der Schritt dennoch schwer, denn im Dezember soll der neue Ministerpräsident gewählt werden. AfD-Fraktionschef Ulrich Siegmund will kandidieren. Die AfD hatte bei der Landtagswahl Anfang September 43,8 Prozent erreicht, ihr fehlen drei Stimmen zur absoluten Mehrheit. Das BSW will sich bei der Wahl nach aktuellem Stand enthalten.\n\nDer geschäftsführende Ministerpräsident Sven Schulze (CDU) nannte den Antrag ein „Brautgeschenk“ an das BSW und den Entzug der Ukraine-Unterstützung beschämend. Siegmund sprach von einem guten Tag für den Frieden. Der ukrainische Botschafter Oleksij Makeiev sprach laut ZDFheute von einem „Gipfel der Absurdität“. SPD, Grüne und Linke kritisierten die Abstimmung als Inszenierung beziehungsweise als falsches Thema für einen Landtag.\n\nDie CDU-Fraktion hat beschlossen, dass keine ihrer Stimmen an die AfD gehen soll, und will den Saal bei der Wahl verlassen, weil sie Abweichler fürchtet. Unionsfraktionschef Thorsten Frei sagte bei Maischberger, sollten CDU-Abgeordnete Siegmund wählen, bleibe das nicht ohne Konsequenzen; konkrete Maßnahmen nannte er nicht. Die SPD fordert stattdessen einen eigenen demokratischen Kandidaten, die CDU könne im dritten Wahlgang in den Saal zurückkehren.\n\n## Unruhe im BSW\n\nAuch beim BSW sorgt die Nähe zur AfD für Streit. Sahra Wagenknecht erklärte laut t-online, die Brandmauer sei gescheitert, und lobte den „Magdeburger Weg“. Mitgründer Klaus Ernst kritisierte den Rechtskurs scharf, mehrere BSW-Mitglieder in Magdeburg sind ausgetreten. Richtungsentscheidungen könnten auf dem BSW-Bundesparteitag am 27. und 28. November fallen, kurz vor dem CDU-Landesparteitag Anfang Dezember.\n\nFür Sachsen ist das ein Signal aus dem Nachbarland: Auch hier stellt sich bei knappen Mehrheiten die Frage, wie weit Parteien in der Mitte Abstimmungen mit AfD und BSW ausschließen können, und welche Wirkung solche Symbolbeschlüsse auf die Ostdeutschen Landtage haben.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/deutschland/ukraine-krieg-sachsen-anhalt-afd-bsw-landtag-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/ukraine-krieg-sachsen-anhalt-afd-bsw-landtag-100.html"
+            },
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/nachrichten/deutschland/innenpolitik/id_101481646/afd-und-bsw-parteien-demonstrieren-beim-antrag-zur-ukraine-ihre-neue-macht.html"
+            },
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/nachrichten/deutschland/gesellschaft/id_101481898/frei-droht-kollegen-in-sachsen-anhalt-mit-konsequenzen.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T15:18:00+02:00",
+          "importance": 8,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Landtag_von_Sachsen-Anhalt_in_Magdeburg.jpg/1280px-Landtag_von_Sachsen-Anhalt_in_Magdeburg.jpg",
+            "credit": "Torsten Maue",
+            "license": "CC BY-SA 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Landtag_von_Sachsen-Anhalt_in_Magdeburg.jpg",
+            "alt": "Landtag von Sachsen-Anhalt am Domplatz in Magdeburg"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "politik-merz-regierungserklaerung-eu-gipfel",
+          "tier": "top",
+          "headline": "Merz schlägt in Regierungserklärung versöhnlichen Ton an",
+          "summary": "Vor dem EU-Gipfel würdigt der Kanzler die zurückgetretene SPD-Chefin Bas, wirbt für Gerechtigkeit und kündigt mit Macron ein neues Handelsschutzinstrument an.",
+          "body": "Bundeskanzler Friedrich Merz (CDU) hat in seiner Regierungserklärung im Bundestag am Mittwoch einen ungewöhnlich ruhigen Ton gewählt. Einen Tag vor dem EU-Gipfel in Brüssel würdigte er die zurückgetretene Arbeitsministerin und SPD-Chefin Bärbel Bas, sprach ihr nach ihrem persönlichen Verlust sein Mitgefühl aus und hofft laut ZDFheute auf ihre baldige Rückkehr als Abgeordnete. Man sei sachlich nicht immer einer Meinung gewesen, sagte er.\n\nDie Rede kam in einer angespannten Lage für die Koalition: SPD-Spitzenleute werfen der Union vor, mit Bas unsensibel umgegangen zu sein, die CDU weist das zurück. Die Analyse von t-online liest Merz' Auftritt deshalb auch als Versuch, den Koalitionspartner zu beruhigen.\n\n## Gerechtigkeit als Leitmotiv\n\nMerz zitierte Papst Benedikt XVI. aus dessen Bundestagsrede von 2011, Politik müsse „Mühen um Gerechtigkeit“ sein, und erklärte das zur Aufgabe aller vernünftigen Parteien. Er verstand darunter Chancen-, Leistungs- und Generationengerechtigkeit und lehnte Enteignung und Umverteilung zulasten der Leistungsträger ab. Den Vorwurf, Ukraine-Hilfe gehe zulasten von Sozialausgaben, wies er zurück; Verteidigung und Ukraine-Hilfe laufen über die Bereichsausnahme der Schuldenbremse.\n\nAfD und Linken warf er vor, das Land spalten zu wollen und die Gefahr durch Russland zu verharmlosen. Von Russland gehe eine konkrete Gefahr aus, die Eskalationsbereitschaft steige. Extremismus dringe wieder ins Parlament und in den Alltag ein; dagegen setzte Merz auf „schöpferische Anstrengung“.\n\n## Was in Brüssel ansteht\n\nFür den EU-Gipfel am Donnerstag kündigte Merz eine „robuste europäische Antwort“ auf unfaire Handelspraktiken an. Gemeinsam mit Frankreichs Präsident Emmanuel Macron legte er Vorschläge vor, darunter ein neues Handelsschutzinstrument, mit dem die EU-Kommission schneller auf gezielte Angriffe reagieren kann. Ziel sei mehr wirtschaftliche Unabhängigkeit.\n\nNach Darstellung von t-online will Deutschland außerdem den EU-Haushalt weiter verhandeln und Bürokratie abbauen; große Beschlüsse werden in Brüssel nicht erwartet. Die Ausgabenpolitik ist umstritten, CSU-Politiker Manfred Weber fordert, EU-Gelder nicht zu kürzen.\n\nFür Sachsen mit seiner exportorientierten Industrie, etwa in der Autobranche und bei Chips, ist die Handelsfrage konkret: Schutzinstrumente gegen unfaire Konkurrenz können Absatzmärkte und Zulieferketten berühren. Ob der versöhnliche Ton der Rede die Koalition trägt, wird sich an den Streitthemen Rente und Arbeitszeit zeigen, bei denen Union und SPD nach Angaben von ZDFheute weit auseinanderliegen.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/deutschland/merz-regierungserklaerung-bundestag-eu-gipfel-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/merz-regierungserklaerung-bundestag-eu-gipfel-100.html"
+            },
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/nachrichten/deutschland/aussenpolitik/id_101480392/friedrich-merz-cdu-jetzt-probiert-er-sich-in-einem-neuen-ton.html"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/lanz-ruecktritt-bas-spd-schmidt-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T14:47:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Deutscher_Bundestag_Plenarsaal_Seitenansicht.jpg/1280px-Deutscher_Bundestag_Plenarsaal_Seitenansicht.jpg",
+            "credit": "Times",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Deutscher_Bundestag_Plenarsaal_Seitenansicht.jpg",
+            "alt": "Plenarsaal des Deutschen Bundestages im Reichstagsgebäude"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "politik-kabinett-jugendschutz-social-media",
+          "tier": "top",
+          "headline": "Kabinett will Social Media für Kinder unter 13 sperren",
+          "summary": "Die Bundesregierung beschließt Eckpunkte für den Jugendschutz im Netz: eine Übergangsregel für Unter-13-Jährige, Altersprüfung per digitaler Brieftasche und ein „KI-Seepferdchen“.",
+          "body": "Das Bundeskabinett hat am Mittwoch Eckpunkte für einen besseren Kinder- und Jugendschutz in der digitalen Welt beschlossen. Kern ist eine Altersgrenze: Auf EU-Ebene will sich die Bundesregierung dafür einsetzen, dass Kinder unter 13 Jahren grundsätzlich keinen Zugang zu sozialen Netzwerken haben. Ausnahmen soll es für nachweislich kindgerechte Angebote geben.\n\nBis eine europäische Regel gilt, plant Deutschland eine nationale Übergangsregelung. Sie sieht ein Verbot für Unter-13-Jährige vor und abgestufte Beschränkungen für 13- bis 18-Jährige. Nach Angaben der Bundesregierung stützt sich das Vorhaben auf die Empfehlungen einer unabhängigen Expertenkommission, die im September ihren Abschlussbericht mit 56 Empfehlungen vorgelegt hat.\n\n## Zwölf Einzelmaßnahmen\n\nDas Papier bündelt laut ZDFheute zwölf Einzelmaßnahmen, für die meisten gibt es noch keinen konkreten Zeitplan. Die Regierung will den Vorschlag der EU-Kommission für einen „EU KIDS Act“ unterstützen, der ein Mindestalter von 13 Jahren festschreiben und suchtfördernde App-Designs verbieten soll. Für eine verlässliche Altersprüfung soll ab 2027 die deutsche digitale Identitäts-Brieftasche dienen.\n\nIn der Schule soll ein bundesweites „KI-Seepferdchen“ für Grundschulkinder den Umgang mit Künstlicher Intelligenz vermitteln. Eine Informationskampagne für Eltern von Vorschulkindern soll noch vor Jahresende starten. Neu eingeführt werden soll zudem eine Früherkennungsuntersuchung für Kinder von 9 bis 10 Jahren, die J1-Untersuchung für Jugendliche wird dokumentiert; beide achten auf Risiken durch digitale Mediennutzung. Die Länder sollen eine kindgerechte „Kinder-Online-Wache“ einrichten, das Bundeskriminalamt soll gegen Cybergrooming vorgehen.\n\n## Beteiligte und Kritik\n\nFamilienministerin Karin Prien (CDU) verantwortet die Ziele zum sicheren Aufwachsen. Justizministerin Stefanie Hubig (SPD) will im Familienrecht klarstellen, dass Eltern die Mediennutzung ihrer Kinder beaufsichtigen müssen; sie wollte nicht auf neue EU-Vorgaben warten. Die Verantwortung der Plattformen bleibt davon unberührt.\n\nDer Digitalverband Bitkom begrüßt den Kurs grundsätzlich, hält aber eine starre Altersgrenze von 13 Jahren für ungeeignet. Jugendschutz müsse sich an realen Gefahren und am Entwicklungsstand orientieren, sagte Hauptgeschäftsführer Bernhard Rohleder. Laut einer Bitkom-Umfrage halten 79 Prozent der Menschen in Deutschland das KI-Seepferdchen für sinnvoll.\n\nFür Familien in Sachsen heißt das zunächst: Konkrete Verbote gelten noch nicht. Die Eckpunkte sind eine Absichtserklärung, die erst durch Gesetze auf Bundes- und EU-Ebene verbindlich wird. Entscheidend wird, ob die Altersprüfung praktikabel und datensparsam umgesetzt werden kann.",
+          "source": "Bundesregierung",
+          "url": "https://www.bundesregierung.de/breg-de/aktuelles/kabinett-eckpunkte-jugendmedienschutz-2456960",
+          "sources": [
+            {
+              "name": "Bundesregierung",
+              "url": "https://www.bundesregierung.de/breg-de/aktuelles/kabinett-eckpunkte-jugendmedienschutz-2456960"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/kinderschutz-online-ki-social-media-verbot-regierung-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T20:47:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/190930_Schuppenartige_Verglasung_der_Kuppel_auf_dem_Reichstagsgeb%C3%A4ude.jpg/1280px-190930_Schuppenartige_Verglasung_der_Kuppel_auf_dem_Reichstagsgeb%C3%A4ude.jpg",
+            "credit": "Ole Neitzel",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:190930_Schuppenartige_Verglasung_der_Kuppel_auf_dem_Reichstagsgeb%C3%A4ude.jpg",
+            "alt": "Gläserne Kuppel auf dem Reichstagsgebäude, davor eine Deutschlandfahne"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "politik-berlin-sondierung-wieder-aufgenommen",
+          "tier": "more",
+          "headline": "Berliner Sondierung mit Linken geht nach Pause weiter",
+          "summary": "Linke, Grüne und SPD haben ihren Streit um die Antisemitismus-Erklärung beigelegt und setzen die Sondierungen am Donnerstag fort.",
+          "body": "Die am Dienstagabend unterbrochenen Sondierungen von Linken, Grünen und SPD in Berlin werden fortgesetzt. Nach Angaben der dpa, über die t-online berichtet, soll das Gespräch von Donnerstag an weitergehen. Linke-Fraktionschefin Elif Eralp sagte, man habe sich verständigt, die Missverständnisse seien ausgeräumt.\n\nAuslöser der Pause war ein Streit um den Umgang mit Antisemitismus. In der Vorwoche hatten sich die drei Parteien darauf geeinigt, wie sie mit antisemitischen Vorfällen in der Linken umgehen wollen, falls sie gemeinsam regieren; im Gespräch waren Sanktionen bis zum Fraktionsausschluss. Am Dienstag unterschrieben dann alle 44 anwesenden Linke-Abgeordneten eine eigene Erklärung, die teilweise vom Dreier-Papier abweicht. Grüne und SPD unterbrachen daraufhin. Im Zentrum steht laut ZDFheute die Frage, wie mit einer Abgeordneten umzugehen ist, der mögliche antisemitische Äußerungen vorgeworfen werden.\n\nNun soll die gemeinsame Erklärung gegen Antisemitismus weiter gelten und in einen möglichen Koalitionsvertrag aufgenommen werden. Ob es überhaupt zu Koalitionsverhandlungen kommt, entscheidet nach den Sondierungen ein Parteitag der Linken, auf Grundlage des Sondierungspapiers und der „Berliner Vereinbarung“. Einen Termin nennen die Berichte nicht.\n\nFür die Bundespolitik ist Berlin ein Testfall: Ein Bündnis unter Beteiligung der Linken wäre ein Signal für die Machtoptionen links der Union, die CDU wittert laut ZDFheute eine Chance.",
+          "source": "t-online",
+          "url": "https://www.t-online.de/nachrichten/deutschland/innenpolitik/id_101481812/regierungsbildung-in-berlin-sondierungsgespraeche-werden-fortgesetzt.html",
+          "sources": [
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/nachrichten/deutschland/innenpolitik/id_101481812/regierungsbildung-in-berlin-sondierungsgespraeche-werden-fortgesetzt.html"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/sondierungen-linke-gruene-spd-berlin-gehen-weiter-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T20:48:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Bundestag_Berlin_Deutschland_Reichstagsgeb%C3%A4ude_-_07.jpg/1280px-Bundestag_Berlin_Deutschland_Reichstagsgeb%C3%A4ude_-_07.jpg",
+            "credit": "Norbert Nagel",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bundestag_Berlin_Deutschland_Reichstagsgeb%C3%A4ude_-_07.jpg",
+            "alt": "Deutschlandfahne vor dem Reichstagsgebäude in Berlin"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "welt",
+      "title": "Welt",
+      "emoji": "🌍",
+      "items": [
+        {
+          "id": "welt-starlink-drosselung-ukraine",
+          "tier": "top",
+          "headline": "Starlink-Drosselung bringt Ukraines Drohnen in Bedrängnis",
+          "summary": "Ukraine wirft SpaceX vor, die Geschwindigkeit bewegter Terminals gedrosselt zu haben. Musk erklärt, das US-Militär und letztlich der US-Präsident entschieden über solche Grenzen.",
+          "body": "In der Nacht zum Mittwoch hat nach Angaben aus Kyjiw eine Drosselung von Starlink-Terminals die Kriegsführung der Ukraine behindert. Sergij Beskrestnow, Technikberater von Präsident Wolodymyr Selenskyj, sagte, SpaceX habe ohne Vorwarnung ein Tempolimit für Terminals in Bewegung eingeführt. Das könne „kein Zufall“ sein, sondern hänge mit der politischen Lage zusammen, sagte er.\n\nBetroffen sind vor allem Drohnen, die über Satelliteninternet gesteuert werden, sowie Logistik und Einsätze mit größerer Reichweite. Das 7. Schnelle Eingreifkorps im Südosten berichtete laut Reuters von Verbindungsabbrüchen von 10 bis 20 Sekunden bei hoher Geschwindigkeit; Einheiten hätten Missionen abbrechen müssen. Ein hoher ukrainischer Beamter sagte der AFP, die Einschränkung treffe zuallererst die Logistik.\n\n## Musk verweist auf Washington\n\nElon Musk schrieb auf X, Grenzen bei Geschwindigkeit oder Nutzung der militärischen Variante Starshield bestimme das US-Militär und letztlich der US-Präsident. Das Weiße Haus bestätigte oder dementierte das nicht; das Pentagon reagierte zunächst nicht auf eine Anfrage von Al Jazeera.\n\nSelenskyj nannte die Einschränkung in einem Interview einen schweren Fehler, der viele Menschenleben kosten werde. Es sei schmerzhaft, dass Donald Trump „nicht unsere Seite“ wähle. Die US-Senatorin Jeanne Shaheen forderte ein sofortiges Ende der Beschränkungen. Polens Außenminister Radosław Sikorski, dessen Regierung ukrainische Starlink-Abos bezahlt, fragte Musk, ob er Politik mit seinen Produkten mache.\n\n## Hintergrund: Streit um US-Unterstützung\n\nDer Vorfall fällt in eine Phase wachsender Spannungen. Nach Angaben von Al Jazeera berichteten Reuters-Quellen, die USA hätten gedroht, die Weitergabe von Aufklärungsdaten zur Raketenfrühwarnung zu stoppen, sollte Kyjiw Angriffe auf russische Raffinerien nicht aussetzen. Trump sagte, die Weitergabe sei nicht gestoppt worden. Selenskyj sagte, die gewohnten Warnungen der Verbündeten seien an zwei Tagen in Folge ausgeblieben. Zugleich hatte Trump Sanktionen auf russischen Diesel gelockert.\n\nRussland greift weiter die Energieversorgung an; in Kyjiw wurden bei Raketenangriffen laut Al Jazeera mindestens neun Menschen getötet. Eine von Trump verkündete Energie-Waffenruhe hält nach Darstellung von France 24 offenbar nicht.\n\n## Was das für Deutschland heißt\n\nDie Episode zeigt, wie abhängig die ukrainische Verteidigung von der Infrastruktur eines einzelnen US-Unternehmens ist. Selenskyj hatte im August erklärt, Kyjiw suche mit einem europäischen Land eine Starlink-Alternative. Für Berlin und die EU stärkt das die Debatte über eigene Satellitenkommunikation und darüber, wie viel Verlass auf Washington bleibt, wenn Europa die ukrainische Verteidigung mitfinanziert.",
+          "source": "France 24",
+          "url": "https://www.france24.com/en/europe/20261014-ukraine-says-starlink-restricted-operations-overnight-disrupting-military-missions",
+          "sources": [
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/europe/20261014-ukraine-says-starlink-restricted-operations-overnight-disrupting-military-missions"
+            },
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/14/ukraine-accuses-elon-musks-spacex-of-throttling-starlink-terminals"
+            }
+          ],
+          "publishedAt": "2026-10-14T11:14:00+02:00",
+          "importance": 8,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Kyiv_skyline_%2815688086793%29.jpg/1280px-Kyiv_skyline_%2815688086793%29.jpg",
+            "credit": "Sergey Galyonkin from Raleigh, USA",
+            "license": "CC BY-SA 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kyiv_skyline_(15688086793).jpg",
+            "alt": "Die Skyline von Kyjiw im Morgendunst"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "welt-eu-gipfel-budget-streit",
+          "tier": "top",
+          "headline": "EU-Gipfel streitet über Billionenhaushalt und Energiepreise",
+          "summary": "Beim Gipfel in Brüssel prallen Sparsame, Frankreich und die Kohäsionsländer beim Haushalt 2028–2034 aufeinander. Dazu kommen hohe Energiepreise und der Umgang mit China.",
+          "body": "Die Staats- und Regierungschefs der EU ringen in Brüssel um den nächsten Siebenjahreshaushalt. Laut AFP geht es um knapp zwei Billionen Euro für die Jahre 2028 bis 2034; der Donnerstag gilt als bisher härteste Auseinandersetzung darüber. Ratspräsident António Costa will bis Jahresende eine Einigung, ein Entwurf der Gipfelschlussfolgerungen sprach zuletzt nur noch von einer „zügigen“ Verständigung.\n\nDer irische Ratsvorsitz schlägt Kürzungen von rund 140 Milliarden Euro vor. Verschont bleiben sollen vor allem Landwirtschaft und Kohäsion, getroffen würden Forschung, Technologie, Klimaschutz, Sicherheit und Außenpolitik, berichtet Euronews.\n\n## Drei Lager\n\nDie sogenannten Sparsamen, angeführt von Deutschland zusammen mit den Niederlanden und Schweden, wollen deutlich tiefere Einschnitte. Frankreich lehnt große Kürzungen ab und fordert neue EU-weite Steuern, etwa auf große Konzerne, Digitaldienste oder Krypto-Werte. Die 17 „Freunde der Kohäsion“ halten schon die vorgeschlagenen Kürzungen für zu hart. Costa plant ein Sondertreffen Ende November.\n\nZeitdruck entsteht durch die französische Präsidentschaftswahl im April und Mai. Marine Le Pen führt laut AFP in den Umfragen und nannte einen Beschluss vor der Wahl einen „demokratischen Skandal“. Ein Diplomat sagte, eine Verschiebung in den Sommer wäre eine „furchtbare Übung“.\n\n## Energie, China, Ukraine\n\nParallel belasten hohe Preise die Tagesordnung: Öl liegt trotz einer koordinierten G7-Freigabe laut Euronews über 100 Dollar je Barrel, Gas auf dem höchsten Stand seit dem Winter 2022. Italien und Griechenland wollen gelockerte Haushaltsregeln für befristete Hilfen; sechs Staaten, darunter Deutschland, schlagen eine EU-weite Übergewinnsteuer vor, für die bislang die Mehrheit fehlt.\n\nBeim Thema China nennt Euronews ein tägliches Handelsdefizit von einer Milliarde Euro. Deutschland und Frankreich bringen einen „Not-Aus“-Mechanismus ins Spiel, der Chinas Marktzugang kappen könnte. Am Freitag kommt Wolodymyr Selenskyj; die Schlussfolgerungen sollen die US-Sanktionsausnahme für russischen Diesel bedauern.\n\n## Bedeutung für Deutschland\n\nDeutschland ist größter Nettozahler. Je nach Ausgang entscheidet sich, wie viel Geld für Forschung, Grenzschutz und Verteidigung bleibt und ob neue EU-Steuern kommen. Die Energiepreise treffen zudem Haushalte und Industrie in Sachsen direkt.",
+          "source": "Euronews",
+          "url": "https://de.euronews.com/2026/10/14/eu-gipfel-energiepreise-haushalt-ukraine",
+          "sources": [
+            {
+              "name": "Euronews",
+              "url": "https://de.euronews.com/2026/10/14/eu-gipfel-energiepreise-haushalt-ukraine"
+            },
+            {
+              "name": "France 24 (AFP)",
+              "url": "https://www.france24.com/en/live-news/20261015-eu-leaders-head-for-showdown-over-bloc-budget"
+            }
+          ],
+          "publishedAt": "2026-10-14T19:05:00+02:00",
+          "importance": 8,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/European_Union_Flags_2.jpg/1280px-European_Union_Flags_2.jpg",
+            "credit": "Thijs ter Haar",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:European_Union_Flags_2.jpg",
+            "alt": "Europaflaggen vor dem Berlaymont-Gebäude in Brüssel"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "welt-nord-stream-prozess-hamburg",
+          "tier": "top",
+          "headline": "Nord-Stream-Prozess in Hamburg: Ukrainer wegen Anschlags vor Gericht",
+          "summary": "Vor dem Hanseatischen Oberlandesgericht hat der Prozess gegen einen mutmaßlichen Drahtzieher der Nord-Stream-Sprengungen begonnen. Angeklagt ist ein 50-jähriger Ukrainer.",
+          "body": "Mehr als vier Jahre nach den Explosionen an den Nord-Stream-Pipelines hat am Mittwoch in Hamburg der Prozess gegen einen mutmaßlichen Beteiligten begonnen. Angeklagt ist der 50-jährige frühere ukrainische Offizier Serhij K., in englischen Berichten Sergiy Kuznietsov geschrieben. Verhandlungstage sind bis Februar angesetzt, das Verfahren dürfte mehrere Monate dauern.\n\nDie Anklage wirft ihm laut France 24 vor, ein Team aus Tauchern und einem Sprengstoffexperten geleitet zu haben. Angeklagt sind unter anderem ein Kriegsverbrechen durch Einsatz militärischer Mittel gegen zivile Infrastruktur, das Herbeiführen einer Explosion und Sabotage. Staatsanwalt Stefan Schmidt sagte, Ziel sei es gewesen, die Lieferungen dauerhaft zu stoppen, damit Russland mit Gaseinnahmen keinen Krieg finanziere.\n\n## Der mutmaßliche Ablauf\n\nNach der Anklage reiste der Mann Anfang September 2022 mit gefälschtem ukrainischem Pass nach Deutschland ein. Das Team habe in Rostock eine Jacht gemietet, Sprengstoff geladen und sei in die Nähe der dänischen Insel Bornholm gefahren. Dort hätten Taucher Zeitzünder angebracht. Die Detonationen am 26. September 2022 beschädigten drei der vier Stränge schwer. Keine der Leitungen lieferte damals Gas: Nord Stream 1 war gestoppt, Nord Stream 2 nie in Betrieb.\n\n## Verteidigung und Kundgebung\n\nVerteidiger Nicola Canestrini sagte, es gebe keinen klaren Beweis für eine Verbindung seines Mandanten zur Sabotage. Russland habe die Pipelines als politische und wirtschaftliche Waffe genutzt und trage Verantwortung für Kriegsverbrechen. Der Angeklagte wird sich nicht äußern. Vor dem Gericht zeigten Unterstützer ukrainische Fahnen und Schilder mit der Aufschrift „Russia is a Terrorist“, wie Euronews berichtet.\n\nKyjiw bestreitet, den Anschlag organisiert zu haben. Ein weiterer Verdächtiger, Wolodymyr Z., wurde im August in Kroatien festgenommen; ein kroatisches Gericht billigte die Auslieferung nach Deutschland, er legte aber Einspruch ein.\n\n## Warum das für Deutschland zählt\n\nDer Fall ist politisch heikel: Er betrifft die Beziehung zur Ukraine, die Deutschland militärisch unterstützt, und die Sicherheit kritischer Infrastruktur. Ausgang und Beweislage werden zeigen, wie belastbar die deutschen Ermittlungen sind und ob Berlin Täter eines Angriffs im eigenen Interesse verfolgt, dessen Folgen auch ostdeutsche Verbraucher als Gaspreis spürten.",
+          "source": "France 24",
+          "url": "https://www.france24.com/en/europe/20261014-defence-of-ukrainian-accused-of-sabotage-says-russia-used-nord-stream-pipelines-as-weapon",
+          "sources": [
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/europe/20261014-defence-of-ukrainian-accused-of-sabotage-says-russia-used-nord-stream-pipelines-as-weapon"
+            },
+            {
+              "name": "Euronews",
+              "url": "https://de.euronews.com/video/2026/10/14/deutschland-anhanger-demonstrieren-in-hamburg-zum-prozess-um-nord-stream-anschlage"
+            }
+          ],
+          "publishedAt": "2026-10-14T08:37:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Treppenhausdecke_Hanseatisches_Oberlandesgericht_%28Hamburg%29.jpg/1280px-Treppenhausdecke_Hanseatisches_Oberlandesgericht_%28Hamburg%29.jpg",
+            "credit": "T meltzer",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Treppenhausdecke_Hanseatisches_Oberlandesgericht_(Hamburg).jpg",
+            "alt": "Treppenhaus im Hanseatischen Oberlandesgericht in Hamburg"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "welt-albanien-proteste-eskalieren",
+          "tier": "more",
+          "headline": "Albanien: Proteste gegen Rama werden gewalttätig",
+          "summary": "In Tirana sind Tausende gegen Premier Edi Rama auf die Straße gegangen. Es gab Brände an Ministerien, Verletzte und Festnahmen; die EU zeigt sich besorgt.",
+          "body": "In Albaniens Hauptstadt Tirana ist die Lage den zweiten Abend in Folge eskaliert. Tausende forderten am Mittwoch den Rücktritt von Ministerpräsident Edi Rama und bessere Bedingungen an den Universitäten, berichtet France 24. Demonstranten beschädigten mehrere Regierungsgebäude, im Justizministerium wurde ein Stockwerk in Brand gesetzt, das Finanzministerium wurde angegriffen. Die Polizei setzte Tränengas und Wasserwerfer ein.\n\nNach Polizeiangaben wurden am Mittwoch 14 Beamte verletzt und 35 Menschen festgenommen; am Dienstag waren es 6 verletzte Beamte und 16 Festnahmen. Innenminister Ervin Demo machte „böswillige Hände von Außenstehenden“ für die Gewalt verantwortlich. Al Jazeera meldete zudem ein Feuer im Bildungsministerium am dritten Protesttag.\n\nDie EU äußerte sich besorgt über die „gewaltsame Eskalation“ und forderte eine rasche Untersuchung mutmaßlich übermäßiger Polizeigewalt. Die Proteste laufen seit mehr als vier Monaten und begannen laut France 24 wegen eines Luxustourismusprojekts im Süden des Landes mit Verbindung zur Familie von US-Präsident Donald Trump.\n\nFür Deutschland ist Albanien als EU-Beitrittskandidat und Herkunftsland vieler Zugewanderter relevant: Eine Zuspitzung auf dem Westbalkan stellt die Erweiterungspolitik der EU auf die Probe, über die gerade auch in Brüssel verhandelt wird.",
+          "source": "France 24",
+          "url": "https://www.france24.com/en/europe/20261014-albania-protests-protestors-demand-pm-rama-resignation",
+          "sources": [
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/europe/20261014-albania-protests-protestors-demand-pm-rama-resignation"
+            }
+          ],
+          "publishedAt": "2026-10-15T00:35:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Flamingo_Revolution_Tirana_Protest_nr15_June_14_2026_56.jpg/1280px-Flamingo_Revolution_Tirana_Protest_nr15_June_14_2026_56.jpg",
+            "credit": "Albinfo",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Flamingo_Revolution_Tirana_Protest_nr15_June_14_2026_56.jpg",
+            "alt": "Demonstrationszug in Tirana bei früheren Protesten im Juni 2026"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "welt-kenia-zweiter-ebola-fall",
+          "tier": "more",
+          "headline": "Kenia bestätigt zweiten Ebola-Fall",
+          "summary": "Ein naher Angehöriger des ersten Patienten ist erkrankt, obwohl er schon in Quarantäne war. Kenia ist das vierte Land mit Fall im Zusammenhang mit dem Ausbruch im Kongo.",
+          "body": "Kenias Gesundheitsministerium hat einen zweiten Ebola-Fall bestätigt. Betroffen ist ein 39-jähriger naher Angehöriger des ersten Patienten; er erkrankte am Dienstag, als er bereits in Quarantäne war, und wird in einem Behandlungszentrum versorgt, wie Al Jazeera berichtet.\n\nDer erste Patient, ein kenianischer Staatsbürger, der in der Demokratischen Republik Kongo gelebt hatte, starb zwei Tage nach der Einlieferung in ein Krankenhaus in Nairobi. Er soll über Uganda angereist sein, was Uganda zurückweist: „Lassen Sie Uganda aus dem Gespräch“, sagte Alan Kasujja. Gesundheitsminister Aden Duale hatte am 7. Oktober mitgeteilt, mindestens 57 Kontaktpersonen seien identifiziert und 10 sofort isoliert worden.\n\nKenia ist das vierte Land mit einem Fall im Zusammenhang mit dem Ausbruch im Kongo, der laut Al Jazeera mehr als 9.000 Fälle und über 4.000 Tote umfasst. Uganda hatte 2026 zunächst 20 Fälle und zwei Tote gemeldet und war im August für Ebola-frei erklärt worden.\n\nFür Deutschland ist das Risiko einer Einschleppung gering, Reisende und Gesundheitsbehörden beobachten die Lage aber, da Kenia ein wichtiges Reiseziel und Drehkreuz ist.",
+          "source": "Al Jazeera",
+          "url": "https://www.aljazeera.com/news/2026/10/14/kenyas-health-ministry-confirms-second-ebola-case",
+          "sources": [
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/14/kenyas-health-ministry-confirms-second-ebola-case"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Ebola_Virus_-_Electron_Micrograph.tiff/lossy-page1-1280px-Ebola_Virus_-_Electron_Micrograph.tiff.jpg",
+            "credit": "BernbaumJG",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ebola_Virus_-_Electron_Micrograph.tiff",
+            "alt": "Eingefärbte elektronenmikroskopische Aufnahme von Ebola-Viren"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "welt-kolumbien-proteste-espriella",
+          "tier": "more",
+          "headline": "Kolumbien: Tausende demonstrieren gegen Präsident de la Espriella",
+          "summary": "Es sind die ersten großen Proteste der Opposition seit seinem Amtsantritt im August. Anlass sind Kürzungen, ein Demonstrationsdekret und die Hinwendung zu Israel.",
+          "body": "In ganz Kolumbien sind am Mittwoch Tausende gegen den rechten Präsidenten Abelardo de la Espriella auf die Straße gegangen, meldet France 24 unter Berufung auf AFP. Die Kundgebungen verliefen friedlich. In Bogotá führte der frühere linke Präsident Gustavo Petro den Zug an, neben Gewerkschaften, Indigenen-Gruppen, Studierenden und feministischen Aktivistinnen. Auch Senator Iván Cepeda nahm teil, der im Juni die Stichwahl mit weniger als einem Prozentpunkt Rückstand verloren hatte.\n\nAm Vorabend hatte de la Espriella ein Dekret erlassen, das den Behörden mehr Befugnisse gegen Demonstrationen mit Sachschaden oder Straßenblockaden gibt. Außenpolitisch nahm er die Beziehungen zu Israel wieder auf, die Petro wegen des Gaza-Kriegs abgebrochen hatte, und kündigte an, Jerusalem als Hauptstadt anzuerkennen. Al Jazeera meldete die Eröffnung der kolumbianischen Botschaft in Jerusalem.\n\nBei den Märschen wurde eine US-Flagge verbrannt, in Medellín stand auf einem Schild „Yankees go home“. Die Lehrerin Ester Guerra sagte AFP, sie fühle, dass es keine Garantien gebe.\n\nFür Deutschland ist das vor allem außenpolitisch von Interesse: Ein Rechtsruck in Südamerika verändert Bündnisse und die Verhandlungen zwischen der EU und lateinamerikanischen Staaten.",
+          "source": "France 24",
+          "url": "https://www.france24.com/en/americas/20261015-thousands-protest-colombia-right-wing-president",
+          "sources": [
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/americas/20261015-thousands-protest-colombia-right-wing-president"
+            },
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/14/colombia-opposition-groups-launch-protest-against-de-la-espriellas-cuts"
+            }
+          ],
+          "publishedAt": "2026-10-15T03:57:00+02:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Plaza_de_Bol%C3%ADvar_en_Bogot%C3%A1_%28Colombia%29.jpg/1280px-Plaza_de_Bol%C3%ADvar_en_Bogot%C3%A1_%28Colombia%29.jpg",
+            "credit": "Javierleiva",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Plaza_de_Bol%C3%ADvar_en_Bogot%C3%A1_(Colombia).jpg",
+            "alt": "Die Plaza de Bolívar in Bogotá"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "region",
+      "title": "Leipzig & Region",
+      "emoji": "📍",
+      "items": [
+        {
+          "id": "region-windkraft-erlass-sachsen",
+          "tier": "top",
+          "headline": "Sachsen kann Windräder bis Ende 2027 untersagen",
+          "summary": "Per Erlass kann Sachsen einzelne Windprojekte bis Ende 2027 untersagen, wenn sie die Regionalplanung stören. Die Regierung spricht von keinem Stopp, die Branche warnt vor Härtefällen.",
+          "body": "Der Erlass wurde nach Angaben der Staatsregierung am 9. Oktober verfasst und richtet sich an die Landesdirektion als Genehmigungsbehörde. Er betrifft Vorhaben, die nicht zu den künftigen Windenergieplänen der vier Regionalen Planungsverbände passen. Infrastrukturministerin Regina Kraushaar (CDU) betonte, der Erlass ordne keinen allgemeinen Stopp für Genehmigungen an. Wirtschaftsminister Dirk Panter (SPD) sagte, der Ausbau werde weiter vorangetrieben; die Regelung solle zudem die Akzeptanz in der Bevölkerung stärken.\n\n## Warum die Regierung jetzt eingreift\n\nHintergrund ist das Bundesgesetz zum Windausbau. Es verlangt von Sachsen, bis Ende 2027 1,3 Prozent und bis 2032 zwei Prozent der Landesfläche für Windräder auszuweisen. Zuständig dafür sind die Regionalen Planungsverbände, doch keiner von ihnen hat bislang einen Plan beschlossen, zwei haben laut einem Bericht einen Entwurf vorgelegt. In den Planungsregionen Chemnitz und Oberes Elbtal/Osterzgebirge fehlen Regionalpläne seit Jahren. Ohne rechtzeitig wirksame Pläne droht aus Sicht der Regierung eine vom Bund vorgesehene Superprivilegierung, die ab 2028 greifen soll: Windräder könnten dann praktisch überall gebaut werden, ohne dass die Region mitsteuert.\n\nWie viel Bewegung es zuletzt gab, zeigen Zahlen aus einem Bericht des Portals Cleanthinking: Binnen eines Jahres wurden demnach 80 neue Anlagen genehmigt, weitere 398 Anträge liegen vor. Rund 850 Windräder stehen bereits im Freistaat.\n\n## Kritik von Branche und Grünen\n\nDer Verband VEE Sachsen nennt den Erlass ein falsches Signal zum falschen Zeitpunkt. Präsident Falk Zeuner warnt vor Härtefällen bei Projekten, deren Genehmigung kurz bevorsteht. Investitionen könnten laut Verband „von heute auf morgen wertlos“ werden, wenn Standorte nicht übertragbar sind. Die Branche sei ohnehin angespannt; schon im August habe es Hinweise auf Stellenstreichungen gegeben. Der Verband fordert, genehmigungsreife Vorhaben zu schützen, Untersagungen im Einzelfall zu begründen und die Regionalplanung zügig abzuschließen.\n\nDie Grünen im Landtag sprechen von einem „fatalen Signal“ und kritisieren, dass die Regierung nicht sagt, wie viele Vorhaben betroffen sind. Ein Sprecher einer Bürgerinitiative aus Leipzig-Großzschocher forderte, die Befristung bis 2027 dürfe nicht zum Dauerzustand werden und brauche nachvollziehbare Begründungen. Parallel bereitet Sachsen laut dpa eine Bundesratsinitiative vor, die die Flächenziele des Bundes bis 2032 überprüfen soll.\n\nFür die Region Leipzig und Nordsachsen ist das relevant, weil hier Windprojekte und Regionalplanung ebenfalls verhandelt werden. Welche konkreten Vorhaben die Landesdirektion künftig untersagen kann, ist bislang offen.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/wirtschaft/metropolregion/2026/10/windkraft-erlass-der-sachsischen-regierung-vee-falsches-signal-falscher-zeitpunkt-672959",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/wirtschaft/metropolregion/2026/10/windkraft-erlass-der-sachsischen-regierung-vee-falsches-signal-falscher-zeitpunkt-672959"
+            },
+            {
+              "name": "Volksstimme (dpa)",
+              "url": "https://www.volksstimme.de/panorama/regierung-ermoglicht-genehmigungsstopp-fur-windrader-4336060"
+            },
+            {
+              "name": "Cleanthinking",
+              "url": "https://www.cleanthinking.de/?p=1073856"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Baustelle_im_Windpark_Gersdorf-Bernsdorf%2C_Sachsen_2H1A0184WI.jpg/1280px-Baustelle_im_Windpark_Gersdorf-Bernsdorf%2C_Sachsen_2H1A0184WI.jpg",
+            "credit": "Kora27",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Baustelle_im_Windpark_Gersdorf-Bernsdorf,_Sachsen_2H1A0184WI.jpg",
+            "alt": "Baustelle im Windpark Gersdorf-Bernsdorf in Sachsen"
+          }
+        },
+        {
+          "id": "region-metall-tarifrunde-sachsen",
+          "tier": "more",
+          "headline": "IG Metall: Sachsens Arbeitgeber legen in erster Tarifrunde nichts vor",
+          "summary": "In Chemnitz endete die erste Verhandlung der Metall- und Elektroindustrie ohne Angebot der Arbeitgeber. Die Gewerkschaft nennt den Start enttäuschend.",
+          "body": "Die erste Tarifverhandlung für die sächsische Metall- und Elektroindustrie ist in Chemnitz ohne ein Angebot der Arbeitgeber zu Ende gegangen. Die IG Metall fordert fünf Prozent mehr Geld bei zwölf Monaten Laufzeit; betroffen sind in Sachsen rund 155.000 Beschäftigte.\n\nDie Gewerkschaft nannte den Auftakt nach Angaben der Leipziger Zeitung enttäuschend und verlangt konkrete Vorschläge der Arbeitgeberseite. Die zweite Runde ist für den 27. Oktober in Dresden angesetzt.\n\nDie Tarifrunde läuft bundesweit: Die regionalen Verhandlungen begannen Anfang Oktober, die Arbeitgeber verweisen auf Produktionsrückgänge und Stellenabbau. Für Sachsen mit seinen Autowerken in Leipzig und Zwickau und vielen Zulieferern ist der Ausgang wichtig, weil Löhne und Beschäftigungssicherung gleichzeitig verhandelt werden. Ob es vor Ablauf der Friedenspflicht schon Bewegung gibt, ist offen; Warnstreiks sind erst danach möglich.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/der-tag/2026/10/mittwoch-der-14-oktober-2026-fahnen-klau-beim-frauenfussball-heim-null-auch-in-champions-league-kein-angebot-in-metall-tarifrunde-673152",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/der-tag/2026/10/mittwoch-der-14-oktober-2026-fahnen-klau-beim-frauenfussball-heim-null-auch-in-champions-league-kein-angebot-in-metall-tarifrunde-673152"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 6,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/FANUC_6-axis_welding_robots.jpg/1280px-FANUC_6-axis_welding_robots.jpg",
+            "credit": "Phasmatisnox",
+            "license": "CC BY 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:FANUC_6-axis_welding_robots.jpg",
+            "alt": "Gelbe Schweißroboter in einer Industrieanlage"
+          }
+        },
+        {
+          "id": "region-sportbaeder-donnerstag-zu",
+          "tier": "more",
+          "headline": "Alle Leipziger Sportbäder bleiben am Donnerstag geschlossen",
+          "summary": "Wegen eines Weiterbildungstags sind heute sämtliche Hallenbäder und Saunen der Leipziger Sportbäder zu. Ab Freitag läuft der Betrieb wieder normal.",
+          "body": "Die Leipziger Sportbäder bleiben heute, am Donnerstag, dem 15. Oktober, ganztägig geschlossen. Das betrifft alle Hallenbäder und Saunen des städtischen Unternehmens. Hintergrund ist ein unternehmensweiter Weiterbildungstag, wie t-online unter Berufung auf die Stadt Leipzig berichtet.\n\nDa die Beschäftigten an sieben Tagen pro Woche im Schichtbetrieb arbeiten, lässt sich eine gemeinsame Schulung nicht neben dem laufenden Betrieb organisieren. Ein einziger Schließtag soll die Einschränkungen für Schwimmer möglichst gering halten. Das Sportbad an der Elster hatte bereits am Mittwoch früher geschlossen, um den Tag vorzubereiten.\n\nWer Schwimmkurse oder Training plant, sollte sich auf Alternativen einstellen. Am Freitag, dem 16. Oktober, öffnen alle Bäder wieder zu den gewohnten Zeiten.\n\nFür Leipzigerinnen und Leipziger, die regelmäßig vor oder nach der Arbeit schwimmen gehen, heißt das: Der Termin fällt mitten in die Herbstferien, in denen viele Familien die Hallenbäder nutzen. Wer sicher gehen will, schaut vor dem Weg auf die Internetseite der Sportbäder oder der Stadt, ob einzelne Angebote wie Saunagänge morgen wieder verfügbar sind. Weitere Schließtage dieser Art sind in der Meldung nicht genannt.",
+          "source": "t-online Leipzig",
+          "url": "https://leipzig.t-online.de/region/leipzig/id_101481066/leipzig-warum-alle-sportbaeder-am-donnerstag-geschlossen-bleiben.html",
+          "sources": [
+            {
+              "name": "t-online Leipzig",
+              "url": "https://leipzig.t-online.de/region/leipzig/id_101481066/leipzig-warum-alle-sportbaeder-am-donnerstag-geschlossen-bleiben.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Neubau_Schwimmhalle_Ost_-_Leipzig_August_2023.jpg/1280px-Neubau_Schwimmhalle_Ost_-_Leipzig_August_2023.jpg",
+            "credit": "Frank Eritt",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Neubau_Schwimmhalle_Ost_-_Leipzig_August_2023.jpg",
+            "alt": "Neubau der Schwimmhalle Ost in Leipzig"
+          }
+        },
+        {
+          "id": "region-uni-leipzig-ddr-zentrum",
+          "tier": "more",
+          "headline": "Uni Leipzig baut Zentrum für DDR- und Transformationsforschung auf",
+          "summary": "Das Bundesforschungsministerium fördert das neue Zentrum mit knapp drei Millionen Euro bis 2031. Es soll Forschung zu DDR und Friedlicher Revolution bündeln.",
+          "body": "Die Universität Leipzig richtet ein Zentrum für vergleichende DDR- und Transformationsforschung ein. Das Bundesforschungsministerium fördert es mit knapp drei Millionen Euro; die Laufzeit reicht vom 1. Oktober 2026 bis zum 30. September 2031.\n\nDas Zentrum soll fächerübergreifende Initiativen bündeln, die sich mit der Friedlichen Revolution 1989 und der DDR befassen. Ein Schwerpunkt liegt nach Angaben von dpa darauf, wie der Umbruch in Ostdeutschland die Gesellschaft bis heute prägt. Zudem ist ein Austausch zwischen Forschenden und Öffentlichkeit geplant. Die Projektleitung liegt laut Leipziger Zeitung bei den Professoren Dirk van Laak vom Historischen Seminar und Monika Wohlrab-Sahr vom Institut für Kulturwissenschaften.\n\nFür Leipzig, den Ort der Montagsdemonstrationen, ist das ein passender Standort: Die Stadt bekommt damit eine feste Anlaufstelle für die wissenschaftliche Aufarbeitung der Wendezeit und ihrer Folgen.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/bildung/forschung/2026/10/forderung-fur-uni-leipzig-zentrum-vergleichende-ddr-transformationsforschung-673006",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/bildung/forschung/2026/10/forderung-fur-uni-leipzig-zentrum-vergleichende-ddr-transformationsforschung-673006"
+            },
+            {
+              "name": "Volksstimme (dpa)",
+              "url": "https://www.volksstimme.de/panorama/universitat-leipzig-baut-zentrum-fur-ddr-forschung-auf-4337603"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Leipzig_Neues_Augusteum_%282802%29.jpg/1280px-Leipzig_Neues_Augusteum_%282802%29.jpg",
+            "credit": "Michael.F.H.Barth",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Leipzig_Neues_Augusteum_(2802).jpg",
+            "alt": "Neues Augusteum, Hauptgebäude der Universität Leipzig"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sport",
+      "title": "Sport",
+      "emoji": "⚽",
+      "items": [
+        {
+          "id": "sport-bvb-verliert-bei-bodoe-glimt",
+          "tier": "top",
+          "headline": "BVB verliert in Norwegen bei Bodø/Glimt 0:1",
+          "summary": "Borussia Dortmund kassiert in der Champions League beim norwegischen Außenseiter die erste Niederlage der Ligaphase. Das Tor des Abends fällt kurz nach der Pause.",
+          "body": "Borussia Dortmund hat am zweiten Spieltag der Champions League eine überraschende Niederlage erlitten. Beim FK Bodø/Glimt verlor die Mannschaft von Trainer Niko Kovac am Mittwochabend 0:1 (0:0). Das einzige Tor erzielte Fredrik Sjøvold in der 52. Minute per Direktabnahme nach einem schnellen Angriff, die Vorlage kam laut SPORT1 von Sondre Auklend.\n\nDie Norweger waren über weite Strecken die bessere Mannschaft. Schon in der ersten Halbzeit hatten sie mehr Ballbesitz und mehr Abschlüsse: Sondre Fet traf in der 19. Minute nur den Pfosten, Ole Blomberg ließ acht Minuten später die große Chance zur Führung aus. Dortmund kam in diesen 45 Minuten kaum zu Abschlüssen, SPORT1 nennt einen Wert von 0,01 erwarteten Toren.\n\n## Kobel rettet zunächst, dann fällt das Tor\n\nAuch nach dem Wechsel blieb Bodø gefährlich. Andreas Helmersen hatte nach nur 23 Sekunden eine Großchance, Torwart Gregor Kobel hielt. Kurz darauf traf Sjøvold doch noch. Nach einer Stunde brachte Kovac vier frische Kräfte, darunter Nwaneri, Guirassy, Ryerson und Nmecha. Das Spiel des BVB wurde danach besser, doch Bodøs Torwart Nikita Haikin hielt mehrfach stark, etwa gegen Nwaneri und in der Nachspielzeit gegen Nmecha.\n\nNach dem Spiel gab sich die Dortmunder Seite selbstkritisch. Kovac sagte laut Sportschau: „Wir waren mit dem Ball nicht gut und auch gegen den Ball nicht gut.“ Verteidiger Waldemar Anton erklärte, es gebe keine Ausreden. Kovac nahm die Niederlage zudem ausdrücklich auf seine Kappe, wie in Videobeiträgen von SPORT1 zu sehen ist.\n\n## Einordnung\n\nFür Dortmund ist es nach dem 3:2 gegen Villarreal am ersten Spieltag der erste Dämpfer in der Ligaphase. Beide Teams stehen nach zwei Partien bei jeweils drei Punkten. Bodø hatte zum Auftakt beim FC Bayern 0:5 verloren, zeigte nun aber, wie unbequem der Klub auf heimischem Kunstrasen sein kann. Für den BVB geht es in den kommenden Wochen darum, die Ligaphase nicht zu einer Zitterpartie werden zu lassen. Dass der Auftritt in Norwegen offensiv so blass blieb, dürfte die Debatte über Kovacs Aufstellung und Wechselzeitpunkt anfachen.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/championsleague/bvb-bekommt-die-klasse-von-bodo-glimt-zu-spueren,spielbericht-bodo-glimt-borussia-dortmund-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/championsleague/bvb-bekommt-die-klasse-von-bodo-glimt-zu-spueren,spielbericht-bodo-glimt-borussia-dortmund-100.html"
+            },
+            {
+              "name": "SPORT1",
+              "url": "https://www.sport1.de/news/fussball/champions-league/2026/10/bvb-kassiert-ueberraschende-pleite-in-norwegen"
+            }
+          ],
+          "publishedAt": "2026-10-14T23:18:00+02:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Signal_iduna_park_stadium_dortmund_2.jpg/1280px-Signal_iduna_park_stadium_dortmund_2.jpg",
+            "credit": "Arne Müseler / www.arne-mueseler.com",
+            "license": "CC BY-SA 3.0 de",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Signal_iduna_park_stadium_dortmund_2.jpg",
+            "alt": "Das Dortmunder Stadion Signal Iduna Park von außen"
+          }
+        },
+        {
+          "id": "sport-stuttgart-gewinnt-in-bratislava",
+          "tier": "top",
+          "headline": "VfB Stuttgart siegt 3:0 bei Slovan Bratislava",
+          "summary": "Stuttgart steht nach zwei Spielen der Champions-League-Ligaphase bei sechs Punkten. Deniz Undav trifft erstmals in dieser Saison, Demirović macht spät alles klar.",
+          "body": "Der VfB Stuttgart hat in der Champions League den zweiten Sieg im zweiten Spiel eingefahren. Bei Slovan Bratislava gewann die Mannschaft von Trainer Sebastian Hoeneß am Mittwochabend 3:0 (1:0) und hat damit sechs Punkte auf dem Konto. Die Schwaben haben in der Ligaphase noch sechs Spiele vor sich, ein wichtiger Schritt Richtung K.o.-Runde ist getan.\n\n## Undav erlöst den VfB\n\nDie Tore erzielten Deniz Undav in der 29. Minute, ein Eigentor von Sandro Cruz in der 64. Minute und Ermedin Demirović in der 90. Minute. Für Undav war es laut SPORT1 der erste Treffer der Saison. Er hatte zunächst eine Doppelchance vergeben, dann traf er mit einem leicht abgefälschten Schuss zur Führung. Kurz vor der Pause setzte Josha Vagnoman einen Ball an die Latte, Slovans Torwart Dominik Takac hielt den Rückstand in Grenzen.\n\nNach dem Seitenwechsel wurde Bratislava stärker. Cruz traf selbst die Latte, und in der 53. Minute jubelten die Gastgeber über einen Ausgleich von Suleiman Camara, der wegen Abseits aberkannt wurde. Die Vorentscheidung fiel, als Cruz eine Hereingabe von Vagnoman ins eigene Tor lenkte. In der Schlussminute köpfte Demirović zum 3:0 ein.\n\n## Rotation ohne Bruch\n\nHoeneß wechselte im Vergleich zum letzten Spiel fünfmal und stellte unter anderem Fabian Bredlow ins Tor. Der Umbau kostete den VfB keine Stabilität. Bredlow musste kaum eingreifen, und die Stuttgarter kontrollierten vor allem die erste Halbzeit.\n\nNach Undavs Treffer sagte der Stürmer laut kicker, ihm sei klar gewesen, dass er irgendwann ohnehin treffen werde. Für die Bundesliga-Mannschaft zählt der Abend doppelt, weil sie in der Liga bisher nur sechs Punkte aus fünf Spielen geholt hat. Der Erfolg in der Slowakei gibt Selbstvertrauen vor den kommenden Aufgaben. Der BVB verlor am selben Abend in Norwegen. Tabellenplätze nennen die Spielberichte nicht.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/championsleague/stuttgart-mit-wichtigem-schritt-richtung-ko-runde,spielbericht-slovan-bratislava-stuttgart-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/championsleague/stuttgart-mit-wichtigem-schritt-richtung-ko-runde,spielbericht-slovan-bratislava-stuttgart-100.html"
+            },
+            {
+              "name": "SPORT1",
+              "url": "https://www.sport1.de/news/fussball/champions-league/2026/10/undav-trifft-vfb-mit-traumstart-in-der-koenigsklasse"
+            },
+            {
+              "name": "kicker",
+              "url": "https://newsfeed.kicker.de/news/aktuell"
+            }
+          ],
+          "publishedAt": "2026-10-14T23:09:00+02:00",
+          "importance": 6,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Mercedes_Benz_Arena_2010_08-29.jpg/1280px-Mercedes_Benz_Arena_2010_08-29.jpg",
+            "credit": "Hobby-Fotograf2013",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mercedes_Benz_Arena_2010_08-29.jpg",
+            "alt": "Das Stuttgarter Stadion vor einem Heimspiel des VfB"
+          }
+        },
+        {
+          "id": "sport-real-dreht-spiel-bei-as-rom",
+          "tier": "top",
+          "headline": "Real Madrid dreht in Rom ein 1:3 und gewinnt 4:3",
+          "summary": "Mit drei Toren in den letzten acht Minuten kippt Real das Champions-League-Spiel bei der AS Rom. Antonio Rüdiger köpft in der 90. Minute den Siegtreffer.",
+          "body": "Real Madrid hat in der Champions League eine spektakuläre Aufholjagd hingelegt. Bei der AS Rom gewannen die Spanier am Mittwochabend 4:3 (1:1), nachdem sie in der 57. Minute noch 1:3 zurückgelegen hatten. Real hat damit sechs Punkte aus zwei Spielen.\n\n## Roma führt, Real schlägt zurück\n\nDie Römer gingen in der 20. Minute durch Marten de Roon in Führung, Kylian Mbappé glich in der 25. Minute aus. Nach der Pause schien die Partie zu kippen: Donyell Malen traf in der 51. und 57. Minute und brachte Rom mit 3:1 in Front.\n\nDann kam Madrids Schlussspurt. Carlos Espi verkürzte in der 83. oder 84. Minute, die beiden Quellen weichen um eine Minute ab, kurz darauf glich Endrick in der 85. Minute zum 3:3 aus. In der 90. Minute köpfte Nationalspieler Antonio Rüdiger den Siegtreffer. Nach Angaben der Sportschau entstanden die drei späten Tore aus Ecken oder Flanken, an denen Arda Güler und Mbappé beteiligt waren.\n\n## Das Drumherum\n\nBeim Gegner Rom war der in Deutschland bekannte Malen der auffälligste Spieler, er bekam für seine zwei Tore aber keinen Punkt. Vinícius Júnior, der im Ligaspiel gegen Villarreal Rot gesehen hatte, wurde vom spanischen Verband für vier Ligaspiele gesperrt; Trainer José Mourinho ärgerte sich laut SPORT1 darüber.\n\nNeben diesem Spiel gab es am Spieltag weitere torreiche Partien. Paris Saint-Germain schlug Manchester City 4:2, und der FC Liverpool gewann in Linz 6:3. Insgesamt fielen an den beiden Spieltagsabenden 78 Tore, ein Rekord für die Ligaphase: Die bisherige Bestmarke lag bei 71 Treffern am dritten Spieltag der vergangenen Saison, wie SPORT1 berichtet.\n\nFür deutsche Fans bleibt die Partie auch wegen Rüdiger bemerkenswert, dessen später Kopfball für den Titelanwärter aus Madrid den Unterschied machte.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/championsleague/real-madrid-gewinnt-nach-13-noch-bei-as-rom,spielbericht-as-rom-real-madrid-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/championsleague/real-madrid-gewinnt-nach-13-noch-bei-as-rom,spielbericht-as-rom-real-madrid-100.html"
+            },
+            {
+              "name": "SPORT1",
+              "url": "https://www.sport1.de/news/fussball/champions-league/2026/10/ruediger-trifft-spaet-real-dreht-spiel-in-rom"
+            },
+            {
+              "name": "SPORT1 (Torrekord)",
+              "url": "https://www.sport1.de/news/fussball/champions-league/2026/10/torrekord-in-der-champions-league"
+            }
+          ],
+          "publishedAt": "2026-10-14T23:32:00+02:00",
+          "importance": 6,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Santiagobernabeupanoramav45.JPG/1280px-Santiagobernabeupanoramav45.JPG",
+            "credit": "لا روسا",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Santiagobernabeupanoramav45.JPG",
+            "alt": "Innenraum des Stadions Santiago Bernabéu in Madrid"
+          }
+        },
+        {
+          "id": "sport-magdeburg-schlaegt-kielce",
+          "tier": "more",
+          "headline": "SC Magdeburg schlägt Kielce und steht in der Hauptrunde",
+          "summary": "Der SC Magdeburg gewinnt in der Handball-Champions-League 30:27 gegen Kielce und hat nach vier Spielen die Hauptrunde sicher.",
+          "body": "Der SC Magdeburg hat in der Handball-Champions-League seinen vierten Sieg im vierten Gruppenspiel geholt und sich vorzeitig für die Hauptrunde qualifiziert. Gegen Industria Kielce setzte sich der deutsche Klub am Mittwochabend 30:27 durch, zur Pause hatte es noch 13:14 gestanden.\n\nDie erste Halbzeit verlief aus Magdeburger Sicht schwach. Trainer Bennet Wiegert nahm beim Stand von 6:9 eine Auszeit und forderte laut Sportschau von jedem mehr Energie. Felix Claar wurde durch einen Ellbogen von Aleks Vlah verletzt und musste behandelt werden. Den Rückstand holte vor allem Gísli Kristjánsson auf, der wie Kielces Dylan Nahi sechs Tore erzielte.\n\nNach dem Wechsel übernahm Magdeburg die Kontrolle. Torwart Matej Mandić parierte elf Würfe, Matthias Musche traf bei fünf Versuchen fünfmal. Kristjánsson stellte drei Minuten vor Schluss auf 30:25 und sorgte damit für die Entscheidung. Kielce muss nächste Woche gegen HC Kriens-Luzern in einem wichtigen Spiel antreten. Magdeburg ist nach Angaben von SPORT1 nah daran, die Gruppe als Erster zu beenden. Der Klub gehört zur Handball-Bundesliga, in der auch der SC DHfK Leipzig spielt.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/regional/mdr/handball-champions-league-sc-magdeburg-ks-kielce,bericht-scm-kielce-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/regional/mdr/handball-champions-league-sc-magdeburg-ks-kielce,bericht-scm-kielce-100.html"
+            },
+            {
+              "name": "SPORT1",
+              "url": "https://www.sport1.de/news/handball/champions-league/2026/10/handball-magdeburg-gewinnt-auch-zweites-duell-mit-kielce"
+            }
+          ],
+          "publishedAt": "2026-10-14T20:36:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/SC_Magdeburg_Handball_2.jpg/1280px-SC_Magdeburg_Handball_2.jpg",
+            "credit": "Goodway",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:SC_Magdeburg_Handball_2.jpg",
+            "alt": "Handballspiel des SC Magdeburg in der Magdeburger Halle"
+          }
+        },
+        {
+          "id": "sport-psg-schockt-manchester-city",
+          "tier": "more",
+          "headline": "PSG schlägt Manchester City trotz Haaland-Doppelpack 4:2",
+          "summary": "Paris führt zur Pause 3:0 und rettet den Vorsprung gegen City. Pep Guardiola sieht die Niederlage als Zuschauer von der Tribüne.",
+          "body": "Paris Saint-Germain hat Manchester City am zweiten Champions-League-Spieltag 4:2 (3:0) besiegt. Die Franzosen waren laut Sportschau von Beginn an die überlegene Mannschaft. Désiré Doué traf in der 13. Minute, Ousmane Dembélé in der 15. und Vitinha in der 32. Minute, sodass der Gast zur Pause schon klar zurücklag.\n\nNach dem Wechsel kam City durch zwei Treffer von Erling Haaland in der 53. und 75. Minute heran. Die Antwort der Pariser kam aber schnell: Maghnes Akliouche stellte in der 63. Minute mit einem Distanzschuss auf 4:1, wobei Torwart Gianluca Donnarumma den Ball falsch einschätzte. Der Treffer sicherte PSG letztlich den Sieg.\n\nManchester City hatte zuvor acht Pflichtspiele in Serie gewonnen, die Serie endet damit. Pep Guardiola verfolgte die Partie als Zuschauer von der Tribüne. Am Spieltag fielen laut SPORT1 insgesamt 78 Tore, ein neuer Rekord für einen Spieltag der Ligaphase; der FC Liverpool gewann dabei beim Linzer ASK 6:3, Bradley Barcola erzielte drei Treffer.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/championsleague/psg-schockt-manchester-city-vor-guardiolas-augen,spielbericht-manchester-city-paris-st-germain-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/championsleague/psg-schockt-manchester-city-vor-guardiolas-augen,spielbericht-manchester-city-paris-st-germain-100.html"
+            },
+            {
+              "name": "SPORT1",
+              "url": "https://www.sport1.de/news/fussball/champions-league/2026/10/torrekord-in-der-champions-league"
+            }
+          ],
+          "publishedAt": "2026-10-14T23:23:00+02:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Paris_Parc_des_Princes_1.jpg/1280px-Paris_Parc_des_Princes_1.jpg",
+            "credit": "Валерий Дед",
+            "license": "CC BY 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Paris_Parc_des_Princes_1.jpg",
+            "alt": "Das Pariser Stadion Parc des Princes"
+          }
+        },
+        {
+          "id": "sport-six-kings-slam-verschoben",
+          "tier": "more",
+          "headline": "Six Kings Slam in Riad wird auf Dezember verschoben",
+          "summary": "Nach tödlichen Huthi-Angriffen in Saudi-Arabien wird das Show-Turnier mit Zverev vom 21. bis 24. Oktober auf den 27. bis 30. Dezember verlegt.",
+          "body": "Das Tennis-Show-Turnier Six Kings Slam in Riad ist verschoben worden. Statt wie geplant vom 21. bis 24. Oktober soll die dritte Auflage nun vom 27. bis 30. Dezember stattfinden. Das gab Turki Al-Sheikh, Vorsitzender der saudischen General Entertainment Authority, am Mittwoch bekannt.\n\nAls Grund gelten tödliche Angriffe der Huthi-Miliz im Land. Zuletzt war der internationale Flughafen von Riad geschlossen worden, zunächst bis zum Wochenende, wie SPORT1 berichtet.\n\nFür Alexander Zverev bedeutet die Verlegung, dass er das Turnier in der kommenden Woche nicht wie geplant bestreitet. ATP-Punkte gibt es beim Six Kings Slam nicht, da er nicht zum Tour-Kalender gehört, dafür aber hohe Preisgelder: Sieger Jannik Sinner erhielt 2025 eine Siegprämie von 4,5 Millionen Dollar. Der neue Termin fällt in die Vorbereitungsphase auf die Australian Open im Januar in Melbourne. Zuvor hatte der Hamburger beim ATP-Turnier in Shanghai das Viertelfinale erreicht.",
+          "source": "SPORT1",
+          "url": "https://www.sport1.de/news/tennis/2026/10/angriffe-in-saudi-arabien-six-kings-slam-verschoben",
+          "sources": [
+            {
+              "name": "SPORT1",
+              "url": "https://www.sport1.de/news/tennis/2026/10/angriffe-in-saudi-arabien-six-kings-slam-verschoben"
+            },
+            {
+              "name": "kicker",
+              "url": "https://newsfeed.kicker.de/news/aktuell"
+            }
+          ],
+          "publishedAt": "2026-10-14T18:21:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Tennis_ball_on_tennis_court_20170619.jpg/1280px-Tennis_ball_on_tennis_court_20170619.jpg",
+            "credit": "Santeri Viinamäki",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tennis_ball_on_tennis_court_20170619.jpg",
+            "alt": "Tennisball auf einem Sandplatz"
+          }
+        },
+        {
+          "id": "sport-vinicius-vier-spiele-gesperrt",
+          "tier": "more",
+          "headline": "Vinícius Júnior verpasst nach Rot den Clásico",
+          "summary": "Der spanische Verband sperrt Reals Stürmer für vier Ligaspiele. Auch das Duell mit dem FC Barcelona am 25. Oktober fällt für ihn aus.",
+          "body": "Vinícius Júnior von Real Madrid ist für vier Ligaspiele gesperrt worden. Das Disziplinarkomitee des spanischen Verbands verkündete die Strafe am Mittwoch, 14. Oktober. Der Brasilianer hatte beim 1:0 gegen den FC Villarreal nach Videobeweis die Rote Karte gesehen, weil er Gegenspieler Nathan Saliba an den Haaren gezogen hatte. Er hatte dabei das vermeintliche 2:0 erzielt, den Gegenspieler aber in der Entstehung des Treffers zu Boden gerissen. Anschließend protestierte er heftig, Mitspieler mussten ihn zurückhalten.\n\nDie Sperre trifft Real in einer heiklen Phase. Vinícius fehlt am 18. Oktober gegen den FC Sevilla, am 25. Oktober im Clásico beim FC Barcelona, am 1. November gegen Racing Santander und am 7. November gegen den FC Valencia. In der Champions League ist er von der Ligasperre nicht betroffen.\n\nTrainer José Mourinho zeigte sich laut SPORT1 mit der Entscheidung unzufrieden und sagte die Pressekonferenz nach dem Villarreal-Spiel ab. Bei der AS Rom gewann Real am Mittwochabend trotzdem 4:3 und feierte ein spätes Comeback.",
+          "source": "SPORT1",
+          "url": "https://www.sport1.de/news/internationaler-fussball/la-liga/2026/10/nach-roter-karte-vinicius-jr-fuer-vier-spiele-gesperrt",
+          "sources": [
+            {
+              "name": "SPORT1",
+              "url": "https://www.sport1.de/news/internationaler-fussball/la-liga/2026/10/nach-roter-karte-vinicius-jr-fuer-vier-spiele-gesperrt"
+            },
+            {
+              "name": "kicker",
+              "url": "https://newsfeed.kicker.de/news/aktuell"
+            }
+          ],
+          "publishedAt": "2026-10-14T20:00:00+02:00",
+          "importance": 4,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Vinicius_Junior_Achraf_Hakimi_Brazil_V_Morocco_13_June_2026-119.jpg/1280px-Vinicius_Junior_Achraf_Hakimi_Brazil_V_Morocco_13_June_2026-119.jpg",
+            "credit": "Bryan Berlin",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vinicius_Junior_Achraf_Hakimi_Brazil_V_Morocco_13_June_2026-119.jpg",
+            "alt": "Vinícius Júnior im Spiel der brasilianischen Nationalmannschaft bei der WM 2026"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wissenschaft",
+      "title": "Wissenschaft & Raumfahrt",
+      "emoji": "🔭",
+      "items": [
+        {
+          "id": "wissenschaft-seaborgium-bindung-relativistisch",
+          "tier": "top",
+          "headline": "Seaborgium bindet schwächer als Wolfram – Relativität dreht den Trend um",
+          "summary": "Ein GSI-Team hat gemessen, dass Seaborgium-Hexacarbonyl schwächer gebunden ist als die Wolfram-Variante. Der Grund liegt in der Relativitätstheorie.",
+          "body": "Im Periodensystem werden die Bindungen bestimmter Metallverbindungen von oben nach unten normalerweise stärker. Bei Seaborgium, dem Element 106, gilt das nicht mehr: Ein internationales Team unter Federführung des GSI Helmholtzzentrums für Schwerionenforschung in Darmstadt hat gezeigt, dass die Bindung in Seaborgium-Hexacarbonyl, Sg(CO)6, schwächer ist als in der Wolfram-Verbindung W(CO)6. Die Arbeit erschien am 14. Oktober 2026 in „Nature“.\n\nDer Unterschied ist klein, aber aussagekräftig. Nach Angaben der Forschenden hält die Wolfram-Verbindung etwa 4 Kilojoule pro Mol fester zusammen. Damit kehrt sich der Trend um, der von Chrom über Molybdän bis zu Wolfram zu beobachten ist.\n\n## Ein Experiment mit 75 Atomen\n\nDie Messung war aufwendig. Das Team nutzte das Isotop Seaborgium-259, das nicht einmal eine halbe Sekunde existiert, und trennte es mit dem Separator TASCA ab. Insgesamt registrierten die Forschenden 75 Seaborgium-Atome, von denen nur drei die Hexacarbonyl-Verbindung bildeten. Zum Vergleich dienten Wolfram-Isotope: Dort bildeten 17 Prozent der Atome die entsprechende Verbindung. Sprecher der Gruppe ist Alexander Yakushev. Seaborgium-Hexacarbonyl war vor rund zehn Jahren erstmals am japanischen RIKEN Nishina Center hergestellt worden.\n\n## Warum Relativität die Chemie verändert\n\nIn sehr schweren Atomen bewegen sich die inneren Elektronen mit einem erheblichen Bruchteil der Lichtgeschwindigkeit. Dadurch ändert sich nach der Relativitätstheorie ihr Verhalten, und mit ihm die gesamte Elektronenhülle. Rechnungen, die diese Effekte ignorieren, sagen für Seaborgium sogar eine stärkere Bindung voraus. Erst mit Relativität stimmen Theorie und Messung überein.\n\nFür die Chemie der schwersten Elemente ist das ein wichtiger Prüfstein: Je weiter man im Periodensystem nach unten kommt, desto weniger darf man aus den leichteren Verwandten einfach hochrechnen. Christoph E. Düllmann, der bei GSI/FAIR und am Helmholtz-Institut Mainz die Chemie superschwerer Elemente leitet und an der Universität Mainz lehrt, gehört zum Team.\n\nFür Deutschland ist die Arbeit auch ein Zeichen für die Stärke der Grundlagenforschung am Standort Darmstadt, wo mit dem Beschleunigerprojekt FAIR die Forschung an exotischen Atomkernen weiter ausgebaut wird. Praktische Anwendungen sind nicht in Sicht; der Wert liegt im Verständnis, wo die Ordnung des Periodensystems an ihre Grenzen stößt.",
+          "source": "Spektrum der Wissenschaft",
+          "url": "https://www.spektrum.de/news/relativitaetstheorie-relativistischer-effekt-kehrt-trend-um/2349813",
+          "sources": [
+            {
+              "name": "Spektrum der Wissenschaft",
+              "url": "https://www.spektrum.de/news/relativitaetstheorie-relativistischer-effekt-kehrt-trend-um/2349813"
+            },
+            {
+              "name": "Phys.org",
+              "url": "https://phys.org/news/2026-10-superheavy-element-compound-reveals-weaker.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 6,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/GSI-Darmstadt-S%C3%BCdbau.jpg/1280px-GSI-Darmstadt-S%C3%BCdbau.jpg",
+            "credit": "commander-pirx",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:GSI-Darmstadt-Südbau.jpg",
+            "alt": "Gebäude des GSI Helmholtzzentrums für Schwerionenforschung in Darmstadt"
+          }
+        },
+        {
+          "id": "wissenschaft-perseverance-fahrrekord-mars",
+          "tier": "top",
+          "headline": "Perseverance bricht den Fahrrekord auf fremden Welten",
+          "summary": "Der NASA-Rover hat auf dem Mars 45,22 Kilometer zurückgelegt und damit Opportunity überholt. Er soll mindestens bis Ende 2028 weiterfahren.",
+          "body": "Der Mars-Rover Perseverance hält jetzt den Rekord für die längste Strecke, die ein Fahrzeug auf einem anderen Himmelskörper gefahren ist. Am 11. Oktober 2026 zeigte sein Kilometerzähler 45,22 Kilometer, wie die NASA in einem Blogbeitrag vom 12. Oktober mitteilte. Die bisherige Bestmarke hielt der Rover Opportunity mit 45,16 Kilometern, gefahren zwischen 2004 und 2018.\n\nDen Ausschlag gab eine Etappe von rund 91 Metern am 2.006. Marstag der Mission. Für die Strecke, für die Opportunity fast 15 Jahre brauchte, benötigte Perseverance nach NASA-Angaben etwa fünfeinhalb Jahre. Auch die Mondrekorde liegen damit hinter ihm: Apollo 17 kam auf 22,2 Meilen, Lunochod 2 auf 24,2 Meilen.\n\n## Weit über den Plan hinaus\n\nGeplant waren für die Mission höchstens 12,4 Meilen, also knapp 20 Kilometer. Steven Lee, Projektleiter der Rover Curiosity und Perseverance am Jet Propulsion Laboratory, erwartet, dass die Strecke in den kommenden Jahren weiter wächst. Ein wichtiger Faktor ist die Autonomie: Das Navigationssystem AutoNav bewertete laut NASA mehr als 90 Prozent der gesamten Fahrstrecke selbst, bei Opportunity und Spirit waren es rund 5 Prozent. An einem Marstag kann Perseverance bis zu 412 Meter schaffen. Pro Blick verarbeitet das System 600.000 Messpunkte, der erste Rover Sojourner kam auf 20.\n\n## Wohin die Reise geht\n\nAktuell ist der Rover unterwegs zu einem Gebiet namens „Idubi“ westlich des Jezero-Kraterrands, in dem das Team Spuren alter hydrothermaler Systeme zu finden hofft. Die NASA hat die erste Missionsverlängerung genehmigt, die im Oktober 2026 begann und bis etwa Ende 2028 läuft. Danach soll es entlang des Kraterrands nach Süden zu „Rainbow Falls“ gehen, einem etwa 100 Meter breiten Block uralter Kruste. Nach Angaben von Spektrum der Wissenschaft liegt das Fahrzeug inzwischen weit außerhalb des Kraters und erkundet Hochland, das vor etwa vier Milliarden Jahren entstand.\n\nPerseverance hat bislang 29 Gesteins- und Regolithproben gesammelt. Die Daten und Proben liefern Material für Forschende weltweit, auch in Deutschland.",
+          "source": "Spektrum der Wissenschaft",
+          "url": "https://www.spektrum.de/news/nasa-rover-perseverance-schafft-streckenrekord/2349658",
+          "sources": [
+            {
+              "name": "NASA Science",
+              "url": "https://science.nasa.gov/blogs/perseverance-mars-rover/2026/10/12/nasas-perseverance-sets-off-world-record-for-total-distance-driven/"
+            },
+            {
+              "name": "Spektrum der Wissenschaft",
+              "url": "https://www.spektrum.de/news/nasa-rover-perseverance-schafft-streckenrekord/2349658"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 5,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/NASA%27s_Ingenuity_helicopter_on_Mars_by_Perseverance_Mastcam-Z%2C_Sol_768_%2853475637956%29.jpg/1280px-NASA%27s_Ingenuity_helicopter_on_Mars_by_Perseverance_Mastcam-Z%2C_Sol_768_%2853475637956%29.jpg",
+            "credit": "semeion.photo Credit: NASA/JPL-Caltech/ASU/Simeon Schmauß",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:NASA%27s_Ingenuity_helicopter_on_Mars_by_Perseverance_Mastcam-Z,_Sol_768_(53475637956).jpg",
+            "alt": "Marsoberfläche mit dem Hubschrauber Ingenuity, aufgenommen von Perseverance"
+          }
+        },
+        {
+          "id": "wissenschaft-schwarze-loecher-gravitationslinse",
+          "tier": "top",
+          "headline": "Gravitationslinse verrät zwei Schwarze Löcher im frühen Universum",
+          "summary": "Astronomen sehen Hinweise auf zwei aktive supermassereiche Schwarze Löcher in nur 570 Lichtjahren Abstand. Die Studie ist noch nicht begutachtet.",
+          "body": "Ein Forschungsteam um Jianghao Huyan sieht Anzeichen für ein seltenes Paar: zwei aktiv wachsende, supermassereiche Schwarze Löcher, die nur etwa 175 Parsec, also rund 570 Lichtjahre, voneinander entfernt liegen. Das System MG B2016+112 stammt aus einer Zeit, als das Universum etwa zwei Milliarden Jahre alt war. Die Ergebnisse stehen als Preprint auf dem Server arXiv und sind noch nicht von unabhängigen Fachleuten begutachtet worden.\n\n## Eine natürliche Lupe\n\nMG B2016+112 ist eine weit entfernte, radiostarke aktive Galaxie bei der Rotverschiebung 3,273. Eine Galaxie im Vordergrund wirkt wie eine Linse und zerlegt das Bild in drei Teile, die als A, B und C bezeichnet werden. Dank dieser Vergrößerung lassen sich Details erkennen, die ohne Linse in der Ferne verschwimmen würden. Frühere Radio- und Röntgendaten hatten bereits zwei Kerne vermuten lassen.\n\nDas Team wertete Archivspektren des Instruments MUSE am Very Large Telescope der Europäischen Südsternwarte (ESO) aus dem Jahr 2018 aus. Entscheidend war das Verhältnis von Helium- zu Kohlenstoff-Emissionslinien: Es liegt in den Bildern A und B bei etwa 0,60 und 0,58, im Bild C bei etwa 0,36. Das spricht für unterschiedliche Quellen.\n\n## Massen und Fütterungsraten\n\nFür die Massen geben die Autoren Untergrenzen an: etwa 20 bis 23 Millionen Sonnenmassen für die Quelle in A und B sowie etwa 15 Millionen für die in C. Die Wachstumsraten, ausgedrückt als Eddington-Verhältnis, liegen höchstens bei rund 47 und 51 Prozent für A und B sowie bei etwa 4 Prozent für C.\n\n## Warum das zählt\n\nPaare Schwarzer Löcher in so kleinem Abstand gelten als Vorstufe von Verschmelzungen, bei denen Gravitationswellen entstehen. Wie oft solche Systeme im frühen Universum vorkommen, ist kaum bekannt, weil sie sich ohne Hilfe einer Gravitationslinse selten trennen lassen. Ein bestätigter Fall wäre ein Datenpunkt für Modelle, die erklären wollen, wie supermassereiche Schwarze Löcher so schnell wachsen konnten.\n\nWichtig bleibt die Einschränkung: Es handelt sich um Hinweise, nicht um einen Beweis, und die Massenangaben sind Untergrenzen. Die Prüfung durch andere Gruppen und weitere Beobachtungen stehen aus.",
+          "source": "scinexx",
+          "url": "https://www.scinexx.de/news/kosmos/gravitationslinse-deutet-auf-zwei-aktive-schwarze-loecher-mit-nur-570-lichtjahren-abstand-hin/",
+          "sources": [
+            {
+              "name": "scinexx",
+              "url": "https://www.scinexx.de/news/kosmos/gravitationslinse-deutet-auf-zwei-aktive-schwarze-loecher-mit-nur-570-lichtjahren-abstand-hin/"
+            },
+            {
+              "name": "Phys.org",
+              "url": "https://phys.org/news/2026-10-evidence-black-holes-parsecs-lurking.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 4,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Artist%E2%80%99s_impression_of_the_black_hole_inside_NGC_300_X-1_%28ESO_1004a%29.jpg/1280px-Artist%E2%80%99s_impression_of_the_black_hole_inside_NGC_300_X-1_%28ESO_1004a%29.jpg",
+            "credit": "ESO/L. Calçada/M.Kornmesser",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Artist%E2%80%99s_impression_of_the_black_hole_inside_NGC_300_X-1_(ESO_1004a).jpg",
+            "alt": "Künstlerische Darstellung eines Schwarzen Lochs (Symbolbild)"
+          }
+        },
+        {
+          "id": "wissenschaft-weisse-zwerge-farben",
+          "tier": "more",
+          "headline": "Weiße Zwerge leuchten manchmal grün, rosa oder tiefrot",
+          "summary": "Eine Auswertung der University of Warwick von 151 nahen Weißen Zwergen zeigt: Etwa jeder dreißigste hat eine ungewöhnliche Farbe.",
+          "body": "Weiße Zwerge gelten als weiß, doch das stimmt nicht immer. Ein Team der University of Warwick um Mark Hollands hat 151 Weiße Zwerge im Umkreis von 20 Parsec, rund 65 Lichtjahren, auf ihre Farben untersucht. Die Studie erschien in „RAS Techniques and Instruments“; Phys.org berichtete am 14. Oktober 2026.\n\nDas Ergebnis: 146 der Sterne erscheinen weiß, ihre mittlere Farbtemperatur liegt bei etwa 6.800 Kelvin. Fünf weichen ab, zwei gelbe und drei rosa, also etwa einer von dreißig. Der Stern WD J1330+6435 mit rund 4.000 Grad Celsius wirkt grün, weil Natrium in seiner Atmosphäre orangefarbenes Licht schluckt. WD J0902+2010 erscheint rosa, verursacht durch C2-Kohlenstoffmoleküle.\n\nBesonders auffällig ist WD J1011+2845 in 48 Lichtjahren Entfernung. Er könnte der röteste bisher erfasste Stern sein, der Großteil seines Lichts liegt jenseits von 600 Nanometern. Bei den kühlsten Weißen Zwergen erreicht die Dichte der Atmosphäre bis zu etwa 1 Gramm pro Kubikzentimeter, was die Farben mitbestimmt.\n\nWeiße Zwerge sind die ausgebrannten Kerne sonnenähnlicher Sterne, auch unsere Sonne wird einmal einer. Ihre Farben verraten Temperatur und Zusammensetzung der Atmosphäre, und damit auch Hinweise auf Reste zerstörter Planeten. Die Auswertung stützt sich bisher auf eine einzige Quelle, die Studie selbst konnten wir nicht einsehen.",
+          "source": "Phys.org",
+          "url": "https://phys.org/news/2026-10-green-pink-purple-astronomers-reveal.html",
+          "sources": [
+            {
+              "name": "Phys.org",
+              "url": "https://phys.org/news/2026-10-green-pink-purple-astronomers-reveal.html"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Artist%E2%80%99s_impression_of_debris_around_a_white_dwarf_star.jpg/1280px-Artist%E2%80%99s_impression_of_debris_around_a_white_dwarf_star.jpg",
+            "credit": "NASA, ESA, STScI, and G. Bacon (STScI)",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Artist%E2%80%99s_impression_of_debris_around_a_white_dwarf_star.jpg",
+            "alt": "Künstlerische Darstellung eines Weißen Zwergs mit Trümmerscheibe (Symbolbild)"
+          }
+        },
+        {
+          "id": "wissenschaft-supraleiter-strompulse-grenze",
+          "tier": "more",
+          "headline": "Ultrakurze Strompulse treiben Supraleiter über ihre übliche Grenze",
+          "summary": "Forschende des Max-Planck-Instituts in Hamburg haben mit Pikosekunden-Pulsen die intrinsische Stromgrenze von Niobnitrid gemessen.",
+          "body": "Supraleiter leiten Strom ohne Widerstand, aber nur bis zu einer Grenze: Wird die Stromdichte zu hoch, bricht der Zustand zusammen. Ein Team des Max-Planck-Instituts für Struktur und Dynamik der Materie in Hamburg um Eryin Wang, Guido Meier und Andrea Cavalleri hat diese Grenze nun mit einem Trick weit überschritten. Die Arbeit erschien in „Nature Physics“, scinexx berichtete am 14. Oktober 2026.\n\nNormalerweise erzeugen wandernde magnetische Wirbel Wärme, die den Supraleiter zerstört, lange bevor seine eigentliche Grenze erreicht ist. Die Forschenden schickten daher Strompulse von nur etwa zwei Pikosekunden Länge durch das Material, erzeugt mit Schaltern, die grüne Laserpulse von 300 Femtosekunden auslösen. In dieser Zeit können die Wirbel nicht weit wandern.\n\nBei Niobnitrid blieb der Zustand bei 7 Kelvin bis etwa 220 Milliarden Ampere pro Quadratmeter erhalten, rund das 2,2-Fache der Grenze im Gleichstrombetrieb. Der Übergang war scharf und passte zu theoretischen Rechnungen. Bei Yttrium-Barium-Kupferoxid (YBCO) nahm die Supraleitung dagegen allmählich ab, ohne klare Grenze; die Forschenden führen das auf die richtungsabhängige Energielücke zurück.\n\nEinschränkend gilt: Die Proben waren dünn und stark gekühlt, und die Ergebnisse zeigen keine höhere Dauerbelastbarkeit. Verglichen wurden nur zwei Materialien. Der Wert liegt im besseren Verständnis der fundamentalen Grenzen, nicht in einer unmittelbaren Anwendung.",
+          "source": "scinexx",
+          "url": "https://www.scinexx.de/news/physik/supraleiter-koennen-dank-ultrakurzer-strompulse-ihre-uebliche-grenze-ueberschreiten/",
+          "sources": [
+            {
+              "name": "scinexx",
+              "url": "https://www.scinexx.de/news/physik/supraleiter-koennen-dank-ultrakurzer-strompulse-ihre-uebliche-grenze-ueberschreiten/"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Levitation_meissner.jpg/1280px-Levitation_meissner.jpg",
+            "credit": "Julien Bobroff (user:Jubobroff), Frederic Bouquet (user:Fbouquet), LPS, Orsay, France",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Levitation_meissner.jpg",
+            "alt": "Magnet schwebt über einem Supraleiter (Symbolbild)"
+          }
+        },
+        {
+          "id": "wissenschaft-vertecs-minisatellit-erste-bilder",
+          "tier": "more",
+          "headline": "Mini-Satellit VERTECS liefert erste Bilder für Restlicht-Messung",
+          "summary": "Der japanische Kleinsatellit hat seine Tests bestanden und Nebel fotografiert. Er soll das kosmische optische Hintergrundlicht vermessen.",
+          "body": "Der Kleinsatellit VERTECS der Kyushu Institute of Technology unter Leitung von Kei Sano hat die ersten Wochen im Orbit hinter sich. Er startete am 12. Juni 2026 mit einer H3-Rakete vom Raumfahrtzentrum Tanegashima. Wie scinexx am 14. Oktober 2026 berichtet, funktionieren Energieversorgung, Kommunikation, Lageregelung, Datenverarbeitung und Instrumente.\n\nDie ersten Bilder zeigen den Cygnus-Schleier, den Lagunennebel und den Nordamerikanebel. Teils reichten Belichtungen von etwa einer Minute. Das Teleskop mit 35-Millimeter-Objektiv deckt je Farbkanal etwa 3 mal 3 Grad ab, rund 40 Vollmonde, und arbeitet in vier Bändern zwischen etwa 400 und 800 Nanometern.\n\nZiel ist das extragalaktische Hintergrundlicht im sichtbaren Bereich. Es stammt aus vielen Quellen, auch aus Galaxien, die einzeln zu schwach sind. Zuerst muss das Streulicht aus dem Sonnensystem und der Milchstraße herausgerechnet werden. Eine Testregion im Sternbild Bootes ohne helle Objekte zeigt laut Analyse, dass die Kamera Auflösung und Empfindlichkeit erreicht. Beteiligt sind auch Koji Takimoto von der Universität Tokio und Shuji Matsuura von der Kwansei-Gakuin-Universität.\n\nRegelmäßige Beobachtungen sind für etwa ein Jahr geplant. Neue Messwerte zum Hintergrundlicht gibt es noch nicht; die Bilder belegen bislang nur, dass das System funktioniert.",
+          "source": "scinexx",
+          "url": "https://www.scinexx.de/news/kosmos/mini-satellit-vertecs-startet-messungen-des-kosmischen-restlichts/",
+          "sources": [
+            {
+              "name": "scinexx",
+              "url": "https://www.scinexx.de/news/kosmos/mini-satellit-vertecs-startet-messungen-des-kosmischen-restlichts/"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Lagoon_Nebula_%28ESO%29.jpg/1280px-Lagoon_Nebula_%28ESO%29.jpg",
+            "credit": "ESO/S. Guisard",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lagoon_Nebula_(ESO).jpg",
+            "alt": "Der Lagunennebel (Messier 8)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gesundheit",
+      "title": "Gesundheit",
+      "emoji": "🩺",
+      "items": [
+        {
+          "id": "gesundheit-zusatzbeitrag-2027-stabil",
+          "tier": "top",
+          "headline": "Zusatzbeitrag der Krankenkassen bleibt 2027 bei 2,9 Prozent",
+          "summary": "Der Schätzerkreis rechnet für 2027 mit einem unveränderten durchschnittlichen Zusatzbeitrag. Gesundheitsminister Linnemann nennt das ein erreichtes Ziel, die Kassen bleiben skeptisch.",
+          "body": "Der durchschnittliche Zusatzbeitragssatz in der gesetzlichen Krankenversicherung soll im kommenden Jahr bei 2,9 Prozent liegen und damit auf dem Niveau von 2026 bleiben. Das ergibt die Schätzung des Schätzerkreises beim Bundesamt für Soziale Sicherung, die am Mittwoch bekannt wurde. Veränderungen bei den Finanzreserven der einzelnen Kassen sind darin nicht berücksichtigt.\n\nGesundheitsminister Carsten Linnemann (CDU) sprach von einem erreichten Ziel. Ausschlaggebend sei das im Sommer beschlossene GKV-Spargesetz, das die Kassen laut Bundesgesundheitsministerium 2027 um bis zu 15 Milliarden Euro entlastet. Zugleich räumte der Minister ein, dass die Finanzlage angespannt bleibe und die strukturellen Probleme der gesetzlichen Krankenversicherung noch nicht gelöst seien.\n\n## Die Zahlen der Schätzung\n\nFür 2026 erwartet der Schätzerkreis Einnahmen des Gesundheitsfonds von 312,2 Milliarden Euro, bei erwarteten Ausgaben der Kassen von 370,1 Milliarden Euro. Für 2027 liegen die Prognosen bei 320,7 Milliarden Euro Einnahmen und 378,1 Milliarden Euro Ausgaben. Zusätzlich sind 2,4 Milliarden Euro eingeplant, um die Liquiditätsreserve des Fonds aufzufüllen.\n\nNach Angaben des Ministeriums sind die Ausgaben seit 2024 um knapp 8 Prozent pro Jahr gestiegen. Für 2026 werden knapp 7 Prozent erwartet, für 2027 unter 3 Prozent. Der Zusatzbeitrag ist seit 2022 von 1,3 auf 2,9 Prozent gestiegen. Das Ministerium legt den Durchschnittswert zum 1. November offiziell fest; jede Krankenkasse setzt ihren eigenen Satz und kann davon abweichen.\n\n## Reaktionen\n\nDer SPD-Gesundheitsexperte Christos Pantazis nannte die Schätzung eine gute Nachricht für rund 75 Millionen Versicherte. Der Ersatzkassenverband vdek, vertreten durch Verbandschefin Ulrike Elsner, hält es dagegen für fraglich, ob die Sparmaßnahmen ausreichen. Der AOK-Bundesverband forderte, bei Effizienzmaßnahmen und Strukturreformen nicht nachzulassen.\n\n## Was jetzt folgt\n\nAm Donnerstag berät der Bundestag erneut über die Kassenfinanzen, im Zusammenhang mit der Notfallreform und letzten Änderungen am Sparpaket. Für Versicherte in Sachsen heißt das: Der Durchschnittswert bleibt stabil, ob die eigene Kasse im Januar tatsächlich bei 2,9 Prozent bleibt, entscheidet sich aber erst bei den einzelnen Kassen. Wer mit seinem Beitrag unzufrieden ist, kann bei Erhöhungen ein Sonderkündigungsrecht nutzen, sobald die Kasse ihren Satz anhebt.",
+          "source": "Pharmazeutische Zeitung",
+          "url": "https://www.pharmazeutische-zeitung.de/linnemann-verspricht-stabile-beitragssaetze-171120/",
+          "sources": [
+            {
+              "name": "Pharmazeutische Zeitung",
+              "url": "https://www.pharmazeutische-zeitung.de/linnemann-verspricht-stabile-beitragssaetze-171120/"
+            },
+            {
+              "name": "APOTHEKE ADHOC (dpa)",
+              "url": "https://www.apotheke-adhoc.de/nachrichten/detail/politik/linnemann-ziel-erreicht/"
+            }
+          ],
+          "publishedAt": "2026-10-14T20:20:00+02:00",
+          "importance": 8,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/2023_Stetoskop.jpg/1280px-2023_Stetoskop.jpg",
+            "credit": "Jacek Halicki",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:2023_Stetoskop.jpg",
+            "alt": "Stethoskop auf hellem Untergrund"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "gesundheit-pflegestrukturkommission-startet",
+          "tier": "top",
+          "headline": "Pflegestrukturkommission startet: Reform soll im Juli 2027 greifen",
+          "summary": "Das Kabinett hat eine 13-köpfige Expertenkommission für den Umbau der Pflegeversicherung eingesetzt. Erste Vorschläge sollen Ende Januar vorliegen, Kritik kommt aus der Praxis.",
+          "body": "Die Bundesregierung hat eine Pflegestrukturkommission eingesetzt, die Vorschläge für einen grundlegenden Umbau der Pflegeversicherung erarbeiten soll. Erste Ergebnisse erwartet das Bundesgesundheitsministerium Ende Januar 2027, die Strukturreform soll am 1. Juli 2027 in Kraft treten. Der Beschluss des Kabinetts war zuvor kurzfristig verschoben worden.\n\nDen Vorsitz übernimmt der frühere Caritas-Generalsekretär Georg Cremer, Co-Vorsitzende ist Gabriele Kuhn-Zuber, Präsidentin der Katholischen Hochschule für Sozialwesen Berlin. Die 13 Mitglieder sind überwiegend Wissenschaftler, Volkswirte und Juristen, darunter Heinz Rothgang, Thorsten Kingreen und Stefan Huster. Auch der frühere AOK-Bundesverbandschef Jürgen Graalmann gehört dazu.\n\n## Der Auftrag\n\nDie Kommission soll die Ausgaben der sozialen Pflegeversicherung analysieren, eine tragfähige Finanzierung empfehlen und Vorschläge für eine effizientere Versorgung machen. Prävention und Rehabilitation sollen besser mit der akuten Behandlung und der Pflege verzahnt werden. Ziel ist, den Beitragssatz auch über 2030 hinaus stabil zu halten. Geprüft werden unter anderem eine stärkere Beteiligung der Privatversicherten, eine Begrenzung der Eigenanteile und Elemente der Kapitaldeckung. Nach Angaben des Ärzteblatts geht es um eine „angemessene Teilabsicherung“, nicht um eine Vollabsicherung.\n\nGesundheitsminister Carsten Linnemann (CDU) nannte Pflege ein „Megathema dieses Jahrzehnts“. Der Auftrag der Koalition sei klar: Pflege müsse bezahlbar und zielgerichtet sein.\n\n## Kritik und Zeitdruck\n\nOliver Blatt vom GKV-Spitzenverband will, dass die Gesetzgebung unmittelbar nach den Ergebnissen im Januar beginnt. Carola Reimann vom AOK-Bundesverband warnte, die Pflegeversicherung sei schon im Sommer 2027 nicht mehr ausreichend finanziert; es wäre das fünfte Darlehen in Folge. Andreas Storm von der DAK-Gesundheit fehlt die Vorstellungskraft, wie bis Ende Januar ein tragfähiges Konzept entstehen soll. Die Pflegeverbände VDAB und bpa bemängeln, dass keine Praktiker aus Pflegeeinrichtungen in der Kommission sitzen.\n\n## Einordnung\n\nBereits im September hatte das Kabinett ein erstes Hilfspaket beschlossen, das unter anderem die Beiträge für Kinderlose zum 1. Januar 2027 um 0,3 Prozentpunkte anhebt. Für Pflegebedürftige und Angehörige in Sachsen ist vor allem die Frage der Eigenanteile entscheidend, die in Heimen weiter steigen. Die Kommission hat damit wenige Monate Zeit für eine Weichenstellung, die Beitragszahler und Pflegebedürftige gleichermaßen betrifft.",
+          "source": "Pharmazeutische Zeitung",
+          "url": "https://www.pharmazeutische-zeitung.de/pflegekommission-nimmt-arbeit-auf-171100/",
+          "sources": [
+            {
+              "name": "Pharmazeutische Zeitung",
+              "url": "https://www.pharmazeutische-zeitung.de/pflegekommission-nimmt-arbeit-auf-171100/"
+            },
+            {
+              "name": "APOTHEKE ADHOC",
+              "url": "https://www.apotheke-adhoc.de/nachrichten/detail/politik/pflegestrukturkommission-nimmt-arbeit-auf/"
+            },
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/pflichtenheft-fur-pflegekommission-losungssuche-fur-angemessene-teilabsicherung-257f7dc7-ff73-4d63-8a0f-e025ffb259c2"
+            }
+          ],
+          "publishedAt": "2026-10-14T15:05:00+02:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/2020_Sfigmomanometr_elektroniczny.jpg/1280px-2020_Sfigmomanometr_elektroniczny.jpg",
+            "credit": "Jacek Halicki",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:2020_Sfigmomanometr_elektroniczny.jpg",
+            "alt": "Elektronisches Blutdruckmessgerät mit Manschette"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "gesundheit-impfen-apotheken-curriculum-streit",
+          "tier": "top",
+          "headline": "Streit um Impfschulung: Ärzte lehnen Apotheker-Curriculum ab",
+          "summary": "Die Bundesapothekerkammer hat ein Schulungskonzept für Impfungen in Apotheken beschlossen. Die Bundesärztekammer kritisiert es als zu knapp und nicht abgestimmt.",
+          "body": "Zwischen Apothekern und Ärzten ist ein Streit über die Qualifikation für Impfungen in Apotheken entbrannt. Die Mitgliederversammlung der Bundesapothekerkammer (BAK) hat am Dienstag ein Fortbildungscurriculum beschlossen, die Bundesärztekammer (BÄK) lehnt es ab. Sie sieht weiterhin einen fachlichen Dissens und bemängelt, das Papier sei nicht mit der Ärzteseite abgestimmt.\n\n## Was das Gesetz vorsieht\n\nNach dem Apothekenversorgung-Weiterentwicklungsgesetz dürfen Apotheken nach einer Schulung alle Totimpfstoffe verabreichen. Bisher sind in Apotheken nur Grippe- und Corona-Impfungen erlaubt. Das Gesetz verlangt, dass die Mustercurricula gemeinsam mit der Bundesärztekammer entwickelt werden. Genau das sei nicht geschehen, argumentiert die BÄK.\n\nBAK-Präsident Armin Hoffmann erklärte, die Grundlage für weitere Impfungen in Apotheken sei geschaffen, die Schulungsunterlagen würden vorbereitet und die Veranstaltungen geplant. Er rechnet damit, dass alle Totimpfstoffe spätestens ab Anfang 2027 von den gesetzlichen Kassen bezahlt werden, abhängig von den noch offenen Honorarverhandlungen.\n\n## Der Umfang der Schulung\n\nDas Curriculum sieht für bislang ungeschulte Apotheker 23 Unterrichtseinheiten à 45 Minuten vor, von denen 12 Stunden im Selbststudium absolviert werden können. Wer bereits gegen Grippe und Covid-19 impft, braucht 14 Stunden, mit zusätzlicher subkutaner Impfung 15 Stunden. Die BÄK bringt dagegen bis zu 100 Fortbildungsstunden ins Spiel, nennt aber keinen eigenen Umfang.\n\nBÄK-Präsident Klaus Reinhardt hält den Lehrplan für zu knapp und wirft der BAK vor, an einem „Schnellkurs“ festzuhalten. Besonders die Beratung bei Reiseimpfungen mit Anamnese, Indikationsstellung und Komplikationsmanagement komme zu kurz. Zugleich verwies er darauf, dass man ohne Medizinstudium kaum in eineinhalb Schulungstagen die nötige Qualifikation erwerbe.\n\n## Einordnung\n\nFür Patienten bedeutet der Streit zunächst Unsicherheit: Wann und in welchem Umfang Impfungen jenseits von Grippe und Covid-19 in Apotheken möglich werden, hängt von Schulung und Vergütung ab. Besonders im ländlichen Raum Nordsachsens, wo Arztpraxen weit auseinanderliegen, könnte das Angebot den Zugang erleichtern. Ob der Konflikt über die Qualitätsanforderungen noch beigelegt wird, ist offen.",
+          "source": "Pharmazeutische Zeitung",
+          "url": "https://www.pharmazeutische-zeitung.de/aerzte-distanzieren-sich-von-bak-impfcurriculum-171098/",
+          "sources": [
+            {
+              "name": "Pharmazeutische Zeitung",
+              "url": "https://www.pharmazeutische-zeitung.de/aerzte-distanzieren-sich-von-bak-impfcurriculum-171098/"
+            },
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/verabschiedung-eines-curriculums-streit-ums-impfen-in-apotheken-bec062c6-268f-4b9e-b3f8-cf2239a966b4"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Norderney%2C_Kur-Apotheke_--_2025_--_9417.jpg/1280px-Norderney%2C_Kur-Apotheke_--_2025_--_9417.jpg",
+            "credit": "Dietmar Rabich",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Norderney,_Kur-Apotheke_--_2025_--_9417.jpg",
+            "alt": "Schriftzug „Kur-Apotheke“ an einer Hauswand"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "gesundheit-ebola-kongo-ueber-9000-faelle",
+          "tier": "more",
+          "headline": "Ebola im Kongo: Mehr als 9.000 Fälle, kein zugelassener Impfstoff",
+          "summary": "Der Bundibugyo-Ausbruch in der DR Kongo ist der schwerste in der Geschichte des Landes. Die WHO sieht ihn noch nicht unter Kontrolle.",
+          "body": "In der Demokratischen Republik Kongo sind nach Angaben des Gesundheitsinstituts des Landes 9.066 Ebola-Infektionen registriert, 4.381 Menschen starben, was einer Sterblichkeit von 48,3 Prozent entspricht. 2.389 Betroffene gelten als genesen. Experten gehen davon aus, dass die tatsächliche Zahl höher liegt.\n\nDer Ausbruch wurde Mitte Mai offiziell festgestellt, sich aber wohl schon Monate zuvor ausgebreitet. Es ist die schwerste Ebola-Epidemie in der Geschichte des Landes. Ausgelöst wird sie durch die Bundibugyo-Variante des Virus, für die es weder einen zugelassenen Impfstoff noch eine zugelassene Therapie gibt. Mehrere Kandidaten werden erprobt.\n\nChikwe Ihekweazu, Leiter des WHO-Gesundheitsnotfallprogramms, sagte beim World Health Summit in Berlin, man sei „überhaupt nicht in Feierlaune“. Der Ausbruch sei nicht unter Kontrolle, auch die humanitäre Krise und die Konflikte in der Region erschwerten die Lage. Klinische Studien mit zwei Impfstoffkandidaten könnten frühestens in diesem Monat beginnen.\n\nEine unmittelbare Gefahr für Deutschland ist aus der Meldung nicht abzulesen. Sie zeigt aber, wie lange die Entwicklung von Impfstoffen gegen seltenere Virusvarianten dauert. Die Angaben stützen sich auf einen AFP-Bericht im Deutschen Ärzteblatt.",
+          "source": "Deutsches Ärzteblatt",
+          "url": "https://www.aerzteblatt.de/news/dr-kongo-zahl-der-ebola-falle-auf-mehr-als-9000-gestiegen-fdc400ce-41e9-457d-a14d-629b9c20f6fc",
+          "sources": [
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/dr-kongo-zahl-der-ebola-falle-auf-mehr-als-9000-gestiegen-fdc400ce-41e9-457d-a14d-629b9c20f6fc"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Rettungswagen_BRK_Sprinter-20180708-RM-172654.jpg/1280px-Rettungswagen_BRK_Sprinter-20180708-RM-172654.jpg",
+            "credit": "Reinhold Möller Ermell",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rettungswagen_BRK_Sprinter-20180708-RM-172654.jpg",
+            "alt": "Rettungswagen des Bayerischen Roten Kreuzes mit Blaulicht"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "gesundheit-who-hpv-impfung-vier-bis-achtjaehrige",
+          "tier": "more",
+          "headline": "WHO-Experten empfehlen HPV-Impfung schon für Vier- bis Achtjährige",
+          "summary": "Die Impfberater der WHO schlagen vor, Mädchen unter bestimmten Bedingungen früher gegen HPV zu impfen. Weltweit liegt die Impfquote bei 33 Prozent, in Deutschland bei 55 Prozent.",
+          "body": "Die Strategische Beratungsgruppe der WHO für Impffragen (SAGE) empfiehlt, Mädchen im Alter von vier bis acht Jahren unter bestimmten Bedingungen routinemäßig gegen humane Papillomviren (HPV) zu impfen. Das sagte SAGE-Sprecher Anthony Scott am Dienstag. Später könnten auch Jungen und Männer eine Einzeldosis erhalten.\n\nHintergrund ist die niedrige Impfquote: Weltweit sind nur 33 Prozent geimpft, das Ziel liegt bei 90 Prozent. Um dieses Ziel zu erreichen, gilt laut SAGE eine Einzeldosis für Mädchen von neun bis 14 Jahren als wirksamster Ansatz. Bereits 2022 hatte die WHO festgestellt, dass eine Dosis in dieser Altersgruppe ähnlich schützt wie zwei.\n\nIn Deutschland empfiehlt die STIKO die Impfung mit zwei Dosen für Kinder von neun bis 14 Jahren, Nachholen ist bis zum 18. Geburtstag möglich. Die Impfquote liegt bei 55 Prozent. Laut ECDC-Bericht haben in Europa knapp 70 Prozent der 15-jährigen Mädchen mindestens eine Dosis erhalten, rund 55 Prozent beide; dieser Wert stagniert seit drei Jahren.\n\nGebärmutterhalskrebs ist weltweit die fünfthäufigste Krebsart bei Frauen, nach WHO-Angaben für 2024 mit rund 600.000 Neuerkrankungen und 280.000 Todesfällen. Ein HPV-Impfstoff ist in rund 165 Ländern verfügbar. Für die deutsche Empfehlung ändert die Aussage der WHO-Berater zunächst nichts; die STIKO müsste sie eigenständig bewerten.",
+          "source": "Deutsches Ärzteblatt",
+          "url": "https://www.aerzteblatt.de/news/schutz-vor-krebs-who-experten-empfehlen-hpv-impfung-fur-vier-bis-achtjahrige-4096c462-8336-4ccc-bfc0-89972ebfdbc4",
+          "sources": [
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/schutz-vor-krebs-who-experten-empfehlen-hpv-impfung-fur-vier-bis-achtjahrige-4096c462-8336-4ccc-bfc0-89972ebfdbc4"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Vero_Cell_COVID-19_vaccine_vial%2C_cotton_swab_and_syringe.jpg/1280px-Vero_Cell_COVID-19_vaccine_vial%2C_cotton_swab_and_syringe.jpg",
+            "credit": "Ajay Kumar Chaurasiya",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vero_Cell_COVID-19_vaccine_vial,_cotton_swab_and_syringe.jpg",
+            "alt": "Impfstofffläschchen, Wattebausch und Spritze"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "gesundheit-charite-zentrum-hiv-heilung",
+          "tier": "more",
+          "headline": "Charité eröffnet Zentrum für HIV-Heilungsforschung",
+          "summary": "Das Berlin Center for HIV Cure (BeCURE) bündelt Grundlagen- und klinische Forschung. Weltweit gelten bisher 13 Menschen als von HIV geheilt.",
+          "body": "Die Berliner Charité hat das Zentrum BeCURE (Berlin Center for HIV Cure) eröffnet. Direktor ist Christian Gaebler. Das Zentrum stützt sich auf fünf Säulen: Grundlagenforschung, klinische Forschung, qualitative Sozialforschung, ein Community Collaboration Board und Computational Science. Laut Deutschem Ärzteblatt lebt in Berlin jeder fünfte Mensch mit HIV in Deutschland.\n\nDie Charité hat in diesem Feld Geschichte: 2008 wurde dort Timothy Ray Brown, der „Berliner Patient“, per Stammzelltransplantation von HIV geheilt. Beim „Zweiten Berliner Patienten“ erfolgte 2015 eine Stammzelltransplantation wegen Leukämie, 2018 beendete er die antiretrovirale Therapie, 2024 wurde seine Heilung bekannt. Auch 2026 ist das Virus nicht nachweisbar.\n\nWeltweit gelten 13 Menschen als geheilt, alle nach einer Stammzelltransplantation. Dieses Verfahren birgt ein Sterberisiko von etwa 50 Prozent und kommt für die breite Masse der Betroffenen nicht infrage. Mit Immuntherapien konnten laut Studien 10 bis 20 Prozent der Behandelten mehr als zehn Jahre ohne antiretrovirale Medikamente leben.\n\nWeltweit leben rund 41 Millionen Menschen mit HIV, etwa ein Viertel hat keinen Zugang zu einer Therapie. Eine Heilung für alle ist damit weiter nicht in Sicht; wirksame Medikamente bleiben der Standard.",
+          "source": "Deutsches Ärzteblatt",
+          "url": "https://www.aerzteblatt.de/news/charite-eroffnet-zentrum-fur-hiv-heilungsforschung-021b5c23-a677-4639-9140-a9acb4b58e61",
+          "sources": [
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/charite-eroffnet-zentrum-fur-hiv-heilungsforschung-021b5c23-a677-4639-9140-a9acb4b58e61"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Baffled_Erlenmeyer_Flask_2.jpg/1280px-Baffled_Erlenmeyer_Flask_2.jpg",
+            "credit": "PhotoCave",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Baffled_Erlenmeyer_Flask_2.jpg",
+            "alt": "Leerer Erlenmeyerkolben aus Glas"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "klima",
+      "title": "Klima & Umwelt",
+      "emoji": "🌱",
+      "items": [
+        {
+          "id": "klima-ikea-holz-schutzgebiete",
+          "tier": "top",
+          "headline": "Greenpeace wirft Ikea Holz aus rumänischem Schutzgebiet vor",
+          "summary": "Greenpeace zufolge gelangte Holz aus einem Natura-2000-Gebiet in den Karpaten in Ikeas Lieferkette. Der Konzern weist die Kernvorwürfe zurück, eine direkte Spur zu bestimmten Produkten fehlt.",
+          "body": "Die Umweltorganisation Greenpeace erhebt schwere Vorwürfe gegen den Möbelkonzern Ikea. Holz aus einem Kahlschlag in einem Natura-2000-Schutzgebiet im Forstbezirk Rusca Montană in den rumänischen Karpaten soll nach ihrer Darstellung in die Lieferkette des Unternehmens gelangt sein. Ikea weist die zentralen Vorwürfe zurück.\n\nGreenpeace-Aktive protestierten am Dienstag mit rund 20 Personen vor dem Ikea-Haus in Hamburg-Altona. Auf einem Banner an der Fassade stand „Ikea vermöbelt Schutzgebiete“. Der Protest fällt in die Woche vor der UN-Biodiversitätskonferenz, die am 19. Oktober im armenischen Jerewan beginnt.\n\n## Was Greenpeace belegt – und was nicht\n\nNach Angaben der Organisation war der abgeholzte Wald rund 170 Jahre alt und FSC-zertifiziert. Die Fläche war für einen strengeren Schutz vorgeschlagen worden und wurde nach dem Einschlag 2026 aus dieser Vorschlagsliste genommen; warum, ist unklar. Verwaltet wird sie von der staatlichen Forstverwaltung Romsilva. Greenpeace verfolgte Lieferungen zu Firmen, die unter anderem für Ikea Babybetten, Wickeltische, Hocker und Löffel fertigen. Dass Holz genau dieser Fläche in solchen Produkten steckt, hat die Organisation nicht bewiesen.\n\nEine Satellitenanalyse über 25 Jahre untersuchte den Kronendachverlust in Polen, Schweden, Deutschland, Rumänien und Finnland, die zusammen fast die Hälfte von Ikeas Frischholz liefern. Auch in bestehenden oder geplanten Schutzgebieten gab es Verluste. Das heißt aber nicht zwingend dauerhafte Entwaldung, und der Anteil Ikeas bleibt offen.\n\n## Ikea widerspricht\n\nDer Konzern erklärt, das Gebiet sei als Wirtschaftswald ausgewiesen, stehe nicht im rumänischen Register der Ur- und Naturwälder, und der Einschlag sei nach den Natura-2000-Regeln erlaubt gewesen. Das Foto zeige nur einen kleinen, nicht repräsentativen Ausschnitt; die Wiederaufforstung wolle man beobachten. Im Geschäftsjahr 2025 stammten laut Ikea rund 96,5 Prozent des Holzes und Papiers aus FSC-zertifizierter oder recycelter Quelle, etwa 19 Prozent des Holzes waren recycelt.\n\nGreenpeace hält das für unzureichend: Es fehlten messbare Biodiversitätsziele, und Herkunftsnachweise zeigten nur, wo geschlagen wurde, nicht ob Lebensräume zerstört wurden. Die Organisation fordert einen sofortigen Einkaufsstopp für Holz aus besonders geschützten Wäldern. Das Thema berührt Verbraucher auch in Sachsen: Deutschland ist Ikeas größter Markt mit mehr als 50 Einrichtungshäusern.",
+          "source": "Klimareporter",
+          "url": "https://www.klimareporter.de/international/ikea-unter-druck-wegen-holz-aus-schutzgebieten",
+          "sources": [
+            {
+              "name": "Klimareporter",
+              "url": "https://www.klimareporter.de/international/ikea-unter-druck-wegen-holz-aus-schutzgebieten"
+            },
+            {
+              "name": "Greenpeace Presseportal",
+              "url": "https://presseportal.greenpeace.de/273239-greenpeace-aktive-protestieren-an-ikea-fassade-gegen-waldzerstorung/"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/IKEA_store%2C_IKEA%2C_Rostov-on-Don%2C_Russia.jpg/1280px-IKEA_store%2C_IKEA%2C_Rostov-on-Don%2C_Russia.jpg",
+            "credit": "Vyacheslav Argenberg",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:IKEA_store,_IKEA,_Rostov-on-Don,_Russia.jpg",
+            "alt": "Blick in ein Ikea-Einrichtungshaus"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "klima-kohlefinanzierung-banken-urgewald",
+          "tier": "top",
+          "headline": "Deutsche Bank bleibt größter deutscher Geldgeber der Kohle",
+          "summary": "Laut urgewald-Studie sinkt die Kohlefinanzierung europäischer Banken deutlich, deutsche Institute halten ihr Niveau. Die Deutsche Bank vergab 2022 bis 2025 rund 2,3 Milliarden US-Dollar.",
+          "body": "Europäische Banken fahren ihre Kohlefinanzierung zurück, deutsche Großbanken aber kaum. Das zeigt die Recherche „Still Banking on Coal“ der Umweltorganisation urgewald, die Energiezukunft am 14. Oktober aufgriff. Die Deutsche Bank steht dabei besonders in der Kritik.\n\n## Europa im Rückzug, Deutschland nicht\n\nBanken mit Sitz in der EU senkten ihre Kohlefinanzierung von 2022 bis 2025 um 46 Prozent, von 4,8 auf 2,6 Milliarden US-Dollar. Besonders stark reduzierten Institute aus der Schweiz und Österreich: Die UBS fiel von 675 Millionen Dollar (2022) auf knapp 56 Millionen (2025), die Erste Group von 156 Millionen auf 1,4 Millionen. Die Erste Group verschob ihren Kohleausstieg allerdings von 2030 auf 2035 und erlaubt Ausnahmen für Bestandskunden.\n\nDeutsche Geschäftsbanken vergaben im Untersuchungszeitraum zusammen rund 5 Milliarden Dollar an Kohleunternehmen. Das ist laut urgewald Platz 8 weltweit und Platz 2 in Europa hinter Großbritannien. Auf die Deutsche Bank entfallen 2,3 Milliarden Dollar, also 47 Prozent; allein 2025 waren es 425 Millionen. Die Commerzbank kommt auf 1 Milliarde Dollar. Während Landesbanken ihr Engagement teils deutlich senkten, blieb es bei Deutscher Bank, Commerzbank und DZ Bank insgesamt etwa auf gleichem Niveau.\n\n## Vorwürfe gegen die Deutsche Bank\n\nUrgewald wirft der Bank vor, 2025 an Anleihen chinesischer Kohlefirmen beteiligt gewesen zu sein: der Shanxi Xinzhou Shenda Energy Group mit rund 50 Prozent Kohleumsatz und einer Tochter der Huayang-Gruppe mit 91 Prozent. Die interne Richtlinie der Bank verlangt ab 30 Prozent Kohleumsatz glaubwürdige Umbaupläne. Zudem sei die Kohlerichtlinie zuletzt abgeschwächt worden. Philipp Noack von urgewald kritisiert, die Bank investiere anders als europäische Wettbewerber weiter in Kohle.\n\nDie Stellungnahme der Bank lag in den geprüften Quellen nicht vor. Für Kunden und Anleger ist die Studie vor allem ein Maßstab: Sie zeigt, welche Institute Klimaversprechen im Geschäft umsetzen. Weltweit entfielen laut urgewald 62 Prozent der Kohlefinanzierung auf chinesische Banken.",
+          "source": "Energiezukunft",
+          "url": "https://www.energiezukunft.eu/wirtschaft/die-meisten-europaeische-banken-fahren-ihre-kohlefinanzierung-zurueck-einige-deutsche-nicht",
+          "sources": [
+            {
+              "name": "Energiezukunft",
+              "url": "https://www.energiezukunft.eu/wirtschaft/die-meisten-europaeische-banken-fahren-ihre-kohlefinanzierung-zurueck-einige-deutsche-nicht"
+            },
+            {
+              "name": "urgewald",
+              "url": "https://www.urgewald.org/presse/still-banking-on-coal-2026-DACH"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Komatsu_bulldozer_pushing_coal_in_Power_plant_Ljubljana_%28winter_2017%29.jpg/1280px-Komatsu_bulldozer_pushing_coal_in_Power_plant_Ljubljana_%28winter_2017%29.jpg",
+            "credit": "Petar Milošević",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Komatsu_bulldozer_pushing_coal_in_Power_plant_Ljubljana_(winter_2017).jpg",
+            "alt": "Planierraupe schiebt Kohle in einem Kraftwerk"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "klima-gasreserve-entwurf",
+          "tier": "more",
+          "headline": "Gasreserve: Branche begrüßt Pläne, fordert Nachbesserungen",
+          "summary": "Nach einem durchgesickerten Entwurf soll Deutschland eine strategische Gasreserve bekommen, die Füllstandsziele entfallen. INES und BDEW kritisieren Verwaltung und Finanzierung.",
+          "body": "Die Energiewirtschaft begrüßt die geplante strategische Gasreserve, will sie aber anders ausgestalten. Das berichtet Clean Energy Wire am 14. Oktober unter Berufung auf einen durchgesickerten Entwurf des Wirtschafts- und Energieministeriums.\n\nDemnach sollen die bisherigen Füllstandsziele für Gasspeicher bis Ende März 2027 entfallen; derzeit gelten rund 70 Prozent bis November und 30 Prozent bis Februar 2027. Die Reserve soll nur Versorgungskrisen abfedern und bei Ausfall der regulären Infrastruktur 30 Tage Versorgung sichern. Sie soll über mehrere Jahre aufgebaut werden, als Zielwert nennt der Entwurf 24 Terawattstunden, ohne verbindliches Volumen. Verwalten soll sie das Fernleitungsunternehmen Trading Hub Europe. Finanziert würde sie ab Oktober 2027 über eine Umlage von 247 bis 308 Millionen Euro jährlich in den ersten zehn Jahren.\n\nSebastian Heinermann vom Branchenverband INES will, dass das Parlament Größe und Zeitplan festlegt und die Verwaltung nicht in die Hand eines einzelnen Marktakteurs fällt. BDEW-Hauptgeschäftsführerin Kerstin Andreae fordert Befüllung per Ausschreibung und eine Finanzierung aus dem Bundeshaushalt statt über eine Umlage; die Reserve dürfe nicht der Preisdämpfung dienen.\n\nHintergrund sind Sorgen vor einer neuen Gaskrise wegen des Iran-Kriegs. Ende September hatte die Bundesregierung den Importeur SEFE angewiesen, die Speicher schneller zu füllen, nachdem die Füllstände wochenlang unter dem Durchschnitt lagen.",
+          "source": "Clean Energy Wire",
+          "url": "https://cleanenergywire.org/news/energy-industry-welcomes-plans-national-gas-crisis-reserve-germany-calls-better-design",
+          "sources": [
+            {
+              "name": "Clean Energy Wire",
+              "url": "https://cleanenergywire.org/news/energy-industry-welcomes-plans-national-gas-crisis-reserve-germany-calls-better-design"
+            }
+          ],
+          "publishedAt": "2026-10-14T12:35:00+02:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Power_lines_during_Blue_Hour_LR.jpg/1280px-Power_lines_during_Blue_Hour_LR.jpg",
+            "credit": "PumpkinSky",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Power_lines_during_Blue_Hour_LR.jpg",
+            "alt": "Hochspannungsleitung durch eine Landschaft zur blauen Stunde"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "klima-eu-haushalt-buendnis",
+          "tier": "more",
+          "headline": "Bündnis fordert vor EU-Gipfel stärkeren Haushalt für Klimaziele",
+          "summary": "Über 20 Organisationen, darunter BDI, DGB und Umweltverbände, wenden sich gegen Kürzungen im EU-Budget 2028 bis 2034. Der EU-Gipfel beginnt am Donnerstag.",
+          "body": "Vor dem EU-Gipfel am 15. und 16. Oktober hat ein breites Bündnis die Bundesregierung aufgefordert, sich für einen deutlich ambitionierteren EU-Haushalt einzusetzen. Zu den mehr als 20 Unterzeichnern zählen der Industrieverband BDI, der Gewerkschaftsbund DGB und der Deutsche Naturschutzring; koordiniert wird die Initiative von der Europäischen Bewegung Deutschland. Clean Energy Wire berichtete am 14. Oktober.\n\nEs geht um den Finanzrahmen 2028 bis 2034. Der irische Ratsvorsitz schlägt gegenüber dem Entwurf der EU-Kommission eine Kürzung um acht Prozent vor, das entspricht 141 Milliarden Euro. Deutschland und weitere Nettozahler wollen noch tiefer kürzen; Kanzler Friedrich Merz hält großzügige Beiträge nach Angaben des Berichts nicht mehr für finanzierbar.\n\nJennifer Tollmann von Germanwatch warnt, die Kürzungen gefährdeten Klimaziele und die Widerstandsfähigkeit der EU. Wettbewerbsfähigkeit und Resilienz würden zur Verhandlungsmasse. Betroffen seien unter anderem der Wettbewerbsfonds sowie Mittel für internationale Zusammenarbeit und Krisenreaktion. Für Sachsen ist der Haushalt relevant, weil EU-Mittel auch den Strukturwandel in den Kohleregionen mitfinanzieren.",
+          "source": "Clean Energy Wire",
+          "url": "https://cleanenergywire.org/news/german-industry-trade-unions-and-environmental-groups-call-stronger-eu-budget",
+          "sources": [
+            {
+              "name": "Clean Energy Wire",
+              "url": "https://cleanenergywire.org/news/german-industry-trade-unions-and-environmental-groups-call-stronger-eu-budget"
+            }
+          ],
+          "publishedAt": "2026-10-14T13:52:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Klimawandel_003_2016_06_06.jpg/1280px-Klimawandel_003_2016_06_06.jpg",
+            "credit": "Friedrich Haag",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Klimawandel_003_2016_06_06.jpg",
+            "alt": "Ausgetrockneter, rissiger Boden"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "klima-elektrolyse-nachbarlaender-strompreis",
+          "tier": "more",
+          "headline": "Elektrolyseure im Ausland verteuern deutschen Strom nur leicht",
+          "summary": "Eine Fraunhofer-Studie zeigt: Zusätzliche Elektrolyse in Österreich und Westdänemark hebt den deutschen Strompreis 2030 um bis zu 1,7 Euro je Megawattstunde.",
+          "body": "Zusätzliche Wasserstoff-Elektrolyseure in Nachbarländern hätten nur geringe Folgen für den deutschen Strommarkt. Das ergibt eine Kurzstudie des Fraunhofer-Instituts für Energiewirtschaft und Energiesystemtechnik (IEE) im Auftrag der IHK Flensburg, veröffentlicht am 14. Oktober.\n\nUntersucht wurden drei Szenarien für 2030: ein Gigawatt zusätzlich in Österreich, ein Gigawatt und drei Gigawatt in Westdänemark. Der durchschnittliche deutsche Strompreis steigt demnach um etwa 0,6, 0,5 beziehungsweise 1,7 Euro je Megawattstunde. Die Wirkung tritt vor allem in Stunden mit hohem Ökostromüberschuss auf, in denen die Zusatznachfrage Strom aufnimmt, der sonst sehr billig oder negativ verkauft würde. In knappen Stunden laufen die Anlagen kaum.\n\nAngenommen wird, dass beide Länder das EU-Kriterium für erneuerbaren Wasserstoff erfüllen, das einen flexiblen Netzbezug erlaubt. Mit einem Gigawatt in Österreich stiegen Deutschlands Nettoexporte dorthin um rund 1,7 Terawattstunden im Jahr. Flexibler Betrieb senkt zudem die Wasserstoffkosten gegenüber starren Lieferverträgen. Die Studie baut auf Analysen zu einer gemeinsamen Preiszone von Schleswig-Holstein, Hamburg und Westdänemark auf.",
+          "source": "idw – Fraunhofer IEE",
+          "url": "https://www.idw-online.de/de/news879143",
+          "sources": [
+            {
+              "name": "idw – Fraunhofer IEE",
+              "url": "https://www.idw-online.de/de/news879143"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/2026-08-29_Sunrise_Windpark_Gollenberg_%28D500-97777M%29_by_Achim_Lammerts.jpg/1280px-2026-08-29_Sunrise_Windpark_Gollenberg_%28D500-97777M%29_by_Achim_Lammerts.jpg",
+            "credit": "Achim Lammerts (Syntaxys)",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:2026-08-29_Sunrise_Windpark_Gollenberg_(D500-97777M)_by_Achim_Lammerts.jpg",
+            "alt": "Windräder auf Feldern in der Südpfalz bei Sonnenaufgang"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "klima-ostsee-munition-expedition",
+          "tier": "more",
+          "headline": "Forschungsschiff Alkor untersucht Weltkriegsmunition in der Ostsee",
+          "summary": "GEOMAR schickt die Alkor für 24 Tage in die zentrale und östliche Ostsee. Dort liegen hunderttausende Tonnen Munition am Meeresboden.",
+          "body": "Das Kieler GEOMAR Helmholtz-Zentrum für Ozeanforschung untersucht die Umweltfolgen versenkter Munition in der Ostsee. Die Expedition AL663 mit dem Forschungsschiff Alkor läuft vom 12. Oktober bis zum 4. November, Fahrtleiter ist der Meeresgeologe Jens Greinert. Das Institut teilte dies am 14. Oktober mit.\n\nAuf dem Ostseeboden liegen laut GEOMAR hunderttausende Tonnen Munition aus den Weltkriegen. Das Institut erforscht das Thema seit zehn Jahren. Die Fahrt führt bis vor Estland und Lettland, mit Hafenaufenthalten in Ventspils und Gdynia; beteiligt sind Partner aus Polen, Estland, Lettland, Dänemark und Finnland. Eingesetzt werden autonome und ferngesteuerte Unterwasserfahrzeuge sowie akustische, optische und geochemische Messverfahren.\n\nGetestet wird auch eine neue Monitoring-Boje, die künftig bei Räumungen helfen soll. Eine weitgehend automatisierte Bergungsplattform soll ab 2029 zunächst in der Lübecker Bucht zum Einsatz kommen. Die Fahrt gehört zu drei abgestimmten Ausfahrten im Projekt MUNI-RISK.",
+          "source": "idw – GEOMAR",
+          "url": "https://www.idw-online.de/de/news879150",
+          "sources": [
+            {
+              "name": "idw – GEOMAR",
+              "url": "https://www.idw-online.de/de/news879150"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Glaciers_and_Icebergs_at_Cape_York.jpg/1280px-Glaciers_and_Icebergs_at_Cape_York.jpg",
+            "credit": "Brocken Inaglory",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Glaciers_and_Icebergs_at_Cape_York.jpg",
+            "alt": "Eisberge vor der Küste Grönlands"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "entertainment",
+      "title": "Games & Entertainment",
+      "emoji": "🎮",
+      "items": [
+        {
+          "id": "entertainment-ubisoft-schliesst-redlynx",
+          "tier": "top",
+          "headline": "Ubisoft will Trials-Studio RedLynx schließen, Singapur streicht 70 Stellen",
+          "summary": "Ubisoft plant, das finnische Studio RedLynx mit 52 Stellen zu schließen. In Singapur fallen 70 Positionen weg.",
+          "body": "Ubisoft will das finnische Studio RedLynx schließen, das die Trials-Reihe entwickelt hat. Nach Angaben von Game Developer sollen dabei 52 Stellen wegfallen, vorbehaltlich der in Finnland vorgeschriebenen Change-Verhandlungen mit der Belegschaft. Die Schließung ist also ein Vorschlag und noch nicht endgültig. Zusätzlich streicht Ubisoft 70 Positionen bei Ubisoft Singapore.\n\nZusammen sind damit 122 Jobs betroffen. Game Developer nennt im Text zwei unterschiedliche Summen („über 100“ und „über 120“); die Einzelzahlen ergeben 122. Ubisoft begründet den Schritt in Singapur damit, das Studio „an kommende Produktionsbedürfnisse anzupassen“.\n\n## Was über RedLynx bekannt ist\n\nRedLynx gehört seit 2011 zu Ubisoft. Das Studio schuf Trials HD, Trials Evolution, Trials Fusion und Trials Rising; Letzteres war laut Nintendo Life der einzige Teil der Reihe auf der Switch. Zuletzt arbeitete RedLynx in einer Unterstützungsrolle und portierte unter anderem Star Wars Outlaws auf die Switch 2. Eine Begründung für die Schließung hat Ubisoft nicht genannt; berichtet wird, dass dem Studio zum Zeitpunkt der Entscheidung kein eigenes Projekt zugeteilt war.\n\nUbisoft Singapore entwickelte 2024 das Piratenspiel Skull and Bones und wurde im Zuge der Neuordnung in eine Einheit verschoben, die andere Teams unterstützt.\n\n## Einordnung\n\nDie Kürzungen gehören zum Umbau des Konzerns in sogenannte „Creative Houses“, der im Januar begann. Ubisoft will damit kreative Führungsstärke zurückgewinnen und beweglicher werden. Konzernchef Yves Guillemot rechnet damit, dass das Geschäftsjahr 2026/27 beim Cashflow den Tiefpunkt bildet. Frühere Einschnitte trafen unter anderem Standorte in San Francisco, Barcelona und Toronto; Winnipeg, Belgrad und Halifax wurden ganz geschlossen. Nintendo Life berichtet zudem von 538 streikenden Ubisoft-Beschäftigten in einem dreitägigen Ausstand gegen die Neuaufstellung.\n\nFür Spieler in Deutschland heißt das vor allem: Eine eigenständige Trials-Fortsetzung wird damit noch unwahrscheinlicher. Ubisoft versprach, den Prozess „mit Sorgfalt und Respekt“ zu führen.",
+          "source": "Game Developer",
+          "url": "https://www.gamedeveloper.com/business/ubisoft-to-close-trials-studio-redlynx-downsize-ubisoft-singapore",
+          "sources": [
+            {
+              "name": "Game Developer",
+              "url": "https://www.gamedeveloper.com/business/ubisoft-to-close-trials-studio-redlynx-downsize-ubisoft-singapore"
+            },
+            {
+              "name": "Nintendo Life",
+              "url": "https://www.nintendolife.com/news/2026/10/redlynx-the-studio-behind-the-trials-series-is-being-closed-by-ubisoft"
+            }
+          ],
+          "publishedAt": "2026-10-14T11:45:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Rue_Armand_Carrel%2C_28_%28Montreuil%29.jpg/1280px-Rue_Armand_Carrel%2C_28_%28Montreuil%29.jpg",
+            "credit": "Tangopaso",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rue_Armand_Carrel,_28_(Montreuil).jpg",
+            "alt": "Verwaltungsgebäude in Montreuil, Sitz der Ubisoft-Verwaltung"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "entertainment-zelda-ocarina-switch-2-vorschauen",
+          "tier": "more",
+          "headline": "Zelda: Ocarina of Time auf Switch 2 überzeugt in Vorschauen",
+          "summary": "Das Remake erscheint am 5. November. Erste Vorschauen loben Optik und Komfortfunktionen wie den Sprungknopf, kritisieren aber Navis neue Sprechblasen.",
+          "body": "Vor dem Start am 5. November sind die ersten Vorschauen zum Remake von The Legend of Zelda: Ocarina of Time für die Switch 2 erschienen. Nintendo Life fasst die Stimmen als überwiegend positiv zusammen.\n\nNintendo-Life-Autor Gavin Lane spielte etwa zwei Stunden: Kokiri-Wald, Hyrule-Steppe, Marktplatz und rund eine Stunde im Waldtempel. Er lobt die deutlich aufgewertete Optik mit besserem Licht und mehr Details. Beim Spielgefühl orientiert sich das Remake an Breath of the Wild, mit eigener Sprungtaste. Dazu kommen Komfort-Neuerungen: keine Ladebildschirme beim Betreten von Gebäuden, ein Questlog im Pausenmenü, wegfallendes Zeitlimit beim Poe-Fotorätsel und abschaltbare Anzeigen. Die Sprache lässt sich umstellen, auch auf Japanisch.\n\nKritik gibt es an Navi: Sie spricht seltener, dafür erscheinen schwebende Dialogblasen, die Lane als aufdringlich empfand. Leichtes Flimmern fiel ihm bei naher Sicht auf. Den Handheld-Modus und das Ocarina-Spiel per Mikrofon konnte er nicht testen.\n\nLaut Nintendo Life kostet die physische Version in den USA 69,99 Dollar, der eShop-Download 59,99 Dollar. Eine Übersicht der Medienstimmen nennt unter anderem Lob für die Detailtiefe, aber auch Kritik an altmodischem Kampfgefühl und an der englischen Synchronisation. Deutsche Preise nennen die Quellen nicht.",
+          "source": "Nintendo Life",
+          "url": "https://www.nintendolife.com/previews/zelda-ocarina-of-time-on-switch-2-brims-with-breathtaking-detail-plus-one-familiar-irritation",
+          "sources": [
+            {
+              "name": "Nintendo Life",
+              "url": "https://www.nintendolife.com/previews/zelda-ocarina-of-time-on-switch-2-brims-with-breathtaking-detail-plus-one-familiar-irritation"
+            },
+            {
+              "name": "Nintendo Life (Übersicht)",
+              "url": "https://www.nintendolife.com/news/2026/10/round-up-the-previews-are-in-for-zelda-ocarina-of-time-on-switch-2"
+            }
+          ],
+          "publishedAt": "2026-10-14T14:00:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Microsoft-Xbox-One-Console-Set-wKinect.jpg/1280px-Microsoft-Xbox-One-Console-Set-wKinect.jpg",
+            "credit": "Evan-Amos",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Microsoft-Xbox-One-Console-Set-wKinect.jpg",
+            "alt": "Spielkonsole mit Controller und Kamera auf weißem Hintergrund"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "entertainment-xbox-nano-controller",
+          "tier": "more",
+          "headline": "Xbox stellt kleinen Nano-Controller für 49,99 Dollar vor",
+          "summary": "Der Xbox Nano Controller soll am 4. November erscheinen und ist laut Pure Xbox der bislang kleinste Controller der Marke.",
+          "body": "Microsoft hat den Xbox Nano Controller vorgestellt, der für kleinere Hände gedacht ist. Er lässt sich laut Pure Xbox ab sofort im Microsoft Store vorbestellen und erscheint am 4. November 2026.\n\nDer Preis liegt bei 49,99 Dollar beziehungsweise 44,99 Pfund. Deutsche Preise nennt die Quelle nicht. Der Controller ist gut 5 Zoll lang und wiegt 3,5 Unzen, also rund 100 Gramm. Er verbindet sich drahtlos mit der Xbox und per Bluetooth mit kompatiblen Geräten und bietet alle 18 üblichen Eingaben.\n\nDer Akku ist fest eingebaut, ein USB-C-Ladekabel liegt aber nicht bei. Zum Start gibt es für neue Mitglieder in den USA zwei Monate Game Pass Ultimate dazu. Ob und wann das Zubehör in Deutschland erhältlich ist, geht aus dem Bericht nicht hervor.",
+          "source": "Pure Xbox",
+          "url": "https://www.purexbox.com/news/2026/10/xbox-unveils-new-nano-controller-perfect-for-smaller-hands",
+          "sources": [
+            {
+              "name": "Pure Xbox",
+              "url": "https://www.purexbox.com/news/2026/10/xbox-unveils-new-nano-controller-perfect-for-smaller-hands"
+            }
+          ],
+          "publishedAt": "2026-10-14T19:00:00+02:00",
+          "importance": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Nintendo-Switch-Pro-Controller-FL.jpg/1280px-Nintendo-Switch-Pro-Controller-FL.jpg",
+            "credit": "Evan-Amos",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nintendo-Switch-Pro-Controller-FL.jpg",
+            "alt": "Schwarzer Gamecontroller auf weißem Hintergrund"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "entertainment-narnia-trailer-gerwig",
+          "tier": "more",
+          "headline": "Erster Narnia-Trailer von Greta Gerwig setzt auf Led Zeppelin",
+          "summary": "Der Film „Narnia: Der Neffe des Magiers“ startet am 12. Februar 2027 im Kino, am 2. April folgt Netflix. Der erste Trailer läuft mit Led Zeppelin.",
+          "body": "Netflix hat den ersten Trailer zu Greta Gerwigs Narnia: Der Neffe des Magiers veröffentlicht. Laut NME unterlegt er die Bilder mit Led Zeppelins „Stairway To Heaven“ und wirkt wie Glam-Rock. Gerwig sagte demnach, sie habe sich für die Rechte mit Robert Plant und Jimmy Page getroffen.\n\nDer Film läuft am 12. Februar 2027 im Kino an, IMAX-Vorpremieren beginnen am 10. Februar. Auf Netflix erscheint er am 2. April 2027. Laut What's on Netflix ist das mit sieben Wochen das längste Kinofenster für einen englischsprachigen Netflix-Film dieser Größe.\n\nMeryl Streep spricht Aslan, Daniel Craig spielt den Magier, Emma Mackey die Weiße Hexe. Die Kinder Digory und Polly spielen die Newcomer David McKenna und Beatrice Campbell; zur Besetzung zählt außerdem Carey Mulligan. Zur genauen Veröffentlichungszeit des Trailers gehen die Angaben leicht auseinander, nach Netflix-Ankündigung war er für den 13. Oktober geplant.",
+          "source": "NME",
+          "url": "https://www.nme.com/news/film/led-zeppelin-greta-gerwig-narnia-the-magicians-nephew-first-trailer-3973110",
+          "sources": [
+            {
+              "name": "NME",
+              "url": "https://www.nme.com/news/film/led-zeppelin-greta-gerwig-narnia-the-magicians-nephew-first-trailer-3973110"
+            },
+            {
+              "name": "What's on Netflix",
+              "url": "https://www.whats-on-netflix.com/news/new-poster-and-artwork-revealed-for-narnia-the-magicians-nephew-ahead-of-trailer-drop/"
+            }
+          ],
+          "publishedAt": "2026-10-14T00:00:00+02:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Auditorium_at_Gilda_on_an_afternoon_in_January_2025.jpg/1280px-Auditorium_at_Gilda_on_an_afternoon_in_January_2025.jpg",
+            "credit": "JIP",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Auditorium_at_Gilda_on_an_afternoon_in_January_2025.jpg",
+            "alt": "Kinosaal mit Sesselreihen"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    }
+  ]
+}
