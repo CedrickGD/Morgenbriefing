@@ -3,8 +3,9 @@
  * Validator for the Morgenbriefing data files on the `briefs` branch
  * (contract: docs/brief-format.md). Zero dependencies, Node >= 18, ESM.
  *
- *   node routine/validate-brief.mjs <datei...> [--max-age-hours 36] [--require-images]
- *   node routine/validate-brief.mjs --section <rubrik.json...> [--max-age-hours 36] [--require-images] [--now <ISO>]
+ *   node routine/validate-brief.mjs <datei...> [--max-age-hours 36] [--require-images] [--no-repeat-days 14]
+ *   node routine/validate-brief.mjs --section <rubrik.json...> [--max-age-hours 36] [--require-images]
+ *        [--no-repeat-days 14] [--now <ISO>]
  *
  * Every file is classified by its keys: an object with `sections`/`schema` is a daily brief
  * (`briefs/YYYY-MM-DD.json`, `latest.json`), an object with `days` is `index.json`. With
@@ -24,6 +25,11 @@
  * `--require-images` is the picture policy of the routine: every schema-2 article needs an `image`
  * (without the option a missing picture is fine, so older briefs stay valid). The same picture
  * twice in one brief – or, with `--section`, in two of the given sections – is a warning.
+ *
+ * `--no-repeat-days N` keeps the pictures fresh across days: a picture whose Commons file (in any
+ * size) ran in one of the briefs of the N days before the brief's date is an error. The previous
+ * briefs come from git (`origin/briefs`, fetched if missing; `--recent-ref`) or from a directory
+ * (`--recent-from`), see recent-images.mjs. Sections count for the Berlin date of `--now`/now.
  *
  * Exit codes: 0 = all files valid, 1 = at least one file invalid, 2 = usage error.
  * Messages are German because the routine (and the human reading CI logs) works in German.
@@ -400,6 +406,28 @@ export function imageKey(value) {
   return commonsFileKey(value) ?? urlKey(value);
 }
 
+/**
+ * Key for "same picture on another day" (`--no-repeat-days`, find-image.mjs `--recent-days`):
+ * the Commons file name in lower case – any thumbnail size, the original, the file page or a
+ * "File:" title –, otherwise host and path of the URL in lower case. `null` for empty values.
+ */
+export function imageFileKey(value) {
+  if (typeof value !== 'string' || value.trim() === '') return null;
+  const file = commonsFileKey(value);
+  if (file !== null) return file.toLowerCase();
+  try {
+    const u = new URL(value.trim());
+    return `${u.hostname.replace(/^www\./i, '')}${u.pathname}`.toLowerCase();
+  } catch {
+    return value.trim().toLowerCase();
+  }
+}
+
+/** Calendar date (`YYYY-MM-DD`) of an instant in Europe/Berlin – the date the brief of that morning carries. */
+export function berlinDate(epochMs = Date.now()) {
+  return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Berlin' }).format(new Date(epochMs));
+}
+
 // ---------------------------------------------------------------------------------------------
 // Article bodies (schema 2)
 // ---------------------------------------------------------------------------------------------
@@ -585,16 +613,17 @@ function checkDate(value, where, c) {
 }
 
 /**
- * Shared state while validating the items of one brief (or one section): duplicate detection and
- * the reference time of the freshness check.
+ * Shared state while validating the items of one brief (or one section): duplicate detection,
+ * the reference time of the freshness check and the pictures of the previous days.
  */
-function itemContext(c, { referenceMs, referenceLabel, maxAgeHours, requireImages = false }) {
+function itemContext(c, { referenceMs, referenceLabel, maxAgeHours, requireImages = false, recentImages = null }) {
   return {
     c,
     referenceMs,
     referenceLabel,
     maxAgeHours,
     requireImages,
+    recentImages,
     urls: new Map(),
     headlines: new Map(),
     ids: new Map(),
@@ -887,7 +916,7 @@ function validateItemV2(item, where, ctx) {
       `Artikel ${id}hat kein Bild – mit --require-images braucht jeder Artikel eins (Commons-Suche, sonst node routine/find-image.mjs --fallback <motiv|rubrik>)`,
     );
   }
-  checkImage(item.image, `${where}.image`, ctx);
+  checkImage(item.image, `${where}.image`, ctx, item.id);
 
   return tier;
 }
@@ -943,7 +972,24 @@ function checkSources(item, where, ctx, { tier, url, source }) {
   }
 }
 
-function checkImage(image, where, ctx) {
+/**
+ * `--no-repeat-days`: a picture whose Commons file already ran in one of the previous briefs is an
+ * error – the reader would see it again (find-image.mjs `--recent-days` hides those files).
+ */
+function checkRecentImage(image, where, ctx, itemId) {
+  if (!ctx.recentImages) return;
+  const use = [image.url, image.sourceUrl]
+    .map((value) => imageFileKey(value))
+    .map((key) => (key === null ? undefined : ctx.recentImages.get(key)))
+    .find((found) => found !== undefined);
+  if (use === undefined) return;
+  const file = commonsFileKey(image.url) ?? image.url;
+  const article = typeof itemId === 'string' ? ` von Artikel "${itemId}"` : '';
+  const topic = typeof use.section === 'string' && use.section !== '' ? ` (${use.section})` : '';
+  ctx.c.error(`${where}.url`, `Bild „${file}“${article} lief schon am ${use.date}${topic} – bitte ein anderes wählen`);
+}
+
+function checkImage(image, where, ctx, itemId) {
   const { c } = ctx;
   if (image === undefined || image === null) return;
   if (!isPlainObject(image)) {
@@ -964,6 +1010,7 @@ function checkImage(image, where, ctx) {
     } else {
       ctx.images.set(key, where);
     }
+    checkRecentImage(image, where, ctx, itemId);
   }
 
   const license = checkText(image.license, `${where}.license`, c);
@@ -1020,15 +1067,18 @@ function guessSchema(doc) {
  * Validates a daily brief (`briefs/YYYY-MM-DD.json` or `latest.json`), schema 1 or 2.
  *
  * @param {unknown} doc parsed JSON
- * @param {{ maxAgeHours?: number, requireImages?: boolean }} [options] `maxAgeHours` enables the
- *   freshness policy: every item needs `publishedAt` and must not be older than that relative to
- *   `generatedAt`. `requireImages` makes a missing `image` of a schema-2 article an error (the
- *   routine's rule for new briefs; older briefs without it stay valid).
+ * @param {{ maxAgeHours?: number, requireImages?: boolean,
+ *   recentImages?: Map<string, { date: string, section?: string }> }} [options] `maxAgeHours`
+ *   enables the freshness policy: every item needs `publishedAt` and must not be older than that
+ *   relative to `generatedAt`. `requireImages` makes a missing `image` of a schema-2 article an
+ *   error (the routine's rule for new briefs; older briefs without it stay valid).
+ *   `recentImages` are the pictures of the previous days by {@link imageFileKey}
+ *   (recent-images.mjs): every article picture among them is an error.
  * @returns {{ errors: string[], warnings: string[] }} errors make the file unusable;
  *   warnings point at editorial guidelines (≤ 10 words, catalogue order …) and typos.
  */
 export function validateBrief(doc, options = {}) {
-  const { maxAgeHours, requireImages } = options;
+  const { maxAgeHours, requireImages, recentImages } = options;
   const c = collector();
   if (!isPlainObject(doc)) {
     c.error('', `Ein Briefing muss ein JSON-Objekt sein (gefunden: ${show(doc)}).`);
@@ -1073,6 +1123,7 @@ export function validateBrief(doc, options = {}) {
     referenceLabel: 'generatedAt',
     maxAgeHours,
     requireImages,
+    recentImages,
   });
   const sectionIds = new Map();
   let itemTotal = 0;
@@ -1118,12 +1169,14 @@ export function validateBrief(doc, options = {}) {
  * the routine write it. Without `generatedAt`, the freshness check uses `now`.
  *
  * @param {unknown} doc parsed JSON
- * @param {{ maxAgeHours?: number, now?: number, requireImages?: boolean }} [options] `now` =
- *   reference instant (epoch ms), default `Date.now()`; `requireImages` as in {@link validateBrief}
+ * @param {{ maxAgeHours?: number, now?: number, requireImages?: boolean,
+ *   recentImages?: Map<string, { date: string, section?: string }> }} [options] `now` =
+ *   reference instant (epoch ms), default `Date.now()`; `requireImages` and `recentImages` as in
+ *   {@link validateBrief}
  * @returns {{ errors: string[], warnings: string[] }}
  */
 export function validateSection(doc, options = {}) {
-  const { maxAgeHours, now = Date.now(), requireImages } = options;
+  const { maxAgeHours, now = Date.now(), requireImages, recentImages } = options;
   const c = collector();
   if (!isPlainObject(doc)) {
     c.error('', `Eine Rubrik muss ein JSON-Objekt { id, title, emoji, items } sein (gefunden: ${show(doc)}).`);
@@ -1133,7 +1186,7 @@ export function validateSection(doc, options = {}) {
     c.error('', 'Das ist ein ganzes Briefing, keine einzelne Rubrik – ohne --section prüfen.');
     return { errors: c.errors, warnings: c.warnings };
   }
-  const ctx = itemContext(c, { referenceMs: now, referenceLabel: 'jetzt', maxAgeHours, requireImages });
+  const ctx = itemContext(c, { referenceMs: now, referenceLabel: 'jetzt', maxAgeHours, requireImages, recentImages });
   validateSectionV2(doc, '', ctx, null);
   // `where` is empty for the section itself, so the messages read "id: …", "items[0].body: …".
   const strip = (list) => list.map((m) => m.replace(/^\./, ''));
@@ -1205,17 +1258,34 @@ export function validateIndex(doc) {
 }
 
 /**
+ * Runs `validate` with the pictures of the days before `date` from `options.history`, if given;
+ * the history's warnings (e.g. "nicht lesbar") are passed on.
+ */
+function validateWithHistory(validate, doc, date, options) {
+  if (typeof options.history !== 'function' || !isCalendarDate(date)) return validate(doc, options);
+  const history = options.history(date);
+  const result = validate(doc, { ...options, recentImages: history.images });
+  return { errors: result.errors, warnings: [...result.warnings, ...history.warnings] };
+}
+
+/**
  * Detects the kind of a parsed document and validates it accordingly. With `options.section`
  * the document is always validated as a single section.
  *
  * @param {unknown} doc
- * @param {{ maxAgeHours?: number, section?: boolean, now?: number, requireImages?: boolean }} [options]
+ * @param {{ maxAgeHours?: number, section?: boolean, now?: number, requireImages?: boolean,
+ *   history?: (date: string) => { images: Map<string, { date: string, section?: string }>, warnings: string[] } }} [options]
+ *   `history` supplies the pictures of the days before a brief (`--no-repeat-days`, see
+ *   recent-images.mjs): it is called with the brief's `date` – for a section with the Berlin date
+ *   of `now` – and every article picture among them is an error.
  * @returns {{ kind: 'brief' | 'index' | 'section' | null, errors: string[], warnings: string[] }}
  */
 export function validateDocument(doc, options = {}) {
-  if (options.section) return { kind: 'section', ...validateSection(doc, options) };
+  if (options.section) {
+    return { kind: 'section', ...validateWithHistory(validateSection, doc, berlinDate(options.now), options) };
+  }
   const kind = detectKind(doc);
-  if (kind === 'brief') return { kind, ...validateBrief(doc, options) };
+  if (kind === 'brief') return { kind, ...validateWithHistory(validateBrief, doc, doc.date, options) };
   if (kind === 'index') return { kind, ...validateIndex(doc) };
   if (kind === 'section') {
     return {
@@ -1293,7 +1363,8 @@ function describeJsonError(error, text) {
  * Reads, parses and validates one file.
  *
  * @param {string} file
- * @param {{ maxAgeHours?: number, section?: boolean, now?: number, requireImages?: boolean }} [options]
+ * @param {{ maxAgeHours?: number, section?: boolean, now?: number, requireImages?: boolean, history?: Function }} [options]
+ *   as in {@link validateDocument}
  * @returns {{ file: string, kind: 'brief'|'index'|'section'|null, doc: unknown, errors: string[], warnings: string[] }}
  */
 export function validateFile(file, options = {}) {
@@ -1379,11 +1450,21 @@ export function parseHours(value) {
   return hours > 0 && Number.isFinite(hours) ? hours : null;
 }
 
+/** How far back `--no-repeat-days` / `--recent-days` may look (each day is one brief to read). */
+export const MAX_RECENT_DAYS = 60;
+
+/** Parses a whole number of days from 1 to {@link MAX_RECENT_DAYS}; returns `null` if invalid. */
+export function parseDays(value) {
+  if (typeof value !== 'string' || !/^\d+$/.test(value.trim())) return null;
+  const days = Number(value);
+  return days >= 1 && days <= MAX_RECENT_DAYS ? days : null;
+}
+
 const USAGE = `Prüft Morgenbriefing-Dateien (Briefings, index.json, einzelne Rubriken) gegen docs/brief-format.md.
 
 Aufruf:
-  node routine/validate-brief.mjs <datei...> [--max-age-hours <h>] [--require-images]
-  node routine/validate-brief.mjs --section <rubrik.json...> [--max-age-hours <h>] [--require-images] [--now <zeitpunkt>]
+  node routine/validate-brief.mjs <datei...> [--max-age-hours <h>] [--require-images] [--no-repeat-days <n>]
+  node routine/validate-brief.mjs --section <rubrik.json...> [--max-age-hours <h>] [--require-images] [--no-repeat-days <n>] [--now <zeitpunkt>]
 
 Optionen:
   --section            Jede Datei ist eine einzelne Rubrik { id, title, emoji, items }
@@ -1394,6 +1475,13 @@ Optionen:
                        Rubriken die aktuelle Uhrzeit bzw. --now.
   --require-images     Jeder Artikel (Schema 2) braucht ein Bild – ein fehlendes ist ein
                        Fehler (Routine). Ohne die Option bleibt "image" freiwillig.
+  --no-repeat-days <n> Ein Bild, dessen Commons-Datei (egal in welcher Größe) in den Briefings
+                       der <n> Tage vor dem Datum des Briefings schon lief, ist ein Fehler
+                       (Routine: 14). Rubriken zählen für das Datum von --now bzw. heute.
+  --recent-ref <ref>   Mit --no-repeat-days: frühere Briefings aus diesem Git-Stand lesen
+                       (Standard: origin/briefs, wird bei Bedarf geholt).
+  --recent-from <pfad> Mit --no-repeat-days: frühere Briefings stattdessen aus diesem Ordner
+                       (<pfad>/briefs/<datum>.json oder <pfad>/<datum>.json).
   --now <zeitpunkt>    Bezugszeitpunkt für Rubriken, ISO-8601 mit Zeitzone.
   -h, --help           Diese Hilfe.
 
@@ -1405,6 +1493,9 @@ function parseCliArgs(argv) {
   let section = false;
   let requireImages = false;
   let now;
+  let noRepeatDays;
+  let recentRef;
+  let recentFrom;
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '-h' || arg === '--help') return { help: true };
@@ -1412,6 +1503,20 @@ function parseCliArgs(argv) {
       section = true;
     } else if (arg === '--require-images') {
       requireImages = true;
+    } else if (arg === '--no-repeat-days' || arg.startsWith('--no-repeat-days=')) {
+      const raw = arg.includes('=') ? arg.slice(arg.indexOf('=') + 1) : argv[++i];
+      noRepeatDays = parseDays(raw);
+      if (noRepeatDays === null) {
+        return { problem: `--no-repeat-days braucht eine ganze Zahl von 1 bis ${MAX_RECENT_DAYS} (gefunden: ${raw ?? 'nichts'})` };
+      }
+    } else if (['--recent-ref', '--recent-from'].some((name) => arg === name || arg.startsWith(`${name}=`))) {
+      const name = arg.split('=')[0];
+      const raw = arg.includes('=') ? arg.slice(arg.indexOf('=') + 1) : argv[++i];
+      if (raw === undefined || raw.trim() === '' || (raw.startsWith('--') && !arg.includes('='))) {
+        return { problem: `${name} braucht einen Wert.` };
+      }
+      if (name === '--recent-ref') recentRef = raw;
+      else recentFrom = raw;
     } else if (arg === '--max-age-hours' || arg.startsWith('--max-age-hours=')) {
       const raw = arg.includes('=') ? arg.slice(arg.indexOf('=') + 1) : argv[++i];
       const hours = parseHours(raw);
@@ -1437,7 +1542,13 @@ function parseCliArgs(argv) {
   }
   if (files.length === 0) return { problem: 'Keine Datei angegeben.' };
   if (now !== undefined && !section) return { problem: '--now gilt nur zusammen mit --section.' };
-  return { files, maxAgeHours, section, now, requireImages };
+  if ((recentRef !== undefined || recentFrom !== undefined) && noRepeatDays === undefined) {
+    return { problem: '--recent-ref und --recent-from gelten nur zusammen mit --no-repeat-days.' };
+  }
+  if (recentRef !== undefined && recentFrom !== undefined) {
+    return { problem: '--recent-ref und --recent-from schließen sich gegenseitig aus.' };
+  }
+  return { files, maxAgeHours, section, now, requireImages, noRepeatDays, recentRef, recentFrom };
 }
 
 /**
@@ -1473,11 +1584,27 @@ function ghEscape(text) {
 }
 
 /**
- * Runs the CLI and returns the exit code (does not call `process.exit`).
+ * `--no-repeat-days`: the pictures of the days before a date, read once per date. The history's
+ * warnings are reported with the first file only.
+ */
+async function historyLoader({ noRepeatDays, recentRef, recentFrom }) {
+  // Loaded on demand: recent-images.mjs builds on this module, so a static import would be circular.
+  const { collectRecentImages } = await import('./recent-images.mjs');
+  const loaded = new Map();
+  return (date) => {
+    if (loaded.has(date)) return { images: loaded.get(date), warnings: [] };
+    const history = collectRecentImages({ date, days: noRepeatDays, ref: recentRef, from: recentFrom });
+    loaded.set(date, history.images);
+    return { images: history.images, warnings: history.warnings };
+  };
+}
+
+/**
+ * Runs the CLI and resolves to the exit code (does not call `process.exit`).
  *
  * @param {string[]} argv arguments without `node` and the script path
  */
-export function main(argv = process.argv.slice(2), out = console.log, err = console.error) {
+export async function main(argv = process.argv.slice(2), out = console.log, err = console.error) {
   const args = parseCliArgs(argv);
   if (args.help) {
     out(USAGE);
@@ -1494,6 +1621,7 @@ export function main(argv = process.argv.slice(2), out = console.log, err = cons
     section: args.section,
     now: args.now,
     requireImages: args.requireImages,
+    history: args.noRepeatDays === undefined ? undefined : await historyLoader(args),
   };
   const seenImages = new Map();
   let invalid = 0;
@@ -1531,5 +1659,9 @@ export function main(argv = process.argv.slice(2), out = console.log, err = cons
 }
 
 if (isMainModule(import.meta.url)) {
-  process.exitCode = main();
+  // Deliberately no top-level await: main() may import recent-images.mjs, which imports this
+  // module – it would wait for this module to finish evaluating, and that would never happen.
+  main().then((code) => {
+    process.exitCode = code;
+  });
 }

@@ -333,16 +333,16 @@ bevor du so antwortest.
   Leiter ab, bis ein Bild passt:
   a) Gezielt suchen nach dem Konkreten der Geschichte – Person (offizielles Porträt), Ort,
      Gebäude, Organisation, Unternehmen, Ereignis, Produkt; englisch und deutsch:
-       node routine/find-image.mjs "<Suchbegriffe>"
+       node routine/find-image.mjs "<Suchbegriffe>" --recent-days 14
      Top-Artikel: mindestens zwei verschiedene Suchen. Weitere Artikel: eine Suche, dann c).
   b) Nur Top-Artikel: eine breitere Suche nach dem Thema, z. B. „Bundestag“, „Leipzig
-     Hauptbahnhof“, „wind farm“, „hospital“.
+     Hauptbahnhof“, „wind farm“, „hospital“ – ebenfalls mit --recent-days 14.
   c) Ersatzbild aus dem geprüften Bildkatalog zum Motiv der Geschichte – ohne Netz, sofort da:
-       node routine/find-image.mjs --fallback <motiv> --seed <artikel-id> --exclude <vergebene Bild-URLs> --exclude-from /tmp/sections
+       node routine/find-image.mjs --fallback <motiv> --seed <artikel-id> --exclude <vergebene Bild-URLs> --exclude-from /tmp/sections --recent-days 14
      Welche Motive es gibt (bundestag, kanzleramt, ezb, boerse-frankfurt, leipzig-hbf,
      bad-dueben, rb-leipzig-arena, windpark, krankenhaus, ukraine-kyjiw, …), zeigt einmal:
        node routine/find-image.mjs --list-fallbacks
-  d) Passt kein Motiv: dasselbe mit deiner Rubrik als Motiv, also --fallback {{ID}}.
+  d) Passt kein Motiv: dasselbe mit deiner Rubrik als Motiv, also --fallback {{ID}} --recent-days 14.
 - Schau vor der Bildsuche auf die Uhr (Befehl unter ZEIT): Sind es weniger als 8 Minuten bis
   {{FRIST}}, gehst du für jeden Artikel ohne Bild direkt zu c) – keine Suchen mehr, die Datei
   muss rechtzeitig geprüft sein.
@@ -356,6 +356,8 @@ bevor du so antwortest.
 - Nie ein Bild, das ein anderes, bestimmtes Ereignis zeigt, als wäre es dieses – etwa ein altes
   Unglücksfoto zu einem neuen Unglück oder das Foto einer anderen Partie. Allgemeine
   Symbolbilder (das Gebäude, die Stadt, der Gegenstand, die Landschaft) sind in Ordnung.
+- Ein Bild darf in den Briefings der letzten 14 Tage nicht gelaufen sein (dieselbe Commons-Datei
+  in jeder Größe zählt); die Prüfung meldet jede Wiederholung – dann ersetzt du das Bild.
 - Jedes Bild nur einmal im Briefing: Gib bei --fallback mit --exclude alle Bild-URLs an, die du
   schon vergeben hast (kommagetrennt); --exclude-from /tmp/sections schließt die Bilder der
   schon fertigen Rubriken aus, --seed mit der Artikel-id verteilt parallele Rubriken auf
@@ -407,7 +409,7 @@ Schreibe /tmp/sections/{{ID}}.json (UTF-8) genau in diesem Aufbau:
 
 Anführungszeichen im Text immer als „…“ schreiben – ein gerades " zerstört das JSON. Dann prüfen:
 
-    node routine/validate-brief.mjs --section /tmp/sections/{{ID}}.json --max-age-hours 36 --require-images
+    node routine/validate-brief.mjs --section /tmp/sections/{{ID}}.json --max-age-hours 36 --require-images --no-repeat-days 14
 
 Korrigiere jeden Fehler und prüfe erneut, bis die Ausgabe mit OK beginnt. Nimm auch die Hinweise
 ernst. Ist eine Meldung zu alt, ersetze sie durch eine frischere, geprüfte – ändere niemals ein
@@ -477,7 +479,7 @@ Warte, bis auch der zweite Durchgang geantwortet hat. Dann:
 
 ```bash
 ls /tmp/sections
-node routine/validate-brief.mjs --section /tmp/sections/*.json --max-age-hours 36 --require-images
+node routine/validate-brief.mjs --section /tmp/sections/*.json --max-age-hours 36 --require-images --no-repeat-days 14
 node routine/assemble-brief.mjs --overview /tmp/sections
 ```
 
@@ -492,7 +494,7 @@ node routine/assemble-brief.mjs --overview /tmp/sections
   Konkreten der Geschichte wie in Abschnitt 5 der Vorlage, wird es knapp, direkt aus dem
   Katalog:
   ```bash
-  node routine/find-image.mjs --fallback <motiv|rubrik> --seed <artikel-id> --exclude-from /tmp/sections
+  node routine/find-image.mjs --fallback <motiv|rubrik> --seed <artikel-id> --exclude-from /tmp/sections --recent-days 14
   ```
   Trag url, credit, license, sourceUrl und alt in die Rubrik-Datei ein (bei doppelten Bildern
   beim zweiten Artikel) und prüfe erneut, bis keine Rubrik mehr „hat kein Bild“ oder „dasselbe
@@ -524,7 +526,7 @@ Jetzt zusammensetzen – das Skript ordnet die Rubriken nach dem Katalog, lässt
 
 ```bash
 node routine/assemble-brief.mjs --sections /tmp/sections --teaser "<TEASER>" --generated-at "<GENERATED_AT>" --out /tmp/brief.json --max-age-hours 36
-node routine/validate-brief.mjs /tmp/brief.json --max-age-hours 36 --require-images
+node routine/validate-brief.mjs /tmp/brief.json --max-age-hours 36 --require-images --no-repeat-days 14
 ```
 
 Bei `FEHLER` jede genannte Stelle in der betroffenen Datei unter `/tmp/sections` korrigieren und

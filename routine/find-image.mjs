@@ -3,8 +3,9 @@
  * Finds freely licensed pictures on Wikimedia Commons for an article of the Morgenbriefing
  * (contract: docs/brief-format.md, field `image`). Zero dependencies, Node >= 18 (global fetch), ESM.
  *
- *   node routine/find-image.mjs "<suchbegriffe>" [--limit 5]
+ *   node routine/find-image.mjs "<suchbegriffe>" [--limit 5] [--recent-days 14]
  *   node routine/find-image.mjs --fallback <motiv|rubrik> [--exclude <url,…>] [--exclude-from <pfad>] [--seed <text>]
+ *        [--recent-days 14]
  *   node routine/find-image.mjs --list-fallbacks
  *   node routine/find-image.mjs --verify-fallbacks
  *
@@ -34,6 +35,12 @@
  * `--verify-fallbacks` re-checks every catalogue entry against Commons (file, license, author,
  * size) – for maintenance, not for the daily run.
  *
+ * `--recent-days N` (search and fallback mode) leaves out every file that ran in the briefs of the
+ * N days before the brief's date (`--date`, default today in Europe/Berlin) – in any thumbnail
+ * size –, so the reader does not see the same picture every morning. The previous briefs come
+ * from git (`origin/briefs`, `--recent-ref`) or a directory (`--recent-from`), see
+ * recent-images.mjs; validate-brief.mjs `--no-repeat-days` checks the result.
+ *
  * Exit codes: 0 = done (the array may be empty), 1 = Commons not reachable / API error, catalogue
  * unreadable or a verification problem, 2 = usage error (also an unknown subject or topic).
  * Diagnostics go to stderr, stdout carries only the JSON (or the list of `--list-fallbacks`).
@@ -42,24 +49,29 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { collectRecentImages } from './recent-images.mjs';
 import {
   IMAGE_SOURCE_PREFIX,
   IMAGE_URL_PREFIX,
   LIMITS,
+  MAX_RECENT_DAYS,
   TOPICS,
+  berlinDate,
   commonsFileKey,
+  imageFileKey,
   imageKey,
   isCalendarDate,
   isFreeLicense,
   isMainModule,
   isSlug,
   licenseNeedsCredit,
+  parseDays,
   topicById,
 } from './validate-brief.mjs';
 
 export const API_URL = 'https://commons.wikimedia.org/w/api.php';
 /** Wikimedia asks every API client to identify itself with a descriptive User-Agent. */
-export const USER_AGENT = 'MorgenbriefingRoutine/1.0 (https://github.com/CedrickGD/Morgenbriefing)';
+export const USER_AGENT = 'MorgenbriefingRoutine/1.4 (https://github.com/CedrickGD/Morgenbriefing)';
 export const DEFAULT_LIMIT = 5;
 export const MAX_LIMIT = 20;
 /** Requested thumbnail width; a standard Commons thumbnail step. */
@@ -72,12 +84,18 @@ export const MIN_WIDTH = 640;
 /** The curated fallback catalogue next to this script. */
 export const FALLBACK_CATALOG_PATH = fileURLToPath(new URL('./fallback-images.json', import.meta.url));
 export const CATALOG_SCHEMA = 1;
-/** Rules for the catalogue: pictures per topic and per subject, minimum width of the thumbnail. */
+/**
+ * Rules for the catalogue: pictures per topic and per subject, minimum width of the thumbnail,
+ * and how many pictures a topic offers together with its subjects (`topicPoolMin`): the routine
+ * keeps every picture out for 14 days (`--recent-days 14`) and a topic draws two to six catalogue
+ * pictures a day, so a smaller pool would run dry.
+ */
 export const CATALOG_LIMITS = Object.freeze({
   topicImagesMin: 4,
-  topicImagesMax: 8,
+  topicImagesMax: 16,
   subjectImagesMin: 1,
-  subjectImagesMax: 3,
+  subjectImagesMax: 6,
+  topicPoolMin: 30,
   minWidth: 1200,
 });
 
@@ -299,23 +317,28 @@ export function pageToCandidate(page) {
   return { candidate: { url, credit, license, sourceUrl, width, height, title, description } };
 }
 
+/** Reason in `rejected` for a file that ran in one of the recent briefs (`--recent-days`). */
+export const RECENT_REASON = 'lief kürzlich';
+
 /**
  * Turns a Commons API response into candidates, best first.
  *
  * @param {any} response parsed JSON of {@link buildSearchUrl}
- * @param {{ limit?: number }} [options]
+ * @param {{ limit?: number, recent?: { has(key: string): boolean } }} [options] `recent`: file
+ *   keys ({@link imageFileKey}) of the pictures of the recent briefs – those files are dropped
  * @returns {{ candidates: object[], rejected: Record<string, number> }} `rejected` counts the
  *   dropped files per reason (for diagnostics).
  */
-export function parseCandidates(response, { limit = DEFAULT_LIMIT } = {}) {
+export function parseCandidates(response, { limit = DEFAULT_LIMIT, recent } = {}) {
   throwIfApiError(response);
   const rejected = {};
   const seen = new Set();
   const accepted = [];
   for (const page of responsePages(response)) {
     const result = pageToCandidate(page);
-    if (result.reason) {
-      rejected[result.reason] = (rejected[result.reason] ?? 0) + 1;
+    const reason = result.reason ?? (recent?.has(imageFileKey(result.candidate.url)) ? RECENT_REASON : undefined);
+    if (reason) {
+      rejected[reason] = (rejected[reason] ?? 0) + 1;
       continue;
     }
     const { candidate } = result;
@@ -390,12 +413,13 @@ export async function fetchCommonsJson(url, { fetchImpl = globalThis.fetch, retr
  * Queries Commons and returns the parsed candidates.
  *
  * @param {string} terms search terms (English or German)
- * @param {{ limit?: number, fetchImpl?: typeof fetch, retryDelayMs?: number }} [options]
+ * @param {{ limit?: number, fetchImpl?: typeof fetch, retryDelayMs?: number,
+ *   recent?: { has(key: string): boolean } }} [options] `recent` as in {@link parseCandidates}
  * @throws {CommonsError}
  */
-export async function findImages(terms, { limit = DEFAULT_LIMIT, fetchImpl = globalThis.fetch, retryDelayMs = 1500 } = {}) {
+export async function findImages(terms, { limit = DEFAULT_LIMIT, fetchImpl = globalThis.fetch, retryDelayMs = 1500, recent } = {}) {
   const json = await fetchCommonsJson(buildSearchUrl(terms, limit), { fetchImpl, retryDelayMs });
-  return parseCandidates(json, { limit });
+  return parseCandidates(json, { limit, recent });
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -460,9 +484,10 @@ function entryProblems(entry, where) {
 
 /**
  * Checks the structure of the fallback catalogue: every topic of the catalogue of the app with
- * 4–8 pictures, subjects with a known topic, label and 1–3 pictures, unique keys and aliases,
- * no file twice, and every picture within the rules of the validator (free license, credit,
- * Commons URLs, German alt text, landscape ≥ 1200 px, verification date).
+ * 4–16 pictures ({@link CATALOG_LIMITS}), subjects with a known topic, label and 1–6 pictures,
+ * unique keys and aliases, no file twice, and every picture within the rules of the validator
+ * (free license, credit, Commons URLs, German alt text, landscape ≥ 1200 px, verification date).
+ * How many pictures a topic offers in total is a separate rule: {@link catalogPoolProblems}.
  *
  * @param {unknown} catalog parsed `fallback-images.json`
  * @returns {string[]} problems in German (empty = fine)
@@ -533,6 +558,42 @@ export function catalogProblems(catalog) {
 }
 
 /**
+ * How many catalogue pictures `--fallback <topic>` can hand out per topic: the topic's own pictures
+ * plus those of all its subjects (the order of {@link fallbackCandidates}).
+ *
+ * @param {object} catalog parsed `fallback-images.json`
+ * @returns {Record<string, number>} picture count per topic id
+ */
+export function topicPoolSizes(catalog) {
+  const sizes = {};
+  for (const [id, images] of Object.entries(catalog?.topics ?? {})) {
+    sizes[id] = Array.isArray(images) ? images.length : 0;
+  }
+  for (const subject of Object.values(catalog?.subjects ?? {})) {
+    if (isPlainObject(subject) && subject.topic in sizes && Array.isArray(subject.images)) sizes[subject.topic] += subject.images.length;
+  }
+  return sizes;
+}
+
+/**
+ * The size rule of the catalogue: every topic of the app offers at least
+ * {@link CATALOG_LIMITS}.topicPoolMin pictures in total. The routine keeps a picture out of the
+ * brief for 14 days (`--recent-days 14`) and a topic draws two to six catalogue pictures a day, so
+ * a smaller pool would run dry. Kept apart from {@link catalogProblems}, which every catalogue
+ * (also the small ones of the tests) has to pass.
+ *
+ * @param {object} catalog parsed `fallback-images.json`
+ * @returns {string[]} problems in German (empty = fine)
+ */
+export function catalogPoolProblems(catalog) {
+  const sizes = topicPoolSizes(catalog);
+  return TOPICS.filter((topic) => (sizes[topic.id] ?? 0) < CATALOG_LIMITS.topicPoolMin).map(
+    (topic) =>
+      `topics.${topic.id}: mindestens ${CATALOG_LIMITS.topicPoolMin} Bilder mit allen Motiven der Rubrik vorgesehen (gefunden: ${sizes[topic.id] ?? 0})`,
+  );
+}
+
+/**
  * Reads and checks the fallback catalogue.
  *
  * @param {string} [file] default: `routine/fallback-images.json`
@@ -595,13 +656,16 @@ function rotate(list, seed) {
  *
  * @param {object} catalog see {@link loadFallbackCatalog}
  * @param {string} key subject (key or alias) or topic id
- * @param {{ exclude?: Iterable<string>, seed?: string, limit?: number }} [options] `exclude`:
- *   picture URLs, file pages or "File:" titles already used in the brief
+ * @param {{ exclude?: Iterable<string>, seed?: string, limit?: number,
+ *   recent?: { has(key: string): boolean } }} [options] `exclude`: picture URLs, file pages or
+ *   "File:" titles already used in the brief; `recent`: file keys ({@link imageFileKey}) of the
+ *   pictures of the recent briefs
  * @returns {{ kind: 'motiv' | 'rubrik', key: string, topic: string, excluded: number,
- *   candidates: object[] }}
+ *   recentlyUsed: number, candidates: object[] }} `excluded`: skipped because already in the
+ *   brief; `recentlyUsed`: skipped because they ran in a recent brief
  * @throws {UnknownFallbackError} for a key the catalogue does not know
  */
-export function fallbackCandidates(catalog, key, { exclude = [], seed = '', limit = DEFAULT_LIMIT } = {}) {
+export function fallbackCandidates(catalog, key, { exclude = [], seed = '', limit = DEFAULT_LIMIT, recent } = {}) {
   const resolved = resolveFallbackKey(catalog, key);
   if (resolved === null) {
     throw new UnknownFallbackError(
@@ -623,11 +687,16 @@ export function fallbackCandidates(catalog, key, { exclude = [], seed = '', limi
       : [topicGroup, fromSubjects(subjects)];
 
   let excluded = 0;
+  let recentlyUsed = 0;
   const candidates = [];
   for (const group of groups) {
     for (const { entry, origin } of rotate(group, seed)) {
       if (blocked.has(imageKey(entry.url)) || blocked.has(imageKey(entry.sourceUrl))) {
         excluded++;
+        continue;
+      }
+      if (recent?.has(imageFileKey(entry.url)) || recent?.has(imageFileKey(entry.sourceUrl))) {
+        recentlyUsed++;
         continue;
       }
       candidates.push({
@@ -643,7 +712,7 @@ export function fallbackCandidates(catalog, key, { exclude = [], seed = '', limi
       });
     }
   }
-  return { ...resolved, excluded, candidates: candidates.slice(0, limit) };
+  return { ...resolved, excluded, recentlyUsed, candidates: candidates.slice(0, limit) };
 }
 
 /**
@@ -787,13 +856,21 @@ export function describeCatalog(catalog) {
 const USAGE = `Sucht frei lizenzierte Bilder auf Wikimedia Commons (CC0, gemeinfrei, CC BY, CC BY-SA).
 
 Aufruf:
-  node routine/find-image.mjs "<suchbegriffe>" [--limit <n>]
-  node routine/find-image.mjs --fallback <motiv|rubrik> [--seed <artikel-id>] [--exclude <url,…>] [--exclude-from <pfad>] [--limit <n>]
+  node routine/find-image.mjs "<suchbegriffe>" [--limit <n>] [--recent-days <n>]
+  node routine/find-image.mjs --fallback <motiv|rubrik> [--seed <artikel-id>] [--exclude <url,…>] [--exclude-from <pfad>] [--limit <n>] [--recent-days <n>]
   node routine/find-image.mjs --list-fallbacks
   node routine/find-image.mjs --verify-fallbacks
 
 Optionen:
   --limit <n>            Höchstens so viele Kandidaten (1–${MAX_LIMIT}, Standard ${DEFAULT_LIMIT}).
+  --recent-days <n>      Bei Suche und Katalog alle Bilder auslassen, deren Commons-Datei (egal in
+                         welcher Größe) in den Briefings der <n> Tage vor dem Briefing-Datum schon
+                         lief (Routine: 14) – sonst sieht der Leser jeden Morgen dasselbe Bild.
+  --recent-ref <ref>     Mit --recent-days: frühere Briefings aus diesem Git-Stand lesen
+                         (Standard: origin/briefs, wird bei Bedarf geholt).
+  --recent-from <pfad>   Mit --recent-days: frühere Briefings stattdessen aus diesem Ordner
+                         (<pfad>/briefs/<datum>.json oder <pfad>/<datum>.json).
+  --date <datum>         Mit --recent-days: Datum des Briefings (JJJJ-MM-TT, Standard: heute).
   --fallback <name>      Kein Netz nötig: geprüfte Ersatzbilder aus routine/fallback-images.json
                          für ein Motiv (z. B. bundestag, leipzig-hbf, windpark) oder eine Rubrik
                          (ki, wirtschaft, politik, …). Erst das Motiv, dann seine Rubrik, dann die
@@ -812,7 +889,8 @@ Optionen:
 
 Ausgabe (stdout): JSON-Liste [{ url, credit, license, sourceUrl, width, height, title, description }],
 beste zuerst (Querformat ab ${PREFERRED_WIDTH} px); mit --fallback [{ url, credit, license, sourceUrl,
-alt, width, height, title, fallback }]. Leere Liste = nichts Passendes (bzw. alles schon vergeben).
+alt, width, height, title, fallback }]. Leere Liste = nichts Passendes (bzw. alles schon vergeben
+oder in den letzten Tagen gelaufen).
 Ob ein Bild wirklich zur Geschichte passt, entscheidest du – das Skript prüft nur die Lizenz.
 
 Exit-Code: 0 = erledigt, 1 = Commons nicht erreichbar, Katalog ungültig oder Prüfung fehlgeschlagen,
@@ -833,6 +911,7 @@ function parseCliArgs(argv) {
   let catalogPath;
   let list = false;
   let verify = false;
+  const recent = {};
   const optionWithValue = (name) => (arg) => arg === name || arg.startsWith(`${name}=`);
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -846,7 +925,14 @@ function parseCliArgs(argv) {
         return { problem: `--limit braucht eine ganze Zahl von 1 bis ${MAX_LIMIT} (gefunden: ${raw ?? 'nichts'})` };
       }
       limit = n;
-    } else if (takes('--fallback') || takes('--exclude') || takes('--exclude-from') || takes('--seed') || takes('--catalog')) {
+    } else if (takes('--recent-days')) {
+      const { value: raw, next } = readValue(argv, i, arg);
+      i = next;
+      recent.days = parseDays(raw);
+      if (recent.days === null) {
+        return { problem: `--recent-days braucht eine ganze Zahl von 1 bis ${MAX_RECENT_DAYS} (gefunden: ${raw ?? 'nichts'})` };
+      }
+    } else if (['--fallback', '--exclude', '--exclude-from', '--seed', '--catalog', '--recent-from', '--recent-ref', '--date'].some(takes)) {
       const name = arg.split('=')[0];
       const { value, next } = readValue(argv, i, arg);
       i = next;
@@ -857,7 +943,12 @@ function parseCliArgs(argv) {
       else if (name === '--exclude') exclude.push(...splitExcludeList(value));
       else if (name === '--exclude-from') excludeFrom.push(value);
       else if (name === '--seed') seed = value;
-      else catalogPath = value;
+      else if (name === '--recent-from') recent.from = value;
+      else if (name === '--recent-ref') recent.ref = value;
+      else if (name === '--date') {
+        if (!isCalendarDate(value)) return { problem: `--date braucht ein Datum JJJJ-MM-TT (gefunden: ${value})` };
+        recent.date = value;
+      } else catalogPath = value;
     } else if (arg === '--list-fallbacks') {
       list = true;
     } else if (arg === '--verify-fallbacks') {
@@ -880,21 +971,44 @@ function parseCliArgs(argv) {
   if (fallback === undefined && (exclude.length > 0 || excludeFrom.length > 0 || seed !== '')) {
     return { problem: '--exclude, --exclude-from und --seed gelten nur zusammen mit --fallback.' };
   }
+  if (recent.days === undefined && (recent.from !== undefined || recent.ref !== undefined || recent.date !== undefined)) {
+    return { problem: '--recent-from, --recent-ref und --date gelten nur zusammen mit --recent-days.' };
+  }
+  if (recent.from !== undefined && recent.ref !== undefined) {
+    return { problem: '--recent-from und --recent-ref schließen sich gegenseitig aus.' };
+  }
+  if (recent.days !== undefined && (list || verify)) {
+    return { problem: '--recent-days gilt nur für die Suche und --fallback.' };
+  }
   if (query.length > 250) return { problem: 'Suchbegriffe sind zu lang (höchstens 250 Zeichen).' };
-  if (fallback !== undefined) return { mode: 'fallback', key: fallback, exclude, excludeFrom, seed, limit, catalogPath };
+  const history = recent.days === undefined ? null : recent;
+  if (fallback !== undefined) return { mode: 'fallback', key: fallback, exclude, excludeFrom, seed, limit, catalogPath, history };
   if (list) return { mode: 'list', catalogPath };
   if (verify) return { mode: 'verify', catalogPath };
-  return { mode: 'search', query, limit };
+  return { mode: 'search', query, limit, history };
+}
+
+/**
+ * `--recent-days`: the file keys of the pictures of the recent briefs (empty set without the
+ * option). Problems reading the history are only hints – the search goes on without them.
+ */
+function recentImagesFor(history, { cwd, err }) {
+  if (history === null) return { keys: new Set(), days: 0 };
+  const result = collectRecentImages({ date: history.date ?? berlinDate(), days: history.days, from: history.from, ref: history.ref, cwd });
+  for (const w of result.warnings) err(`Hinweis: ${w}`);
+  return { keys: new Set(result.images.keys()), days: history.days };
 }
 
 /**
  * Runs the CLI and resolves to the exit code (does not call `process.exit`).
  *
  * @param {string[]} argv arguments without `node` and the script path
+ * @param {{ out?: Function, err?: Function, fetchImpl?: typeof fetch, retryDelayMs?: number,
+ *   catalogPath?: string, cwd?: string }} [io] `cwd`: repository for `--recent-days` (git)
  */
 export async function main(
   argv = process.argv.slice(2),
-  { out = console.log, err = console.error, fetchImpl = globalThis.fetch, retryDelayMs, catalogPath: defaultCatalog } = {},
+  { out = console.log, err = console.error, fetchImpl = globalThis.fetch, retryDelayMs, catalogPath: defaultCatalog, cwd } = {},
 ) {
   const args = parseCliArgs(argv);
   if (args.help) {
@@ -907,7 +1021,8 @@ export async function main(
   }
   try {
     if (args.mode === 'search') {
-      const { candidates, rejected } = await findImages(args.query, { limit: args.limit, fetchImpl, retryDelayMs });
+      const recent = recentImagesFor(args.history, { cwd, err });
+      const { candidates, rejected } = await findImages(args.query, { limit: args.limit, fetchImpl, retryDelayMs, recent: recent.keys });
       out(JSON.stringify(candidates, null, 2));
       const dropped = Object.entries(rejected)
         .map(([reason, n]) => `${n}× ${reason}`)
@@ -941,13 +1056,18 @@ export async function main(
       exclude.push(...refs);
       for (const w of warnings) err(`Hinweis: ${w}`);
     }
-    const result = fallbackCandidates(catalog, args.key, { exclude, seed: args.seed, limit: args.limit });
+    const recent = recentImagesFor(args.history, { cwd, err });
+    const result = fallbackCandidates(catalog, args.key, { exclude, seed: args.seed, limit: args.limit, recent: recent.keys });
     out(JSON.stringify(result.candidates, null, 2));
     const what = result.kind === 'motiv' ? `Motiv „${result.key}“ (Rubrik ${result.topic})` : `Rubrik „${result.key}“`;
-    const skipped = result.excluded > 0 ? ` (${result.excluded} schon vergeben)` : '';
+    const reasons = [
+      ...(result.excluded > 0 ? [`${result.excluded} schon vergeben`] : []),
+      ...(result.recentlyUsed > 0 ? [`${result.recentlyUsed} in den letzten ${recent.days} Tagen gelaufen`] : []),
+    ];
+    const skipped = reasons.length > 0 ? ` (${reasons.join(', ')})` : '';
     err(
       result.candidates.length === 0
-        ? `Kein freies Katalogbild mehr für ${what}${skipped} – anderes Motiv oder andere Rubrik versuchen.`
+        ? `Kein freies Katalogbild mehr für ${what}${skipped} – anderes Motiv, andere Rubrik oder eine Commons-Suche versuchen.`
         : `${result.candidates.length} Katalogbild${result.candidates.length === 1 ? '' : 'er'} für ${what}${skipped}`,
     );
     return 0;

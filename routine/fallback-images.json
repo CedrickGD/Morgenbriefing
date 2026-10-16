@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "verifiedAt": "2026-10-09",
+  "verifiedAt": "2026-10-17",
   "about": "Geprüfte Ersatzbilder von Wikimedia Commons für Artikel, zu denen die Bildsuche nichts Passendes findet (routine/PROMPT.md, Abschnitt 5. BILD). Jedes Bild ist frei lizenziert (CC0, gemeinfrei, CC BY, CC BY-SA), als 1280-px-Vorschaubild von upload.wikimedia.org eingebunden, im Querformat und zeigt ein allgemeines Motiv – kein bestimmtes Ereignis, keine Medienlogos, keine erkennbaren Privatpersonen in heiklen Situationen. Abfrage: node routine/find-image.mjs --fallback <motiv|rubrik>; erneut prüfen: node routine/find-image.mjs --verify-fallbacks.",
   "topics": {
     "ki": [
@@ -80,6 +80,50 @@
         "width": 1280,
         "height": 720,
         "verifiedAt": "2026-10-09"
+      },
+      {
+        "title": "File:Typing on a laptop (Unsplash).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Typing_on_a_laptop_%28Unsplash%29.jpg/1280px-Typing_on_a_laptop_%28Unsplash%29.jpg",
+        "credit": "Simon Hattinga Verschure webmarbles",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Typing_on_a_laptop_(Unsplash).jpg",
+        "alt": "Hände tippen auf einer Laptop-Tastatur",
+        "width": 1280,
+        "height": 853,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:An office table and computers (Unsplash).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/An_office_table_and_computers_%28Unsplash%29.jpg/1280px-An_office_table_and_computers_%28Unsplash%29.jpg",
+        "credit": "Patryk Sobczak patryksobczak",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:An_office_table_and_computers_(Unsplash).jpg",
+        "alt": "Schreibtisch mit Computer und Laptop",
+        "width": 1280,
+        "height": 960,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Statistics on a laptop (Unsplash).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Statistics_on_a_laptop_%28Unsplash%29.jpg/1280px-Statistics_on_a_laptop_%28Unsplash%29.jpg",
+        "credit": "Carlos Muza kmuza",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Statistics_on_a_laptop_(Unsplash).jpg",
+        "alt": "Laptop mit Statistiken und Diagrammen auf dem Bildschirm",
+        "width": 1280,
+        "height": 912,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Laptop with a USB stick (Unsplash).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Laptop_with_a_USB_stick_%28Unsplash%29.jpg/1280px-Laptop_with_a_USB_stick_%28Unsplash%29.jpg",
+        "credit": "Brina Blum brina_blum",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Laptop_with_a_USB_stick_(Unsplash).jpg",
+        "alt": "USB-Stick in einem Laptop, Nahaufnahme",
+        "width": 1280,
+        "height": 853,
+        "verifiedAt": "2026-10-17"
       }
     ],
     "wirtschaft": [
@@ -137,6 +181,39 @@
         "width": 1280,
         "height": 823,
         "verifiedAt": "2026-10-09"
+      },
+      {
+        "title": "File:Desks in an open office space (Unsplash).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Desks_in_an_open_office_space_%28Unsplash%29.jpg/1280px-Desks_in_an_open_office_space_%28Unsplash%29.jpg",
+        "credit": "Crew crew",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Desks_in_an_open_office_space_(Unsplash).jpg",
+        "alt": "Großraumbüro mit Schreibtischen",
+        "width": 1280,
+        "height": 853,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Office buildings under clouds (Unsplash).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Office_buildings_under_clouds_%28Unsplash%29.jpg/1280px-Office_buildings_under_clouds_%28Unsplash%29.jpg",
+        "credit": "Anthony DELANOIX anthonydelanoix",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Office_buildings_under_clouds_(Unsplash).jpg",
+        "alt": "Bürohochhäuser unter Wolken",
+        "width": 1280,
+        "height": 853,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Stempel (32625168347).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Stempel_%2832625168347%29.jpg/1280px-Stempel_%2832625168347%29.jpg",
+        "credit": "Tim Reckmann from Hamm, Deutschland",
+        "license": "CC BY 2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stempel_(32625168347).jpg",
+        "alt": "Stempel mit Holzgriff auf hellem Hintergrund",
+        "width": 1280,
+        "height": 854,
+        "verifiedAt": "2026-10-17"
       }
     ],
     "politik": [
@@ -205,6 +282,28 @@
         "width": 1280,
         "height": 854,
         "verifiedAt": "2026-10-09"
+      },
+      {
+        "title": "File:Brandenburger Tor morgens.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Brandenburger_Tor_morgens.jpg/1280px-Brandenburger_Tor_morgens.jpg",
+        "credit": "Thomas Wolf, www.foto-tw.de",
+        "license": "CC BY-SA 3.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Brandenburger_Tor_morgens.jpg",
+        "alt": "Brandenburger Tor in Berlin am Morgen",
+        "width": 1280,
+        "height": 855,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Berlin, Brandenburger Tor -- 2013 -- 4589.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Berlin%2C_Brandenburger_Tor_--_2013_--_4589.jpg/1280px-Berlin%2C_Brandenburger_Tor_--_2013_--_4589.jpg",
+        "credit": "Dietmar Rabich",
+        "license": "CC BY-SA 4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Berlin,_Brandenburger_Tor_--_2013_--_4589.jpg",
+        "alt": "Das Brandenburger Tor in Berlin",
+        "width": 1280,
+        "height": 965,
+        "verifiedAt": "2026-10-17"
       }
     ],
     "welt": [
@@ -262,6 +361,39 @@
         "width": 1280,
         "height": 852,
         "verifiedAt": "2026-10-09"
+      },
+      {
+        "title": "File:Globe with yellow background 1.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Globe_with_yellow_background_1.jpg/1280px-Globe_with_yellow_background_1.jpg",
+        "credit": "Wendy Cope",
+        "license": "CC BY 2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Globe_with_yellow_background_1.jpg",
+        "alt": "Globus vor gelbem Hintergrund",
+        "width": 1280,
+        "height": 851,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:3d earth globe.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/3d_earth_globe.jpg/1280px-3d_earth_globe.jpg",
+        "credit": "Thomas Amberg",
+        "license": "CC BY-SA 2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:3d_earth_globe.jpg",
+        "alt": "Globus mit Relief der Erdoberfläche",
+        "width": 1280,
+        "height": 960,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:World globe (Unsplash gEKMstKfZ6w).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/World_globe_%28Unsplash_gEKMstKfZ6w%29.jpg/1280px-World_globe_%28Unsplash_gEKMstKfZ6w%29.jpg",
+        "credit": "Ben White benwhitephotography",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:World_globe_(Unsplash_gEKMstKfZ6w).jpg",
+        "alt": "Hand hält einen kleinen Globus",
+        "width": 1280,
+        "height": 854,
+        "verifiedAt": "2026-10-17"
       }
     ],
     "region": [
@@ -376,6 +508,28 @@
         "width": 1280,
         "height": 860,
         "verifiedAt": "2026-10-09"
+      },
+      {
+        "title": "File:Skateboard near a wall (Unsplash).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Skateboard_near_a_wall_%28Unsplash%29.jpg/1280px-Skateboard_near_a_wall_%28Unsplash%29.jpg",
+        "credit": "Imani Clovis imaniclovis",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Skateboard_near_a_wall_(Unsplash).jpg",
+        "alt": "Skateboard an einer Wand",
+        "width": 1280,
+        "height": 834,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:The pleasure of playing football (Unsplash).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/The_pleasure_of_playing_football_%28Unsplash%29.jpg/1280px-The_pleasure_of_playing_football_%28Unsplash%29.jpg",
+        "credit": "Click and Boo clickandboo",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_pleasure_of_playing_football_(Unsplash).jpg",
+        "alt": "Hände bewegen Spielfiguren auf einem Fußball-Spielfeldmodell",
+        "width": 1280,
+        "height": 854,
+        "verifiedAt": "2026-10-17"
       }
     ],
     "wissenschaft": [
@@ -433,6 +587,61 @@
         "width": 1280,
         "height": 963,
         "verifiedAt": "2026-10-09"
+      },
+      {
+        "title": "File:Lofoten, Norway (Unsplash).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Lofoten%2C_Norway_%28Unsplash%29.jpg/1280px-Lofoten%2C_Norway_%28Unsplash%29.jpg",
+        "credit": "Johannes Groll followhansi",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lofoten,_Norway_(Unsplash).jpg",
+        "alt": "Polarlicht über den Lofoten in Norwegen",
+        "width": 1280,
+        "height": 853,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Meteorological station 2.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Meteorological_station_2.jpg/1280px-Meteorological_station_2.jpg",
+        "credit": "Jetam2",
+        "license": "CC BY-SA 4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Meteorological_station_2.jpg",
+        "alt": "Wetterstation in einem Botanischen Garten",
+        "width": 1280,
+        "height": 960,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:CSIRO ScienceImage 10788 The Canberra Phytotron at Black Mountain.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/CSIRO_ScienceImage_10788_The_Canberra_Phytotron_at_Black_Mountain.jpg/1280px-CSIRO_ScienceImage_10788_The_Canberra_Phytotron_at_Black_Mountain.jpg",
+        "credit": "division, CSIRO",
+        "license": "CC BY 3.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:CSIRO_ScienceImage_10788_The_Canberra_Phytotron_at_Black_Mountain.jpg",
+        "alt": "Klimagesteuertes Gewächshaus einer Pflanzenforschungsanlage in der Dämmerung",
+        "width": 1280,
+        "height": 833,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Top view of the rings of Saturn by Cassini - October 10, 2013.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Top_view_of_the_rings_of_Saturn_by_Cassini_-_October_10%2C_2013.jpg/1280px-Top_view_of_the_rings_of_Saturn_by_Cassini_-_October_10%2C_2013.jpg",
+        "credit": "NASA/JPL-Caltech/SSI/Cornell",
+        "license": "Public domain",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Top_view_of_the_rings_of_Saturn_by_Cassini_-_October_10,_2013.jpg",
+        "alt": "Der Saturn mit seinen Ringen von oben, aufgenommen von der Raumsonde Cassini",
+        "width": 1280,
+        "height": 960,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Radio telescope The Dish.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Radio_telescope_The_Dish.jpg/1280px-Radio_telescope_The_Dish.jpg",
+        "credit": "Steve Jurvetson from Menlo Park, USA",
+        "license": "CC BY 2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Radio_telescope_The_Dish.jpg",
+        "alt": "Das Radioteleskop „The Dish“ der Stanford University",
+        "width": 1280,
+        "height": 819,
+        "verifiedAt": "2026-10-17"
       }
     ],
     "gesundheit": [
@@ -490,6 +699,83 @@
         "width": 1280,
         "height": 960,
         "verifiedAt": "2026-10-09"
+      },
+      {
+        "title": "File:Apple for Health - Apple with Stethoscope (16348686815).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Apple_for_Health_-_Apple_with_Stethoscope_%2816348686815%29.jpg/1280px-Apple_for_Health_-_Apple_with_Stethoscope_%2816348686815%29.jpg",
+        "credit": "Wellness GM (www.wellnesscorporatesolutions.com)",
+        "license": "CC BY-SA 2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Apple_for_Health_-_Apple_with_Stethoscope_(16348686815).jpg",
+        "alt": "Grüner Apfel mit einem Stethoskop",
+        "width": 1280,
+        "height": 853,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Stethoscope and Laptop Computer - Nci-vol-9713-300.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Stethoscope_and_Laptop_Computer_-_Nci-vol-9713-300.jpg/1280px-Stethoscope_and_Laptop_Computer_-_Nci-vol-9713-300.jpg",
+        "credit": "Daniel Sone (photographer)",
+        "license": "Public domain",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stethoscope_and_Laptop_Computer_-_Nci-vol-9713-300.jpg",
+        "alt": "Hände an einem Laptop, daneben ein Stethoskop",
+        "width": 1280,
+        "height": 853,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Stethoscope-ja-2019.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Stethoscope-ja-2019.jpg/1280px-Stethoscope-ja-2019.jpg",
+        "credit": "melvil",
+        "license": "CC BY-SA 4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stethoscope-ja-2019.jpg",
+        "alt": "Vier Stethoskope vor grünem Hintergrund",
+        "width": 1280,
+        "height": 960,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Arzt mit Klemmbrett (50745299822).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Arzt_mit_Klemmbrett_%2850745299822%29.jpg/1280px-Arzt_mit_Klemmbrett_%2850745299822%29.jpg",
+        "credit": "Tim Reckmann from Hamm, Deutschland",
+        "license": "CC BY 2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arzt_mit_Klemmbrett_(50745299822).jpg",
+        "alt": "Arzt mit einem Klemmbrett",
+        "width": 1280,
+        "height": 854,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Corridor on the second level - NÄL hospital 1.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Corridor_on_the_second_level_-_N%C3%84L_hospital_1.jpg/1280px-Corridor_on_the_second_level_-_N%C3%84L_hospital_1.jpg",
+        "credit": "W.carter",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Corridor_on_the_second_level_-_N%C3%84L_hospital_1.jpg",
+        "alt": "Langer, heller Flur in einem Krankenhaus",
+        "width": 1280,
+        "height": 960,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Sphygmomanometer&Cuff.JPG",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Sphygmomanometer%26Cuff.JPG/1280px-Sphygmomanometer%26Cuff.JPG",
+        "credit": "ML5 in der Wikipedia auf Englisch",
+        "license": "Public domain",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sphygmomanometer%26Cuff.JPG",
+        "alt": "Blutdruckmessgerät mit Manschette",
+        "width": 1280,
+        "height": 839,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Hanteln (45784000422).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Hanteln_%2845784000422%29.jpg/1280px-Hanteln_%2845784000422%29.jpg",
+        "credit": "Tim Reckmann from Hamm, Deutschland",
+        "license": "CC BY 2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hanteln_(45784000422).jpg",
+        "alt": "Hanteln für das Krafttraining",
+        "width": 1280,
+        "height": 917,
+        "verifiedAt": "2026-10-17"
       }
     ],
     "klima": [
@@ -547,6 +833,39 @@
         "width": 1280,
         "height": 868,
         "verifiedAt": "2026-10-09"
+      },
+      {
+        "title": "File:Bicycle Path in Liepāja City Park.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Bicycle_Path_in_Liep%C4%81ja_City_Park.jpg/1280px-Bicycle_Path_in_Liep%C4%81ja_City_Park.jpg",
+        "credit": "---=XEON=---",
+        "license": "CC BY 3.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bicycle_Path_in_Liep%C4%81ja_City_Park.jpg",
+        "alt": "Radweg durch einen Stadtpark mit hohen Bäumen",
+        "width": 1280,
+        "height": 960,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:BrockenSnowedTreesInSun.jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/BrockenSnowedTreesInSun.jpg/1280px-BrockenSnowedTreesInSun.jpg",
+        "credit": "Andreas Tille",
+        "license": "CC BY-SA 4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:BrockenSnowedTreesInSun.jpg",
+        "alt": "Verschneite Bäume im Sonnenlicht auf dem Brocken im Harz",
+        "width": 1280,
+        "height": 849,
+        "verifiedAt": "2026-10-17"
+      },
+      {
+        "title": "File:Snow Scene at Shipka Pass 1.JPG",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Snow_Scene_at_Shipka_Pass_1.JPG/1280px-Snow_Scene_at_Shipka_Pass_1.JPG",
+        "credit": "Psy guy",
+        "license": "CC BY-SA 3.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Snow_Scene_at_Shipka_Pass_1.JPG",
+        "alt": "Verschneite Nadelbäume an einem Bergpass",
+        "width": 1280,
+        "height": 960,
+        "verifiedAt": "2026-10-17"
       }
     ],
     "entertainment": [
@@ -615,6 +934,17 @@
         "width": 1280,
         "height": 853,
         "verifiedAt": "2026-10-09"
+      },
+      {
+        "title": "File:Camera equipment film lens (Unsplash).jpg",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Camera_equipment_film_lens_%28Unsplash%29.jpg/1280px-Camera_equipment_film_lens_%28Unsplash%29.jpg",
+        "credit": "Luca Bravo lucabravo",
+        "license": "CC0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Camera_equipment_film_lens_(Unsplash).jpg",
+        "alt": "Fotokameras und Objektive auf einem Tisch",
+        "width": 1280,
+        "height": 853,
+        "verifiedAt": "2026-10-17"
       }
     ]
   },
@@ -649,6 +979,39 @@
           "width": 1280,
           "height": 854,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:NOIRLab HQ Server Racks (6V6A0395-CC).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/NOIRLab_HQ_Server_Racks_%286V6A0395-CC%29.jpg/1280px-NOIRLab_HQ_Server_Racks_%286V6A0395-CC%29.jpg",
+          "credit": "NOIRLab/NSF/AURA/T. Slovinský",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:NOIRLab_HQ_Server_Racks_(6V6A0395-CC).jpg",
+          "alt": "Serverschränke in einem Serverraum",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Kabelgewirr (10564703354).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Kabelgewirr_%2810564703354%29.jpg/1280px-Kabelgewirr_%2810564703354%29.jpg",
+          "credit": "Dirk Vorderstraße",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kabelgewirr_(10564703354).jpg",
+          "alt": "Netzwerk-Switch mit vielen Netzwerkkabeln",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Beautiful technology (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Beautiful_technology_%28Unsplash%29.jpg/1280px-Beautiful_technology_%28Unsplash%29.jpg",
+          "credit": "Thomas Kvistholt freeche",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Beautiful_technology_(Unsplash).jpg",
+          "alt": "Serverhardware mit Kabeln, Nahaufnahme",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -684,6 +1047,39 @@
           "width": 1280,
           "height": 795,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Silicon chip from a computer laser mouse under a microscope 50х.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Silicon_chip_from_a_computer_laser_mouse_under_a_microscope_50%D1%85.jpg/1280px-Silicon_chip_from_a_computer_laser_mouse_under_a_microscope_50%D1%85.jpg",
+          "credit": "Original: Alexander Klepnev Abgeleitetes Werk: IamMM",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Silicon_chip_from_a_computer_laser_mouse_under_a_microscope_50%D1%85.jpg",
+          "alt": "Siliziumchip unter dem Mikroskop, stark vergrößert",
+          "width": 1280,
+          "height": 851,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:2023 Dysk SSD Patriot P210 1TB wewnątrz.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/2023_Dysk_SSD_Patriot_P210_1TB_wewn%C4%85trz.jpg/1280px-2023_Dysk_SSD_Patriot_P210_1TB_wewn%C4%85trz.jpg",
+          "credit": "Jacek Halicki",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:2023_Dysk_SSD_Patriot_P210_1TB_wewn%C4%85trz.jpg",
+          "alt": "Geöffnete SSD mit Speicherchips auf der Platine",
+          "width": 1280,
+          "height": 925,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:RS 42471-12 PCB 02.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/RS_42471-12_PCB_02.jpg/1280px-RS_42471-12_PCB_02.jpg",
+          "credit": "Mister rf",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:RS_42471-12_PCB_02.jpg",
+          "alt": "Bestückte Leiterplatte mit elektronischen Bauteilen",
+          "width": 1280,
+          "height": 857,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -706,6 +1102,39 @@
           "width": 1280,
           "height": 960,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Bras robotisés.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Bras_robotis%C3%A9s.jpg/1280px-Bras_robotis%C3%A9s.jpg",
+          "credit": "Gzen92",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bras_robotis%C3%A9s.jpg",
+          "alt": "Roboterarme in einer Ausstellung",
+          "width": 1280,
+          "height": 890,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Tour4 Spoetzl Brewery Shiner Texas 2024.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Tour4_Spoetzl_Brewery_Shiner_Texas_2024.jpg/1280px-Tour4_Spoetzl_Brewery_Shiner_Texas_2024.jpg",
+          "credit": "Larry D. Moore",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tour4_Spoetzl_Brewery_Shiner_Texas_2024.jpg",
+          "alt": "Industrieroboter in einer Brauerei",
+          "width": 1280,
+          "height": 720,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:KUKA Industrial Robot Writer.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/KUKA_Industrial_Robot_Writer.jpg/1280px-KUKA_Industrial_Robot_Writer.jpg",
+          "credit": "Mirko Tobias Schäfer",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:KUKA_Industrial_Robot_Writer.jpg",
+          "alt": "Industrieroboter schreibt mit einem Stift auf eine Papierrolle",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -729,6 +1158,17 @@
           "width": 1280,
           "height": 961,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Black smartphone in hand (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Black_smartphone_in_hand_%28Unsplash%29.jpg/1280px-Black_smartphone_in_hand_%28Unsplash%29.jpg",
+          "credit": "Dennis Cortés cortes",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Black_smartphone_in_hand_(Unsplash).jpg",
+          "alt": "Schwarzes Smartphone in einer Hand",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -762,6 +1202,180 @@
           "width": 1280,
           "height": 849,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Optical fiber cable installation in Austria 01.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Optical_fiber_cable_installation_in_Austria_01.jpg/1280px-Optical_fiber_cable_installation_in_Austria_01.jpg",
+          "credit": "Zeitblick",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Optical_fiber_cable_installation_in_Austria_01.jpg",
+          "alt": "Verlegung von Glasfaserkabeln",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Bad Waldsee-Cable reels-Optical fiber cables-02ASD.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Bad_Waldsee-Cable_reels-Optical_fiber_cables-02ASD.jpg/1280px-Bad_Waldsee-Cable_reels-Optical_fiber_cables-02ASD.jpg",
+          "credit": "Asurnipal",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bad_Waldsee-Cable_reels-Optical_fiber_cables-02ASD.jpg",
+          "alt": "Kabeltrommeln mit Glasfaserkabeln",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "software": {
+      "topic": "ki",
+      "label": "Software, Programmieren, Code",
+      "aliases": [
+        "programmieren",
+        "programmierer",
+        "code",
+        "coding",
+        "entwickler",
+        "laptop",
+        "computer"
+      ],
+      "images": [
+        {
+          "title": "File:Code on computer monitor (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Code_on_computer_monitor_%28Unsplash%29.jpg/1280px-Code_on_computer_monitor_%28Unsplash%29.jpg",
+          "credit": "Markus Spiske markusspiske",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Code_on_computer_monitor_(Unsplash).jpg",
+          "alt": "Programmcode auf einem Computerbildschirm",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Colorful lines of code (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Colorful_lines_of_code_%28Unsplash%29.jpg/1280px-Colorful_lines_of_code_%28Unsplash%29.jpg",
+          "credit": "Ilya Pavlov ilyapavlov",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Colorful_lines_of_code_(Unsplash).jpg",
+          "alt": "Bunte Zeilen Quellcode auf einem Bildschirm",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Laptop coding programs (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Laptop_coding_programs_%28Unsplash%29.jpg/1280px-Laptop_coding_programs_%28Unsplash%29.jpg",
+          "credit": "Tirza van Dijk tirzavandijk",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Laptop_coding_programs_(Unsplash).jpg",
+          "alt": "Laptop mit Programmcode in einer Entwicklungsumgebung",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Programmer at work (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Programmer_at_work_%28Unsplash%29.jpg/1280px-Programmer_at_work_%28Unsplash%29.jpg",
+          "credit": "Crew crew",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Programmer_at_work_(Unsplash).jpg",
+          "alt": "Programmierer arbeitet am Laptop",
+          "width": 1280,
+          "height": 927,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "cybersicherheit": {
+      "topic": "ki",
+      "label": "Cybersicherheit, Passwörter, Hackerangriffe",
+      "aliases": [
+        "cyberangriff",
+        "hacker",
+        "hackerangriff",
+        "it-sicherheit",
+        "passwort",
+        "phishing",
+        "datenschutz"
+      ],
+      "images": [
+        {
+          "title": "File:Username and password 20170626.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Username_and_password_20170626.jpg/1280px-Username_and_password_20170626.jpg",
+          "credit": "Santeri Viinamäki",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Username_and_password_20170626.jpg",
+          "alt": "Anmeldemaske mit Benutzername und Passwort",
+          "width": 1280,
+          "height": 961,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:CryptoCard two factor.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/CryptoCard_two_factor.jpg/1280px-CryptoCard_two_factor.jpg",
+          "credit": "Brian Ronald",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:CryptoCard_two_factor.jpg",
+          "alt": "Sicherheits-Token zeigt ein Einmalpasswort",
+          "width": 1280,
+          "height": 863,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Computer virus illustration.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Computer_virus_illustration.jpg/1280px-Computer_virus_illustration.jpg",
+          "credit": "Santeri Viinamäki",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Computer_virus_illustration.jpg",
+          "alt": "Symbolbild Computervirus",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "quantencomputer": {
+      "topic": "ki",
+      "label": "Quantencomputer",
+      "aliases": [
+        "quantencomputing",
+        "quanten",
+        "qubit",
+        "qubits"
+      ],
+      "images": [
+        {
+          "title": "File:IBM Q system (Fraunhofer 2).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/IBM_Q_system_%28Fraunhofer_2%29.jpg/1280px-IBM_Q_system_%28Fraunhofer_2%29.jpg",
+          "credit": "IBM Research",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:IBM_Q_system_(Fraunhofer_2).jpg",
+          "alt": "Quantencomputer IBM Quantum System One in Deutschland",
+          "width": 1280,
+          "height": 888,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Quantum-computer-Chalmers 2017.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Quantum-computer-Chalmers_2017.jpg/1280px-Quantum-computer-Chalmers_2017.jpg",
+          "credit": "Anita Fors (Chalmers)",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Quantum-computer-Chalmers_2017.jpg",
+          "alt": "Quantenprozessor mit drei Qubits",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Full wafer of Intel quantum computers.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Full_wafer_of_Intel_quantum_computers.jpg/1280px-Full_wafer_of_Intel_quantum_computers.jpg",
+          "credit": "Steve Jurvetson from Menlo Park, USA",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Full_wafer_of_Intel_quantum_computers.jpg",
+          "alt": "Wafer mit Quantenchips",
+          "width": 1280,
+          "height": 895,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -877,6 +1491,39 @@
           "width": 1280,
           "height": 961,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Euro coins in wallet.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Euro_coins_in_wallet.jpg/1280px-Euro_coins_in_wallet.jpg",
+          "credit": "Santeri Viinamäki",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Euro_coins_in_wallet.jpg",
+          "alt": "Euromünzen in einer Geldbörse",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Euro coins (07).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Euro_coins_%2807%29.jpg/1280px-Euro_coins_%2807%29.jpg",
+          "credit": "Lukasz Kobus - European Commission",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Euro_coins_(07).jpg",
+          "alt": "Euromünzen",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:20 Euro banknotes.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/20_Euro_banknotes.jpg/1280px-20_Euro_banknotes.jpg",
+          "credit": "Lionel Allorge",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:20_Euro_banknotes.jpg",
+          "alt": "20-Euro-Scheine",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -912,6 +1559,39 @@
           "width": 1280,
           "height": 960,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Container terminal from above (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Container_terminal_from_above_%28Unsplash%29.jpg/1280px-Container_terminal_from_above_%28Unsplash%29.jpg",
+          "credit": "chuttersnap chuttersnap",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Container_terminal_from_above_(Unsplash).jpg",
+          "alt": "Containerterminal von oben",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Shipping containers in a port (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Shipping_containers_in_a_port_%28Unsplash%29.jpg/1280px-Shipping_containers_in_a_port_%28Unsplash%29.jpg",
+          "credit": "Igor Ovsyannykov igorovsyannykov",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Shipping_containers_in_a_port_(Unsplash).jpg",
+          "alt": "Gestapelte Container in einem Hafen",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Container ship in Koper 2013.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Container_ship_in_Koper_2013.jpg/1280px-Container_ship_in_Koper_2013.jpg",
+          "credit": "Martin Dörsch",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Container_ship_in_Koper_2013.jpg",
+          "alt": "Containerschiff vor einem Hafen",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -985,6 +1665,347 @@
         }
       ]
     },
+    "supermarkt": {
+      "topic": "wirtschaft",
+      "label": "Supermarkt, Lebensmittelpreise, Einkaufen",
+      "aliases": [
+        "lebensmittel",
+        "lebensmittelpreise",
+        "einkaufen",
+        "einzelhandel",
+        "discounter",
+        "einkaufswagen"
+      ],
+      "images": [
+        {
+          "title": "File:Voller Einkaufswagen (24140946888).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Voller_Einkaufswagen_%2824140946888%29.jpg/1280px-Voller_Einkaufswagen_%2824140946888%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Voller_Einkaufswagen_(24140946888).jpg",
+          "alt": "Voller Einkaufswagen",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Einkaufswagen (37962696292).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Einkaufswagen_%2837962696292%29.jpg/1280px-Einkaufswagen_%2837962696292%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Einkaufswagen_(37962696292).jpg",
+          "alt": "Einkaufswagen",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Vegetable Market (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Vegetable_Market_%28Unsplash%29.jpg/1280px-Vegetable_Market_%28Unsplash%29.jpg",
+          "credit": "Lukas Budimaier lukasbudimaier",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vegetable_Market_(Unsplash).jpg",
+          "alt": "Obst- und Gemüseladen mit Kisten voller Ware",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:2019-08-01 Krustenbrot for sale at supermarket.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/2019-08-01_Krustenbrot_for_sale_at_supermarket.jpg/1280px-2019-08-01_Krustenbrot_for_sale_at_supermarket.jpg",
+          "credit": "Maksym Kozlenko",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:2019-08-01_Krustenbrot_for_sale_at_supermarket.jpg",
+          "alt": "Brotlaibe im Regal eines Supermarkts",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "bau": {
+      "topic": "wirtschaft",
+      "label": "Bau, Baustellen, Wohnungsbau",
+      "aliases": [
+        "baustelle",
+        "baustellen",
+        "bauwirtschaft",
+        "wohnungsbau",
+        "bauen",
+        "kran",
+        "neubau"
+      ],
+      "images": [
+        {
+          "title": "File:ABS Nürnberg–Ebensfeld Kran Vollmond-20160718-RM-210716.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/ABS_N%C3%BCrnberg%E2%80%93Ebensfeld_Kran_Vollmond-20160718-RM-210716.jpg/1280px-ABS_N%C3%BCrnberg%E2%80%93Ebensfeld_Kran_Vollmond-20160718-RM-210716.jpg",
+          "credit": "Ermell",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:ABS_N%C3%BCrnberg%E2%80%93Ebensfeld_Kran_Vollmond-20160718-RM-210716.jpg",
+          "alt": "Baukran vor dem Vollmond",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:View Above Construction Site (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/View_Above_Construction_Site_%28Unsplash%29.jpg/1280px-View_Above_Construction_Site_%28Unsplash%29.jpg",
+          "credit": "chuttersnap chuttersnap",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:View_Above_Construction_Site_(Unsplash).jpg",
+          "alt": "Baustelle von oben",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:2016100103 Baustelle Oberpostdirektion Kran 2016.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/2016100103_Baustelle_Oberpostdirektion_Kran_2016.jpg/1280px-2016100103_Baustelle_Oberpostdirektion_Kran_2016.jpg",
+          "credit": "VSchagow",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:2016100103_Baustelle_Oberpostdirektion_Kran_2016.jpg",
+          "alt": "Baustelle mit Kran und Baucontainern in Dresden",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "industrie": {
+      "topic": "wirtschaft",
+      "label": "Industrie, Stahl, Produktion",
+      "aliases": [
+        "fabrik",
+        "produktion",
+        "stahl",
+        "stahlindustrie",
+        "maschinenbau",
+        "industrieproduktion"
+      ],
+      "images": [
+        {
+          "title": "File:20210821 Stahlwerk Bous 01.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/20210821_Stahlwerk_Bous_01.jpg/1280px-20210821_Stahlwerk_Bous_01.jpg",
+          "credit": "Flocci Nivis",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:20210821_Stahlwerk_Bous_01.jpg",
+          "alt": "Stahlwerk am Ufer der Saar",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:13 Industry of Australia - Steelworks of BlueScope Steel Limited company in Port Kembla, Australia.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/13_Industry_of_Australia_-_Steelworks_of_BlueScope_Steel_Limited_company_in_Port_Kembla%2C_Australia.jpg/1280px-13_Industry_of_Australia_-_Steelworks_of_BlueScope_Steel_Limited_company_in_Port_Kembla%2C_Australia.jpg",
+          "credit": "Marek Ślusarczyk (Tupungato) Photo gallery",
+          "license": "CC BY 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:13_Industry_of_Australia_-_Steelworks_of_BlueScope_Steel_Limited_company_in_Port_Kembla,_Australia.jpg",
+          "alt": "Hallen und Schornsteine eines großen Stahlwerks",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Welder in a workshop (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Welder_in_a_workshop_%28Unsplash%29.jpg/1280px-Welder_in_a_workshop_%28Unsplash%29.jpg",
+          "credit": "Uğur Gürcüoğlu sharkdesignstudio",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Welder_in_a_workshop_(Unsplash).jpg",
+          "alt": "Schweißer bei der Arbeit in einer Werkstatt",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "arbeitsmarkt": {
+      "topic": "wirtschaft",
+      "label": "Arbeitsmarkt, Agentur für Arbeit, Jobs",
+      "aliases": [
+        "arbeitslosigkeit",
+        "arbeitslose",
+        "jobcenter",
+        "arbeitsagentur",
+        "buergergeld",
+        "stellenabbau",
+        "jobs"
+      ],
+      "images": [
+        {
+          "title": "File:Agentur für Arbeit München 01.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Agentur_f%C3%BCr_Arbeit_M%C3%BCnchen_01.jpg/1280px-Agentur_f%C3%BCr_Arbeit_M%C3%BCnchen_01.jpg",
+          "credit": "Kritzolina",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Agentur_f%C3%BCr_Arbeit_M%C3%BCnchen_01.jpg",
+          "alt": "Gebäude der Agentur für Arbeit in München",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Agentur für Arbeit und Jobcenter Frankfurt (Oder) 2024 002.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Agentur_f%C3%BCr_Arbeit_und_Jobcenter_Frankfurt_%28Oder%29_2024_002.jpg/1280px-Agentur_f%C3%BCr_Arbeit_und_Jobcenter_Frankfurt_%28Oder%29_2024_002.jpg",
+          "credit": "Sebastian Wallroth",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Agentur_f%C3%BCr_Arbeit_und_Jobcenter_Frankfurt_(Oder)_2024_002.jpg",
+          "alt": "Agentur für Arbeit und Jobcenter in Frankfurt (Oder)",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Agentur für Arbeit Tübingen 01.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Agentur_f%C3%BCr_Arbeit_T%C3%BCbingen_01.jpg/1280px-Agentur_f%C3%BCr_Arbeit_T%C3%BCbingen_01.jpg",
+          "credit": "Giftzwerg 88",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Agentur_f%C3%BCr_Arbeit_T%C3%BCbingen_01.jpg",
+          "alt": "Gebäude der Agentur für Arbeit in Tübingen",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "banken": {
+      "topic": "wirtschaft",
+      "label": "Banken, Finanzplatz Frankfurt",
+      "aliases": [
+        "bank",
+        "bankenviertel",
+        "finanzplatz",
+        "frankfurt",
+        "frankfurt-skyline"
+      ],
+      "images": [
+        {
+          "title": "File:Skyline Frankfurt am Main.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Skyline_Frankfurt_am_Main.jpg/1280px-Skyline_Frankfurt_am_Main.jpg",
+          "credit": "Nicolas Scheuer",
+          "license": "CC BY-SA 2.5",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Skyline_Frankfurt_am_Main.jpg",
+          "alt": "Bankentürme der Frankfurter Skyline in der Abenddämmerung",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Skyline Frankfurt 2011-01.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Skyline_Frankfurt_2011-01.jpg/1280px-Skyline_Frankfurt_2011-01.jpg",
+          "credit": "Thomas Wolf (Der Wolf im Wald)",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Skyline_Frankfurt_2011-01.jpg",
+          "alt": "Frankfurter Skyline am Abend",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Frankfurter Altstadt mit Skyline 2012-04.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Frankfurter_Altstadt_mit_Skyline_2012-04.jpg/1280px-Frankfurter_Altstadt_mit_Skyline_2012-04.jpg",
+          "credit": "Thomas Wolf, www.foto-tw.de",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Frankfurter_Altstadt_mit_Skyline_2012-04.jpg",
+          "alt": "Frankfurter Altstadt vor den Hochhäusern des Bankenviertels",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "lkw": {
+      "topic": "wirtschaft",
+      "label": "Lkw, Logistik, Güterverkehr",
+      "aliases": [
+        "logistik",
+        "spedition",
+        "gueterverkehr",
+        "maut",
+        "lastwagen",
+        "lkw-maut"
+      ],
+      "images": [
+        {
+          "title": "File:Mautbrücke Deutschland Autobahn 20090320 001.JPG",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Mautbr%C3%BCcke_Deutschland_Autobahn_20090320_001.JPG/1280px-Mautbr%C3%BCcke_Deutschland_Autobahn_20090320_001.JPG",
+          "credit": "Politikaner",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mautbr%C3%BCcke_Deutschland_Autobahn_20090320_001.JPG",
+          "alt": "Mautbrücke über einer Autobahn",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Brenner LKW Stau.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Brenner_LKW_Stau.jpg/1280px-Brenner_LKW_Stau.jpg",
+          "credit": "MartinPutz",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Brenner_LKW_Stau.jpg",
+          "alt": "Lkw-Kolonne auf der Brennerautobahn",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Delivery truck at sunrise (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Delivery_truck_at_sunrise_%28Unsplash%29.jpg/1280px-Delivery_truck_at_sunrise_%28Unsplash%29.jpg",
+          "credit": "Andrew Kambel andrewk",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Delivery_truck_at_sunrise_(Unsplash).jpg",
+          "alt": "Lieferwagen in einer Straße bei Sonnenaufgang",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "wohnen": {
+      "topic": "wirtschaft",
+      "label": "Wohnen, Mieten, Immobilien",
+      "aliases": [
+        "mieten",
+        "miete",
+        "mietpreise",
+        "wohnungen",
+        "wohnungsmarkt",
+        "immobilien"
+      ],
+      "images": [
+        {
+          "title": "File:Mehrfamilienhaus – Neumannstraße 3 (Leipzig).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Mehrfamilienhaus_%E2%80%93_Neumannstra%C3%9Fe_3_%28Leipzig%29.jpg/1280px-Mehrfamilienhaus_%E2%80%93_Neumannstra%C3%9Fe_3_%28Leipzig%29.jpg",
+          "credit": "August Geyler",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mehrfamilienhaus_%E2%80%93_Neumannstra%C3%9Fe_3_(Leipzig).jpg",
+          "alt": "Mehrfamilienhaus in Leipzig",
+          "width": 1280,
+          "height": 940,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Mehrfamilienhaus – Sellerhäuser Straße 7 (Leipzig).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Mehrfamilienhaus_%E2%80%93_Sellerh%C3%A4user_Stra%C3%9Fe_7_%28Leipzig%29.jpg/1280px-Mehrfamilienhaus_%E2%80%93_Sellerh%C3%A4user_Stra%C3%9Fe_7_%28Leipzig%29.jpg",
+          "credit": "August Geyler",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mehrfamilienhaus_%E2%80%93_Sellerh%C3%A4user_Stra%C3%9Fe_7_(Leipzig).jpg",
+          "alt": "Gründerzeit-Mietshaus mit verzierter Fassade in Leipzig",
+          "width": 1280,
+          "height": 879,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Mehrfamilienhaus Bifangstrasse 21, Wohlen AG 20230909-jag9889.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Mehrfamilienhaus_Bifangstrasse_21%2C_Wohlen_AG_20230909-jag9889.jpg/1280px-Mehrfamilienhaus_Bifangstrasse_21%2C_Wohlen_AG_20230909-jag9889.jpg",
+          "credit": "Jag9889",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mehrfamilienhaus_Bifangstrasse_21,_Wohlen_AG_20230909-jag9889.jpg",
+          "alt": "Modernes Mehrfamilienhaus mit Flachdach",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
     "bundestag": {
       "topic": "politik",
       "label": "Bundestag, Reichstagsgebäude",
@@ -1015,6 +2036,39 @@
           "width": 1280,
           "height": 853,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Berlin, Reichstagsgebäude -- 2019 -- 6314.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Berlin%2C_Reichstagsgeb%C3%A4ude_--_2019_--_6314.jpg/1280px-Berlin%2C_Reichstagsgeb%C3%A4ude_--_2019_--_6314.jpg",
+          "credit": "Dietmar Rabich",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Berlin,_Reichstagsgeb%C3%A4ude_--_2019_--_6314.jpg",
+          "alt": "Reichstagsgebäude in Berlin",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Reichstag 2015 01.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Reichstag_2015_01.jpg/1280px-Reichstag_2015_01.jpg",
+          "credit": "Perituss",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reichstag_2015_01.jpg",
+          "alt": "Westfassade des Reichstagsgebäudes mit Kuppel",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Reichstagsgebäude und Paul-Löbe-Haus, Berlin-Mitte, 170327, ako.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Reichstagsgeb%C3%A4ude_und_Paul-L%C3%B6be-Haus%2C_Berlin-Mitte%2C_170327%2C_ako.jpg/1280px-Reichstagsgeb%C3%A4ude_und_Paul-L%C3%B6be-Haus%2C_Berlin-Mitte%2C_170327%2C_ako.jpg",
+          "credit": "Ansgar Koreng",
+          "license": "CC BY-SA 3.0 de",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reichstagsgeb%C3%A4ude_und_Paul-L%C3%B6be-Haus,_Berlin-Mitte,_170327,_ako.jpg",
+          "alt": "Reichstagsgebäude und Paul-Löbe-Haus an der Spree zur blauen Stunde",
+          "width": 1280,
+          "height": 720,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1145,6 +2199,28 @@
           "width": 1280,
           "height": 692,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Dresden, Sächsische Staatskanzlei (April 2024).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Dresden%2C_S%C3%A4chsische_Staatskanzlei_%28April_2024%29.jpg/1280px-Dresden%2C_S%C3%A4chsische_Staatskanzlei_%28April_2024%29.jpg",
+          "credit": "Romzig",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dresden,_S%C3%A4chsische_Staatskanzlei_(April_2024).jpg",
+          "alt": "Sächsische Staatskanzlei in Dresden",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Dresden Sächsische Staatskanzlei Labe 2012 1.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Dresden_S%C3%A4chsische_Staatskanzlei_Labe_2012_1.jpg/1280px-Dresden_S%C3%A4chsische_Staatskanzlei_Labe_2012_1.jpg",
+          "credit": "Karelj",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dresden_S%C3%A4chsische_Staatskanzlei_Labe_2012_1.jpg",
+          "alt": "Sächsische Staatskanzlei am Elbufer in Dresden",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1177,6 +2253,17 @@
           "width": 1280,
           "height": 792,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Europäisches Parlament (Europaparlament, EP) in Straßburg - panoramio.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Europ%C3%A4isches_Parlament_%28Europaparlament%2C_EP%29_in_Stra%C3%9Fburg_-_panoramio.jpg/1280px-Europ%C3%A4isches_Parlament_%28Europaparlament%2C_EP%29_in_Stra%C3%9Fburg_-_panoramio.jpg",
+          "credit": "Qwesy",
+          "license": "CC BY 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Europ%C3%A4isches_Parlament_(Europaparlament,_EP)_in_Stra%C3%9Fburg_-_panoramio.jpg",
+          "alt": "Gebäude des Europäischen Parlaments in Straßburg",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1233,6 +2320,182 @@
           "width": 1280,
           "height": 849,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Schild vor dem Eingang zu einem Wahllokal in Deutschland (Brandenburg), Bundestagswahl 2021.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Schild_vor_dem_Eingang_zu_einem_Wahllokal_in_Deutschland_%28Brandenburg%29%2C_Bundestagswahl_2021.jpg/1280px-Schild_vor_dem_Eingang_zu_einem_Wahllokal_in_Deutschland_%28Brandenburg%29%2C_Bundestagswahl_2021.jpg",
+          "credit": "Franziska Kelch (WMDE)",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Schild_vor_dem_Eingang_zu_einem_Wahllokal_in_Deutschland_(Brandenburg),_Bundestagswahl_2021.jpg",
+          "alt": "Schild „Wahllokal“ vor einem Eingang",
+          "width": 1280,
+          "height": 857,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "bundeswehr": {
+      "topic": "politik",
+      "label": "Bundeswehr, Verteidigung",
+      "aliases": [
+        "militaer",
+        "soldaten",
+        "verteidigung",
+        "wehrpflicht",
+        "wehrdienst",
+        "aufruestung",
+        "luftwaffe"
+      ],
+      "images": [
+        {
+          "title": "File:Leopard 2 Panzer der Bundeswehr (49919624546).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Leopard_2_Panzer_der_Bundeswehr_%2849919624546%29.jpg/1280px-Leopard_2_Panzer_der_Bundeswehr_%2849919624546%29.jpg",
+          "credit": "Dirk Vorderstraße from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Leopard_2_Panzer_der_Bundeswehr_(49919624546).jpg",
+          "alt": "Kampfpanzer Leopard 2 der Bundeswehr",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Eurofighter Typhoon (Luftwaffe) (8736840368).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Eurofighter_Typhoon_%28Luftwaffe%29_%288736840368%29.jpg/1280px-Eurofighter_Typhoon_%28Luftwaffe%29_%288736840368%29.jpg",
+          "credit": "bomberpilot",
+          "license": "CC BY-SA 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Eurofighter_Typhoon_(Luftwaffe)_(8736840368).jpg",
+          "alt": "Eurofighter der Luftwaffe im Flug",
+          "width": 1280,
+          "height": 858,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Julius-Leber-Kaserne in Berlin aus der Vogelperspektive.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Julius-Leber-Kaserne_in_Berlin_aus_der_Vogelperspektive.jpg/1280px-Julius-Leber-Kaserne_in_Berlin_aus_der_Vogelperspektive.jpg",
+          "credit": "Bundeswehr-Fotos",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Julius-Leber-Kaserne_in_Berlin_aus_der_Vogelperspektive.jpg",
+          "alt": "Kaserne der Bundeswehr in Berlin aus der Luft",
+          "width": 1280,
+          "height": 746,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "justiz": {
+      "topic": "politik",
+      "label": "Justiz, Gerichte, Bundesverfassungsgericht",
+      "aliases": [
+        "gericht",
+        "gerichte",
+        "urteil",
+        "bundesverfassungsgericht",
+        "karlsruhe",
+        "bundesgerichtshof",
+        "prozess",
+        "staatsanwaltschaft"
+      ],
+      "images": [
+        {
+          "title": "File:Karlsruhe at night – Bundesverfassungsgericht Karlsruhe - 1.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Karlsruhe_at_night_%E2%80%93_Bundesverfassungsgericht_Karlsruhe_-_1.jpg/1280px-Karlsruhe_at_night_%E2%80%93_Bundesverfassungsgericht_Karlsruhe_-_1.jpg",
+          "credit": "Killarnee",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Karlsruhe_at_night_%E2%80%93_Bundesverfassungsgericht_Karlsruhe_-_1.jpg",
+          "alt": "Bundesverfassungsgericht in Karlsruhe bei Nacht",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Karlsruhe-Bundesverfassungsgericht-14-2021-gje.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Karlsruhe-Bundesverfassungsgericht-14-2021-gje.jpg/1280px-Karlsruhe-Bundesverfassungsgericht-14-2021-gje.jpg",
+          "credit": "Gerd Eichmann",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Karlsruhe-Bundesverfassungsgericht-14-2021-gje.jpg",
+          "alt": "Gebäude des Bundesverfassungsgerichts in Karlsruhe",
+          "width": 1280,
+          "height": 844,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Karlsruhe-Bundesgerichtshof-02-2018-gje.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Karlsruhe-Bundesgerichtshof-02-2018-gje.jpg/1280px-Karlsruhe-Bundesgerichtshof-02-2018-gje.jpg",
+          "credit": "Gerd Eichmann",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Karlsruhe-Bundesgerichtshof-02-2018-gje.jpg",
+          "alt": "Bundesgerichtshof in Karlsruhe",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Justitia Justizpalast Muenchen.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Justitia_Justizpalast_Muenchen.jpg/1280px-Justitia_Justizpalast_Muenchen.jpg",
+          "credit": "User:Waugsberg",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Justitia_Justizpalast_Muenchen.jpg",
+          "alt": "Justitia-Figur am Justizpalast in München",
+          "width": 1280,
+          "height": 958,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Hammer für Richter oder Auktionator (14614719699).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Hammer_f%C3%BCr_Richter_oder_Auktionator_%2814614719699%29.jpg/1280px-Hammer_f%C3%BCr_Richter_oder_Auktionator_%2814614719699%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hammer_f%C3%BCr_Richter_oder_Auktionator_(14614719699).jpg",
+          "alt": "Richterhammer",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "polizei": {
+      "topic": "politik",
+      "label": "Polizei, Innere Sicherheit",
+      "aliases": [
+        "polizeieinsatz",
+        "innere-sicherheit",
+        "kriminalitaet",
+        "ermittlungen",
+        "blaulicht"
+      ],
+      "images": [
+        {
+          "title": "File:Blaulicht.Dunkelheit.JPG",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Blaulicht.Dunkelheit.JPG/1280px-Blaulicht.Dunkelheit.JPG",
+          "credit": "User:Mattes",
+          "license": "Public domain",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blaulicht.Dunkelheit.JPG",
+          "alt": "Blaulicht eines Einsatzfahrzeugs im Dunkeln",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Police station Karlsruhe Waldstadt.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Police_station_Karlsruhe_Waldstadt.jpg/1280px-Police_station_Karlsruhe_Waldstadt.jpg",
+          "credit": "Killarnee",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Police_station_Karlsruhe_Waldstadt.jpg",
+          "alt": "Polizeirevier in Karlsruhe",
+          "width": 1280,
+          "height": 956,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Polizei senftenberg 2018-10-20 (34).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Polizei_senftenberg_2018-10-20_%2834%29.jpg/1280px-Polizei_senftenberg_2018-10-20_%2834%29.jpg",
+          "credit": "Z thomas",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Polizei_senftenberg_2018-10-20_(34).jpg",
+          "alt": "Polizeiwache in Senftenberg",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1278,6 +2541,28 @@
           "width": 1280,
           "height": 704,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:2017 - Київ - Світанок над Дніпром.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/2017_-_%D0%9A%D0%B8%D1%97%D0%B2_-_%D0%A1%D0%B2%D1%96%D1%82%D0%B0%D0%BD%D0%BE%D0%BA_%D0%BD%D0%B0%D0%B4_%D0%94%D0%BD%D1%96%D0%BF%D1%80%D0%BE%D0%BC.jpg/1280px-2017_-_%D0%9A%D0%B8%D1%97%D0%B2_-_%D0%A1%D0%B2%D1%96%D1%82%D0%B0%D0%BD%D0%BE%D0%BA_%D0%BD%D0%B0%D0%B4_%D0%94%D0%BD%D1%96%D0%BF%D1%80%D0%BE%D0%BC.jpg",
+          "credit": "Moahim",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:2017_-_%D0%9A%D0%B8%D1%97%D0%B2_-_%D0%A1%D0%B2%D1%96%D1%82%D0%B0%D0%BD%D0%BE%D0%BA_%D0%BD%D0%B0%D0%B4_%D0%94%D0%BD%D1%96%D0%BF%D1%80%D0%BE%D0%BC.jpg",
+          "alt": "Fußgängerbrücke über den Dnipro in Kyjiw bei Sonnenaufgang",
+          "width": 1280,
+          "height": 875,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Києво-Печерська Лавра в ранковому тумані.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/%D0%9A%D0%B8%D1%94%D0%B2%D0%BE-%D0%9F%D0%B5%D1%87%D0%B5%D1%80%D1%81%D1%8C%D0%BA%D0%B0_%D0%9B%D0%B0%D0%B2%D1%80%D0%B0_%D0%B2_%D1%80%D0%B0%D0%BD%D0%BA%D0%BE%D0%B2%D0%BE%D0%BC%D1%83_%D1%82%D1%83%D0%BC%D0%B0%D0%BD%D1%96.jpg/1280px-%D0%9A%D0%B8%D1%94%D0%B2%D0%BE-%D0%9F%D0%B5%D1%87%D0%B5%D1%80%D1%81%D1%8C%D0%BA%D0%B0_%D0%9B%D0%B0%D0%B2%D1%80%D0%B0_%D0%B2_%D1%80%D0%B0%D0%BD%D0%BA%D0%BE%D0%B2%D0%BE%D0%BC%D1%83_%D1%82%D1%83%D0%BC%D0%B0%D0%BD%D1%96.jpg",
+          "credit": "KyivMax",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9A%D0%B8%D1%94%D0%B2%D0%BE-%D0%9F%D0%B5%D1%87%D0%B5%D1%80%D1%81%D1%8C%D0%BA%D0%B0_%D0%9B%D0%B0%D0%B2%D1%80%D0%B0_%D0%B2_%D1%80%D0%B0%D0%BD%D0%BA%D0%BE%D0%B2%D0%BE%D0%BC%D1%83_%D1%82%D1%83%D0%BC%D0%B0%D0%BD%D1%96.jpg",
+          "alt": "Höhlenkloster in Kyjiw im Morgennebel",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1312,6 +2597,17 @@
           "width": 1280,
           "height": 642,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:US Capitol Building at night Jan 2006.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/US_Capitol_Building_at_night_Jan_2006.jpg/1280px-US_Capitol_Building_at_night_Jan_2006.jpg",
+          "credit": "Diliff",
+          "license": "Public domain",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:US_Capitol_Building_at_night_Jan_2006.jpg",
+          "alt": "Kapitol in Washington bei Nacht",
+          "width": 1280,
+          "height": 966,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1346,6 +2642,17 @@
           "width": 1280,
           "height": 948,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:The White House North Portico in Washington, D.C.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/The_White_House_North_Portico_in_Washington%2C_D.C.jpg/1280px-The_White_House_North_Portico_in_Washington%2C_D.C.jpg",
+          "credit": "Harrison Keely",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_White_House_North_Portico_in_Washington,_D.C.jpg",
+          "alt": "Nordportikus des Weißen Hauses in Washington",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1380,6 +2687,17 @@
           "width": 1280,
           "height": 712,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Boat passing United Nations Headquarters and surrounds, seen from the East River.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Boat_passing_United_Nations_Headquarters_and_surrounds%2C_seen_from_the_East_River.jpg/1280px-Boat_passing_United_Nations_Headquarters_and_surrounds%2C_seen_from_the_East_River.jpg",
+          "credit": "Jdforrester",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Boat_passing_United_Nations_Headquarters_and_surrounds,_seen_from_the_East_River.jpg",
+          "alt": "UN-Hauptquartier in New York, vom East River aus gesehen",
+          "width": 1280,
+          "height": 1024,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1413,6 +2731,28 @@
           "width": 1280,
           "height": 708,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Old City Walls and Tower of David in Jerusalem (2019) 03.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Old_City_Walls_and_Tower_of_David_in_Jerusalem_%282019%29_03.jpg/1280px-Old_City_Walls_and_Tower_of_David_in_Jerusalem_%282019%29_03.jpg",
+          "credit": "Pudelek",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Old_City_Walls_and_Tower_of_David_in_Jerusalem_(2019)_03.jpg",
+          "alt": "Stadtmauer der Altstadt von Jerusalem mit dem Davidsturm",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Jerusalem Damaskustor BW 1.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Jerusalem_Damaskustor_BW_1.jpg/1280px-Jerusalem_Damaskustor_BW_1.jpg",
+          "credit": "Berthold Werner",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jerusalem_Damaskustor_BW_1.jpg",
+          "alt": "Damaskustor in der Altstadt von Jerusalem",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1445,6 +2785,28 @@
           "width": 1280,
           "height": 698,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Shanghai skyline from the bund.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Shanghai_skyline_from_the_bund.jpg/1280px-Shanghai_skyline_from_the_bund.jpg",
+          "credit": "https://www.pxfuel.com/en/free-photo-ovozr",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Shanghai_skyline_from_the_bund.jpg",
+          "alt": "Skyline von Shanghai, vom Bund aus gesehen",
+          "width": 1280,
+          "height": 721,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:The Great Wall of China at Jinshanling.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/The_Great_Wall_of_China_at_Jinshanling.jpg/1280px-The_Great_Wall_of_China_at_Jinshanling.jpg",
+          "credit": "Vincent Ndaku",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_Great_Wall_of_China_at_Jinshanling.jpg",
+          "alt": "Chinesische Mauer bei Jinshanling",
+          "width": 1280,
+          "height": 850,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1477,6 +2839,17 @@
           "width": 1280,
           "height": 622,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:New HQ NATO 7.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/New_HQ_NATO_7.jpg/1280px-New_HQ_NATO_7.jpg",
+          "credit": "Swadim",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:New_HQ_NATO_7.jpg",
+          "alt": "Nato-Hauptquartier in Brüssel",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1498,6 +2871,218 @@
           "width": 1280,
           "height": 627,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Grand Kremlin Palace in summer sunset light 2025-8.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Grand_Kremlin_Palace_in_summer_sunset_light_2025-8.jpg/1280px-Grand_Kremlin_Palace_in_summer_sunset_light_2025-8.jpg",
+          "credit": "Юрий Д.К.",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grand_Kremlin_Palace_in_summer_sunset_light_2025-8.jpg",
+          "alt": "Großer Kremlpalast in Moskau im Abendlicht",
+          "width": 1280,
+          "height": 917,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Moscow 05-2012 Kremlin 22.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Moscow_05-2012_Kremlin_22.jpg/1280px-Moscow_05-2012_Kremlin_22.jpg",
+          "credit": "A.Savin",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_05-2012_Kremlin_22.jpg",
+          "alt": "Blick auf den Moskauer Kreml",
+          "width": 1280,
+          "height": 808,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "grossbritannien": {
+      "topic": "welt",
+      "label": "Großbritannien, London, Westminster",
+      "aliases": [
+        "london",
+        "uk",
+        "britannien",
+        "vereinigtes-koenigreich",
+        "westminster",
+        "brexit"
+      ],
+      "images": [
+        {
+          "title": "File:London, Palace of Westminster -- 2016 -- 4800.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/London%2C_Palace_of_Westminster_--_2016_--_4800.jpg/1280px-London%2C_Palace_of_Westminster_--_2016_--_4800.jpg",
+          "credit": "Dietmar Rabich",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:London,_Palace_of_Westminster_--_2016_--_4800.jpg",
+          "alt": "Palace of Westminster, Sitz des britischen Parlaments, in London",
+          "width": 1280,
+          "height": 720,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Palace of Westminster from the dome on Methodist Central Hall.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall.jpg/1280px-Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall.jpg",
+          "credit": "Colin",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall.jpg",
+          "alt": "Britisches Parlament in London von oben",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Tower Bridge from London City Hall 2015.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Tower_Bridge_from_London_City_Hall_2015.jpg/1280px-Tower_Bridge_from_London_City_Hall_2015.jpg",
+          "credit": "Colin",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tower_Bridge_from_London_City_Hall_2015.jpg",
+          "alt": "Tower Bridge in London, dahinter die Hochhäuser von Canary Wharf",
+          "width": 1280,
+          "height": 720,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Union Jack (47435710192).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Union_Jack_%2847435710192%29.jpg/1280px-Union_Jack_%2847435710192%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Union_Jack_(47435710192).jpg",
+          "alt": "Britische Flagge vor dem Europäischen Parlament in Brüssel",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "frankreich": {
+      "topic": "welt",
+      "label": "Frankreich, Paris, Élysée",
+      "aliases": [
+        "paris",
+        "elysee",
+        "elysee-palast",
+        "assemblee-nationale"
+      ],
+      "images": [
+        {
+          "title": "File:Palacio de Eliseo-Paris320.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Palacio_de_Eliseo-Paris320.jpg/1280px-Palacio_de_Eliseo-Paris320.jpg",
+          "credit": "Diego Delso",
+          "license": "CC BY 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Palacio_de_Eliseo-Paris320.jpg",
+          "alt": "Tor des Élysée-Palasts in Paris",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Palais Bourbon seen from the River Seine.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Palais_Bourbon_seen_from_the_River_Seine.jpg/1280px-Palais_Bourbon_seen_from_the_River_Seine.jpg",
+          "credit": "DiscoA340",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Palais_Bourbon_seen_from_the_River_Seine.jpg",
+          "alt": "Palais Bourbon, Sitz der französischen Nationalversammlung, an der Seine",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Paris skyline quality image Tour Eiffel.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Paris_skyline_quality_image_Tour_Eiffel.jpg/1280px-Paris_skyline_quality_image_Tour_Eiffel.jpg",
+          "credit": "falconp4",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Paris_skyline_quality_image_Tour_Eiffel.jpg",
+          "alt": "Blick über Paris mit dem Eiffelturm",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "iran": {
+      "topic": "welt",
+      "label": "Iran, Teheran",
+      "aliases": [
+        "teheran",
+        "tehran"
+      ],
+      "images": [
+        {
+          "title": "File:Azadi Tower in the spring.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Azadi_Tower_in_the_spring.jpg/1280px-Azadi_Tower_in_the_spring.jpg",
+          "credit": "بهادر های زاده",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Azadi_Tower_in_the_spring.jpg",
+          "alt": "Azadi-Turm in Teheran",
+          "width": 1280,
+          "height": 774,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Tehran skyline- Alborz Mountains on background-20150401.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Tehran_skyline-_Alborz_Mountains_on_background-20150401.jpg/1280px-Tehran_skyline-_Alborz_Mountains_on_background-20150401.jpg",
+          "credit": "Mhsheikholeslami",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tehran_skyline-_Alborz_Mountains_on_background-20150401.jpg",
+          "alt": "Skyline von Teheran vor dem Elburs-Gebirge",
+          "width": 1280,
+          "height": 646,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:North of Tehran Skyline view.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/North_of_Tehran_Skyline_view.jpg/1280px-North_of_Tehran_Skyline_view.jpg",
+          "credit": "Ninara from Helsinki, Finland",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:North_of_Tehran_Skyline_view.jpg",
+          "alt": "Hochhäuser im Norden Teherans",
+          "width": 1280,
+          "height": 1011,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "tuerkei": {
+      "topic": "welt",
+      "label": "Türkei, Istanbul",
+      "aliases": [
+        "istanbul",
+        "ankara",
+        "bosporus"
+      ],
+      "images": [
+        {
+          "title": "File:Istanbul skyline 03.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Istanbul_skyline_03.jpg/1280px-Istanbul_skyline_03.jpg",
+          "credit": "SegLig",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Istanbul_skyline_03.jpg",
+          "alt": "Galataturm über dem Goldenen Horn in Istanbul",
+          "width": 1280,
+          "height": 897,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Istanbul City skyline at Sunset.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Istanbul_City_skyline_at_Sunset.jpg/1280px-Istanbul_City_skyline_at_Sunset.jpg",
+          "credit": "Husain007",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Istanbul_City_skyline_at_Sunset.jpg",
+          "alt": "Skyline von Istanbul am Bosporus bei Sonnenuntergang",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Istanbul skyline at night.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Istanbul_skyline_at_night.jpg/1280px-Istanbul_skyline_at_night.jpg",
+          "credit": "Hakan Sarıtaş",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Istanbul_skyline_at_night.jpg",
+          "alt": "Istanbul bei Nacht, über den Bosporus gesehen",
+          "width": 1280,
+          "height": 850,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1530,6 +3115,17 @@
           "width": 1280,
           "height": 853,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Nikolaikirche Leipzig 2009.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Nikolaikirche_Leipzig_2009.jpg/1280px-Nikolaikirche_Leipzig_2009.jpg",
+          "credit": "Appaloosa",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nikolaikirche_Leipzig_2009.jpg",
+          "alt": "Die Nikolaikirche in Leipzig",
+          "width": 1280,
+          "height": 955,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1721,6 +3317,28 @@
           "width": 1280,
           "height": 640,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Kurpark Bad Düben1.JPG",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Kurpark_Bad_D%C3%BCben1.JPG/1280px-Kurpark_Bad_D%C3%BCben1.JPG",
+          "credit": "Z thomas",
+          "license": "CC BY 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kurpark_Bad_D%C3%BCben1.JPG",
+          "alt": "Weg im Kurpark von Bad Düben",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:20170907 Bad Düben Kurpark Brunnen.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/20170907_Bad_D%C3%BCben_Kurpark_Brunnen.jpg/1280px-20170907_Bad_D%C3%BCben_Kurpark_Brunnen.jpg",
+          "credit": "Heidebiber",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:20170907_Bad_D%C3%BCben_Kurpark_Brunnen.jpg",
+          "alt": "Brunnen im Kurpark von Bad Düben",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1767,6 +3385,39 @@
           "width": 1280,
           "height": 961,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Torgau Schloss Hartenfels Wendelstein 4.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Torgau_Schloss_Hartenfels_Wendelstein_4.jpg/1280px-Torgau_Schloss_Hartenfels_Wendelstein_4.jpg",
+          "credit": "Radler59",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Torgau_Schloss_Hartenfels_Wendelstein_4.jpg",
+          "alt": "Schloss Hartenfels in Torgau mit Turm",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Eilenburg vom Burgberg.JPG",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Eilenburg_vom_Burgberg.JPG/1280px-Eilenburg_vom_Burgberg.JPG",
+          "credit": "Joeb07",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Eilenburg_vom_Burgberg.JPG",
+          "alt": "Blick vom Burgberg auf das Stadtzentrum von Eilenburg",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:20090419185DR Delitzsch Markt Rathaus.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/20090419185DR_Delitzsch_Markt_Rathaus.jpg/1280px-20090419185DR_Delitzsch_Markt_Rathaus.jpg",
+          "credit": "Jörg Blobelt",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:20090419185DR_Delitzsch_Markt_Rathaus.jpg",
+          "alt": "Das Rathaus am Markt in Delitzsch",
+          "width": 1280,
+          "height": 928,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1799,6 +3450,17 @@
           "width": 1280,
           "height": 853,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Fließgraben (Dübener Heide).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Flie%C3%9Fgraben_%28D%C3%BCbener_Heide%29.jpg/1280px-Flie%C3%9Fgraben_%28D%C3%BCbener_Heide%29.jpg",
+          "credit": "Benutzer:Ulf.johannes.",
+          "license": "CC BY 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Flie%C3%9Fgraben_(D%C3%BCbener_Heide).jpg",
+          "alt": "Fließgraben mit Stauwehr in der Dübener Heide",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1866,6 +3528,228 @@
           "width": 1280,
           "height": 853,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:The Dresden Frauenkirche, Germany.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/The_Dresden_Frauenkirche%2C_Germany.jpg/1280px-The_Dresden_Frauenkirche%2C_Germany.jpg",
+          "credit": "Alina Zinchenko",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_Dresden_Frauenkirche,_Germany.jpg",
+          "alt": "Blick über die Elbe auf die Frauenkirche in Dresden",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "leipziger-neuseenland": {
+      "topic": "region",
+      "label": "Leipziger Neuseenland, Cospudener und Markkleeberger See",
+      "aliases": [
+        "neuseenland",
+        "cospudener-see",
+        "markkleeberger-see",
+        "seenland",
+        "tagebauseen"
+      ],
+      "images": [
+        {
+          "title": "File:Zöbigker Hafen, Cospudener See, Markkleeberg, 1709102012, ako.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Z%C3%B6bigker_Hafen%2C_Cospudener_See%2C_Markkleeberg%2C_1709102012%2C_ako.jpg/1280px-Z%C3%B6bigker_Hafen%2C_Cospudener_See%2C_Markkleeberg%2C_1709102012%2C_ako.jpg",
+          "credit": "Ansgar Koreng",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Z%C3%B6bigker_Hafen,_Cospudener_See,_Markkleeberg,_1709102012,_ako.jpg",
+          "alt": "Segelboote im Hafen am Cospudener See in der Abenddämmerung",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Markkleeberger See Bootsanlegestelle.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Markkleeberger_See_Bootsanlegestelle.jpg/1280px-Markkleeberger_See_Bootsanlegestelle.jpg",
+          "credit": "Joeb07",
+          "license": "CC BY 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Markkleeberger_See_Bootsanlegestelle.jpg",
+          "alt": "Bootsanlegestelle am Markkleeberger See",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:J33 679 Markkleeberger See.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/J33_679_Markkleeberger_See.jpg/1280px-J33_679_Markkleeberger_See.jpg",
+          "credit": "Falk2",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:J33_679_Markkleeberger_See.jpg",
+          "alt": "Badestelle am Markkleeberger See mit Blick über das Wasser",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "leipziger-messe": {
+      "topic": "region",
+      "label": "Leipziger Messe",
+      "aliases": [
+        "messe",
+        "messegelaende",
+        "neue-messe"
+      ],
+      "images": [
+        {
+          "title": "File:20090419520DR Neue Messe Leipzig.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/20090419520DR_Neue_Messe_Leipzig.jpg/1280px-20090419520DR_Neue_Messe_Leipzig.jpg",
+          "credit": "Jörg Blobelt",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:20090419520DR_Neue_Messe_Leipzig.jpg",
+          "alt": "Eingangs-Glashalle der Neuen Messe Leipzig",
+          "width": 1280,
+          "height": 840,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "zoo-leipzig": {
+      "topic": "region",
+      "label": "Zoo Leipzig",
+      "aliases": [
+        "zoo",
+        "zoologischer-garten",
+        "tiere"
+      ],
+      "images": [
+        {
+          "title": "File:Leipzig 20260912 Zoo 147.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Leipzig_20260912_Zoo_147.jpg/1280px-Leipzig_20260912_Zoo_147.jpg",
+          "credit": "NutzerAusBerlin",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Leipzig_20260912_Zoo_147.jpg",
+          "alt": "Grevy-Zebra im Zoo Leipzig",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "muldeaue": {
+      "topic": "region",
+      "label": "Mulde, Muldeaue",
+      "aliases": [
+        "muldetal",
+        "fluss-mulde",
+        "wurzen",
+        "muldenfluss"
+      ],
+      "images": [
+        {
+          "title": "File:20090501075DR Wurzen Muldebrücke Krietschmühle Mühlenwerke.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/20090501075DR_Wurzen_Muldebr%C3%BCcke_Krietschm%C3%BChle_M%C3%BChlenwerke.jpg/1280px-20090501075DR_Wurzen_Muldebr%C3%BCcke_Krietschm%C3%BChle_M%C3%BChlenwerke.jpg",
+          "credit": "Jörg Blobelt",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:20090501075DR_Wurzen_Muldebr%C3%BCcke_Krietschm%C3%BChle_M%C3%BChlenwerke.jpg",
+          "alt": "Blick über die Mulde auf die Straßenbrücke bei Wurzen",
+          "width": 1280,
+          "height": 882,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Mulde dueben.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Mulde_dueben.jpg/1280px-Mulde_dueben.jpg",
+          "credit": "Alma",
+          "license": "CC BY-SA 2.5",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mulde_dueben.jpg",
+          "alt": "Die Mulde bei Bad Düben",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "saechsische-schweiz": {
+      "topic": "region",
+      "label": "Sächsische Schweiz, Bastei",
+      "aliases": [
+        "bastei",
+        "elbsandsteingebirge",
+        "nationalpark-saechsische-schweiz"
+      ],
+      "images": [
+        {
+          "title": "File:Nationalpark Sächsische Schweiz Bastei lub 2025-09-06 img01.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Nationalpark_S%C3%A4chsische_Schweiz_Bastei_lub_2025-09-06_img01.jpg/1280px-Nationalpark_S%C3%A4chsische_Schweiz_Bastei_lub_2025-09-06_img01.jpg",
+          "credit": "Lukas Beck",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nationalpark_S%C3%A4chsische_Schweiz_Bastei_lub_2025-09-06_img01.jpg",
+          "alt": "Blick auf die Bastei in der Sächsischen Schweiz",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Nationalpark Sächsische Schweiz Bastei lub 2025-04-27 img04 Pavillonaussicht.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Nationalpark_S%C3%A4chsische_Schweiz_Bastei_lub_2025-04-27_img04_Pavillonaussicht.jpg/1280px-Nationalpark_S%C3%A4chsische_Schweiz_Bastei_lub_2025-04-27_img04_Pavillonaussicht.jpg",
+          "credit": "Lukas Beck",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nationalpark_S%C3%A4chsische_Schweiz_Bastei_lub_2025-04-27_img04_Pavillonaussicht.jpg",
+          "alt": "Felsen der Bastei im Nationalpark Sächsische Schweiz",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "erzgebirge": {
+      "topic": "region",
+      "label": "Erzgebirge",
+      "aliases": [
+        "osterzgebirge",
+        "vogtland",
+        "mittelgebirge"
+      ],
+      "images": [
+        {
+          "title": "File:Landschaft im Erzgebirge 2H1A7704WI.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Landschaft_im_Erzgebirge_2H1A7704WI.jpg/1280px-Landschaft_im_Erzgebirge_2H1A7704WI.jpg",
+          "credit": "Kora27",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Landschaft_im_Erzgebirge_2H1A7704WI.jpg",
+          "alt": "Hügelige Wiesenlandschaft im Erzgebirge",
+          "width": 1280,
+          "height": 745,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Hermsdorf-Erzgebirge, landschaft nördlich des dorfes - saxony.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Hermsdorf-Erzgebirge%2C_landschaft_n%C3%B6rdlich_des_dorfes_-_saxony.jpg/1280px-Hermsdorf-Erzgebirge%2C_landschaft_n%C3%B6rdlich_des_dorfes_-_saxony.jpg",
+          "credit": "Lysippos",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hermsdorf-Erzgebirge,_landschaft_n%C3%B6rdlich_des_dorfes_-_saxony.jpg",
+          "alt": "Wiesen und Felder im Erzgebirge",
+          "width": 1280,
+          "height": 760,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "meissen": {
+      "topic": "region",
+      "label": "Meißen, Albrechtsburg",
+      "aliases": [
+        "albrechtsburg",
+        "elbtal"
+      ],
+      "images": [
+        {
+          "title": "File:Schloss, Meissen (LRM 20230609 202118).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Schloss%2C_Meissen_%28LRM_20230609_202118%29.jpg/1280px-Schloss%2C_Meissen_%28LRM_20230609_202118%29.jpg",
+          "credit": "Matti Blume",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Schloss,_Meissen_(LRM_20230609_202118).jpg",
+          "alt": "Die Albrechtsburg in Meißen im Abendlicht, vom Elbufer aus",
+          "width": 1280,
+          "height": 959,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -1890,6 +3774,39 @@
           "width": 1280,
           "height": 702,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Munich Olympic Stadium, München, Germany (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Munich_Olympic_Stadium%2C_M%C3%BCnchen%2C_Germany_%28Unsplash%29.jpg/1280px-Munich_Olympic_Stadium%2C_M%C3%BCnchen%2C_Germany_%28Unsplash%29.jpg",
+          "credit": "Paul Bergmeir paulbrgmr",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Munich_Olympic_Stadium,_M%C3%BCnchen,_Germany_(Unsplash).jpg",
+          "alt": "Grüne Sitzreihen im Münchner Olympiastadion",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Olympic stadium munich - Flickr - markus spiske.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Olympic_stadium_munich_-_Flickr_-_markus_spiske.jpg/1280px-Olympic_stadium_munich_-_Flickr_-_markus_spiske.jpg",
+          "credit": "Markus Spiske from Forchheim, Bavaria Upper Franconia",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Olympic_stadium_munich_-_Flickr_-_markus_spiske.jpg",
+          "alt": "Leere gelbe Sitzreihen im Olympiastadion München",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Small soccer goal on a foggy field (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Small_soccer_goal_on_a_foggy_field_%28Unsplash%29.jpg/1280px-Small_soccer_goal_on_a_foggy_field_%28Unsplash%29.jpg",
+          "credit": "Glen Carrie glencarrie",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Small_soccer_goal_on_a_foggy_field_(Unsplash).jpg",
+          "alt": "Kleines Fußballtor auf einem Feld im Nebel",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2011,6 +3928,39 @@
           "width": 1280,
           "height": 869,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Tim Gouw 2016-03-14 (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Tim_Gouw_2016-03-14_%28Unsplash%29.jpg/1280px-Tim_Gouw_2016-03-14_%28Unsplash%29.jpg",
+          "credit": "Tim Gouw punttim",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tim_Gouw_2016-03-14_(Unsplash).jpg",
+          "alt": "Blaue Laufbahn mit der Markierung „100 m Sprint“",
+          "width": 1280,
+          "height": 856,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Starting line (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Starting_line_%28Unsplash%29.jpg/1280px-Starting_line_%28Unsplash%29.jpg",
+          "credit": "Kolleen Gladden rockthechaos",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Starting_line_(Unsplash).jpg",
+          "alt": "Rote Laufbahn mit weißen Bahnnummern an der Startlinie",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Blocchi di partenza Avezzano.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Blocchi_di_partenza_Avezzano.jpg/1280px-Blocchi_di_partenza_Avezzano.jpg",
+          "credit": "Marica Massaro",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blocchi_di_partenza_Avezzano.jpg",
+          "alt": "Startblöcke auf einer blauen Laufbahn",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2076,6 +4026,17 @@
           "width": 1280,
           "height": 960,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Road cycling - riding a bike on the road.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Road_cycling_-_riding_a_bike_on_the_road.jpg/1280px-Road_cycling_-_riding_a_bike_on_the_road.jpg",
+          "credit": "Alextredz",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Road_cycling_-_riding_a_bike_on_the_road.jpg",
+          "alt": "Radfahrer auf einer ruhigen Landstraße",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2098,6 +4059,263 @@
           "width": 1280,
           "height": 711,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Snow covered ski lift (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Snow_covered_ski_lift_%28Unsplash%29.jpg/1280px-Snow_covered_ski_lift_%28Unsplash%29.jpg",
+          "credit": "Rob Bye robertbye",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Snow_covered_ski_lift_(Unsplash).jpg",
+          "alt": "Verschneiter Sessellift in den französischen Alpen",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Snow covered mountains in Keystone Ski Resort (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Snow_covered_mountains_in_Keystone_Ski_Resort_%28Unsplash%29.jpg/1280px-Snow_covered_mountains_in_Keystone_Ski_Resort_%28Unsplash%29.jpg",
+          "credit": "Eric Miller _ericmiller",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Snow_covered_mountains_in_Keystone_Ski_Resort_(Unsplash).jpg",
+          "alt": "Schneebedeckte Berge in einem Skigebiet",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "eishockey": {
+      "topic": "sport",
+      "label": "Eishockey",
+      "aliases": [
+        "eisbaeren",
+        "eishalle",
+        "puck",
+        "del"
+      ],
+      "images": [
+        {
+          "title": "File:Ice hockey rink board.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Ice_hockey_rink_board.jpg/1280px-Ice_hockey_rink_board.jpg",
+          "credit": "Santeri Viinamäki",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ice_hockey_rink_board.jpg",
+          "alt": "Bande einer Eishockeybahn",
+          "width": 1280,
+          "height": 961,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Black Ice Pond Hockey (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Black_Ice_Pond_Hockey_%28Unsplash%29.jpg/1280px-Black_Ice_Pond_Hockey_%28Unsplash%29.jpg",
+          "credit": "Derek Thomson derekthomson",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Black_Ice_Pond_Hockey_(Unsplash).jpg",
+          "alt": "Zugefrorene Eishockeyfelder auf einem Teich, von oben fotografiert",
+          "width": 1280,
+          "height": 719,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "tennis": {
+      "topic": "sport",
+      "label": "Tennis",
+      "aliases": [
+        "tennisplatz",
+        "grand-slam",
+        "atp",
+        "wta"
+      ],
+      "images": [
+        {
+          "title": "File:Tennis line markings (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Tennis_line_markings_%28Unsplash%29.jpg/1280px-Tennis_line_markings_%28Unsplash%29.jpg",
+          "credit": "Erwan Hesry erwanhesry",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tennis_line_markings_(Unsplash).jpg",
+          "alt": "Linien auf einem roten Sandplatz",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Gaithersburg tennis court (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Gaithersburg_tennis_court_%28Unsplash%29.jpg/1280px-Gaithersburg_tennis_court_%28Unsplash%29.jpg",
+          "credit": "Chris Chondrogiannis cchondro",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gaithersburg_tennis_court_(Unsplash).jpg",
+          "alt": "Grüner Hartplatz mit Tennislinien",
+          "width": 1280,
+          "height": 800,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "basketball": {
+      "topic": "sport",
+      "label": "Basketball",
+      "aliases": [
+        "basketballkorb",
+        "nba",
+        "bbl"
+      ],
+      "images": [
+        {
+          "title": "File:Hamersley indoor basketball court 2.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Hamersley_indoor_basketball_court_2.jpg/1280px-Hamersley_indoor_basketball_court_2.jpg",
+          "credit": "Orderinchaos",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hamersley_indoor_basketball_court_2.jpg",
+          "alt": "Leere Basketballhalle mit Holzboden",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Basketball hitting a basketball goal.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Basketball_hitting_a_basketball_goal.jpg/1280px-Basketball_hitting_a_basketball_goal.jpg",
+          "credit": "noahsilliman",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Basketball_hitting_a_basketball_goal.jpg",
+          "alt": "Basketball am Korb vor Bäumen",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Freestanding basketball net (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Freestanding_basketball_net_%28Unsplash%29.jpg/1280px-Freestanding_basketball_net_%28Unsplash%29.jpg",
+          "credit": "Andy Hu humadethis",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Freestanding_basketball_net_(Unsplash).jpg",
+          "alt": "Freistehender Basketballkorb vor blauem Himmel",
+          "width": 1280,
+          "height": 851,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "schwimmen": {
+      "topic": "sport",
+      "label": "Schwimmen, Schwimmbad",
+      "aliases": [
+        "schwimmbad",
+        "schwimmhalle",
+        "schwimmbecken",
+        "freibad"
+      ],
+      "images": [
+        {
+          "title": "File:Swimming Pool lanes and starting blocks.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Swimming_Pool_lanes_and_starting_blocks.jpg/1280px-Swimming_Pool_lanes_and_starting_blocks.jpg",
+          "credit": "KeepActive Australia from Melbourne, VIC, Australia",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Swimming_Pool_lanes_and_starting_blocks.jpg",
+          "alt": "50-Meter-Schwimmbecken mit Bahnen und Startblöcken",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "golf": {
+      "topic": "sport",
+      "label": "Golf",
+      "aliases": [
+        "golfplatz",
+        "golfschlaeger"
+      ],
+      "images": [
+        {
+          "title": "File:Golf course - Green Lakes State Park.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Golf_course_-_Green_Lakes_State_Park.jpg/1280px-Golf_course_-_Green_Lakes_State_Park.jpg",
+          "credit": "Easchiff",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Golf_course_-_Green_Lakes_State_Park.jpg",
+          "alt": "Golfplatz mit grünem Fairway und Herbstbäumen",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Two bags full of golf clubs (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Two_bags_full_of_golf_clubs_%28Unsplash%29.jpg/1280px-Two_bags_full_of_golf_clubs_%28Unsplash%29.jpg",
+          "credit": "Igor Ovsyannykov igorovsyannykov",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Two_bags_full_of_golf_clubs_(Unsplash).jpg",
+          "alt": "Zwei Golftaschen voller Schläger",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "wassersport": {
+      "topic": "sport",
+      "label": "Rudern, Wassersport",
+      "aliases": [
+        "rudern",
+        "kanu",
+        "segeln",
+        "ruderboote"
+      ],
+      "images": [
+        {
+          "title": "File:Rowing Boats by Dorney Lake - geograph.org.uk - 2556018.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Rowing_Boats_by_Dorney_Lake_-_geograph.org.uk_-_2556018.jpg/1280px-Rowing_Boats_by_Dorney_Lake_-_geograph.org.uk_-_2556018.jpg",
+          "credit": "Colin Smith",
+          "license": "CC BY-SA 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rowing_Boats_by_Dorney_Lake_-_geograph.org.uk_-_2556018.jpg",
+          "alt": "Ruderboote an Land am Dorney Lake",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Low brace Youghiogheny River Ohiopyle, PA.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Low_brace_Youghiogheny_River_Ohiopyle%2C_PA.jpg/1280px-Low_brace_Youghiogheny_River_Ohiopyle%2C_PA.jpg",
+          "credit": "flickr user \"Truello\" = Andy from Pittsburgh, USA",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Low_brace_Youghiogheny_River_Ohiopyle,_PA.jpg",
+          "alt": "Kajakfahrer paddelt im Wildwasser",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "hallensport": {
+      "topic": "sport",
+      "label": "Hallensport, Boxen, Tischtennis",
+      "aliases": [
+        "boxen",
+        "tischtennis",
+        "kampfsport",
+        "sporthalle"
+      ],
+      "images": [
+        {
+          "title": "File:Boxing ring at AIS - Australian Institute of Sport.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Boxing_ring_at_AIS_-_Australian_Institute_of_Sport.jpg/1280px-Boxing_ring_at_AIS_-_Australian_Institute_of_Sport.jpg",
+          "credit": "KeepActive Australia from Melbourne, VIC, Australia",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Boxing_ring_at_AIS_-_Australian_Institute_of_Sport.jpg",
+          "alt": "Boxring in einer Trainingshalle",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Table Tennis racquet and ball on table - top view.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Table_Tennis_racquet_and_ball_on_table_-_top_view.jpg/1280px-Table_Tennis_racquet_and_ball_on_table_-_top_view.jpg",
+          "credit": "KeepActive Australia from Melbourne, VIC, Australia",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Table_Tennis_racquet_and_ball_on_table_-_top_view.jpg",
+          "alt": "Tischtennisschläger und Ball auf einer Tischtennisplatte",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2232,6 +4450,50 @@
           "width": 1280,
           "height": 480,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Observatory sky and stars (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Observatory_sky_and_stars_%28Unsplash%29.jpg/1280px-Observatory_sky_and_stars_%28Unsplash%29.jpg",
+          "credit": "Alex Franzelin af",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Observatory_sky_and_stars_(Unsplash).jpg",
+          "alt": "Sternenhimmel über einer Sternwarte mit Kuppel",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Backlit Saturn from Cassini Orbiter 2007 May 9.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Backlit_Saturn_from_Cassini_Orbiter_2007_May_9.jpg/1280px-Backlit_Saturn_from_Cassini_Orbiter_2007_May_9.jpg",
+          "credit": "NASA/JPL/Space Science Institute",
+          "license": "Public domain",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Backlit_Saturn_from_Cassini_Orbiter_2007_May_9.jpg",
+          "alt": "Der Saturn im Gegenlicht, umgeben von seinen Eisringen, aufgenommen von der Raumsonde Cassini",
+          "width": 1280,
+          "height": 809,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Messier83 - Heic1403a.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Messier83_-_Heic1403a.jpg/1280px-Messier83_-_Heic1403a.jpg",
+          "credit": "Credit: NASA, ESA, and the Hubble Heritage Team (STScI/AURA) Acknowledgement: William Blair (Johns Hopkins University)",
+          "license": "Public domain",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Messier83_-_Heic1403a.jpg",
+          "alt": "Die Spiralgalaxie Messier 83, aufgenommen vom Weltraumteleskop Hubble",
+          "width": 1280,
+          "height": 833,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Sombrero Galaxy in infrared light (Hubble Space Telescope and Spitzer Space Telescope).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Sombrero_Galaxy_in_infrared_light_%28Hubble_Space_Telescope_and_Spitzer_Space_Telescope%29.jpg/1280px-Sombrero_Galaxy_in_infrared_light_%28Hubble_Space_Telescope_and_Spitzer_Space_Telescope%29.jpg",
+          "credit": "NASA/JPL-Caltech and The Hubble Heritage Team (STScI/AURA)",
+          "license": "Public domain",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sombrero_Galaxy_in_infrared_light_(Hubble_Space_Telescope_and_Spitzer_Space_Telescope).jpg",
+          "alt": "Die Sombrero-Galaxie in Infrarotlicht, aufgenommen von den Weltraumteleskopen Hubble und Spitzer",
+          "width": 1280,
+          "height": 717,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2268,6 +4530,233 @@
         }
       ]
     },
+    "teilchenphysik": {
+      "topic": "wissenschaft",
+      "label": "Teilchenphysik, CERN",
+      "aliases": [
+        "cern",
+        "physik",
+        "teilchenbeschleuniger",
+        "lhc",
+        "detektor"
+      ],
+      "images": [
+        {
+          "title": "File:CERN LHC ATLAS Detector.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/CERN_LHC_ATLAS_Detector.jpg/1280px-CERN_LHC_ATLAS_Detector.jpg",
+          "credit": "SimonWaldherr",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:CERN_LHC_ATLAS_Detector.jpg",
+          "alt": "Der ATLAS-Detektor am Large Hadron Collider des CERN",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "geologie": {
+      "topic": "wissenschaft",
+      "label": "Geologie, Gesteine, Meteoriten",
+      "aliases": [
+        "gestein",
+        "gesteine",
+        "meteorit",
+        "meteoriten",
+        "erdgeschichte"
+      ],
+      "images": [
+        {
+          "title": "File:Layers of sedimentary rock in Makhtesh Ramon (50749).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Layers_of_sedimentary_rock_in_Makhtesh_Ramon_%2850749%29.jpg/1280px-Layers_of_sedimentary_rock_in_Makhtesh_Ramon_%2850749%29.jpg",
+          "credit": "Rhododendrites",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Layers_of_sedimentary_rock_in_Makhtesh_Ramon_(50749).jpg",
+          "alt": "Farbige Sedimentgesteinsschichten in einer Felswand",
+          "width": 1280,
+          "height": 870,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Namibie Hoba Meteorite 05.JPG",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Namibie_Hoba_Meteorite_05.JPG/1280px-Namibie_Hoba_Meteorite_05.JPG",
+          "credit": "Die Autorenschaft wurde nicht in einer maschinell lesbaren Form angegeben. Es wird Calips als Autor angenommen (basierend auf den Rechteinhaber-Angaben).",
+          "license": "CC BY 2.5",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Namibie_Hoba_Meteorite_05.JPG",
+          "alt": "Der Hoba-Meteorit in Namibia, ein großer Eisenbrocken in einer Mulde",
+          "width": 1280,
+          "height": 851,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Admire Meteorite End-Cut.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Admire_Meteorite_End-Cut.jpg/1280px-Admire_Meteorite_End-Cut.jpg",
+          "credit": "Steve Jurvetson",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Admire_Meteorite_End-Cut.jpg",
+          "alt": "Angeschnittener Pallasit-Meteorit mit gelben Kristallen im Metall",
+          "width": 1280,
+          "height": 868,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Rock layers (2cbb6d695362443abbe0cfe4df8764a4).JPG",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Rock_layers_%282cbb6d695362443abbe0cfe4df8764a4%29.JPG/1280px-Rock_layers_%282cbb6d695362443abbe0cfe4df8764a4%29.JPG",
+          "credit": "Steve Redman (MORA)",
+          "license": "Public domain",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rock_layers_(2cbb6d695362443abbe0cfe4df8764a4).JPG",
+          "alt": "Geschichtete Felswand mit gewellten Gesteinsschichten",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "paelontologie": {
+      "topic": "wissenschaft",
+      "label": "Paläontologie, Dinosaurier, Fossilien",
+      "aliases": [
+        "dinosaurier",
+        "fossil",
+        "fossilien",
+        "saurier"
+      ],
+      "images": [
+        {
+          "title": "File:Dinosaur skeleton, Museum national d'histoire naturelle, Paris.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Dinosaur_skeleton%2C_Museum_national_d%27histoire_naturelle%2C_Paris.jpg/1280px-Dinosaur_skeleton%2C_Museum_national_d%27histoire_naturelle%2C_Paris.jpg",
+          "credit": "Nicolas Halftermeyer",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dinosaur_skeleton,_Museum_national_d%27histoire_naturelle,_Paris.jpg",
+          "alt": "Dinosaurierskelett im Muséum national d’histoire naturelle in Paris",
+          "width": 1280,
+          "height": 834,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Dinosaur Egg Museum, Xixia Dinosaur Park- Psittacosaurus Skeleton 01.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Dinosaur_Egg_Museum%2C_Xixia_Dinosaur_Park-_Psittacosaurus_Skeleton_01.jpg/1280px-Dinosaur_Egg_Museum%2C_Xixia_Dinosaur_Park-_Psittacosaurus_Skeleton_01.jpg",
+          "credit": "Gary Todd",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dinosaur_Egg_Museum,_Xixia_Dinosaur_Park-_Psittacosaurus_Skeleton_01.jpg",
+          "alt": "Fossiles Dinosaurierskelett in einem Museum",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Dinosaur Egg Museum, Xixia Dinosaur Park- Psittacosaurus Skeleton 02.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Dinosaur_Egg_Museum%2C_Xixia_Dinosaur_Park-_Psittacosaurus_Skeleton_02.jpg/1280px-Dinosaur_Egg_Museum%2C_Xixia_Dinosaur_Park-_Psittacosaurus_Skeleton_02.jpg",
+          "credit": "Gary Todd",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dinosaur_Egg_Museum,_Xixia_Dinosaur_Park-_Psittacosaurus_Skeleton_02.jpg",
+          "alt": "Fossile Skelettreste eines Dinosauriers auf einer Gesteinsplatte",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "archaeologie": {
+      "topic": "wissenschaft",
+      "label": "Archäologie, Ausgrabungen",
+      "aliases": [
+        "ausgrabung",
+        "ausgrabungen",
+        "grabung",
+        "funde"
+      ],
+      "images": [
+        {
+          "title": "File:Archaeological Excavation Roman Villa Area Rabat 11.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Archaeological_Excavation_Roman_Villa_Area_Rabat_11.jpg/1280px-Archaeological_Excavation_Roman_Villa_Area_Rabat_11.jpg",
+          "credit": "Godwin Borg",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Archaeological_Excavation_Roman_Villa_Area_Rabat_11.jpg",
+          "alt": "Archäologische Ausgrabung mit freigelegten Mauern",
+          "width": 1280,
+          "height": 914,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "bibliothek": {
+      "topic": "wissenschaft",
+      "label": "Bibliothek, Hochschule, Studium",
+      "aliases": [
+        "bibliotheken",
+        "lesesaal",
+        "wissenschaftsbibliothek",
+        "universitaetsbibliothek"
+      ],
+      "images": [
+        {
+          "title": "File:Graz University-Library reading-room.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Graz_University-Library_reading-room.jpg/1280px-Graz_University-Library_reading-room.jpg",
+          "credit": "Dr. Marcus Gossler",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Graz_University-Library_reading-room.jpg",
+          "alt": "Lesesaal der Universitätsbibliothek Graz",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Suzzallo Reading Room University of Washington restoration Seattle Washington 2026.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Suzzallo_Reading_Room_University_of_Washington_restoration_Seattle_Washington_2026.jpg/1280px-Suzzallo_Reading_Room_University_of_Washington_restoration_Seattle_Washington_2026.jpg",
+          "credit": "Guywelch2000",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Suzzallo_Reading_Room_University_of_Washington_restoration_Seattle_Washington_2026.jpg",
+          "alt": "Lesesaal einer Universitätsbibliothek mit hohen Buntglasfenstern",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:University of Miskolc Library Reading Room 2025 03.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/University_of_Miskolc_Library_Reading_Room_2025_03.jpg/1280px-University_of_Miskolc_Library_Reading_Room_2025_03.jpg",
+          "credit": "Szalax",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:University_of_Miskolc_Library_Reading_Room_2025_03.jpg",
+          "alt": "Lesesaal der Universitätsbibliothek Miskolc",
+          "width": 1280,
+          "height": 720,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "supercomputer": {
+      "topic": "wissenschaft",
+      "label": "Supercomputer, Hochleistungsrechner",
+      "aliases": [
+        "hochleistungsrechner",
+        "hpc",
+        "supercomputing"
+      ],
+      "images": [
+        {
+          "title": "File:Oak Ridge - Kraken (Cray XT5).JPG",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Oak_Ridge_-_Kraken_%28Cray_XT5%29.JPG/1280px-Oak_Ridge_-_Kraken_%28Cray_XT5%29.JPG",
+          "credit": "Daderot",
+          "license": "Public domain",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Oak_Ridge_-_Kraken_(Cray_XT5).JPG",
+          "alt": "Supercomputer in einer großen Rechenhalle",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:GPU blade with glycol cooling (54685994424).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/GPU_blade_with_glycol_cooling_%2854685994424%29.jpg/1280px-GPU_blade_with_glycol_cooling_%2854685994424%29.jpg",
+          "credit": "Steve Jurvetson",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:GPU_blade_with_glycol_cooling_(54685994424).jpg",
+          "alt": "Flüssigkeitsgekühlter Grafikprozessor-Einschub eines Supercomputers",
+          "width": 1280,
+          "height": 732,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
     "krankenhaus": {
       "topic": "gesundheit",
       "label": "Krankenhaus, Kliniken (Uniklinik Leipzig)",
@@ -2299,6 +4788,39 @@
           "width": 1280,
           "height": 878,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Klinikum am Urban Berlin.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Klinikum_am_Urban_Berlin.jpg/1280px-Klinikum_am_Urban_Berlin.jpg",
+          "credit": "JoachimKohler-HB",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Klinikum_am_Urban_Berlin.jpg",
+          "alt": "Moderner Neubau eines Krankenhauses in Berlin",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:12-11-05-gropius-eberswalde-10.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/12-11-05-gropius-eberswalde-10.jpg/1280px-12-11-05-gropius-eberswalde-10.jpg",
+          "credit": "Ralf Roletschek (talk) - Infos über Fahrräder auf fahrradmonteur.de",
+          "license": "CC BY 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:12-11-05-gropius-eberswalde-10.jpg",
+          "alt": "Gebäude eines Krankenhauses in Eberswalde",
+          "width": 1280,
+          "height": 850,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Herzberge Krankenhaus B-Lichtenberg 08-14.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Herzberge_Krankenhaus_B-Lichtenberg_08-14.jpg/1280px-Herzberge_Krankenhaus_B-Lichtenberg_08-14.jpg",
+          "credit": "A.Savin",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Herzberge_Krankenhaus_B-Lichtenberg_08-14.jpg",
+          "alt": "Historisches Hauptgebäude eines Krankenhauses in Berlin",
+          "width": 1280,
+          "height": 720,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2330,6 +4852,28 @@
           "width": 1280,
           "height": 853,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Former pharmacy, shelves with medicines.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Former_pharmacy%2C_shelves_with_medicines.jpg/1280px-Former_pharmacy%2C_shelves_with_medicines.jpg",
+          "credit": "Zalasem1",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Former_pharmacy,_shelves_with_medicines.jpg",
+          "alt": "Regale mit Arzneiflaschen in einer alten Apotheke",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:2012 02 22 2223936 OG Schild der Hirsch Apotheke.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/2012_02_22_2223936_OG_Schild_der_Hirsch_Apotheke.jpg/1280px-2012_02_22_2223936_OG_Schild_der_Hirsch_Apotheke.jpg",
+          "credit": "Peter Nath",
+          "license": "CC BY 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:2012_02_22_2223936_OG_Schild_der_Hirsch_Apotheke.jpg",
+          "alt": "Schmiedeeisernes Apothekenschild an einer Hauswand",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2364,6 +4908,39 @@
           "width": 1280,
           "height": 885,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Pills (23735769083).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Pills_%2823735769083%29.jpg/1280px-Pills_%2823735769083%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pills_(23735769083).jpg",
+          "alt": "Verschiedene Tabletten",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Medicine Drug Pills on Plate.png",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Medicine_Drug_Pills_on_Plate.png/1280px-Medicine_Drug_Pills_on_Plate.png",
+          "credit": "epSos .de",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Medicine_Drug_Pills_on_Plate.png",
+          "alt": "Rosa und weiße Tabletten auf einem Teller",
+          "width": 1280,
+          "height": 963,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Thermometer01.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Thermometer01.jpg/1280px-Thermometer01.jpg",
+          "credit": "Steve Buissinne (stevepb)",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Thermometer01.jpg",
+          "alt": "Fieberthermometer neben bunten Tabletten und Kapseln",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2386,6 +4963,39 @@
           "width": 1280,
           "height": 720,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Impfstoff Ampulle und Spritze (50744122788).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Impfstoff_Ampulle_und_Spritze_%2850744122788%29.jpg/1280px-Impfstoff_Ampulle_und_Spritze_%2850744122788%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Impfstoff_Ampulle_und_Spritze_(50744122788).jpg",
+          "alt": "Ampulle mit Impfstoff und eine Spritze",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Ärztin mit Impfstoff (50744505143).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/%C3%84rztin_mit_Impfstoff_%2850744505143%29.jpg/1280px-%C3%84rztin_mit_Impfstoff_%2850744505143%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:%C3%84rztin_mit_Impfstoff_(50744505143).jpg",
+          "alt": "Ärztin mit Impfstoff",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Impfen (50745283167).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Impfen_%2850745283167%29.jpg/1280px-Impfen_%2850745283167%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Impfen_(50745283167).jpg",
+          "alt": "Symbolbild Impfen",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2409,6 +5019,353 @@
           "width": 1280,
           "height": 960,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:DRF Eurocopter EC135 Christoph 44 D-HDRK Göttingen 2017 03.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/DRF_Eurocopter_EC135_Christoph_44_D-HDRK_G%C3%B6ttingen_2017_03.jpg/1280px-DRF_Eurocopter_EC135_Christoph_44_D-HDRK_G%C3%B6ttingen_2017_03.jpg",
+          "credit": "Julian Herzog (Website)",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:DRF_Eurocopter_EC135_Christoph_44_D-HDRK_G%C3%B6ttingen_2017_03.jpg",
+          "alt": "Rettungshubschrauber beim Start",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Krankentransportwagen in Passau.JPG",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Krankentransportwagen_in_Passau.JPG/1280px-Krankentransportwagen_in_Passau.JPG",
+          "credit": "High Contrast",
+          "license": "CC BY 3.0 de",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Krankentransportwagen_in_Passau.JPG",
+          "alt": "Krankentransportwagen eines Rettungsdienstes",
+          "width": 1280,
+          "height": 922,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Defibrilator (12164231345).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Defibrilator_%2812164231345%29.jpg/1280px-Defibrilator_%2812164231345%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Defibrilator_(12164231345).jpg",
+          "alt": "Automatischer Defibrillator für Notfälle",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "arztpraxis": {
+      "topic": "gesundheit",
+      "label": "Arztpraxis, Hausärzte, Sprechstunde",
+      "aliases": [
+        "arzt",
+        "aerzte",
+        "hausarzt",
+        "hausaerzte",
+        "praxis",
+        "facharzt",
+        "sprechstunde"
+      ],
+      "images": [
+        {
+          "title": "File:A waiting room at a medical healthcare clinic, doctor's office, hospital.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/A_waiting_room_at_a_medical_healthcare_clinic%2C_doctor%27s_office%2C_hospital.jpg/1280px-A_waiting_room_at_a_medical_healthcare_clinic%2C_doctor%27s_office%2C_hospital.jpg",
+          "credit": "Harrison Keely",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:A_waiting_room_at_a_medical_healthcare_clinic,_doctor%27s_office,_hospital.jpg",
+          "alt": "Wartezimmer einer Arztpraxis mit Stühlen",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Modern medical examination room.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Modern_medical_examination_room.jpg/1280px-Modern_medical_examination_room.jpg",
+          "credit": "Shixart1985",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Modern_medical_examination_room.jpg",
+          "alt": "Moderner ärztlicher Behandlungsraum",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "pflege": {
+      "topic": "gesundheit",
+      "label": "Pflege, Pflegeheim, Altenpflege",
+      "aliases": [
+        "pflegeheim",
+        "altenpflege",
+        "pflegekraefte",
+        "pflegeversicherung",
+        "rollstuhl"
+      ],
+      "images": [
+        {
+          "title": "File:Eisenach Germany Alten-und-Pflegeheim-St-Annen-Georgenstraße-64-01.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Eisenach_Germany_Alten-und-Pflegeheim-St-Annen-Georgenstra%C3%9Fe-64-01.jpg/1280px-Eisenach_Germany_Alten-und-Pflegeheim-St-Annen-Georgenstra%C3%9Fe-64-01.jpg",
+          "credit": "CEphoto, Uwe Aranas",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Eisenach_Germany_Alten-und-Pflegeheim-St-Annen-Georgenstra%C3%9Fe-64-01.jpg",
+          "alt": "Alten- und Pflegeheim in einem historischen Gebäude",
+          "width": 1280,
+          "height": 914,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Pflegeheim Haus Allmendäcker Maichingen 02.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Pflegeheim_Haus_Allmend%C3%A4cker_Maichingen_02.jpg/1280px-Pflegeheim_Haus_Allmend%C3%A4cker_Maichingen_02.jpg",
+          "credit": "Giftzwerg 88",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pflegeheim_Haus_Allmend%C3%A4cker_Maichingen_02.jpg",
+          "alt": "Gebäude eines modernen Pflegeheims",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Providentia Seniorenwohn- und Pflegeheim in Klagenfurt.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Providentia_Seniorenwohn-_und_Pflegeheim_in_Klagenfurt.jpg/1280px-Providentia_Seniorenwohn-_und_Pflegeheim_in_Klagenfurt.jpg",
+          "credit": "Streunerich",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Providentia_Seniorenwohn-_und_Pflegeheim_in_Klagenfurt.jpg",
+          "alt": "Seniorenwohn- und Pflegeheim",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Wheelchairs for visitors at the entrance - NÄL hospital 1.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Wheelchairs_for_visitors_at_the_entrance_-_N%C3%84L_hospital_1.jpg/1280px-Wheelchairs_for_visitors_at_the_entrance_-_N%C3%84L_hospital_1.jpg",
+          "credit": "W.carter",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wheelchairs_for_visitors_at_the_entrance_-_N%C3%84L_hospital_1.jpg",
+          "alt": "Rollstühle am Eingang eines Krankenhauses",
+          "width": 1280,
+          "height": 924,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "zahnarzt": {
+      "topic": "gesundheit",
+      "label": "Zahnarzt, Zahngesundheit",
+      "aliases": [
+        "zahnaerzte",
+        "zaehne",
+        "zahngesundheit",
+        "zahnmedizin"
+      ],
+      "images": [
+        {
+          "title": "File:Dentist (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Dentist_%28Unsplash%29.jpg/1280px-Dentist_%28Unsplash%29.jpg",
+          "credit": "Daniel Frank fr3nks",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dentist_(Unsplash).jpg",
+          "alt": "Behandlungsstuhl und Lampe in einer Zahnarztpraxis",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Zahnbürste (12164271386).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Zahnb%C3%BCrste_%2812164271386%29.jpg/1280px-Zahnb%C3%BCrste_%2812164271386%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zahnb%C3%BCrste_(12164271386).jpg",
+          "alt": "Zahnbürste",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Dental implants (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Dental_implants_%28Unsplash%29.jpg/1280px-Dental_implants_%28Unsplash%29.jpg",
+          "credit": "Peter Kasprzyk petekasprzyk",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dental_implants_(Unsplash).jpg",
+          "alt": "Zahnimplantate",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "ernaehrung": {
+      "topic": "gesundheit",
+      "label": "Ernährung, Zucker, Obst und Gemüse",
+      "aliases": [
+        "zucker",
+        "zuckersteuer",
+        "obst",
+        "gemuese",
+        "uebergewicht",
+        "diaet",
+        "suessigkeiten"
+      ],
+      "images": [
+        {
+          "title": "File:Knackiger Salat mit frischen Früchten (47416526901).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Knackiger_Salat_mit_frischen_Fr%C3%BCchten_%2847416526901%29.jpg/1280px-Knackiger_Salat_mit_frischen_Fr%C3%BCchten_%2847416526901%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Knackiger_Salat_mit_frischen_Fr%C3%BCchten_(47416526901).jpg",
+          "alt": "Salat mit frischen Früchten",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Healthy Grocery Shopping (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Healthy_Grocery_Shopping_%28Unsplash%29.jpg/1280px-Healthy_Grocery_Shopping_%28Unsplash%29.jpg",
+          "credit": "leonie wise leoniewise",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Healthy_Grocery_Shopping_(Unsplash).jpg",
+          "alt": "Korb mit gemischtem Gemüse",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Healthy Fruit (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Healthy_Fruit_%28Unsplash%29.jpg/1280px-Healthy_Fruit_%28Unsplash%29.jpg",
+          "credit": "Tim Gouw punttim",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Healthy_Fruit_(Unsplash).jpg",
+          "alt": "Frisches Obst",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Gummibären (12164128534).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gummib%C3%A4ren_%2812164128534%29.jpg/1280px-Gummib%C3%A4ren_%2812164128534%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gummib%C3%A4ren_(12164128534).jpg",
+          "alt": "Bunte Gummibärchen",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Schokolade (33615672621).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Schokolade_%2833615672621%29.jpg/1280px-Schokolade_%2833615672621%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Schokolade_(33615672621).jpg",
+          "alt": "Tafeln Schokolade",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "blut": {
+      "topic": "gesundheit",
+      "label": "Blut, Blutspende, Bluttests",
+      "aliases": [
+        "blutspende",
+        "bluttest",
+        "blutprobe",
+        "blutwerte",
+        "transfusion"
+      ],
+      "images": [
+        {
+          "title": "File:Tube with blood sample.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Tube_with_blood_sample.jpg/1280px-Tube_with_blood_sample.jpg",
+          "credit": "Dotodot",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tube_with_blood_sample.jpg",
+          "alt": "Röhrchen mit einer Blutprobe",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Checking Blood Sample (9955279835).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Checking_Blood_Sample_%289955279835%29.jpg/1280px-Checking_Blood_Sample_%289955279835%29.jpg",
+          "credit": "National Eye Institute",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Checking_Blood_Sample_(9955279835).jpg",
+          "alt": "Prüfung einer Blutprobe im Labor",
+          "width": 1280,
+          "height": 852,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Донирај крв, биди хуман.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/%D0%94%D0%BE%D0%BD%D0%B8%D1%80%D0%B0%D1%98_%D0%BA%D1%80%D0%B2%2C_%D0%B1%D0%B8%D0%B4%D0%B8_%D1%85%D1%83%D0%BC%D0%B0%D0%BD.jpg/1280px-%D0%94%D0%BE%D0%BD%D0%B8%D1%80%D0%B0%D1%98_%D0%BA%D1%80%D0%B2%2C_%D0%B1%D0%B8%D0%B4%D0%B8_%D1%85%D1%83%D0%BC%D0%B0%D0%BD.jpg",
+          "credit": "Ivka20",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%94%D0%BE%D0%BD%D0%B8%D1%80%D0%B0%D1%98_%D0%BA%D1%80%D0%B2,_%D0%B1%D0%B8%D0%B4%D0%B8_%D1%85%D1%83%D0%BC%D0%B0%D0%BD.jpg",
+          "alt": "Beutel mit gespendetem Blut",
+          "width": 1280,
+          "height": 855,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "rauchen": {
+      "topic": "gesundheit",
+      "label": "Rauchen, Tabak, E-Zigaretten",
+      "aliases": [
+        "tabak",
+        "tabaksteuer",
+        "zigaretten",
+        "zigarette",
+        "nikotin",
+        "e-zigarette",
+        "vapes"
+      ],
+      "images": [
+        {
+          "title": "File:Zigaretten (13983136123).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Zigaretten_%2813983136123%29.jpg/1280px-Zigaretten_%2813983136123%29.jpg",
+          "credit": "Tim Reckmann from Hamm, Deutschland",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zigaretten_(13983136123).jpg",
+          "alt": "Zigaretten",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Cigarette in ashtray (option 1 of 2).JPG",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Cigarette_in_ashtray_%28option_1_of_2%29.JPG/1280px-Cigarette_in_ashtray_%28option_1_of_2%29.JPG",
+          "credit": "Kiwiev",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cigarette_in_ashtray_(option_1_of_2).JPG",
+          "alt": "Brennende Zigarette in einem Aschenbecher",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Ashtray with cigarette butts 20181223.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Ashtray_with_cigarette_butts_20181223.jpg/1280px-Ashtray_with_cigarette_butts_20181223.jpg",
+          "credit": "Santeri Viinamäki",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ashtray_with_cigarette_butts_20181223.jpg",
+          "alt": "Aschenbecher mit Zigarettenstummeln",
+          "width": 1280,
+          "height": 928,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:2020 E-papieros mod.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/2020_E-papieros_mod.jpg/1280px-2020_E-papieros_mod.jpg",
+          "credit": "Jacek Halicki",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:2020_E-papieros_mod.jpg",
+          "alt": "E-Zigarette mit Akkuträger und Verdampfer",
+          "width": 1280,
+          "height": 787,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2443,6 +5400,39 @@
           "width": 1280,
           "height": 618,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Barrow Offshore wind turbines NR.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Barrow_Offshore_wind_turbines_NR.jpg/1280px-Barrow_Offshore_wind_turbines_NR.jpg",
+          "credit": "Original: Andy Dingley; Edit: Muhammad",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Barrow_Offshore_wind_turbines_NR.jpg",
+          "alt": "Offshore-Windräder auf dem Meer vor einer Küste",
+          "width": 1280,
+          "height": 944,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Middelgrunden wind farm 2009-07-01 edit filtered.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Middelgrunden_wind_farm_2009-07-01_edit_filtered.jpg/1280px-Middelgrunden_wind_farm_2009-07-01_edit_filtered.jpg",
+          "credit": "Photo by Kim Hansen. Postprocessing (crop, rotation, color adjustment, dust spot removal and noise reduction) by Richard Bartz and Kim Hansen.",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Middelgrunden_wind_farm_2009-07-01_edit_filtered.jpg",
+          "alt": "Der Offshore-Windpark Middelgrunden im dänischen Öresund",
+          "width": 1280,
+          "height": 932,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Jon Flobrant 2014-11-09 (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Jon_Flobrant_2014-11-09_%28Unsplash%29.jpg/1280px-Jon_Flobrant_2014-11-09_%28Unsplash%29.jpg",
+          "credit": "Jon Flobrant jonflobrant",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jon_Flobrant_2014-11-09_(Unsplash).jpg",
+          "alt": "Windrad über einem Wald im Nebel",
+          "width": 1280,
+          "height": 752,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2477,6 +5467,28 @@
           "width": 1280,
           "height": 720,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Serres, Greece (Unsplash KRWfiWPqbq8).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Serres%2C_Greece_%28Unsplash_KRWfiWPqbq8%29.jpg/1280px-Serres%2C_Greece_%28Unsplash_KRWfiWPqbq8%29.jpg",
+          "credit": "Jason Blackeye jeisblack",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Serres,_Greece_(Unsplash_KRWfiWPqbq8).jpg",
+          "alt": "Solarmodule auf einem Feld unter bewölktem Himmel",
+          "width": 1280,
+          "height": 698,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Pylons ^ Panels, Cleve Hill Solar Park - geograph.org.uk - 8165976.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Pylons_%5E_Panels%2C_Cleve_Hill_Solar_Park_-_geograph.org.uk_-_8165976.jpg/1280px-Pylons_%5E_Panels%2C_Cleve_Hill_Solar_Park_-_geograph.org.uk_-_8165976.jpg",
+          "credit": "Des Blenkinsopp",
+          "license": "CC BY-SA 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pylons_%5E_Panels,_Cleve_Hill_Solar_Park_-_geograph.org.uk_-_8165976.jpg",
+          "alt": "Strommasten und Solarmodule in einem Solarpark",
+          "width": 1280,
+          "height": 968,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2513,6 +5525,28 @@
           "width": 1280,
           "height": 960,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Coal power plant Knepper 1.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Coal_power_plant_Knepper_1.jpg/1280px-Coal_power_plant_Knepper_1.jpg",
+          "credit": "Arnoldius",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Coal_power_plant_Knepper_1.jpg",
+          "alt": "Kohlekraftwerk mit Schornstein und Kühlturm in Castrop-Rauxel",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Bridgeport Chimney, former coal plant in Connecticut.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Bridgeport_Chimney%2C_former_coal_plant_in_Connecticut.jpg/1280px-Bridgeport_Chimney%2C_former_coal_plant_in_Connecticut.jpg",
+          "credit": "Quintin Soloviev",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bridgeport_Chimney,_former_coal_plant_in_Connecticut.jpg",
+          "alt": "Schornstein eines stillgelegten Kohlekraftwerks",
+          "width": 1280,
+          "height": 896,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2582,6 +5616,28 @@
           "width": 1280,
           "height": 853,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Fog descending on a pine forest (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Fog_descending_on_a_pine_forest_%28Unsplash%29.jpg/1280px-Fog_descending_on_a_pine_forest_%28Unsplash%29.jpg",
+          "credit": "Pacific Austin _pacifist",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fog_descending_on_a_pine_forest_(Unsplash).jpg",
+          "alt": "Nebel über einem Nadelwald",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Forest clearing from above 1 (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Forest_clearing_from_above_1_%28Unsplash%29.jpg/1280px-Forest_clearing_from_above_1_%28Unsplash%29.jpg",
+          "credit": "Anton Gudkov apgudkov",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Forest_clearing_from_above_1_(Unsplash).jpg",
+          "alt": "Wald von oben mit einer Lichtung",
+          "width": 1280,
+          "height": 719,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2674,6 +5730,221 @@
         }
       ]
     },
+    "wasserkraft": {
+      "topic": "klima",
+      "label": "Wasserkraft, Staudämme",
+      "aliases": [
+        "staudamm",
+        "stausee",
+        "wasserkraftwerk",
+        "talsperre"
+      ],
+      "images": [
+        {
+          "title": "File:Assuan-Hochdamm 15.JPG",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Assuan-Hochdamm_15.JPG/1280px-Assuan-Hochdamm_15.JPG",
+          "credit": "Olaf Tausch",
+          "license": "CC BY 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Assuan-Hochdamm_15.JPG",
+          "alt": "Der Assuan-Hochdamm in Ägypten",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:ThreeGorgesDam-China2009.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/ThreeGorgesDam-China2009.jpg/1280px-ThreeGorgesDam-China2009.jpg",
+          "credit": "Source file: Le Grand Portage Derivative work: Rehman",
+          "license": "CC BY 2.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:ThreeGorgesDam-China2009.jpg",
+          "alt": "Der Drei-Schluchten-Staudamm am Jangtse in China",
+          "width": 1280,
+          "height": 795,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Peechi Dam 3.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Peechi_Dam_3.jpg/1280px-Peechi_Dam_3.jpg",
+          "credit": "Lijovklm",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Peechi_Dam_3.jpg",
+          "alt": "Staudamm mit abfließendem Wasser an den Überläufen",
+          "width": 1280,
+          "height": 721,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "kernkraft": {
+      "topic": "klima",
+      "label": "Kernkraft, Atomkraftwerke",
+      "aliases": [
+        "atomkraft",
+        "akw",
+        "atomausstieg",
+        "kernkraftwerk",
+        "kuehlturm"
+      ],
+      "images": [
+        {
+          "title": "File:De Molen (windmill) and the nuclear power plant cooling tower in Doel, Belgium (DSCF3862).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/De_Molen_%28windmill%29_and_the_nuclear_power_plant_cooling_tower_in_Doel%2C_Belgium_%28DSCF3862%29.jpg/1280px-De_Molen_%28windmill%29_and_the_nuclear_power_plant_cooling_tower_in_Doel%2C_Belgium_%28DSCF3862%29.jpg",
+          "credit": "Trougnouf",
+          "license": "CC BY 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:De_Molen_(windmill)_and_the_nuclear_power_plant_cooling_tower_in_Doel,_Belgium_(DSCF3862).jpg",
+          "alt": "Eine Windmühle vor dem Kühlturm eines Kernkraftwerks in Belgien",
+          "width": 1280,
+          "height": 883,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Cooling tower of the Gösgen Nuclear Power Plant, close view, Däniken, Solothurn.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Cooling_tower_of_the_G%C3%B6sgen_Nuclear_Power_Plant%2C_close_view%2C_D%C3%A4niken%2C_Solothurn.jpg/1280px-Cooling_tower_of_the_G%C3%B6sgen_Nuclear_Power_Plant%2C_close_view%2C_D%C3%A4niken%2C_Solothurn.jpg",
+          "credit": "Christian David",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cooling_tower_of_the_G%C3%B6sgen_Nuclear_Power_Plant,_close_view,_D%C3%A4niken,_Solothurn.jpg",
+          "alt": "Kühlturm des Kernkraftwerks Gösgen in der Schweiz",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "extremwetter": {
+      "topic": "klima",
+      "label": "Extremwetter, Gewitter, Unwetter",
+      "aliases": [
+        "gewitter",
+        "sturm",
+        "blitz",
+        "wetterextreme"
+      ],
+      "images": [
+        {
+          "title": "File:Lightning Pritzerbe 01 (MK).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Lightning_Pritzerbe_01_%28MK%29.jpg/1280px-Lightning_Pritzerbe_01_%28MK%29.jpg",
+          "credit": "Mathias Krumbholz",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lightning_Pritzerbe_01_(MK).jpg",
+          "alt": "Blitze bei einem Gewitter über einer weiten Ebene",
+          "width": 1280,
+          "height": 720,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Joshua Tree Park approaching thunderstorm 02 2013.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Joshua_Tree_Park_approaching_thunderstorm_02_2013.jpg/1280px-Joshua_Tree_Park_approaching_thunderstorm_02_2013.jpg",
+          "credit": "Tuxyso",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Joshua_Tree_Park_approaching_thunderstorm_02_2013.jpg",
+          "alt": "Dunkle Gewitterwolken über einer Wüstenlandschaft",
+          "width": 1280,
+          "height": 713,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "gletscher": {
+      "topic": "klima",
+      "label": "Gletscher, Eis, Eisschmelze",
+      "aliases": [
+        "eisschmelze",
+        "eis",
+        "arktis",
+        "gletscherschmelze"
+      ],
+      "images": [
+        {
+          "title": "File:IceBlockNearJoekullsarlon.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/IceBlockNearJoekullsarlon.jpg/1280px-IceBlockNearJoekullsarlon.jpg",
+          "credit": "Andreas Tille",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:IceBlockNearJoekullsarlon.jpg",
+          "alt": "Eisblock am Strand in Island im Abendlicht",
+          "width": 1280,
+          "height": 855,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Matanuska Glacier mouth.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Matanuska_Glacier_mouth.jpg/1280px-Matanuska_Glacier_mouth.jpg",
+          "credit": "Sbork",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Matanuska_Glacier_mouth.jpg",
+          "alt": "Gletscherzunge des Matanuska-Gletschers in Alaska",
+          "width": 1280,
+          "height": 812,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Marmolada, Italy.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Marmolada%2C_Italy.jpg/1280px-Marmolada%2C_Italy.jpg",
+          "credit": "Marco Bonomo",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Marmolada,_Italy.jpg",
+          "alt": "Schneebedeckte Gipfel der Marmolata in den Dolomiten",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "moor": {
+      "topic": "klima",
+      "label": "Moore, Feuchtgebiete",
+      "aliases": [
+        "moore",
+        "feuchtgebiete",
+        "naturschutz",
+        "artenschutz"
+      ],
+      "images": [
+        {
+          "title": "File:Ķemeru purva laipa.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/%C4%B6emeru_purva_laipa.jpg/1280px-%C4%B6emeru_purva_laipa.jpg",
+          "credit": "Jolanta Liva",
+          "license": "CC BY-SA 4.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:%C4%B6emeru_purva_laipa.jpg",
+          "alt": "Holzsteg durch ein Moor im Morgennebel",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "erneuerbare-energien": {
+      "topic": "klima",
+      "label": "Energiewende, erneuerbare Energien",
+      "aliases": [
+        "erneuerbare",
+        "biogas",
+        "energieversorgung"
+      ],
+      "images": [
+        {
+          "title": "File:Biogas Photovoltaik Wind.jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Biogas_Photovoltaik_Wind.jpg/1280px-Biogas_Photovoltaik_Wind.jpg",
+          "credit": "Florian Gerlach (Nawaro)",
+          "license": "CC BY-SA 3.0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Biogas_Photovoltaik_Wind.jpg",
+          "alt": "Biogasanlage, Windrad und Solarmodule auf einem landwirtschaftlichen Betrieb",
+          "width": 1280,
+          "height": 841,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Farm Windmills (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Farm_Windmills_%28Unsplash%29.jpg/1280px-Farm_Windmills_%28Unsplash%29.jpg",
+          "credit": "Drew Hays drew_hays",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Farm_Windmills_(Unsplash).jpg",
+          "alt": "Windrad auf einem Feld unter hellem Himmel",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
     "gaming": {
       "topic": "entertainment",
       "label": "Games, Spielkonsolen",
@@ -2707,6 +5978,28 @@
           "width": 1280,
           "height": 620,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Let's Play! (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Let%27s_Play%21_%28Unsplash%29.jpg/1280px-Let%27s_Play%21_%28Unsplash%29.jpg",
+          "credit": "Glenn Carstens-Peters glenncarstenspeters",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Let%27s_Play!_(Unsplash).jpg",
+          "alt": "Hände halten einen Gamecontroller vor einem Fernseher",
+          "width": 1280,
+          "height": 852,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Pawel Kadysz 2013 (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Pawel_Kadysz_2013_%28Unsplash%29.jpg/1280px-Pawel_Kadysz_2013_%28Unsplash%29.jpg",
+          "credit": "Pawel Kadysz pawelkadysz",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pawel_Kadysz_2013_(Unsplash).jpg",
+          "alt": "Gamecontroller auf einem Tisch",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2740,6 +6033,50 @@
           "width": 1280,
           "height": 960,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Movie theater seats (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Movie_theater_seats_%28Unsplash%29.jpg/1280px-Movie_theater_seats_%28Unsplash%29.jpg",
+          "credit": "Elijah Flores baesik",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Movie_theater_seats_(Unsplash).jpg",
+          "alt": "Reihen schwarzer Sessel in einem Kinosaal",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Disused Cinema (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Disused_Cinema_%28Unsplash%29.jpg/1280px-Disused_Cinema_%28Unsplash%29.jpg",
+          "credit": "Felix Mooneeram felixmooneeram",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Disused_Cinema_(Unsplash).jpg",
+          "alt": "Rote Sessel und Treppe in einem stillgelegten Kino",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Bowl of Popcorn (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Bowl_of_Popcorn_%28Unsplash%29.jpg/1280px-Bowl_of_Popcorn_%28Unsplash%29.jpg",
+          "credit": "Alex Munsell alexmunsell",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bowl_of_Popcorn_(Unsplash).jpg",
+          "alt": "Schüssel mit Popcorn",
+          "width": 1280,
+          "height": 848,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Movie camera (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Movie_camera_%28Unsplash%29.jpg/1280px-Movie_camera_%28Unsplash%29.jpg",
+          "credit": "David Condrey dcondrey",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Movie_camera_(Unsplash).jpg",
+          "alt": "Filmkamera in Nahaufnahme",
+          "width": 1280,
+          "height": 943,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2774,6 +6111,28 @@
           "width": 1280,
           "height": 854,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Concert crowd (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Concert_crowd_%28Unsplash%29.jpg/1280px-Concert_crowd_%28Unsplash%29.jpg",
+          "credit": "Hannah Rodrigo hannahrodrigo",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Concert_crowd_(Unsplash).jpg",
+          "alt": "Konzertpublikum mit erhobenen Armen in Schwarz-Weiß",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Red spotlights in Metro Music Hall (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Red_spotlights_in_Metro_Music_Hall_%28Unsplash%29.jpg/1280px-Red_spotlights_in_Metro_Music_Hall_%28Unsplash%29.jpg",
+          "credit": "Wesley Tingey wesleytingey",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_spotlights_in_Metro_Music_Hall_(Unsplash).jpg",
+          "alt": "Bühne mit Schlagzeug im roten Scheinwerferlicht",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2797,6 +6156,17 @@
           "width": 1280,
           "height": 857,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Vintage television (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Vintage_television_%28Unsplash%29.jpg/1280px-Vintage_television_%28Unsplash%29.jpg",
+          "credit": "Sven Scheuermeier sveninho",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vintage_television_(Unsplash).jpg",
+          "alt": "Alter Röhrenfernseher auf Beinen",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2819,6 +6189,50 @@
           "width": 1280,
           "height": 854,
           "verifiedAt": "2026-10-09"
+        },
+        {
+          "title": "File:Vinyl collection at a record store (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Vinyl_collection_at_a_record_store_%28Unsplash%29.jpg/1280px-Vinyl_collection_at_a_record_store_%28Unsplash%29.jpg",
+          "credit": "Mr Cup / Fabien Barral iammrcup",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vinyl_collection_at_a_record_store_(Unsplash).jpg",
+          "alt": "Schallplatten in Kisten in einem Plattenladen",
+          "width": 1280,
+          "height": 850,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Vintage vinyl records (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Vintage_vinyl_records_%28Unsplash%29.jpg/1280px-Vintage_vinyl_records_%28Unsplash%29.jpg",
+          "credit": "Umberto Cofini umbe",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vintage_vinyl_records_(Unsplash).jpg",
+          "alt": "Stapel alter Schallplatten",
+          "width": 1280,
+          "height": 706,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Alphacolor 13 2016 (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Alphacolor_13_2016_%28Unsplash%29.jpg/1280px-Alphacolor_13_2016_%28Unsplash%29.jpg",
+          "credit": "Alphacolor 13 duck58cth",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alphacolor_13_2016_(Unsplash).jpg",
+          "alt": "Kopfhörer vor einem unscharfen, warmen Lichterhintergrund",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Piano time (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Piano_time_%28Unsplash%29.jpg/1280px-Piano_time_%28Unsplash%29.jpg",
+          "credit": "Tadas Mikuckis tadasmikuckis",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Piano_time_(Unsplash).jpg",
+          "alt": "Hände auf Klaviertasten",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
         }
       ]
     },
@@ -2873,6 +6287,143 @@
           "width": 1280,
           "height": 854,
           "verifiedAt": "2026-10-09"
+        }
+      ]
+    },
+    "buecher": {
+      "topic": "entertainment",
+      "label": "Bücher, Bibliotheken, Literatur",
+      "aliases": [
+        "buch",
+        "literatur",
+        "buchmesse",
+        "lesen",
+        "bibliotheken-buecher"
+      ],
+      "images": [
+        {
+          "title": "File:Uppsala Library (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Uppsala_Library_%28Unsplash%29.jpg/1280px-Uppsala_Library_%28Unsplash%29.jpg",
+          "credit": "Aleksi Tappura a",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Uppsala_Library_(Unsplash).jpg",
+          "alt": "Regale voller Bücher in einer Bibliothek",
+          "width": 1280,
+          "height": 848,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "freizeitpark": {
+      "topic": "entertainment",
+      "label": "Freizeitpark, Jahrmarkt, Riesenrad",
+      "aliases": [
+        "jahrmarkt",
+        "rummel",
+        "karussell",
+        "riesenrad",
+        "volksfest"
+      ],
+      "images": [
+        {
+          "title": "File:Fantasia Carousel (125439).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Fantasia_Carousel_%28125439%29.jpg/1280px-Fantasia_Carousel_%28125439%29.jpg",
+          "credit": "Riku Lu",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fantasia_Carousel_(125439).jpg",
+          "alt": "Ein Karussell in einem Freizeitpark am Wasser",
+          "width": 1280,
+          "height": 719,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Navy Pier, Chicago, United States (Unsplash WRUNGuEebS0).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Navy_Pier%2C_Chicago%2C_United_States_%28Unsplash_WRUNGuEebS0%29.jpg/1280px-Navy_Pier%2C_Chicago%2C_United_States_%28Unsplash_WRUNGuEebS0%29.jpg",
+          "credit": "Josh Howard thejoshhoward",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Navy_Pier,_Chicago,_United_States_(Unsplash_WRUNGuEebS0).jpg",
+          "alt": "Freizeitpark mit Karussell von oben",
+          "width": 1280,
+          "height": 848,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Ferris wheel (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Ferris_wheel_%28Unsplash%29.jpg/1280px-Ferris_wheel_%28Unsplash%29.jpg",
+          "credit": "Ilya ilya",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ferris_wheel_(Unsplash).jpg",
+          "alt": "Riesenrad vor blauem Himmel",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "feuerwerk": {
+      "topic": "entertainment",
+      "label": "Feuerwerk, Silvester",
+      "aliases": [
+        "silvester",
+        "neujahr",
+        "pyrotechnik"
+      ],
+      "images": [
+        {
+          "title": "File:Fireworks over water (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Fireworks_over_water_%28Unsplash%29.jpg/1280px-Fireworks_over_water_%28Unsplash%29.jpg",
+          "credit": "Adam Whitlock devlife411",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fireworks_over_water_(Unsplash).jpg",
+          "alt": "Feuerwerk am Nachthimmel",
+          "width": 1280,
+          "height": 853,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Fireworks and dark clouds (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Fireworks_and_dark_clouds_%28Unsplash%29.jpg/1280px-Fireworks_and_dark_clouds_%28Unsplash%29.jpg",
+          "credit": "kazuend kazuend",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fireworks_and_dark_clouds_(Unsplash).jpg",
+          "alt": "Feuerwerk vor dunklen Wolken",
+          "width": 1280,
+          "height": 960,
+          "verifiedAt": "2026-10-17"
+        }
+      ]
+    },
+    "konzertsaal": {
+      "topic": "entertainment",
+      "label": "Konzertsaal, Orchester, Klassik",
+      "aliases": [
+        "orchester",
+        "philharmonie",
+        "klassische-musik",
+        "konzerthalle"
+      ],
+      "images": [
+        {
+          "title": "File:Empty concert hall in Katowice (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Empty_concert_hall_in_Katowice_%28Unsplash%29.jpg/1280px-Empty_concert_hall_in_Katowice_%28Unsplash%29.jpg",
+          "credit": "Radek Grzybowski rgrzybowski",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Empty_concert_hall_in_Katowice_(Unsplash).jpg",
+          "alt": "Leerer Konzertsaal mit blauen Sitzreihen",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
+        },
+        {
+          "title": "File:Katowice concert hall (Unsplash).jpg",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Katowice_concert_hall_%28Unsplash%29.jpg/1280px-Katowice_concert_hall_%28Unsplash%29.jpg",
+          "credit": "Radek Grzybowski rgrzybowski",
+          "license": "CC0",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Katowice_concert_hall_(Unsplash).jpg",
+          "alt": "Konzertsaal mit aufgeschlagenen Noten auf dem Pult",
+          "width": 1280,
+          "height": 854,
+          "verifiedAt": "2026-10-17"
         }
       ]
     }

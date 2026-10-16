@@ -252,7 +252,7 @@ describe('findImages', () => {
     assert.equal(candidates.length, 5);
     assert.equal(fetchImpl.calls.length, 1);
     assert.equal(fetchImpl.calls[0].init.headers['User-Agent'], USER_AGENT);
-    assert.match(USER_AGENT, /^MorgenbriefingRoutine\/1\.0 \(https:\/\/github\.com\/CedrickGD\/Morgenbriefing\)$/);
+    assert.match(USER_AGENT, /^MorgenbriefingRoutine\/1\.4 \(https:\/\/github\.com\/CedrickGD\/Morgenbriefing\)$/);
     assert.match(fetchImpl.calls[0].url, /gsrsearch=Leipzig\+Hauptbahnhof\+filetype%3Abitmap/);
   });
 

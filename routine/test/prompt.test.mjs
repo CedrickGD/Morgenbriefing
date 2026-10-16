@@ -126,12 +126,34 @@ describe('PROMPT.md', () => {
     assert.match(bild, /Jedes Bild nur einmal im Briefing/);
     assert.doesNotMatch(PROMPT, /Für weitere Artikel ist es optional|Lieber kein Bild als ein schiefes/);
 
-    assert.match(PROMPT, /--section \/tmp\/sections\/\{\{ID\}\}\.json --max-age-hours 36 --require-images\n/);
-    assert.match(PROMPT, /--section \/tmp\/sections\/\*\.json --max-age-hours 36 --require-images\n/);
-    assert.match(PROMPT, /validate-brief\.mjs \/tmp\/brief\.json --max-age-hours 36 --require-images\n/);
+    assert.match(PROMPT, /--section \/tmp\/sections\/\{\{ID\}\}\.json --max-age-hours 36 --require-images --no-repeat-days 14\n/);
+    assert.match(PROMPT, /--section \/tmp\/sections\/\*\.json --max-age-hours 36 --require-images --no-repeat-days 14\n/);
+    assert.match(PROMPT, /validate-brief\.mjs \/tmp\/brief\.json --max-age-hours 36 --require-images --no-repeat-days 14\n/);
     assert.match(PROMPT, /\{\{ID\}\}: <N> Artikel \(<T> Top, <M> Mehr\), <B> Bilder \(<K> aus dem Katalog\) – OK/);
     assert.match(section('## Schritt 3'), /\*\*Bilder – jeder Artikel braucht eins\.\*\*/);
     assert.match(section('## Schritt 7'), /48 Artikel · 48 Bilder/);
+  });
+
+  it('keeps pictures from repeating across days: --recent-days in every picture step, --no-repeat-days in every check', () => {
+    const start = PROMPT.indexOf('5. BILD');
+    const bild = PROMPT.slice(start, PROMPT.indexOf('6. DATEI SCHREIBEN'));
+    // a) and b) search Commons, c) and d) draw from the catalogue – all of them leave out the last 14 days.
+    assert.match(bild, /node routine\/find-image\.mjs "<Suchbegriffe>" --recent-days 14\n/);
+    assert.match(bild, /b\) Nur Top-Artikel:[^]*?– ebenfalls mit --recent-days 14\.\n/);
+    assert.match(bild, /--exclude-from \/tmp\/sections --recent-days 14\n/);
+    assert.match(bild, /d\) Passt kein Motiv: dasselbe mit deiner Rubrik als Motiv, also --fallback \{\{ID\}\} --recent-days 14\./);
+    assert.match(
+      bild,
+      /Ein Bild darf in den Briefings der letzten 14 Tage nicht gelaufen sein \(dieselbe Commons-Datei\s+in jeder Größe zählt\); die Prüfung meldet jede Wiederholung – dann ersetzt du das Bild\./,
+    );
+    // The repair command of step 3 uses the same window, and so does every picture command of the prompt.
+    assert.match(section('## Schritt 3'), /find-image\.mjs --fallback <motiv\|rubrik> --seed <artikel-id> --exclude-from \/tmp\/sections --recent-days 14\n/);
+    const searches = [...PROMPT.matchAll(/node routine\/find-image\.mjs (?!--list-fallbacks)[^\n`]*/g)];
+    assert.ok(searches.length >= 3);
+    for (const [call] of searches) assert.match(call, /--recent-days 14\b/, call);
+    const checks = [...PROMPT.matchAll(/node routine\/validate-brief\.mjs [^\n`]*--require-images[^\n`]*/g)];
+    assert.ok(checks.length >= 3);
+    for (const [call] of checks) assert.match(call, /--no-repeat-days 14\b/, call);
   });
 
   it('publishes to the target branch and keeps the 04:50 budget', () => {

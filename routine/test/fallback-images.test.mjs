@@ -16,6 +16,7 @@ import {
   UnknownFallbackError,
   buildFileInfoUrl,
   catalogEntries,
+  catalogPoolProblems,
   catalogProblems,
   fallbackCandidates,
   loadFallbackCatalog,
@@ -23,10 +24,20 @@ import {
   normalizeKey,
   resolveFallbackKey,
   splitExcludeList,
+  topicPoolSizes,
   usedImagesIn,
   verifyFallbackCatalog,
 } from '../find-image.mjs';
-import { TOPICS, commonsFileKey, validateSection } from '../validate-brief.mjs';
+import {
+  IMAGE_SOURCE_PREFIX,
+  IMAGE_URL_PREFIX,
+  TOPICS,
+  commonsFileKey,
+  imageFileKey,
+  isFreeLicense,
+  licenseNeedsCredit,
+  validateSection,
+} from '../validate-brief.mjs';
 import { clone, makeSection, tempDir } from './fixtures.mjs';
 
 const CATALOG = loadFallbackCatalog();
@@ -95,10 +106,51 @@ const REVIEWED_EVENT_TITLES = new Map([
 describe('fallback catalogue (routine/fallback-images.json)', () => {
   it('follows all catalogue rules', () => {
     assert.deepEqual(catalogProblems(CATALOG), []);
-    assert.equal(CATALOG.verifiedAt, '2026-10-09');
+    assert.match(CATALOG.verifiedAt, /^\d{4}-\d{2}-\d{2}$/);
   });
 
-  it('has 4–8 pictures for every topic of the app and 1–3 per subject', () => {
+  it('offers every topic at least 30 pictures in total – its own plus those of its subjects', () => {
+    assert.equal(CATALOG_LIMITS.topicPoolMin, 30);
+    const sizes = topicPoolSizes(CATALOG);
+    assert.deepEqual(Object.keys(sizes), TOPICS.map((t) => t.id));
+    for (const topic of TOPICS) {
+      const viaSubjects = Object.values(CATALOG.subjects)
+        .filter((subject) => subject.topic === topic.id)
+        .reduce((sum, subject) => sum + subject.images.length, 0);
+      assert.equal(sizes[topic.id], CATALOG.topics[topic.id].length + viaSubjects, topic.id);
+      assert.ok(sizes[topic.id] >= 30, `${topic.id}: nur ${sizes[topic.id]} Bilder`);
+      // That is what `--fallback <rubrik>` really hands out.
+      const handedOut = fallbackCandidates(CATALOG, topic.id, { limit: 200 }).candidates;
+      assert.equal(handedOut.length, sizes[topic.id], topic.id);
+    }
+    assert.deepEqual(catalogPoolProblems(CATALOG), []);
+  });
+
+  it('gives every picture the fields of an article image, from Commons only, and no file twice', () => {
+    const entries = catalogEntries(CATALOG);
+    assert.ok(entries.length >= 300, `${entries.length} Bilder`);
+    const seen = new Map();
+    for (const { where, entry: e } of entries) {
+      for (const field of ['title', 'url', 'license', 'sourceUrl', 'alt', 'verifiedAt']) {
+        assert.ok(typeof e[field] === 'string' && e[field].trim() !== '', `${where}.${field}`);
+      }
+      assert.ok(Number.isInteger(e.width) && Number.isInteger(e.height), `${where}: width/height`);
+      assert.ok(e.url.startsWith(IMAGE_URL_PREFIX) && e.url.startsWith('https://upload.wikimedia.org/'), `${where}.url`);
+      assert.ok(e.sourceUrl.startsWith(IMAGE_SOURCE_PREFIX) && e.sourceUrl.startsWith('https://commons.wikimedia.org/wiki/File:'), `${where}.sourceUrl`);
+      assert.ok(isFreeLicense(e.license), `${where}: ${e.license}`);
+      if (licenseNeedsCredit(e.license)) assert.ok(typeof e.credit === 'string' && e.credit.trim() !== '', `${where}.credit`);
+      assert.doesNotMatch(e.alt, /<[^>]+>/, `${where}.alt`);
+      // One Commons file in title, thumbnail and file page – and nowhere else in the catalogue.
+      const key = imageFileKey(e.url);
+      assert.equal(imageFileKey(e.title), key, where);
+      assert.equal(imageFileKey(e.sourceUrl), key, where);
+      assert.ok(!seen.has(key), `${where}: dieselbe Datei wie ${seen.get(key)}`);
+      seen.set(key, where);
+    }
+    assert.equal(seen.size, entries.length);
+  });
+
+  it('has 4–16 pictures for every topic of the app and 1–6 per subject', () => {
     assert.deepEqual(Object.keys(CATALOG.topics), TOPICS.map((t) => t.id));
     for (const [id, images] of Object.entries(CATALOG.topics)) {
       assert.ok(images.length >= CATALOG_LIMITS.topicImagesMin && images.length <= CATALOG_LIMITS.topicImagesMax, id);
@@ -106,7 +158,10 @@ describe('fallback catalogue (routine/fallback-images.json)', () => {
     const subjects = Object.entries(CATALOG.subjects);
     assert.ok(subjects.length >= 40, `${subjects.length} Motive`);
     for (const [key, subject] of subjects) {
-      assert.ok(subject.images.length >= 1 && subject.images.length <= 3, key);
+      assert.ok(
+        subject.images.length >= CATALOG_LIMITS.subjectImagesMin && subject.images.length <= CATALOG_LIMITS.subjectImagesMax,
+        key,
+      );
     }
     for (const topic of TOPICS) {
       assert.ok(subjects.some(([, s]) => s.topic === topic.id), `Rubrik ${topic.id} ohne Motive`);
@@ -172,6 +227,40 @@ describe('fallback catalogue (routine/fallback-images.json)', () => {
   });
 });
 
+describe('catalogPoolProblems', () => {
+  it('counts the pictures of a topic together with those of its subjects', () => {
+    const sizes = topicPoolSizes(smallCatalog());
+    assert.deepEqual(Object.keys(sizes), TOPICS.map((t) => t.id));
+    assert.equal(sizes.politik, 4 + 2 + 1); // topic + Bundestag + Kanzleramt
+    assert.equal(sizes.klima, 4 + 1); // topic + Windpark
+    assert.equal(sizes.ki, 4);
+    assert.deepEqual(topicPoolSizes(null), {});
+  });
+
+  it('reports every topic below the minimum of 30 – the small test catalogue misses it everywhere', () => {
+    const problems = catalogPoolProblems(smallCatalog());
+    assert.equal(problems.length, TOPICS.length);
+    assert.equal(problems[0], 'topics.ki: mindestens 30 Bilder mit allen Motiven der Rubrik vorgesehen (gefunden: 4)');
+    assert.match(problems.find((p) => p.startsWith('topics.politik')), / \(gefunden: 7\)$/);
+    assert.equal(catalogPoolProblems(null).length, TOPICS.length);
+  });
+
+  it('is satisfied by 30 pictures, whether in the topic or in its subjects', () => {
+    const c = smallCatalog();
+    for (let n = 5; n <= 16; n++) c.topics.ki.push(entry(`ki ${n}`)); // 16 own pictures
+    for (let n = 1; n <= 6; n++) c.subjects.windpark.images.push(entry(`Windpark extra ${n}`));
+    c.subjects.chip = { topic: 'ki', label: 'Chips', images: Array.from({ length: 6 }, (_, n) => entry(`Chip ${n + 1}`)) };
+    c.subjects.roboter = { topic: 'ki', label: 'Roboter', images: Array.from({ length: 6 }, (_, n) => entry(`Roboter ${n + 1}`)) };
+    assert.equal(topicPoolSizes(c).ki, 28);
+    assert.equal(catalogPoolProblems(c).filter((p) => p.startsWith('topics.ki')).length, 1);
+    c.subjects.roboter.images.push(entry('Roboter 7'), entry('Roboter 8'));
+    assert.equal(topicPoolSizes(c).ki, 30);
+    assert.equal(catalogPoolProblems(c).filter((p) => p.startsWith('topics.ki')).length, 0);
+    // Structure and size are separate rules: a small valid catalogue stays loadable.
+    assert.deepEqual(catalogProblems(smallCatalog()), []);
+  });
+});
+
 describe('catalogProblems', () => {
   it('accepts a minimal valid catalogue', () => {
     assert.deepEqual(catalogProblems(smallCatalog()), []);
@@ -190,12 +279,12 @@ describe('catalogProblems', () => {
     assert.match(problems, /schema: muss 1 sein/);
     assert.match(problems, /verifiedAt: Datum/);
     assert.match(problems, /topics\.sport: fehlt/);
-    assert.match(problems, /topics\.ki: 4–8 Bilder vorgesehen \(gefunden: 1\)/);
+    assert.match(problems, /topics\.ki: 4–16 Bilder vorgesehen \(gefunden: 1\)/);
     assert.match(problems, /subjects\.kanzleramt\.topic: "innenpolitik" ist keine Rubrik/);
     assert.match(problems, /subjects\.windpark\.aliases: "reichstag" ist schon subjects\.bundestag\.aliases/);
     assert.match(problems, /subjects\.Bad Düben: Schlüssel nur aus Kleinbuchstaben/);
     assert.match(problems, /subjects\.Bad Düben\.label: fehlt/);
-    assert.match(problems, /subjects\.Bad Düben\.images: 1–3 Bilder vorgesehen/);
+    assert.match(problems, /subjects\.Bad Düben\.images: 1–6 Bilder vorgesehen/);
     assert.deepEqual(catalogProblems(null), ['Der Katalog muss ein JSON-Objekt sein.']);
   });
 
@@ -553,7 +642,7 @@ describe('find-image CLI (fallback mode)', () => {
     const io = capture();
     assert.equal(await main(['--list-fallbacks'], io), 0);
     const text = io.lines.out.join('\n');
-    assert.match(text, /^Bildkatalog \(geprüft 2026-10-09\): \d+ freie Commons-Bilder\./);
+    assert.match(text, /^Bildkatalog \(geprüft \d{4}-\d{2}-\d{2}\): \d+ freie Commons-Bilder\./);
     assert.match(text, /🏛️ politik – Rubrik, \d+ Bilder/);
     assert.match(text, /^ {2}bundestag – .*auch: reichstag/m);
   });

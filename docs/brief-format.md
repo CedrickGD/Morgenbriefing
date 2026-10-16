@@ -157,13 +157,19 @@ entscheidet die Redaktion (Ort, Gebäude, Person im offiziellen Porträt, Gegens
 Symbolszene – nie Logos von Medien, nie ein Bild, das ein anderes, bestimmtes Ereignis zeigt).
 Passt kein Suchtreffer, kommt ein Ersatzbild aus dem Bildkatalog. Dasselbe Bild (dieselbe
 Commons-Datei, egal in welcher Größe) zweimal im Briefing ist ein Hinweis – mit `--section` und
-mehreren Dateien auch über Rubriken hinweg.
+mehreren Dateien auch über Rubriken hinweg. Ein Bild, das in den Briefings der letzten 14 Tage schon
+lief (dieselbe Datei, egal in welcher Größe), ist mit `--no-repeat-days 14` ein Fehler;
+`find-image.mjs --recent-days 14` blendet solche Bilder gleich aus. Die früheren Briefings kommen aus
+`origin/briefs` (`--recent-ref`) oder aus einem Ordner (`--recent-from`), Hilfsprogramm:
+`node routine/recent-images.mjs`. Ist der Verlauf nicht lesbar, gibt es nur einen Hinweis.
 
 #### Bildkatalog (`routine/fallback-images.json`)
 
 Geprüfte, allgemeine Symbolbilder für Artikel, zu denen die Suche nichts Passendes findet:
-pro Rubrik des Katalogs 4–8 Bilder (`topics`) und 1–3 Bilder für wiederkehrende Motive
-(`subjects`, z. B. `bundestag`, `ezb`, `leipzig-hbf`, `bad-dueben`, `windpark`). Jedes Bild hat
+pro Rubrik des Katalogs 4–16 Bilder (`topics`) und 1–6 Bilder für wiederkehrende Motive
+(`subjects`, z. B. `bundestag`, `ezb`, `leipzig-hbf`, `bad-dueben`, `windpark`); eine Rubrik bietet
+zusammen mit ihren Motiven mindestens 30 Bilder, damit auch bei 14 Tagen Wiederholungssperre immer
+etwas frei bleibt. Jedes Bild hat
 die Felder eines `image`-Objekts plus `title` (`File:…`), `width`/`height` des 1280-px-Vorschaubilds
 und `verifiedAt` (Datum der Prüfung gegen Commons):
 
@@ -182,7 +188,8 @@ und `verifiedAt` (Datum der Prüfung gegen Commons):
 ```
 
 Regeln (Test `routine/test/fallback-images.test.mjs`): alle zehn Rubriken vorhanden, Motive mit
-bekannter Rubrik, eindeutige Schlüssel und Aliase, keine Datei doppelt, freie Lizenz mit
+bekannter Rubrik, mindestens 30 Bilder je Rubrik samt Motiven, eindeutige Schlüssel und Aliase,
+keine Datei doppelt, nur https://upload.wikimedia.org-Bilder, freie Lizenz mit
 Urheber (außer CC0/gemeinfrei), Querformat ab 1200 px, deutscher `alt`-Text, der beschreibt, was
 zu sehen ist. Keine Medienlogos, keine erkennbaren Privatpersonen in heiklen Situationen, kein
 bestimmtes Ereignis: Nennt der Dateiname ein Rennen, eine Etappe, eine Partie oder ein Festival
@@ -190,10 +197,11 @@ bestimmtes Ereignis: Nennt der Dateiname ein Rennen, eine Etappe, eine Partie od
 Bild angesehen und ersetzt oder – wenn es nichts davon zeigt, etwa nur einen Ball – in die
 geprüften Ausnahmen des Tests aufgenommen ist.
 
-* `node routine/find-image.mjs --fallback <motiv|rubrik> [--seed <artikel-id>] [--exclude <url,…>] [--exclude-from <pfad>]`
+* `node routine/find-image.mjs --fallback <motiv|rubrik> [--seed <artikel-id>] [--exclude <url,…>] [--exclude-from <pfad>] [--recent-days <n>]`
   gibt Katalogbilder als JSON aus (dieselben Felder wie die Suche plus `alt` und `fallback`) –
   erst das Motiv, dann seine Rubrik, dann die anderen Motive der Rubrik; schon vergebene Bilder
-  werden übersprungen, `--seed` verteilt parallele Rubriken auf verschiedene Bilder.
+  werden übersprungen, `--seed` verteilt parallele Rubriken auf verschiedene Bilder,
+  `--recent-days 14` lässt Bilder der letzten 14 Briefings aus.
 * `node routine/find-image.mjs --list-fallbacks` zeigt alle Motive mit Aliasen.
 * `node routine/find-image.mjs --verify-fallbacks` prüft jeden Eintrag erneut gegen Commons
   (Datei vorhanden, Lizenz, Urheber, Vorschaubild-URL, Größe, kein Persönlichkeitsrechte-Hinweis).
@@ -331,10 +339,11 @@ zeigt das Skript pro Rubrik weniger ausführliche Artikel (der Rest steht als Ü
 
 | Befehl | Zweck |
 |---|---|
-| `node routine/validate-brief.mjs <datei…> [--max-age-hours 36] [--require-images]` | Briefings (Schema 1/2) und `index.json` prüfen; `--require-images`: jeder Artikel braucht ein Bild |
-| `node routine/validate-brief.mjs --section <datei…> [--max-age-hours 36] [--require-images] [--now <ISO>]` | einzelne Rubrik-Dateien prüfen (mehrere: dasselbe Bild in zwei Rubriken ist ein Hinweis) |
-| `node routine/find-image.mjs "<suchbegriffe>" [--limit 5]` | freie Commons-Bilder suchen (JSON) |
-| `node routine/find-image.mjs --fallback <motiv\|rubrik> [--seed <id>] [--exclude <url,…>] [--exclude-from <pfad>]` | Ersatzbilder aus dem geprüften Bildkatalog (JSON, ohne Netz) |
+| `node routine/validate-brief.mjs <datei…> [--max-age-hours 36] [--require-images] [--no-repeat-days 14]` | Briefings (Schema 1/2) und `index.json` prüfen; `--require-images`: jeder Artikel braucht ein Bild; `--no-repeat-days`: kein Bild, das in den letzten Tagen schon lief |
+| `node routine/validate-brief.mjs --section <datei…> [--max-age-hours 36] [--require-images] [--no-repeat-days 14] [--now <ISO>]` | einzelne Rubrik-Dateien prüfen (mehrere: dasselbe Bild in zwei Rubriken ist ein Hinweis) |
+| `node routine/find-image.mjs "<suchbegriffe>" [--limit 5] [--recent-days 14]` | freie Commons-Bilder suchen (JSON); `--recent-days`: Bilder der letzten Briefings auslassen |
+| `node routine/find-image.mjs --fallback <motiv\|rubrik> [--seed <id>] [--exclude <url,…>] [--exclude-from <pfad>] [--recent-days 14]` | Ersatzbilder aus dem geprüften Bildkatalog (JSON, ohne Netz) |
+| `node routine/recent-images.mjs [--date <datum>] [--days 14]` | die Bilder der letzten Briefings auflisten (aus `origin/briefs`) |
 | `node routine/find-image.mjs --list-fallbacks` / `--verify-fallbacks` | Motive des Bildkatalogs anzeigen / den Katalog erneut gegen Commons prüfen |
 | `node routine/assemble-brief.mjs --sections <ordner> --teaser "…" --out <datei>` | Rubriken zu einem Briefing zusammensetzen |
 | `node routine/assemble-brief.mjs --overview <briefing oder ordner> [--topic <id>]` | Überschriften und Erstellungszeit anzeigen (z. B. vom Vortag) |
