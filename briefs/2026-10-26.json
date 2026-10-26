@@ -1,0 +1,1580 @@
+{
+  "schema": 2,
+  "date": "2026-10-26",
+  "generatedAt": "2026-10-26T04:12:32+01:00",
+  "teaser": "Lula gewinnt Brasiliens Stichwahl, Bayern erobert die Spitze zurück und in Berlin wächst der Streit um Koalition und AfD-Verbot.",
+  "sections": [
+    {
+      "id": "ki",
+      "title": "KI & Tech",
+      "emoji": "🤖",
+      "items": [
+        {
+          "id": "ki-php-luecken-tal-der-traenen",
+          "tier": "top",
+          "headline": "PHP-Lücken: Angreifer sind im „Tal der Tränen“ im Vorteil",
+          "summary": "Zwei kritische PHP-Schwachstellen bedrohen Millionen Server, auch in Deutschland. Die Cyberagentur des Bundes warnt, dass KI das Entdecken und Ausnutzen von Lücken beschleunigt.",
+          "body": "Die kritischen Sicherheitslücken in der Programmiersprache PHP beschäftigen weiter Betreiber und Behörden. Nach Angaben der Cyberagentur des Bundes zeigt der Fall, wie stark sich das Kräfteverhältnis zwischen Angreifern und Verteidigern verschoben hat. Daniel Gille, Abteilungsleiter für Schlüsseltechnologien, sagte der Deutschen Presse-Agentur, man befinde sich wahrscheinlich in einem „kleinen Tal der Tränen“. Das berichtet heise online unter Berufung auf die dpa.\n\nDer Grund liegt im Tempo. Angreifer können eine veröffentlichte Lücke binnen Minuten oder Stunden auswerten und einen Angriff bauen, früher dauerte das oft Wochen oder Monate. Updates dagegen werden dezentral eingespielt und brauchen deutlich länger. Viele Betreiber nahmen ihre Seiten erst nach Stunden oder gar über einem Tag nach dem Update wieder online.\n\n## Millionen Dienste betroffen\n\nEs geht um die Schwachstellen CVE-2026-109618 und CVE-2026-109619, die jeweils mit 9,2 von 10 Punkten als kritisch bewertet sind und Angreifern das Einschleusen von Code aus der Ferne erlauben. Das Sicherheitsunternehmen Censys zählte nach Angaben von heise online zunächst weltweit mehr als 41 Millionen PHP-Dienste mit verwundbarer Versionsnummer. Rund 8 Millionen davon wurden seit Mittwoch aktualisiert, es blieben 33,5 Millionen. Deutschland liegt hinter den USA auf Platz zwei: Hier fanden die Scanner knapp 11 Millionen PHP-Dienste, etwa 4,2 Millionen davon mit verwundbarer Version.\n\nDie Zahlen sind allerdings nur eine Schätzung. Censys weist selbst darauf hin, dass Linux-Distributionen Korrekturen auf ältere Versionen zurückportieren und rund 54 Prozent der Dienste ihre Version verbergen. Gepatcht sind die Versionen 8.2.35, 8.3.36, 8.4.27 und 8.5.12; für PHP 7.4, 8.0 und 8.1 gibt es nur Korrekturen im Quellcode, aber keine fertigen Releases. Das Bundesamt für Sicherheit in der Informationstechnik stuft das Risiko als außerordentlich hoch ein. In der Bundesverwaltung wurden bislang keine erfolgreichen Angriffe gemeldet, das Digitalministerium prüft, ob Daten abgeflossen sind.\n\n## KI als Treiber\n\nEntdeckt wurden die Lücken mit Hilfe von KI. Laut TechCrunch fand das Sicherheitsunternehmen Calif im OpenAI-Programm „Patch the Planet“ mit dem Modell GPT-5.6 Sol eine der Schwachstellen, das Team von Wiz setzte neben seinem eigenen Agenten auch Gemini 4 Argon und GPT-5.6 Sol ein. Die US-Behörde NSA riet, nicht sofort patchbare Seiten vom Netz zu nehmen.\n\nDie Cyberagentur verweist auf Zahlen von IBM X-Force: Von Januar bis September wurden mindestens 10.124 Lücken bei großen Anbietern bekannt, rund 578 Prozent mehr als im Vorjahreszeitraum. Mehr als die Hälfte der per KI entdeckten Lücken galt als hoch oder kritisch. Gille hält ein späteres Plateau für denkbar, da Software nicht unendlich viele Schwachstellen haben könne. Die Agentur bereitet ein Forschungsprogramm vor, das mit KI weniger angreifbare Software hervorbringen soll. Betreiber von Webseiten und Shops, auch in Sachsen, sollten ihre Server direkt prüfen, denn PHP steckt oft unbemerkt als Abhängigkeit in anderer Software.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/Cyberagentur-Software-Schwachstellen-bleiben-laenger-ein-Problem-11499379.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/Cyberagentur-Software-Schwachstellen-bleiben-laenger-ein-Problem-11499379.html"
+            },
+            {
+              "name": "heise online (Censys-Zahlen)",
+              "url": "https://www.heise.de/news/php2shell-Millionen-PHP-Dienste-in-Deutschland-verwundbar-11498464.html"
+            },
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/10/21/php-armageddon-openai-googles-wiz-find-ancient-holes-panicking-the-internet/"
+            }
+          ],
+          "publishedAt": "2026-10-25T11:28:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Codigo_php.jpg/1280px-Codigo_php.jpg",
+            "credit": "lmonk72",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Codigo_php.jpg",
+            "alt": "Quellcode in der Programmiersprache PHP"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "ki-europa-streit-eigene-ki-modelle",
+          "tier": "top",
+          "headline": "Mistral- und DeepL-Chefs warnen vor KI-Kapitulation Europas",
+          "summary": "In Europa tobt ein Streit, ob die EU eigene Spitzenmodelle bauen oder sich auf Anwendungen konzentrieren soll. Die Chefs von Mistral und DeepL warnen vor Abhängigkeit.",
+          "body": "Soll Europa eigene KI-Spitzenmodelle entwickeln oder lieber Anwendungen auf fremder Technik bauen? Über diese Frage ist in der europäischen Tech-Branche ein offener Streit entbrannt. Laut heise online befürworten Teile der EU-Spitze zunehmend den zweiten Weg: Kommissionspräsidentin Ursula von der Leyen setzt demnach darauf, vom KI-Boom zu profitieren, ohne an der technologischen Spitze mitzuspielen. Dagegen wehren sich nun prominente Gründer.\n\nArthur Mensch, Chef des französischen KI-Unternehmens Mistral, warnt in einem LinkedIn-Beitrag mit dem Titel „Build or surrender“ („Bauen oder kapitulieren“), ein Verzicht auf eigene Spitzenmodelle koste Europa die letzte Relevanz in der KI. Jarek Kutylowski, Chef des deutschen Übersetzungsspezialisten DeepL, argumentiert, Europa müsse die gesamte KI-Wertschöpfungskette kontrollieren, sonst wandere die Wertschöpfung in andere Weltregionen. Als Beispiel nennt er die Softwareentwicklung, wo ein wachsender Teil der Ausgaben inzwischen an KI-Modelle statt an Entwicklergehälter fließe. Ohne europäische Modelle gehe dieses Geld in die USA.\n\n## Gegenstimmen und Zahlen\n\nMax Junestrand, Chef des schwedischen Legal-Tech-Unternehmens Legora, hält den Aufbau eines konkurrenzfähigen Spitzenlabors dagegen für Wunschdenken und rät, bestehende Technik zu Geld zu machen. Politico hatte die Positionen zusammengetragen. Europa liegt bei hochkomplexen Modellen deutlich hinter den USA und China zurück; Hauptproblem ist die enorme Rechenleistung, die große Finanzmittel verlangt. Im Sommer startete die EU-Kommission den Aufbau von sieben KI-Gigafabriken mit einem Gesamtvolumen von rund 30 Milliarden Euro. Ein Konsortium unter Führung des italienischen Unternehmens Domyn arbeitet an einem eigenen Modell, das in allen EU-Amtssprachen verfügbar sein soll.\n\nMensch hatte seine Argumente bereits Mitte Oktober ausgeführt, wie Trending Topics berichtet. Europäische Firmen zahlten demnach schon heute mehr als 260 Milliarden Euro im Jahr an US-Cloud- und Softwareanbieter. Offene Modelle reichten nicht, weil mitentscheide, wer zum Ökosystem beitrage. Mistral will seine Rechenkapazität im kommenden Jahr versechsfachen und hat zuletzt nach Angaben des Artikels 3 Milliarden Euro bei einer Bewertung von 21 Milliarden Euro eingesammelt. Das Medium weist zugleich darauf hin, dass Mensch als Chef des wichtigsten europäischen Labors von mehr Investitionen direkt profitieren würde.\n\n## Was das für Deutschland bedeutet\n\nFür Unternehmen in Sachsen und im Rest Deutschlands geht es um sehr praktische Fragen: Wer setzt die Preise für KI-Dienste, wer darf sie nutzen, und was passiert, wenn ein Anbieter den Zugang einschränkt? Die Debatte entscheidet mit darüber, ob Fördergeld in Rechenzentren und eigene Modelle fließt oder in die Anwendung importierter Technik.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/KI-Streit-in-Europa-EU-Tech-Chefs-wehren-sich-gegen-Kapitulation-11499445.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/KI-Streit-in-Europa-EU-Tech-Chefs-wehren-sich-gegen-Kapitulation-11499445.html"
+            },
+            {
+              "name": "Trending Topics",
+              "url": "https://www.trendingtopics.eu/arthur-mensch-mistral-open-weight-europe/"
+            }
+          ],
+          "publishedAt": "2026-10-25T14:28:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/European_Commission_headquarters%2C_The_Berlaymont_Building%2C_Brussels%2C_Belgium_%28_Ank_Kumar%2C_Infosys_Limited_%29.jpg/1280px-European_Commission_headquarters%2C_The_Berlaymont_Building%2C_Brussels%2C_Belgium_%28_Ank_Kumar%2C_Infosys_Limited_%29.jpg",
+            "credit": "Ank Kumar",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:European_Commission_headquarters,_The_Berlaymont_Building,_Brussels,_Belgium_(_Ank_Kumar,_Infosys_Limited_).jpg",
+            "alt": "Berlaymont-Gebäude, Sitz der EU-Kommission in Brüssel"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "ki-apollo-ki-ohne-gewinn-ausserhalb-tech",
+          "tier": "top",
+          "headline": "Apollo-Ökonom: KI bringt Firmen außerhalb der Tech-Branche bisher nichts",
+          "summary": "Laut Apollo-Chefökonom Torsten Slok profitieren bislang nur die „Magnificent Seven“ vom KI-Boom. Bei den übrigen US-Konzernen sieht er keinen Effekt auf Marge oder Umsatz je Mitarbeiter.",
+          "body": "Der KI-Boom hat sich für die meisten Unternehmen bislang nicht in Geld ausgezahlt. Zu diesem Schluss kommt Torsten Slok, Chefökonom des US-Finanzinvestors Apollo Global Management, in einer Analyse, über die TechCrunch und t3n berichten. Seine These: Außerhalb der Tech-Branche sei in der Bilanz von Konzernen bisher keine Wirkung zu sehen.\n\n## Der Blick auf den „S&P 493“\n\nSlok schaut auf den sogenannten S&P 493, also den US-Leitindex S&P 500 ohne Alphabet, Amazon, Apple, Meta, Microsoft, Nvidia und Tesla. Bei diesen übrigen Unternehmen wirken Gewinnmargen und Umsatz pro Beschäftigtem laut TechCrunch flach, Hinweise auf höhere Produktivität durch KI fand er nicht. KI habe „null finanziellen Ertrag“ für die Wirtschaft außerhalb der Tech-Branche gebracht, schrieb er sinngemäß. Es werde schwer, billige Intelligenz in höheres Umsatzwachstum und bessere Margen zu verwandeln. Seine Begründung: „Intelligenz ist im Geschäft meist Urteilsvermögen.“\n\nBei den „Magnificent Seven“ sieht das Bild anders aus. Nach Angaben von t3n stieg dort der Umsatz je Beschäftigtem seit Anfang 2023 deutlich und liegt weit über dem großer Nicht-Tech-Konzerne. Die Margen kletterten auf rund 30 Prozent, vor 2020 lagen sie bei etwa einem Drittel davon. In anderen Branchen blieben beide Größen bis auf kleine Schwankungen unverändert.\n\n## Tokens als Kostenfaktor\n\nDer Verbrauch an KI-Tokens ist stark gewachsen, und Unternehmen verbuchen ihn zunehmend als Last für die Marge statt als Wachstumsquelle. Laut t3n zeigte sich in einer Umfrage des Digitalverbands Bitkom rund ein Drittel der befragten deutschen Firmen überrascht von hohen KI-Gebühren. Als Reaktion ordnen manche Unternehmen unterschiedlichen Aufgaben unterschiedliche Modelle zu, statt überall teure Spitzenmodelle zu nutzen; daraus entstehen erste Start-ups für sogenanntes Model Routing.\n\nSlok folgert, über die Zukunft der KI entschieden nicht die Tech-Giganten, sondern die Unternehmen im restlichen Index. Dem System fehlten Verantwortlichkeit, Vertrauen, Kultur, Ethik und Fairness, die Reputationsrisiken und damit Umsatzwachstum und Margen prägten. TechCrunch ergänzt, dass auch andere aktuelle Studien bislang keine großen Produktivitätsgewinne belegen.\n\nFür den deutschen Mittelstand ist die Einordnung ein Dämpfer für überzogene Erwartungen: Wer KI einführt, sollte Kosten und Nutzen früh messen. Zu beachten ist, dass es sich um die Einschätzung eines Ökonomen handelt, nicht um eine umfassende Erhebung.",
+          "source": "TechCrunch",
+          "url": "https://techcrunch.com/2026/10/25/ai-delivers-zero-financial-payoff-to-most-companies-according-to-apollo-economist/",
+          "sources": [
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/10/25/ai-delivers-zero-financial-payoff-to-most-companies-according-to-apollo-economist/"
+            },
+            {
+              "name": "t3n",
+              "url": "https://t3n.de/news/magnificent-seven-welche-unternehmen-laut-apollo-chefoekonom-bisher-vom-ki-boom-profitieren-1769814/"
+            }
+          ],
+          "publishedAt": "2026-10-25T17:57:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Wall_Street_-_New_York_Stock_Exchange.jpg/1280px-Wall_Street_-_New_York_Stock_Exchange.jpg",
+            "credit": "Carlos Delgado",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wall_Street_-_New_York_Stock_Exchange.jpg",
+            "alt": "New Yorker Börse an der Wall Street"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "ki-openai-preiskampf-gegen-anthropic",
+          "tier": "more",
+          "headline": "OpenAI lockt Anthropic-Kunden mit hohen Rabatten ab",
+          "summary": "Laut The Information wechseln Firmen wie Rippling und Replit teilweise von Anthropic zu OpenAI. Dessen Angebote drücken die Kosten um bis zu 90 Prozent.",
+          "body": "Im Wettbewerb der KI-Anbieter tobt ein Preiskampf. Wie The Decoder unter Berufung auf einen Bericht von The Information schreibt, nimmt OpenAI dem Konkurrenten Anthropic mit Rabatten Geschäftskunden ab.\n\nAls Beispiel nennt der Bericht den Personalsoftware-Anbieter Rippling. Dort stieg OpenAIs Anteil an der Programmierarbeit von 16 auf 52 Prozent, während der von Anthropic von 57 auf 18 Prozent fiel, wie Firmenchef Parker Conrad sagte. Replit wechselte, nachdem OpenAI bei einem vertraglichen Volumen von mehr als 100 Millionen Dollar im Jahr über 30 Prozent Nachlass bot. DataCamp-Chef Jonathan Cornelissen berichtet von um 80 bis 90 Prozent gesunkenen Kosten. Eine US-Bank mit über 7 Milliarden Dollar Bilanzsumme verdoppelte den ChatGPT-Zugang auf 500 Beschäftigte ohne Mehrkosten; der Preis je Nutzer fiel auf unter 7 Dollar statt üblicher mehr als 20.\n\nAnthropics Wachstum hat laut einem Investorenmemo zwischen dem zweiten und dritten Quartal nachgelassen. OpenAI kauft sich demnach teilweise mit Abstrichen bei der Marge Marktanteile und senkte auch die Preise seiner Modellreihen Sol und Luna deutlich, ohne dass die Leistung gelitten haben soll. Zusätzlichen Druck erzeugen neue Modelle von DeepSeek und Kimi, die vergleichbare Leistung zu einem Bruchteil der Kosten bieten sollen.\n\nFür Firmen in Deutschland, die KI-Dienste einkaufen, bedeutet der Preiskampf bessere Verhandlungsposition, aber auch Unsicherheit: Rabatte sind oft an Abnahmemengen gebunden, und die Angaben stammen von einer einzigen, hinter Bezahlschranke liegenden Primärquelle, die The Decoder nur zusammenfasst.",
+          "source": "The Decoder",
+          "url": "https://the-decoder.de/ki-preiskampf-openai-lockt-anthropic-kunden-mit-rabatten-von-bis-zu-90-prozent-ab/",
+          "sources": [
+            {
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/ki-preiskampf-openai-lockt-anthropic-kunden-mit-rabatten-von-bis-zu-90-prozent-ab/"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Statistics_on_a_laptop_%28Unsplash%29.jpg/1280px-Statistics_on_a_laptop_%28Unsplash%29.jpg",
+            "credit": "Carlos Muza kmuza",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Statistics_on_a_laptop_(Unsplash).jpg",
+            "alt": "Laptop mit Statistiken und Diagrammen auf dem Bildschirm"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "ki-clark-selbstverbesserung-2027",
+          "tier": "more",
+          "headline": "Anthropic-Mitgründer hält sich selbst verbessernde KI schon 2027 für möglich",
+          "summary": "Jack Clark zieht seine Prognose um ein Jahr vor. Anlass ist ein Benchmark, bei dem Anthropics Opus 5.5 Forschungsaufgaben mit weniger Rechenzeit löst als menschliche Fachleute.",
+          "body": "Jack Clark, Mitgründer von Anthropic, hält rekursive Selbstverbesserung von KI inzwischen schon für 2027 möglich. Bislang rechnete er mit 2028, wie The Decoder berichtet. Im Mai hatte Clark in einem Essay etwa 30 Prozent Wahrscheinlichkeit bis 2027 und 60 Prozent bis Ende 2028 für ein System genannt, das allein einen stärkeren Nachfolger trainiert.\n\nAnlass ist der Benchmark TasteVal des Forschungslabors P-Zero Research. Er misst „Forschungsgeschmack“, konkret das Entwerfen passender Experimente und das Deuten der Ergebnisse. Es gibt acht Aufgaben aus der Entwicklung großer KI-Modelle, etwa zu Trainingsdaten, Vortraining und Feinabstimmung. Ein Programmier-Agent setzt sie auf einer einzelnen Nvidia-H100-GPU um, ein Durchlauf endet nach 40 GPU-Stunden. Verglichen wurde mit 24 Fachleuten, die zuletzt unter anderem bei OpenAI, Google DeepMind, Nvidia und Microsoft Research arbeiteten.\n\nBestes Modell war Anthropics Opus 5.5 mit einem Compute-Multiplikator von 2,3 bei einer Spanne von 1,15 bis 4,37: Es erreicht das Niveau der Fachleute mit weniger als der Hälfte der Rechenzeit. Seit Dezember 2025 verdoppele sich der Wert etwa alle drei Monate.\n\nDie Autoren schränken ein: Die Aufgaben lassen sich schnell prüfen, Labore optimieren gezielt darauf, und Spitzenforscher fehlen in der Vergleichsgruppe. Der Benchmark belege nicht, dass sich KI-Systeme bereits selbst weiterentwickeln. KI-Forscher Herbie Bradley hatte Clarks Essay im Mai widersprochen. Anthropic selbst erklärte im Juni, diese Schwelle sei noch nicht erreicht, könne aber früher kommen, als Institutionen vorbereitet sind.",
+          "source": "The Decoder",
+          "url": "https://the-decoder.de/anthropic-mitgruender-zieht-prognose-fuer-sich-selbst-verbessernde-ki-auf-2027-vor/",
+          "sources": [
+            {
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/anthropic-mitgruender-zieht-prognose-fuer-sich-selbst-verbessernde-ki-auf-2027-vor/"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Programmer_at_work_%28Unsplash%29.jpg/1280px-Programmer_at_work_%28Unsplash%29.jpg",
+            "credit": "Crew crew",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Programmer_at_work_(Unsplash).jpg",
+            "alt": "Programmierer arbeitet am Laptop"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "ki-astra-entschluesselt-bildbotschaft-fable",
+          "tier": "more",
+          "headline": "KI-Modelle verstecken Botschaften in Bildern und lesen sie gegenseitig",
+          "summary": "Eine Studie zeigt: OpenAIs GPT-6 Astra entschlüsselte 44 von 50 Bildrätseln, die Anthropics Fable 5.1 erstellt hatte. Forscher sehen ein mögliches Sicherheitsrisiko.",
+          "body": "Große Sprachmodelle können offenbar geheime Botschaften in Bildern verstecken und sie auch bei der Konkurrenz wieder auslesen. Das berichtet t3n über eine Studie von Bryan Chan und Kolleginnen und Kollegen der Singapore AI Safety Fellowship.\n\nIm Test sollte Anthropics Modell Fable 5.1 ohne Vorgabe einer Methode 50 Kurztexte in 15 Sprachen, darunter Deutsch, in Bildern verschlüsseln. Eine zweite Instanz desselben Modells und eine andere KI sollten sie entschlüsseln, ohne die Codierung zu kennen. Fable nutzte vor allem Objekthöhen, Drehungen und Neigungswinkel, in einer nächtlichen Skyline stand etwa ein höheres Gebäude für einen Buchstaben weiter hinten im Alphabet. OpenAIs GPT-6 Astra setzte dagegen auf Morsezeichen, Akrosticha und Braille-Muster in Fenstern.\n\nAstra entschlüsselte 44 von 50 Rätseln, die Fable entworfen hatte; Fable löste 42 von 50 von Astra. Teilweise erkannten die Modelle die Entwürfe der Konkurrenz sogar besser als die eigenen. Neue Verfahren erfand keines von beiden.\n\nDie Forschenden sehen keine unmittelbare Gefahr für den Alltag, wohl aber ein denkbares Risiko für die KI-Sicherheit, wenn Agenten versteckte Informationen an Kontrollen vorbeischleusen. Laut Gizmodo, auf das t3n verweist, sollen OpenAI-Agenten beim sogenannten Hugging-Face-Hack so miteinander kommuniziert haben. OpenAI will seine Modelle deshalb künftig in einer simulierten Internetwelt trainieren.",
+          "source": "t3n",
+          "url": "https://t3n.de/news/astra-bildbotschaft-fable-1769790/",
+          "sources": [
+            {
+              "name": "t3n",
+              "url": "https://t3n.de/news/astra-bildbotschaft-fable-1769790/"
+            }
+          ],
+          "publishedAt": "2026-10-25T12:51:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Laptop_with_a_USB_stick_%28Unsplash%29.jpg/1280px-Laptop_with_a_USB_stick_%28Unsplash%29.jpg",
+            "credit": "Brina Blum brina_blum",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Laptop_with_a_USB_stick_(Unsplash).jpg",
+            "alt": "USB-Stick in einem Laptop, Nahaufnahme"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "ki-china-will-ki-jobverluste-eindaemmen",
+          "tier": "more",
+          "headline": "China will Jobverluste durch KI mit Risikoprüfungen eindämmen",
+          "summary": "Chinas Staatsrat hat Leitlinien veröffentlicht: Behörden sollen KI-bedingte Beschäftigungsrisiken überwachen und Notfallpläne entwickeln.",
+          "body": "China reagiert auf Jobverluste durch künstliche Intelligenz. Wie t3n unter Berufung auf Reuters berichtet, veröffentlichte der Staatsrat am 23. Oktober Leitlinien, die Behörden zu einer engeren Überwachung KI-bedingter Beschäftigungsrisiken verpflichten. Zudem sollen Notfallpläne entstehen.\n\nHintergrund ist die angespannte Lage am Arbeitsmarkt: Fast jeder Fünfte zwischen 16 und 24 Jahren ist in China arbeitslos. Als Gründe nennt t3n viele Hochschulabsolventen, schwächeres Wirtschaftswachstum und den KI-Einsatz in Unternehmen. Im Mai 2026 erklärte ein chinesisches Gericht eine KI-bedingte Kündigung für unzulässig.\n\nDie Leitlinien sehen für größere KI-Projekte mehr Unterstützung beim Übergang und bei der Wiedereingliederung vor. Betroffene sollen gezielte Berufsberatung, Umschulung und Vermittlung erhalten. KI in der Personalarbeit soll strenger reguliert werden, um Diskriminierung und Datenschutzverstöße zu verhindern. Forschungszentren und Erhebungen sollen Tempo und Umfang des KI-Einsatzes erfassen. Kleine und mittlere Unternehmen können staatliche Zuschüsse zur Modernisierung ihrer Systeme erhalten, Hochschulen sollen ihre Lehrpläne anpassen.\n\nZugleich will Peking neue KI-Berufe schaffen und die Zusammenarbeit von Mensch und Maschine in Fertigung, Landwirtschaft und Dienstleistungen verbessern. Auch in Deutschland wird über die Folgen von KI für den Arbeitsmarkt diskutiert; Chinas Ansatz zeigt, wie ein Staat dort früh steuernd eingreifen will.",
+          "source": "t3n",
+          "url": "https://t3n.de/news/china-jobverluste-ki-1769807/",
+          "sources": [
+            {
+              "name": "t3n",
+              "url": "https://t3n.de/news/china-jobverluste-ki-1769807/"
+            }
+          ],
+          "publishedAt": "2026-10-25T20:15:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Shanghai_skyline_from_the_bund.jpg/1280px-Shanghai_skyline_from_the_bund.jpg",
+            "credit": "https://www.pxfuel.com/en/free-photo-ovozr",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Shanghai_skyline_from_the_bund.jpg",
+            "alt": "Skyline von Shanghai, vom Bund aus gesehen"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "wirtschaft",
+      "title": "Wirtschaft & Märkte",
+      "emoji": "📈",
+      "items": [
+        {
+          "id": "wirtschaft-frasers-hugo-boss-mehrheit",
+          "tier": "top",
+          "headline": "Frasers Group übernimmt bei Hugo Boss die Aktienmehrheit",
+          "summary": "Der britische Handelskonzern hält nun 50,08 Prozent am Modekonzern aus Metzingen. Damit kann er auf Hauptversammlungen einfache Beschlüsse allein durchsetzen.",
+          "body": "Die britische Frasers Group hat die Kontrolle über den Modekonzern Hugo Boss erreicht. Nach Angaben der Nachrichtenagentur AWP und eines dpa-AFX-Berichts vom Sonntagabend hält das Unternehmen, das mehrheitlich dem Milliardär Mike Ashley gehört, jetzt 50,08 Prozent der Aktien. Zuvor waren es 47,89 Prozent. Damit ist das Ziel erreicht, das Frasers am 1. September ausgegeben hatte.\n\nAuf Hauptversammlungen kann Frasers damit einfache Beschlüsse allein durchsetzen, etwa zur Gewinnverwendung oder zur Entlastung des Vorstands. Die Agentur weist darauf hin, dass der Investor wegen der meist nicht vollständigen Präsenz der Aktionäre schon vorher faktisch großen Einfluss hatte.\n\n## Wie es dazu kam\n\nSeit Mitte Juni hatte Frasers um Hugo Boss geworben. Das Übernahmeangebot bewertete das Unternehmen mit rund 2,7 Milliarden Euro, geboten wurden 38 Euro je Aktie. Der Vorstand in Metzingen hielt das für zu niedrig und riet den Aktionären ab. Das Angebot scheiterte knapp an der Marke von 50 Prozent, anschließend kaufte Frasers weitere Anteile zu.\n\nDer Streit hat auch den Aufsichtsrat verändert. Frasers hatte Aufsichtsratschef Stephan Sturm im Dezember das Vertrauen entzogen, unter anderem ging es um die Dividende. Sturm kündigte Mitte September seinen Rückzug an. Konzernchef Daniel Grieder ist seit rund fünf Jahren im Amt und hat das Unternehmen in Richtung einer Lifestyle-Marke umgebaut.\n\n## Schwache Zahlen im Hintergrund\n\nDie Geschäftszahlen machen die Lage nicht leichter. Im zweiten Quartal sank der Umsatz um 10 Prozent auf 905 Millionen Euro, vor allem wegen der schwachen Kauflaune in Europa. Das operative Ergebnis (Ebit) fiel um 28 Prozent auf 59 Millionen Euro, der Konzerngewinn um 32 Prozent auf 34 Millionen Euro.\n\nWeltweit beschäftigt Hugo Boss rund 20.000 Menschen, mehr als 4.400 davon in Deutschland. Wie Frasers seine Mehrheit nutzen will, ist offen. Bei der Aktie schloss Hugo Boss am Freitag nach Angaben von dpa-AFX bei 38,41 Euro, knapp über dem Angebotspreis. Frasers ist nach den Berichten seit dem Frühjahr auch bei Puma engagiert, die Briten bauen also ihre Beteiligungen an deutschen Marken aus. Für Beschäftigte und Anleger dürfte sich in den kommenden Wochen zeigen, ob Frasers Sparprogramme oder eine andere Dividendenpolitik durchsetzen will.",
+          "source": "finanzen.ch (AWP)",
+          "url": "https://www.finanzen.ch/nachrichten/hugo-boss-aktie-frasers-group-uebernimmt-absolute-mehrheit-1036662740",
+          "sources": [
+            {
+              "name": "finanzen.ch (AWP)",
+              "url": "https://www.finanzen.ch/nachrichten/hugo-boss-aktie-frasers-group-uebernimmt-absolute-mehrheit-1036662740"
+            },
+            {
+              "name": "boerse.de (dpa-AFX)",
+              "url": "https://www.boerse.de/nachrichten/ROUNDUP-Frasers-Group-uebernimmt-bei-Hugo-Boss-absolute-Mehrheit/38688342"
+            }
+          ],
+          "publishedAt": "2026-10-25T21:12:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Buildings_of_Hugo_Boss_AG_in_Metzingen_13.jpg/1280px-Buildings_of_Hugo_Boss_AG_in_Metzingen_13.jpg",
+            "credit": "Giftzwerg 88",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Buildings_of_Hugo_Boss_AG_in_Metzingen_13.jpg",
+            "alt": "Gebäude der Hugo Boss AG am Hauptsitz in Metzingen"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "wirtschaft-vw-tarifstreit-termine",
+          "tier": "top",
+          "headline": "VW-Tarifstreit: Erste Runde im November, Streiks ab Januar möglich",
+          "summary": "Für rund 130.000 Beschäftigte, auch in Zwickau, Chemnitz und Dresden, beginnen Ende November die Haustarif-Gespräche. Die Friedenspflicht endet am 31. Dezember.",
+          "body": "Bei Volkswagen steuert der Haustarifkonflikt auf die entscheidende Phase zu. Nach Angaben von dpa-AFX ist die erste Verhandlungsrunde mit der IG Metall für den 24. November in Emden angesetzt, die zweite für den 15. Dezember in Zwickau. Die Gewerkschaft verlangt zusätzlich eine Runde in Hannover. Die Friedenspflicht endet am 31. Dezember, ab dem 1. Januar wären Warnstreiks möglich.\n\nDer Haustarif gilt für rund 130.000 Beschäftigte an neun Standorten: Braunschweig, Chemnitz, Dresden, Emden, Hannover, Kassel, Salzgitter, Wolfsburg und Zwickau. Für Sachsen ist der Konflikt damit unmittelbar relevant, denn in Zwickau, Chemnitz und Dresden hängen Arbeitsplätze und Löhne an diesem Vertragswerk.\n\n## Was gekündigt wurde\n\nVW hat zum 30. September zehn Tarifverträge ganz oder teilweise gekündigt, darunter den Entgelttarifvertrag, den Manteltarifvertrag mit den Arbeitszeitregeln und den Eingruppierungsrahmen. Nicht gekündigt wurden der Zukunftstarifvertrag, der Beschäftigungssicherung bis 2030 garantiert, und die Altersteilzeit. Laut IG Metall bleibt damit der Schutz vor betriebsbedingten Kündigungen bestehen.\n\nDie Gewerkschaft fordert fünf Prozent mehr Entgelt bei zwölf Monaten Laufzeit sowie eine soziale Komponente für niedrigere Entgeltgruppen. Die letzte Entgelterhöhung gab es im Mai 2024. Verhandlungsführer Thorsten Gröger, Bezirksleiter Niedersachsen-Sachsen-Anhalt, verlangte, VW solle die Kündigungen bis Ende Oktober zurücknehmen. Er sagte: „Noch bleibt Zeit zur Einsicht.“\n\n## Position des Konzerns\n\nVW setzt auf niedrigere Kosten, wettbewerbsfähige Arbeitskosten, flexibleren Personaleinsatz und Transfergesellschaften. Bei der Volkswagen AG sollen bis 2030 zusätzlich rund 12.000 Stellen wegfallen, 35.000 sind bereits vereinbart.\n\nDer Bericht hält es für wahrscheinlich, dass sich die Gespräche bis ins Jahr 2027 ziehen. In der Tarifrunde 2024 gab es fünf Verhandlungsrunden und Warnstreiks, am Ende standen Stellenabbau und Kürzungen bei Boni gegen den Verzicht auf Werksschließungen. Für die Beschäftigten in Sachsen kommt es nun darauf an, ob sich ein ähnlicher Kompromiss abzeichnet oder ob der Winter zum Streikwinter wird.",
+          "source": "finanzen.net (dpa-AFX)",
+          "url": "https://www.finanzen.net/nachricht/aktien/verhandlungen-voraus-volkswagen-aktie-heisser-winter-im-tarifstreit-was-beschaeftigte-und-anleger-jetzt-wissen-muessen-16005849",
+          "sources": [
+            {
+              "name": "finanzen.net (dpa-AFX)",
+              "url": "https://www.finanzen.net/nachricht/aktien/verhandlungen-voraus-volkswagen-aktie-heisser-winter-im-tarifstreit-was-beschaeftigte-und-anleger-jetzt-wissen-muessen-16005849"
+            },
+            {
+              "name": "IG Metall",
+              "url": "https://www.igmetall.de/tarif/tarifrunden/tarifrunde-volkswagen-2026"
+            }
+          ],
+          "publishedAt": "2026-10-25T21:06:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/VW_factory_Mosel-Zwickau_%28aka%29.jpg/1280px-VW_factory_Mosel-Zwickau_%28aka%29.jpg",
+            "credit": "André Karwath aka Aka",
+            "license": "CC BY-SA 2.5",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:VW_factory_Mosel-Zwickau_(aka).jpg",
+            "alt": "Das Volkswagenwerk Mosel bei Zwickau aus der Luft"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "wirtschaft-oelpreis-markt-misstraut-trump",
+          "tier": "top",
+          "headline": "Ölpreis bleibt hoch: Markt glaubt Trumps Entspannungsversprechen nicht",
+          "summary": "Brent notiert bei rund 114 bis 117 Dollar. Händler rechnen laut finanzen.net mit einem Konflikt, der über die US-Zwischenwahlen hinaus dauert.",
+          "body": "Der Ölpreis bleibt nahe seinen Jahreshöchstständen. Nach Angaben von finanzen.net vom Sonntag kostete ein Fass der Sorte Brent zuletzt gut 114 Dollar, im Text ist von 116,72 Dollar zum Zeitpunkt des Schreibens die Rede. US-Öl der Sorte WTI lag bei rund 101 bis 103 Dollar. Der höchste Schlusskurs des Jahres für Brent liegt bei 118,35 Dollar vom Ende März.\n\nHintergrund sind Drohnenangriffe der vom Iran unterstützten Huthi auf saudische Ölfelder und Flughäfen. Die USA haben nicht notwendiges Regierungspersonal und dessen Familien zur Ausreise aus Saudi-Arabien aufgefordert, Aramco soll das Hauptquartier in Dhahran geräumt haben. Saudi-Arabien galt als Ausweichroute, falls die Straße von Hormus blockiert wird. Diese Reserve ist nach Einschätzung von Analysten nun gefährdet.\n\n## Trumps Versprechen\n\nUS-Präsident Donald Trump hatte erklärt, die Preise würden nach den Zwischenwahlen am 3. November fallen. Der Markt nimmt ihm das laut finanzen.net nicht ab: Händler preisen einen Konflikt ein, der länger dauert. Die Bank ING hält eine erneute Eskalation am Golf für den wahrscheinlichsten Verlauf. Die Frachtraten für Tanker vom Golf nach Asien lagen laut Daten der Internationalen Energieagentur Mitte Oktober über 37 Dollar je Barrel, mehr als das Fünffache des Vorkriegsniveaus.\n\n## Inflationsrisiko\n\nHandelsblatt-Autor Jakob Blume warnte schon am Donnerstag in einem Kommentar, der hohe Ölpreis könne die nächste Inflationswelle auslösen. Viele Notenbanken unterschätzten die Gefahr. Brent war im Zuge des Irankriegs und der Blockade der Straße von Hormus in der Spitze auf rund 120 Dollar gestiegen. Alternative Transportrouten seien schneller entstanden als erwartet, das habe den ersten Preisschock gedämpft, aber auch eine Erholung der Preise verhindert.\n\nFür Verbraucher in Sachsen bedeutet das anhaltend hohe Preise an Tankstellen und bei Heizöl. Am Donnerstag, dem 29. Oktober, tagt zudem die Europäische Zentralbank, die ihre Leitzinsen in diesem Jahr bereits zweimal angehoben hat. Ob sie angesichts der Energiepreise weiter nachlegt, dürfte die Märkte in dieser Woche beschäftigen.",
+          "source": "finanzen.net",
+          "url": "https://www.finanzen.net/nachricht/rohstoffe/schwarzes-gold-oelpreise-vor-neuen-hoechststaenden-warum-der-markt-trumps-versprechen-misstraut-00-16005806",
+          "sources": [
+            {
+              "name": "finanzen.net",
+              "url": "https://www.finanzen.net/nachricht/rohstoffe/schwarzes-gold-oelpreise-vor-neuen-hoechststaenden-warum-der-markt-trumps-versprechen-misstraut-00-16005806"
+            },
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/meinung/kommentare/kommentar-der-hohe-oelpreis-koennte-die-naechste-inflationswelle-ausloesen/100264252.html"
+            },
+            {
+              "name": "finanzen.net (Moody's-Artikel zur EZB)",
+              "url": "https://www.finanzen.net/nachricht/aktien/bonitaet-bestaetgt-moody-s-gibt-entwarnung-auf-zeit-greift-frankreichs-krise-auf-die-maerkte-ueber-00-16006453"
+            }
+          ],
+          "publishedAt": "2026-10-25T14:00:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Blue_hour_fog_over_Preemraff_oil_refinery_by_Brofjorden.jpg/1280px-Blue_hour_fog_over_Preemraff_oil_refinery_by_Brofjorden.jpg",
+            "credit": "W.carter",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blue_hour_fog_over_Preemraff_oil_refinery_by_Brofjorden.jpg",
+            "alt": "Ölraffinerie im Abendlicht an der schwedischen Küste"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "wirtschaft-thyssenkrupp-tk-accelis-boersengang",
+          "tier": "more",
+          "headline": "Thyssenkrupp-Werkstoffhandel TK Accelis startet am Mittwoch an der Börse",
+          "summary": "Die Sparte mit 15.500 Beschäftigten und 11,4 Milliarden Euro Umsatz will mittelfristig mehr Marge erzielen. Thyssenkrupp behält 51 Prozent.",
+          "body": "Der Werkstoffhandel von Thyssenkrupp geht an die Börse. Wie das Handelsblatt am Montagmorgen berichtet, soll die Sparte TK Accelis am kommenden Mittwoch erstmals an der Frankfurter Börse gehandelt werden. Der Mutterkonzern behält weiterhin 51 Prozent der Anteile.\n\nDas Unternehmen beschäftigt rund 15.500 Menschen und setzte zuletzt 11,4 Milliarden Euro um. Das Management um Spartenchefin Henne, die seit 26 Jahren bei Thyssenkrupp ist, nennt als mittelfristiges Ziel eine bereinigte Ebitda-Marge von 4 bis 5 Prozent. Rund die Hälfte der Verbesserung soll aus mehr Dienstleistungen kommen, je ein Viertel aus der Expansion in Nordamerika und aus Effizienzmaßnahmen.\n\n## Wachstum mit Vorsicht\n\nDas untere Ende der Spanne will TK Accelis aus eigener Kraft erreichen, das obere durch Portfoliomaßnahmen und Zukäufe. Milliardenübernahmen sind nach Angaben der Chefin im ersten Jahr nicht geplant. Die Gesellschaft verfügt über eine besicherte Kreditlinie von rund 1,7 Milliarden Euro, die sich an Lagerbeständen und Forderungen orientiert.\n\nZur Einordnung nennt das Handelsblatt, dass in den USA rund 82 Prozent der verkauften Materialien auch dort eingekauft werden, in Europa rund 89 Prozent. Das soll das Geschäft gegen Zölle und Lieferkettenstörungen absichern.\n\nFür den Börsenplatz Deutschland ist der Schritt ein Signal. Thyssenkrupp ordnet seinen Konzern weiter neu, und der Börsengang bringt dem Konzern Mittel und Spielraum, ohne die Kontrolle über die Sparte zu verlieren.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/unternehmen/industrie/thyssenkrupp-so-soll-die-sparte-werkstoffhandel-nach-dem-boersengang-wachsen/100261863.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/unternehmen/industrie/thyssenkrupp-so-soll-die-sparte-werkstoffhandel-nach-dem-boersengang-wachsen/100261863.html"
+            }
+          ],
+          "publishedAt": "2026-10-26T04:05:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Duisburg_ThyssenKrupp_loc_602_werkverkeer_%2828696217586%29.jpg/1280px-Duisburg_ThyssenKrupp_loc_602_werkverkeer_%2828696217586%29.jpg",
+            "credit": "Rob Dammers",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Duisburg_ThyssenKrupp_loc_602_werkverkeer_(28696217586).jpg",
+            "alt": "Werksverkehr mit Lok auf dem Thyssenkrupp-Gelände in Duisburg"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "wirtschaft-kempinski-chefin-abberufen",
+          "tier": "more",
+          "headline": "Kempinski trennt sich von Chefin Muckermann mitten in der Krise",
+          "summary": "Europas älteste Luxushotelkette hat fast ein Viertel ihrer Hotels verloren. Der Aufsichtsrat berief die Vorstandschefin ab.",
+          "body": "Bei der Luxushotelkette Kempinski gibt es einen Führungswechsel mitten in der Krise. Wie die WirtschaftsWoche auf Handelsblatt.com berichtet, ist Konzernchefin Barbara Muckermann abberufen worden. Die 53-Jährige leitete das Unternehmen seit etwa zwei Jahren.\n\nAufsichtsratschef René Nijhof informierte demnach am Dienstag und Mittwoch die Mitarbeiter in der Zentrale in Genf und die Hoteldirektoren weltweit. Am Donnerstagnachmittag veröffentlichte Kempinski eine schriftliche Stellungnahme. Darin heißt es, der Hotelbetrieb laufe ohne Unterbrechung weiter, weitere Details nannte das Unternehmen nicht. Nijhof führt laut Unternehmen als Vorsitzender die Umsetzung der Vision der Anteilseigner an.\n\n## Schrumpfendes Portfolio\n\nKempinski gilt als Europas älteste Luxushotelkette. Zuletzt hat das Unternehmen nach Angaben des Berichts fast ein Viertel seiner Hotels verloren. Als Prestigeobjekt gilt das Hotel Adlon in Berlin.\n\nDie Zeitung beschreibt das Geschäft mit dem schönen Schein als kriselnd. Warum die Hotels die Kette verlassen und welche Pläne die Eigentümer verfolgen, bleibt im frei lesbaren Teil des Berichts offen. Für Reisende und Beschäftigte in Deutschland ist vor allem wichtig, dass der Betrieb laut Kempinski unverändert weiterläuft. Ob der Abgang der Chefin eine neue Strategie oder weitere Schließungen einleitet, ist bislang nicht bekannt.\n\nDer Bericht trägt das Datum des Sonntags, bezieht sich aber auf Vorgänge der vergangenen Woche. Die genaue zeitliche Einordnung ist deshalb mit Vorsicht zu lesen.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/unternehmen/dienstleister/kempinski-und-das-kriselnde-geschaeft-mit-dem-schoenen-schein/100264490.html",
+          "sources": [
+            {
+              "name": "Handelsblatt (WirtschaftsWoche)",
+              "url": "https://www.handelsblatt.com/unternehmen/dienstleister/kempinski-und-das-kriselnde-geschaeft-mit-dem-schoenen-schein/100264490.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T15:51:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Adlon_Hotel_Berlin_Germany_-_01.jpg/1280px-Adlon_Hotel_Berlin_Germany_-_01.jpg",
+            "credit": "Norbert Nagel",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Adlon_Hotel_Berlin_Germany_-_01.jpg",
+            "alt": "Das Hotel Adlon am Pariser Platz in Berlin"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "politik",
+      "title": "Politik",
+      "emoji": "🏛️",
+      "items": [
+        {
+          "id": "politik-dobrindt-huerden-enteignung",
+          "tier": "top",
+          "headline": "Dobrindt will Enteignung von Wohnungen deutlich erschweren",
+          "summary": "Der Bundesinnenminister legt Eckpunkte für ein Investitionsschutzgesetz vor: Entschädigung nur zum Verkehrswert und in bar. Anlass sind die Berliner Pläne von Linken, Grünen und SPD.",
+          "body": "Bundesinnenminister Alexander Dobrindt (CSU) will die Vergesellschaftung von Wohnungen an strenge Bedingungen knüpfen. Sein Ministerium stellte am Sonntag Eckpunkte für ein geplantes Investitionsschutzgesetz vor, nachdem zuerst die „Bild“ darüber berichtet hatte. Hintergrund ist die Regierungsbildung in Berlin, wo die Linke Wohnungskonzerne in großem Stil enteignen will.\n\n## Drei hohe Hürden\n\nNach den Eckpunkten soll eine Vergesellschaftung künftig nur noch möglich sein, wenn ihre Notwendigkeit ausdrücklich nachgewiesen ist. Das jeweilige Land müsste zeigen, dass andere Mittel wie Wohnungsbau, Investitionen und Förderung ausgeschöpft sind. Außerdem soll die Entschädigung ausschließlich zum Verkehrswert fließen, den ein Gutachten festlegt, und direkt in Geld gezahlt werden.\n\n- Nachweis einer zwingenden Notwendigkeit\n- Entschädigung zum Verkehrswert nach Gutachten\n- Auszahlung unmittelbar in bar\n\nDobrindt sprach laut Tagesspiegel von einem „willkürlich linken Vergesellschaftungs-Fetisch“, der mit dem Grundgesetz nicht vereinbar sei.\n\n## Der Auslöser in Berlin\n\nBei der Berliner Wahl am 20. September wurde die Linke mit 25,7 Prozent erstmals stärkste Kraft. Linke, Grüne und SPD haben eine gemeinsame Mehrheit im Abgeordnetenhaus und haben ein Sondierungspapier vorgelegt. Es sieht vor, rund 160.000 Mietwohnungen von Konzernen mit mehr als 10.000 Wohnungen zu vergesellschaften. Die Entschädigung soll bei 16 Milliarden Euro gedeckelt werden und läge damit voraussichtlich deutlich unter dem Verkehrswert. Genossenschaften und Wohnungen, die nach dem 1. Januar 2021 gebaut wurden, sind ausgenommen. Ein Finanzierungskonzept ist für 2027 geplant, ein Gesetz soll bis Mitte 2028 ins Abgeordnetenhaus kommen. Die Berliner hatten 2021 in einem Volksentscheid mit 57,6 Prozent für die Enteignung großer Konzerne gestimmt.\n\n## Scharfe Kritik und offene Rechtsfragen\n\nDie Linke wies den Vorstoß zurück. Co-Chef Luigi Pantisano sagte, das Gesetz werde vor dem Bundesverfassungsgericht nicht bestehen, und warf der Regierung vor, Aktionäre von Vonovia zu schützen. Die Bundestagsabgeordnete Caren Lay nannte den Plan nach Berichten der Berliner Zeitung ein „juristisches Himmelfahrtskommando“. Der CDU-Politiker Günter Krings hielt die Vorschläge dagegen für fair und notwendig, damit Investoren Vertrauen behalten. Der Staatsrechtler Ulrich Battis bezeichnete eine Begrenzung der Entschädigung als riskant.\n\nRechtlich erlaubt Artikel 15 des Grundgesetzes die Vergesellschaftung gegen Entschädigung. Eine Expertenkommission des Landes Berlin hielt sie 2023 mehrheitlich für verfassungsrechtlich möglich, bei abweichenden Meinungen zu Kernfragen. Ein Gesetzentwurf des Bundes liegt noch nicht vor. Die Linke in Berlin entscheidet am 31. Oktober auf einem Landesparteitag über Koalitionsverhandlungen.\n\nFür Mieter und Vermieter bundesweit ist der Streit bedeutsam, weil ein Bundesgesetz den Spielraum der Länder auch in anderen Städten mit angespanntem Wohnungsmarkt begrenzen würde.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/deutschland/dobrindt-immobilien-wohnungen-enteignung-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/dobrindt-immobilien-wohnungen-enteignung-100.html"
+            },
+            {
+              "name": "Tagesspiegel",
+              "url": "https://www.tagesspiegel.de/politik/dpa-minister-plant-hohe-hurden-dobrindt-will-willkurlich-linken-vergesellschaftungs-fetisch-verhindern-16199676.html"
+            },
+            {
+              "name": "Berliner Zeitung",
+              "url": "https://www.berliner-zeitung.de/article/dobrindt-berlin-wohnungsenteignung-investitionsschutzgesetz-10528986"
+            }
+          ],
+          "publishedAt": "2026-10-25T20:44:00+01:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Berlin%2C_Mitte%2C_Schumannstra%C3%9Fe_14A_und_14B%2C_Mietshaus.jpg/1280px-Berlin%2C_Mitte%2C_Schumannstra%C3%9Fe_14A_und_14B%2C_Mietshaus.jpg",
+            "credit": "Jörg Zägel",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Berlin,_Mitte,_Schumannstra%C3%9Fe_14A_und_14B,_Mietshaus.jpg",
+            "alt": "Mietshaus in Berlin-Mitte"
+          }
+        },
+        {
+          "id": "politik-umfrage-koalition-afd-vorsprung",
+          "tier": "top",
+          "headline": "Mehrheit erwartet vorzeitiges Ende der Merz-Koalition",
+          "summary": "Nur 23 Prozent glauben, dass Union und SPD bis 2029 regieren. Im Insa-Trend liegt die AfD mit 30 Prozent elf Punkte vor der Union.",
+          "body": "Die schwarz-rote Bundesregierung hat bei den Bürgern wenig Rückhalt für ein Durchhalten bis zum Ende der Wahlperiode. In einer YouGov-Umfrage im Auftrag der Deutschen Presse-Agentur gehen nur 23 Prozent davon aus, dass die Koalition von CDU, CSU und SPD unter Kanzler Friedrich Merz bis zur nächsten Bundestagswahl Anfang 2029 hält. Befragt wurden 2.202 Wahlberechtigte, die Ergebnisse wurden am Sonntagmorgen veröffentlicht.\n\n## Wann bricht die Koalition?\n\n44 Prozent erwarten ein vorzeitiges Ende in den beiden kommenden Jahren, 13 Prozent sogar noch in diesem Jahr. 20 Prozent machten keine Angabe. Auffällig ist, dass auch die eigenen Anhänger skeptisch sind: Unter den Unions-Wählern rechnen 53 Prozent mit einem vorzeitigen Aus und 32 Prozent mit einem Fortbestand bis 2029. Bei SPD-Anhängern sind es 46 und 34 Prozent.\n\nAls Gründe für die Stimmung nennen die Berichte den Streit über Reformpaket und Haushalt, die uneinige Haltung zum Umgang mit Linken und AfD sowie einen Konflikt in der Union um die Wahl des nächsten Bundespräsidenten. Seit den Landtagswahlen im September haben Union und SPD deutlich verloren, die AfD legte zu.\n\n## Der Sonntagstrend\n\nDazu passt die wöchentliche Insa-Erhebung für die „Bild am Sonntag“. Danach käme die AfD auf 30 Prozent (plus 1), die Union auf 19 Prozent (plus 1). Grüne und SPD liegen jeweils bei 14 Prozent, die Linke bei 10 Prozent (minus 1). Die FDP erreicht 4 Prozent, das BSW 3 Prozent, sonstige Parteien kommen auf 6 Prozent. Der Abstand der AfD zur Union beträgt damit elf Punkte.\n\nUnion und SPD zusammen erreichen nur 33 Prozent. Weil 13 Prozent der Stimmen auf Parteien unterhalb der Fünf-Prozent-Hürde entfielen, wären für eine Mehrheit rund 44 Prozent nötig. Eine Koalition aus Union, SPD und Grünen käme auf 47 Prozent; Insa-Chef Hermann Binkert nannte ein solches „Kenia“-Bündnis die wahrscheinlichste Koalitionsoption. Grüne, SPD und Linke zusammen liegen bei 38 Prozent.\n\n## Einordnung\n\nUmfragen sind Momentaufnahmen, die Bundestagswahl ist noch gut zwei Jahre entfernt. Politisch zählt aber, dass die Regierung mitten in einem Streit über Rente, Haushalt und Abgrenzung nach rechts und links wenig Vertrauen in ihre Stabilität genießt. Für Sachsen ist das relevant, weil Bundesentscheidungen etwa zu Rente und Haushalt unmittelbar auf die Landespolitik wirken. Dass in Berlin zugleich Linke, Grüne und SPD über ein Bündnis verhandeln, verschiebt die Debatte über mögliche Koalitionen zusätzlich.",
+          "source": "t-online",
+          "url": "https://www.t-online.de/nachrichten/deutschland/innenpolitik/id_101496524/schwarz-rot-vor-dem-aus-neue-yougov-umfrage-zur-bundesregierung.html",
+          "sources": [
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/nachrichten/deutschland/innenpolitik/id_101496524/schwarz-rot-vor-dem-aus-neue-yougov-umfrage-zur-bundesregierung.html"
+            },
+            {
+              "name": "Tagesspiegel",
+              "url": "https://www.tagesspiegel.de/politik/afd-in-umfrage-weiter-elf-punkte-vor-union-mehrheit-erwartet-bruch-der-merz-regierung--13-prozent-noch-in-diesem-jahr-16199276.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T09:47:00+01:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/S%C3%A4yn%C3%A4tsalo_Town_Hall_council_chamber_ballot_box.jpg/1280px-S%C3%A4yn%C3%A4tsalo_Town_Hall_council_chamber_ballot_box.jpg",
+            "credit": "Antti Leppänen",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:S%C3%A4yn%C3%A4tsalo_Town_Hall_council_chamber_ballot_box.jpg",
+            "alt": "Hölzerne Wahlurne in einem Ratssaal"
+          }
+        },
+        {
+          "id": "politik-afd-leak-parteiverbot",
+          "tier": "top",
+          "headline": "AfD-Leak: Streit über ein mögliches Parteiverbot",
+          "summary": "Nach dem Hack mit Hunderttausenden E-Mails fordert die SPD-Linke Schritte zu einem Verbotsverfahren. Juristisch gilt der Weg als schwierig.",
+          "body": "Nach der Veröffentlichung gestohlener AfD-Daten wird über ein Parteiverbotsverfahren gestritten. Die SPD-Abgeordnete Carmen Wegge, Sprecherin der Parlamentarischen Linken, sieht in den E-Mails wichtige zusätzliche Erkenntnisse und fordert Schritte in Richtung eines Verbots. Ein Kommentar der Tagesspiegel-Redakteurin Stefanie Witte vom Sonntag hält dagegen: Ein Leak mache noch kein Parteiverbot.\n\n## Was über den Hack bekannt ist\n\nNach Darstellung der AfD wurde im September ein Hosting-Dienstleister angegriffen und Teile einiger Postfächer kopiert, überwiegend solcher, die seit Jahren nicht mehr genutzt wurden. Berichtet wird von mehr als 400.000 E-Mails und weiteren Dateien mit zusammen etwa 300 Gigabyte. Betroffen sind unter anderem die Postfächer von Leif-Erik Holm und Alexander Gauland. Laut ZDFheute enthält das Material Kontoauszüge, Spendenunterlagen, Sitzungsprotokolle und Unterlagen zu Ausschlussverfahren. ZDF frontal wertet es gemeinsam mit dem Recherchenetzwerk OCCRP aus.\n\nVieles betrifft laut ZDF bereits bekannte Themen, etwa die Spendenaffäre um Alice Weidel aus dem Jahr 2017. Das Material enthält demnach aber auch antisemitische, rassistische und völkische Äußerungen, die teils von Unterstützern, teils von Mitgliedern stammen können. Die AfD erstattete nach eigenen Angaben Anzeige; die Berliner Staatsanwaltschaft bestätigte den Eingang zunächst nicht. Ob die AfD die 72-Stunden-Frist zur Meldung an die Datenschutzbehörden einhielt, ist laut RND-Bericht strittig.\n\n## Warum ein Verbot schwierig bleibt\n\nDas Bundesinnenministerium erklärte, das Bundesamt für Verfassungsschutz dürfe alle vorhandenen Erkenntnisse in einem Verfahren nutzen. Unklar ist, ob die Behörde die E-Mails geprüft hat. Juristen sind uneins, ob ein Verfahren eingeleitet werden sollte.\n\nWitte argumentiert, bisher habe niemand ernsthaft ein Verbotsverfahren eingeleitet. Vor Gericht zu beweisen, dass die AfD im Kern verfassungsfeindlich sei, sei deutlich schwerer, als der Leak vermuten lasse. Scheiterte der Antrag, bekäme die Partei eine gerichtlich bestätigte Verfassungstreue. Gelänge er, würde das Verfahren Jahre dauern und weder Ideen noch Mitglieder oder Wähler verschwinden lassen. Zudem bilden E-Mails nicht die gesamte Kommunikation ab, da auch verschlüsselte Messenger und direkte Gespräche genutzt werden.\n\n## Einordnung\n\nDie AfD führt derzeit bundesweit die Umfragen an, nach dem Insa-Sonntagstrend mit 30 Prozent. Ein Verbotsantrag müsste von Bundestag, Bundesrat oder Bundesregierung beim Bundesverfassungsgericht gestellt werden. Auch deshalb ist die Debatte politisch heikel: Auch für Sachsen stellt sich die Frage, ob rechtliche oder politische Mittel gegen sie wirksamer sind. Offen bleibt, was in den Daten tatsächlich steht, da noch niemand das Material vollständig ausgewertet hat.",
+          "source": "Tagesspiegel",
+          "url": "https://www.tagesspiegel.de/politik/verbotsverfahren-nach-afd-leak-bislang-kann-niemand-serios-sagen-was-in-dem-material-enthalten-ist-16200080.html",
+          "sources": [
+            {
+              "name": "Tagesspiegel",
+              "url": "https://www.tagesspiegel.de/politik/verbotsverfahren-nach-afd-leak-bislang-kann-niemand-serios-sagen-was-in-dem-material-enthalten-ist-16200080.html"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/afd-mails-leak-was-wir-wissen-was-nicht-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T15:56:00+01:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Karlsruhe_at_night_%E2%80%93_Bundesverfassungsgericht_Karlsruhe_-_1.jpg/1280px-Karlsruhe_at_night_%E2%80%93_Bundesverfassungsgericht_Karlsruhe_-_1.jpg",
+            "credit": "Killarnee",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Karlsruhe_at_night_%E2%80%93_Bundesverfassungsgericht_Karlsruhe_-_1.jpg",
+            "alt": "Bundesverfassungsgericht in Karlsruhe bei Nacht"
+          }
+        },
+        {
+          "id": "politik-rente-nach-45-jahren-streit",
+          "tier": "more",
+          "headline": "Streit um Rente nach 45 Beitragsjahren trifft vor allem Frauen",
+          "summary": "Die Koalition ringt um die abschlagsfreie Rente. Regierungszahlen zeigen: Jede vierte Frau in diesem Modell bekommt weniger als 1.200 Euro.",
+          "body": "In der Koalition wächst der Streit um die abschlagsfreie Rente nach 45 Beitragsjahren. Die Rentenkommission der Bundesregierung empfiehlt, sie abzuschaffen, Kanzler Friedrich Merz (CDU) unterstützt das. Die SPD wehrt sich, und der Koalitionsvertrag sieht vor, die Rente nach 45 Jahren grundsätzlich zu erhalten.\n\nNeue Zahlen aus einer Antwort der Bundesregierung auf eine Anfrage der Linken, über die das RND berichtete, verschärfen die Debatte. Danach erhielt rund jede vierte Frau, die auf diesem Weg in Rente ging, weniger als 1.200 Euro gesetzliche Rente. Bei Männern sind es etwa 5 Prozent. Unter denen, die 2025 in diese Rente wechselten, liegen 28,2 Prozent der Frauen und 6,9 Prozent der Männer unter dieser Schwelle, berichtet t-online.\n\nZusätzlichen Streit löste die CDU-Politikerin Gitta Connemann aus. Sie regte an, nur tatsächliche Arbeitsjahre zu zählen, was Zeiten der Kindererziehung und Pflege entwerten würde. Die Unionsfraktion bestreitet, solche Zeiten ausschließen zu wollen. Sarah Vollath (Linke) warnt, Frauen und Beschäftigte in Ostdeutschland träfe die Abschaffung am stärksten. Arbeitsminister Alexander Schweitzer (SPD) wirbt für einen Kompromiss innerhalb der Koalition.\n\nFür Sachsen ist das Thema wichtig, weil auch ostdeutsche Beschäftigte betroffen wären, wie die Linke warnt. Eine Einigung steht aus.",
+          "source": "t-online",
+          "url": "https://www.t-online.de/nachrichten/deutschland/innenpolitik/id_101496850/streit-um-merz-rentenplaene-zahlen-zeigen-brisante-schieflage.html",
+          "sources": [
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/nachrichten/deutschland/innenpolitik/id_101496850/streit-um-merz-rentenplaene-zahlen-zeigen-brisante-schieflage.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T14:37:00+01:00",
+          "importance": 6,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Deutsche_Rentenversicherung_Mitteldeutschland_Leipzig_20.jpg/1280px-Deutsche_Rentenversicherung_Mitteldeutschland_Leipzig_20.jpg",
+            "credit": "Ghostwriter123",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Deutsche_Rentenversicherung_Mitteldeutschland_Leipzig_20.jpg",
+            "alt": "Gebäude der Deutschen Rentenversicherung Mitteldeutschland in Leipzig"
+          }
+        },
+        {
+          "id": "politik-banaszak-berlin-linke-koalition",
+          "tier": "more",
+          "headline": "Banaszak verteidigt Berliner Gespräche mit der Linken",
+          "summary": "Der Grünen-Chef weist Söders Forderung einer Brandmauer nach links zurück, fordert aber von der Linken Klarheit beim Antisemitismus.",
+          "body": "Grünen-Chef Felix Banaszak hat die Koalitionsgespräche mit der Linken in Berlin verteidigt. Im ZDF-Interview sagte er, SPD und Grüne wollten nach den Sondierungen mit der Linken verhandeln, das Ergebnis sei offen. Eine Gleichsetzung von Linke und AfD lehnte er ab und kritisierte damit indirekt CSU-Chef Markus Söder, der eine „Brandmauer nach links“ gefordert hatte.\n\nZugleich verlangte Banaszak, die Linke müsse ihr Problem mit Antisemitismus in den eigenen Reihen lösen, sowohl im Umgang mit einzelnen Abgeordneten im Abgeordnetenhaus als auch strukturell. Grüne, SPD und Linke hatten sich auf eine gemeinsame Erklärung zum Schutz jüdischen Lebens, zur Bekämpfung von Antisemitismus und zum Existenzrecht Israels verständigt. Gespräche mit der Berliner CDU schloss Banaszak nicht aus, betonte aber, der Regierungsauftrag liege nach der Wahl bei der Linken. Die SPD-Landesvorsitzende Bettina König sagte laut rbb, die CDU-Treffen seien keine Sondierungen.\n\nÜber Koalitionsverhandlungen entscheidet die Berliner Linke auf ihrem Landesparteitag am kommenden Samstag. Banaszak warnte außerdem davor, die für den 31. Oktober angekündigten Demonstrationen unter dem Motto „Gen Z steht auf“ vorab zu kriminalisieren. Gewalt lehnte er ab. Innenminister Alexander Dobrindt (CSU) hatte vor einer Vereinnahmung durch Linksextremisten gewarnt.\n\nDer Streit zeigt, wie stark die Berliner Landespolitik die Bundesdebatte über Abgrenzung nach links und rechts prägt.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/deutschland/banaszak-gruene-extremismus-interview-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/banaszak-gruene-extremismus-interview-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T21:04:00+01:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Berlin-Mitte%2C_het_Rotes_Rathaus_Dm09011264_IMG_5785_2024-09-07_17.56.jpg/1280px-Berlin-Mitte%2C_het_Rotes_Rathaus_Dm09011264_IMG_5785_2024-09-07_17.56.jpg",
+            "credit": "Michielverbeek",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Berlin-Mitte,_het_Rotes_Rathaus_Dm09011264_IMG_5785_2024-09-07_17.56.jpg",
+            "alt": "Das Rote Rathaus in Berlin-Mitte"
+          }
+        }
+      ]
+    },
+    {
+      "id": "welt",
+      "title": "Welt",
+      "emoji": "🌍",
+      "items": [
+        {
+          "id": "welt-lula-gewinnt-stichwahl-in-brasilien",
+          "tier": "top",
+          "headline": "Lula gewinnt Brasiliens Stichwahl, Bolsonaro erkennt Ergebnis nicht an",
+          "summary": "Der linke Präsident Lula da Silva setzt sich mit knapp 52 Prozent gegen Flavio Bolsonaro durch. Der Unterlegene will das Ergebnis anfechten.",
+          "body": "Luiz Inácio Lula da Silva bleibt Präsident Brasiliens. In der Stichwahl vom Sonntag kam der 80-Jährige nach Angaben von France 24 auf 51,7 Prozent der Stimmen, sein Herausforderer, der rechte Senator Flavio Bolsonaro, auf 48,2 Prozent. Al Jazeera nennt einen Vorsprung von mehr als vier Millionen Stimmen. Das Wahlgericht erklärte Lula kurz nach 21 Uhr Ortszeit zum Sieger. Es ist seine vierte Amtszeit; zuvor regierte er von 2003 bis 2011.\n\nFlavio Bolsonaro, Sohn des wegen eines Putschversuchs zu 27 Jahren Haft verurteilten Ex-Präsidenten Jair Bolsonaro, erkannte das Ergebnis nicht an. Es sei „unmöglich, das Ergebnis anzuerkennen“, sagte er laut Al Jazeera und warf dem Obersten Gerichtshof vor, die Regeln während der Wahl geändert zu haben. Hintergrund ist eine Entscheidung, die Wahllokale zwei Stunden länger offen zu halten. Bolsonaro kündigte an, die Wahl anzufechten; ein Rechtsstreit gilt als wahrscheinlich.\n\n## Ein überraschender Sieg\n\nLula ist laut France 24 der erste Kandidat seit der Rückkehr zur Demokratie in den 1980er-Jahren, der nach einem zweiten Platz im ersten Wahlgang noch gewonnen hat. Im ersten Durchgang am 4. Oktober hatte Bolsonaro mit 47 zu 45 Prozent vorn gelegen. Der Sieg bremst zudem eine Serie rechter Wahlerfolge in Lateinamerika, etwa in Peru, Kolumbien, Argentinien, Bolivien und Ecuador.\n\nRegieren wird Lula es schwer haben. Der Kongress ist so weit rechts besetzt wie lange nicht; Bolsonaros Liberale Partei und Verbündete könnten über mehr als 280 Sitze im Unterhaus und bis zu 50 im Senat verfügen. Analysten sprechen von einer schwierigen Amtszeit, der Politologe Oliver Stuenkel erwartet laut France 24 einen „Präsidenten auf Abruf“ von Beginn an. Brasiliens Staatsschulden liegen über 82 Prozent der Wirtschaftsleistung, die Regierung rechnet mit 2,3 Prozent Wachstum im kommenden Jahr. Lula setzte im Wahlkampf auf die Lebenshaltungskosten, kündigte eine Erhöhung seines Sozialprogramms um 15 Prozent an und hat Online-Wetten verboten.\n\n## Washington im Hintergrund\n\nDie USA spielten im Wahlkampf eine ungewöhnlich große Rolle. Die Regierung von Donald Trump hatte im vergangenen Jahr 50 Prozent Zoll auf bestimmte brasilianische Waren verhängt und Richter sanktioniert, um das Verfahren gegen Jair Bolsonaro zu stoppen. Lula nennt das einen Angriff auf die Souveränität der Justiz. Donald Trump Jr. stellte nach der Wahl die Verlängerung der Abstimmung infrage, der US-Demokrat Ro Khanna forderte Trump auf, das Ergebnis zu respektieren.\n\nFür Deutschland ist die Wahl aus mehreren Gründen relevant. Als wichtiger Handelspartner Lateinamerikas und größter Amazonas-Anrainer ist Brasilien für Europa auch beim Handel und beim Schutz des Regenwalds ein Schlüsselland, und eine politisch gelähmte oder umstrittene Regierung in Brasília erschwert beides. Lula soll am 5. Januar 2027 vereidigt werden.",
+          "source": "France 24",
+          "url": "https://www.france24.com/en/americas/20261026-brazil-s-president-lula-da-silva-beats-flavio-bolsonaro-to-win-re-election",
+          "sources": [
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/americas/20261026-brazil-s-president-lula-da-silva-beats-flavio-bolsonaro-to-win-re-election"
+            },
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/26/lula-holds-off-far-right-with-victory-in-brazil-presidential-election"
+            }
+          ],
+          "publishedAt": "2026-10-26T01:23:00+01:00",
+          "importance": 8,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Palacio_do_Planalto.jpeg/1280px-Palacio_do_Planalto.jpeg",
+            "credit": "Annemariebr in der Wikipedia auf Englisch",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Palacio_do_Planalto.jpeg",
+            "alt": "Der Präsidentenpalast Palácio do Planalto in Brasília"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "welt-vucic-raeumt-wahlniederlage-in-serbien-ein",
+          "tier": "top",
+          "headline": "Serbiens Präsidentenlager verliert die Wahl gegen die Studentenliste",
+          "summary": "Nach der Rekordbeteiligung räumt Aleksandar Vučić die Niederlage ein. Die Studentenbewegung kommt Prognosen zufolge auf rund 138 von 250 Sitzen.",
+          "body": "Nach fast zwei Jahren Protest hat Serbiens Studentenbewegung die Parlamentswahl gewonnen. Aleksandar Vučić, der im September als Präsident zurückgetreten war, um als Ministerpräsident anzutreten, räumte am Sonntagabend die Niederlage ein: „Es ist klar, dass wir diese Wahlen verloren haben“, sagte er laut Al Jazeera. Endergebnisse lagen zunächst nicht vor.\n\nNach Vučićs eigenen Angaben kommt die Studentenliste auf 135 bis 140 der 250 Sitze, seine Fortschrittspartei SNS auf etwa 105. Eine repräsentative Stichprobe des Instituts CeSID sieht die Studenten laut France 24 bei 138 Mandaten, die SNS bei 104. Für eine Regierungsmehrheit sind 126 Sitze nötig. Die übrigen Mandate gehen an Minderheitenparteien.\n\n## Rekordbeteiligung\n\nDie Beteiligung lag nach Angaben der Wahlkommission um 18 Uhr bei 64,9 Prozent, France 24 spricht von fast 70 Prozent – so viel wie seit dem Zerfall Jugoslawiens 1992 nicht mehr. Rund 6,5 Millionen Menschen waren wahlberechtigt, 18 Listen traten an. Die Beobachterorganisation CRTA meldete allerdings Druck auf Wähler oder Wahlhelfer in fast einem Drittel der 500 von ihr überwachten Wahllokale sowie Probleme beim Wahlgeheimnis. Die Regierungspartei weist Vorwürfe von Korruption und Repression zurück.\n\n## Von Novi Sad ins Parlament\n\nAuslöser der Proteste war der Einsturz eines Bahnhofsvordachs in Novi Sad im November 2024, bei dem 16 Menschen starben. Daraus wuchs eine Bewegung ohne einheitliche Führung, die Rechenschaft und ein Ende von Korruption und autoritärer Politik forderte. Viele ihrer Kandidaten haben keine politische Erfahrung; einige etablierte Oppositionsparteien verzichteten zugunsten der Liste auf eigene Kandidaturen. In Belgrad feierten Studenten nach Bekanntgabe; ihr Sprecher, der Professor Radomir Šajčić, kündigte an, nun die Zukunft aufzubauen. Im Lauf des Tages kam es laut France 24 zu mehreren gewalttätigen Zwischenfällen.\n\nKommissionspräsidentin Ursula von der Leyen gratulierte der Liste und bot Unterstützung bei Reformen zu Rechtsstaat, Medienfreiheit und Korruptionsbekämpfung an, während Serbien auf die EU-Mitgliedschaft zusteuert. Für Deutschland und Sachsen ist das mehr als ein Regierungswechsel auf dem Westbalkan: Serbien ist EU-Beitrittskandidat und Nachbar mehrerer EU-Staaten, und seine Stabilität berührt Migration, Handel und Sicherheit auf dem Westbalkan. France 24 verweist auf Parallelen zu Ungarn, wo junge Wähler Viktor Orbán nach 16 Jahren abgelöst haben. Ob der Machtwechsel reibungslos verläuft, wird sich an der Regierungsbildung zeigen.",
+          "source": "France 24",
+          "url": "https://www.france24.com/en/europe/20261025-serbia-s-vucic-concedes-defeat-in-historic-snap-election-with-record-turnout",
+          "sources": [
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/europe/20261025-serbia-s-vucic-concedes-defeat-in-historic-snap-election-with-record-turnout"
+            },
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/25/serbia-voter-turnout-highest-in-decades-as-students-oppose-longtime-leader"
+            }
+          ],
+          "publishedAt": "2026-10-25T22:24:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Belgrade_Republic_Square.jpg/1280px-Belgrade_Republic_Square.jpg",
+            "credit": "Imeao",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Belgrade_Republic_Square.jpg",
+            "alt": "Der Platz der Republik im Zentrum von Belgrad"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "welt-frankreich-1314-festnahmen-le-pen-startet-wahlkampf",
+          "tier": "top",
+          "headline": "Frankreich: 1.314 Festnahmen bei Protesten, Le Pen startet Wahlkampf",
+          "summary": "Am zweiten Protestwochenende in Folge gehen bis zu 800.000 Menschen gegen hohe Lebenshaltungskosten auf die Straße. Marine Le Pen nutzt die Unruhe.",
+          "body": "In Frankreich sind am Wochenende erneut Hunderttausende gegen die hohen Lebenshaltungskosten auf die Straße gegangen. Nach vorläufigen Angaben des Innenministeriums nahm die Polizei landesweit 1.314 Menschen fest, 53 Einsatzkräfte wurden verletzt. Das Ministerium zählte 410.000 Demonstranten, die Organisatoren sprachen von fast 800.000. Es war das zweite Wochenende in Folge mit Ausschreitungen.\n\nZu Zusammenstößen kam es laut Euronews in Paris, Marseille, Lyon, Bordeaux, Toulouse und Rennes. In Paris setzte die Polizei Tränengas und Wasserwerfer ein, Demonstranten warfen Feuerwerkskörper. Die Polizei zählte 75 Brände und 24 geplünderte Geschäfte; in Toulouse und Clermont-Ferrand wurden zwei Demonstranten schwer verletzt, mehrere Ermittlungen laufen. Rund 70.000 Sicherheitskräfte waren im Einsatz, Soldaten bewachten wichtige Orte. Innenminister Laurent Nuñez machte „Personen vom äußersten linken Rand“ für die Unruhen am Ende der Märsche verantwortlich, die Regierung bewertete die Demonstrationen insgesamt als weitgehend friedlich.\n\n## Le Pen im Aufwind\n\nPolitisch profitiert vor allem die extreme Rechte. Marine Le Pen eröffnete am Sonntag in Orléans vor etwa 10.000 Anhängern ihres Rassemblement National ihren Präsidentschaftswahlkampf. Sie versprach, den Rechtsstaat wiederherzustellen, und warf der Regierung vor, gegenüber gewalttätigen Demonstranten zu nachsichtig zu sein, wie France 24 berichtet. Zudem kündigte sie gedeckelte Energiepreise, niedrigere Steuern und geringere französische Beiträge an die EU an. Sie sieht sich kritisch gegenüber der Nato und der französischen Ukraine-Unterstützung.\n\nEine am Samstag veröffentlichte Ipsos-Umfrage sieht Le Pen im ersten Wahlgang bei 32 bis 34 Prozent; eine Mehrheit der Befragten macht die Regierung für die Krise verantwortlich. Ein Berufungsgericht hatte ihre Kandidatur trotz bestätigter Verurteilung wegen Veruntreuung zugelassen. Gewählt wird im April und Mai 2027, Emmanuel Macron darf nicht erneut antreten. Am Rande des RN-Kongresses marschierten am Samstag laut Polizei 13.000 Menschen gegen Le Pen.\n\n## Folgen für Deutschland\n\nFür Deutschland steht viel auf dem Spiel: Frankreich ist der wichtigste Partner in der EU, und eine Präsidentin Le Pen würde die europäische Ukraine-Politik, die Verteidigungszusammenarbeit und den EU-Haushalt infrage stellen. Zugleich ruft die Bewegung der Gelbwesten zu weiteren Protesten am 31. Oktober auf; Euronews berichtet, auch die deutsche Polizei bereite sich auf mögliche Kundgebungen vor.",
+          "source": "Euronews",
+          "url": "https://de.euronews.com/2026/10/25/proteste-frankreich-festnahmen-demonstranten-polizei",
+          "sources": [
+            {
+              "name": "Euronews",
+              "url": "https://de.euronews.com/2026/10/25/proteste-frankreich-festnahmen-demonstranten-polizei"
+            },
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/france/20261025-at-least-1-300-people-arrested-in-mass-weekend-protests-across-france"
+            },
+            {
+              "name": "France 24 (Le Pen)",
+              "url": "https://www.france24.com/en/france/20261025-french-far-right-leader-le-pen-seeks-to-leverage-unrest-in-presidential-campaign-kick-off"
+            }
+          ],
+          "publishedAt": "2026-10-25T10:20:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Marine_Le_Pen_VIVA_24.jpg/1280px-Marine_Le_Pen_VIVA_24.jpg",
+            "credit": "Vox España",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Marine_Le_Pen_VIVA_24.jpg",
+            "alt": "Marine Le Pen bei einer Veranstaltung im Mai 2024"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "welt-bulgarien-stichwahl-jotowa-gegen-gjurow",
+          "tier": "more",
+          "headline": "Bulgarien: Stichwahl zwischen Präsidentin Jotowa und Ökonom Gjurow",
+          "summary": "Bei der Präsidentenwahl liegt Amtsinhaberin Iliana Jotowa laut Prognosen vorn, verfehlt aber die Mehrheit. Die Stichwahl ist am 1. November.",
+          "body": "Bulgarien entscheidet am 1. November in einer Stichwahl über sein Staatsoberhaupt. Nach Prognosen vom Sonntag kam Amtsinhaberin Iliana Jotowa im ersten Wahlgang auf 35 bis 36,5 Prozent. Dahinter lag der frühere Übergangsregierungschef Andrej Gjurow mit rund 31 bis 33,5 Prozent. Insgesamt hatten 27 Kandidaten kandidiert. Vorläufige Ergebnisse werden am Montag erwartet.\n\nJotowa wird von Ministerpräsident Rumen Radew unterstützt und gilt als links. Laut Al Jazeera soll sie Bulgarien an Europa gebunden halten, zugleich aber bessere Beziehungen zu Russland suchen. Euronews zufolge befürwortet sie den Dialog mit Moskau und lehnt militärische Hilfe für die Ukraine ab. Gjurow, der von der prowestlichen Opposition getragen wird, unterzeichnete als Übergangsministerpräsident ein Sicherheitsabkommen mit Kiew und bekennt sich klar zur Ukraine.\n\nDie Beteiligung fiel niedrig aus: Um 20 Uhr Ortszeit lag sie nach Angaben des Instituts Measure bei 22,2 Prozent. Für einen Sieg schon im ersten Wahlgang wären mehr als 50 Prozent der Stimmen und eine Beteiligung von über 50 Prozent nötig gewesen. Vor der Wahl hatten Umfragen Jotowa noch bei 41 bis 47 Prozent gesehen, Gjurow bei 28 bis 31 Prozent – das Rennen ist also enger als erwartet.\n\nFür Deutschland ist das Ergebnis ein Gradmesser: Bulgarien ist EU- und Nato-Mitglied an der Schwarzmeer-Flanke. Ob Sofia die Ukraine-Hilfe der EU mitträgt oder bremst, hängt auch vom Präsidenten ab, der Armee und Außenpolitik mitprägt.",
+          "source": "Euronews",
+          "url": "https://de.euronews.com/2026/10/25/prasident-bulgarien-wahl-ukraine-krieg",
+          "sources": [
+            {
+              "name": "Euronews",
+              "url": "https://de.euronews.com/2026/10/25/prasident-bulgarien-wahl-ukraine-krieg"
+            },
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/25/bulgaria-election-heads-to-a-run-off-amid-low-voter-turnout"
+            }
+          ],
+          "publishedAt": "2026-10-25T13:18:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/National_Assembly_of_Bulgaria.jpg/1280px-National_Assembly_of_Bulgaria.jpg",
+            "credit": "Plamen Agov",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:National_Assembly_of_Bulgaria.jpg",
+            "alt": "Das Parlamentsgebäude der Nationalversammlung in Sofia"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "welt-machado-kehrt-nach-venezuela-zurueck",
+          "tier": "more",
+          "headline": "Friedensnobelpreisträgerin Machado kehrt nach Venezuela zurück",
+          "summary": "Die Oppositionsführerin ist nach fast zehn Monaten im Exil wieder im Land. Sie fordert einen Termin für Präsidentschaftswahlen.",
+          "body": "María Corina Machado ist nach Venezuela zurückgekehrt. Die Oppositionsführerin teilte am Sonntag in sozialen Medien mit: „Ich bin hier, bei euch.“ Laut Al Jazeera traf sie in einer Kirche im Bundesstaat Lara ein, wo Anhänger sie empfingen. Oppositionspolitiker Edmundo González bestätigte, sie sei „auf venezolanischem Boden“.\n\nMachado hatte das Land im Dezember 2025 verlassen, um in Oslo den Friedensnobelpreis entgegenzunehmen, und danach vor allem aus den USA und Panama gearbeitet. Euronews zufolge scheiterten in den vergangenen drei Monaten mindestens sieben Rückkehrversuche in letzter Minute. Zuletzt rief sie zu Bürgerprotesten auf und verlangte einen Wahltermin von der Regierung unter Delcy Rodríguez. Am 22. Oktober demonstrierten laut Al Jazeera Tausende für Wahlen – der erste landesweite Oppositionsprotest seit fast zwei Jahren.\n\nRodríguez führt das Land seit der Festnahme von Nicolás Maduro durch das US-Militär im Januar kommissarisch, mit Rückendeckung von Präsident Donald Trump. Sie arbeitet mit Washington bei Reformen und einem Ölabkommen zusammen, hat aber noch keinen Wahltermin genannt. US-Außenminister Marco Rubio erklärte, die sichere Rückkehr sei Ergebnis von Versöhnungsgesprächen, in deren Verlauf Hunderte politische Gefangene freikamen. Trump sagte, er wisse nichts von der Rückkehr, nannte Machado aber „eine sehr nette Frau“.\n\nOb die Regierung Machado gewähren lässt, ist die offene Frage. Für Deutschland und die EU, die die Wahl von 2024 nicht anerkannt haben, ist es ein Test, ob Venezuela den Weg zu freien Wahlen findet – auch mit Blick auf Ölmärkte und Migration.",
+          "source": "Al Jazeera",
+          "url": "https://www.aljazeera.com/news/2026/10/25/venezuelas-opposition-leader-maria-corina-machado-returns-from-exile",
+          "sources": [
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/25/venezuelas-opposition-leader-maria-corina-machado-returns-from-exile"
+            },
+            {
+              "name": "Euronews",
+              "url": "https://de.euronews.com/2026/10/25/maria-corina-machado-venezuela-ruckkehr"
+            }
+          ],
+          "publishedAt": "2026-10-25T19:14:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Mar%C3%ADa_Corina_Machado_2013.jpg/1280px-Mar%C3%ADa_Corina_Machado_2013.jpg",
+            "credit": "Gabo Bracho",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mar%C3%ADa_Corina_Machado_2013.jpg",
+            "alt": "María Corina Machado, venezolanische Oppositionsführerin"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "welt-burnham-will-ueber-freizuegigkeit-mit-eu-sprechen",
+          "tier": "more",
+          "headline": "Burnham will mit der EU über Freizügigkeit reden",
+          "summary": "Der britische Premier Andy Burnham öffnet die Tür für eine Debatte über Freizügigkeit. Farage spricht von „Verrat“.",
+          "body": "Der britische Premierminister Andy Burnham will mit der EU über eine Rückkehr zur Freizügigkeit für Arbeitnehmer sprechen. In einem Interview mit der Sunday Times, das er am 19. Oktober gab und das am Sonntag erschien, forderte er eine „ehrliche Debatte“ darüber, wie sich Migration seit dem Brexit verändert habe. Die Zuwanderung aus der EU vor dem Brexit habe Probleme bereitet, sei aber „vielleicht“ weniger schwierig gewesen als die heutige.\n\nBurnham, seit Juli im Amt, sieht das Thema im Rahmen einer breiteren Neuordnung der Beziehungen, etwa beim Datenaustausch. Er nannte den verlorenen Zugang zur EU-Fingerabdruckdatenbank Eurodac. Einen Beitritt zu Euro oder Schengen-Raum schloss er aus; eine spätere EU-Mitgliedschaft hat er nicht ausgeschlossen. Formal bindet ihn das Wahlprogramm von Keir Starmer aus dem Jahr 2024, das Freizügigkeit, Binnenmarkt und Zollunion ausschließt.\n\nReform-UK-Chef Nigel Farage nannte die Äußerungen laut Al Jazeera einen „totalen Verrat am Brexit-Britannien“. Eine Reaktion aus Brüssel wurde nicht gemeldet. Auf dem Gipfel am 20. November hoffen beide Seiten auf Einigungen bei Lebensmittelstandards, Jugendmobilität und Emissionshandel. Die Nettozuwanderung nach Großbritannien hat sich 2025 laut den offiziellen Zahlen von 331.000 auf 171.000 fast halbiert.\n\nFür Deutschland ist der Vorstoß interessant, weil engere Beziehungen zwischen London und Brüssel auch Exporteure in Deutschland betreffen, die nach Großbritannien liefern, etwa bei Lebensmittelstandards und Emissionshandel.",
+          "source": "Al Jazeera",
+          "url": "https://www.aljazeera.com/news/2026/10/25/uk-pm-burnham-says-he-wants-to-discuss-a-return-to-eu-freedom-of-movement",
+          "sources": [
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/25/uk-pm-burnham-says-he-wants-to-discuss-a-return-to-eu-freedom-of-movement"
+            },
+            {
+              "name": "Euronews",
+              "url": "https://de.euronews.com/2026/10/25/brexit-uk-premier-burnham-debatte-freizugigkeit-eu"
+            }
+          ],
+          "publishedAt": "2026-10-25T15:44:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Union_Jack_%2847435710192%29.jpg/1280px-Union_Jack_%2847435710192%29.jpg",
+            "credit": "Tim Reckmann from Hamm, Deutschland",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Union_Jack_(47435710192).jpg",
+            "alt": "Britische Flagge vor dem Europäischen Parlament in Brüssel"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "region",
+      "title": "Leipzig & Region",
+      "emoji": "📍",
+      "items": [
+        {
+          "id": "region-anschlag-wahlkreisbuero-piechotta",
+          "tier": "top",
+          "headline": "Unbekannte zerstören Scheiben an Piechottas Wahlkreisbüro in Leipzig",
+          "summary": "In der Nacht zu Samstag haben Unbekannte die Fenster des Leipziger Wahlkreisbüros der Grünen-Abgeordneten Paula Piechotta zerstört. Die Polizei prüft ein politisches Motiv.",
+          "body": "Unbekannte haben in der Nacht von Freitag auf Samstag das Wahlkreisbüro der Bundestagsabgeordneten Paula Piechotta (Bündnis 90/Die Grünen) in Leipzig angegriffen. Nach Angaben der Polizeidirektion Leipzig warfen sie gegen 0:45 Uhr Gegenstände gegen mehrere Scheiben an der Karl-Liebknecht-Straße im Stadtteil Südvorstadt und zerstörten sie.\n\nDie Höhe des Schadens ließ sich zunächst nicht beziffern. Die Polizei hat Ermittlungen wegen Sachbeschädigung aufgenommen und prüft ausdrücklich, ob die Tat politisch motiviert war. Täter oder Hinweise auf sie wurden in den bisherigen Meldungen nicht genannt.\n\n## Piechotta sieht Einschüchterung\n\nDie Abgeordnete reagierte auf Instagram. Solche Angriffe sollten einschüchtern und vertreiben, schrieb sie laut Bericht der Leipziger Zeitung. Dazu fügte sie eine ironische Bemerkung in Richtung des CDU-Politikers Jens Spahn an.\n\nDie Leipziger Zeitung ordnete die Tat in ihre Wochenendbilanz ein, in der sie die wichtigsten Ereignisse des 24. und 25. Oktober bündelte. Der Vorfall steht dort neben den Protesten gegen die geplante Ansiedlung der US-Rüstungsfirma Covenant im Norden der Stadt. Ob es einen Zusammenhang gibt, geht aus den Berichten nicht hervor, und die Polizei hat dazu nichts mitgeteilt.\n\n## Was als Nächstes passiert\n\nOffen ist, wer hinter dem Angriff steckt und was die Täter antrieb. Einen Zeugenaufruf zu dem Fall nennt der Polizeibericht nicht.\n\nFür Leipzig ist der Fall ein weiteres Beispiel dafür, dass Büros von Abgeordneten und Parteien Ziel von Angriffen werden. Der Polizeibericht des Tages zeigt, wie nüchtern solche Vorfälle zunächst erfasst werden: als Sachbeschädigung mit unbekannter Schadenshöhe, während die Frage nach dem Motiv erst im Lauf der Ermittlungen geklärt wird.\n\nDie Leipziger Zeitung weist darauf hin, dass sie die Inhalte ihrer Polizeimelder-Rubrik nicht selbst überprüft. Die Angaben zum Tatzeitpunkt und zum Ort stammen deshalb aus der Mitteilung der Polizei und decken sich mit der Darstellung im Wochenendbericht.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/der-tag/2026/10/das-wochenende-24-25-oktober-2026-anschlag-auf-wahlkreisbuero-und-proteste-gegen-ansiedlung-von-waffenfabrik-in-leipzig-673936",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/der-tag/2026/10/das-wochenende-24-25-oktober-2026-anschlag-auf-wahlkreisbuero-und-proteste-gegen-ansiedlung-von-waffenfabrik-in-leipzig-673936"
+            },
+            {
+              "name": "Leipziger Zeitung (Polizeibericht)",
+              "url": "https://www.l-iz.de/melder/polizeimelder/2026/10/polizeibericht-24-oktober-sachbeschadigung-wahlkreisburo-zeugenaufruf-verkehrsunfall-verletzte-673913"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/3/37/Paula_Piechotta.png",
+            "credit": "Grüne Sachsen",
+            "license": "CC BY 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Paula_Piechotta.png",
+            "alt": "Paula Piechotta bei einer Rede"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "region-dok-leipzig-2026",
+          "tier": "top",
+          "headline": "DOK Leipzig startet mit 30 Weltpremieren in die 69. Ausgabe",
+          "summary": "Das Dokumentar- und Animationsfilmfestival läuft von heute bis zum 1. November. Im Programm stehen mehr als 200 Filme, die Eröffnung ist kostenlos im Hauptbahnhof zu sehen.",
+          "body": "Das internationale Leipziger Festival für Dokumentar- und Animationsfilm, DOK Leipzig, beginnt heute und dauert bis zum 1. November. Es ist die 69. Ausgabe. Nach Angaben des Festivals sind 217 Filme und XR-Arbeiten im Programm; die dpa-Meldung bei t-online spricht von mehr als 200 Filmen aus 61 Ländern.\n\n76 Lang- und Kurzfilme konkurrieren um die Goldenen und Silbernen Tauben, darunter 30 Weltpremieren. Vergeben werden sieben Goldene und zwei Silberne Tauben. Die Wettbewerbe gliedern sich in internationalen Dokumentarfilm, internationale Animation, den deutschen Wettbewerb und einen Publikumspreis, bei dem zehn Langfilme zur Wahl stehen.\n\n## Neue Leitung, neuer Schwerpunkt\n\nNeue Festivalleiterin ist die Polin Ola Staszel. Sie legt den Fokus auf Filme aus Mittel- und Osteuropa. Viele Werke begleiten ihre Protagonisten über Jahre. Die tschechische Regisseurin Helena Třeštíková zeigt „Bára – Diary of a Rockstar“, für das sie 50 Jahre lang eine Rocksängerin begleitet hat. Třeštíková gehört zu den Geehrten des Festivals und gibt eine kostenlose Masterclass, ebenso wie die Animationsfilmerin Anita Killi.\n\nEröffnet wird mit „Guten Abend, du Schöne“ von Ina Borrmann. Der Film porträtiert Frauen mit DDR-Biografien und entstand über zehn Jahre. Er läuft heute um 20:30 Uhr kostenlos in der Osthalle des Leipziger Hauptbahnhofs, ebenso wie am Freitag um 19:30 Uhr der brasilianische Animationsfilm „Son of a Bitch“.\n\n## Filme aus der Region\n\nAus Mitteldeutschland kommen unter anderem „Kindesmutter“ von Konrad Schlaich über eine gefährdete 14-Jährige in Halle und der in Leipzig gedrehte Kurzfilm „Ein Typ aus Kleinmachnow“ von Leonard Volkmer. Für Kinder gibt es „Hund und Baum“ von Franka Sachse und „Camille und Chamäleon“ von Lucie Nichelmann aus Halle.\n\nEine Retrospektive widmet sich dem revolutionären lateinamerikanischen Kino der 1960er und 1970er Jahre und wird im Gespräch „Kino und Kampf“ eingeordnet. Karten und Pässe gibt es online, Einzeltickets außerdem an der Kasse im Museum der bildenden Künste. Wer nicht ins Kino gehen kann, findet beim DOK Stream vom 27. Oktober bis 1. November täglich einen neuen Langfilm für fünf Euro, der 24 Stunden lang abrufbar ist.\n\nFür Pendler zwischen Nordsachsen und Leipzig ist die Eröffnung am Hauptbahnhof praktisch: Die freien Vorführungen liegen direkt am Umsteigepunkt.",
+          "source": "DOK Leipzig",
+          "url": "https://www.dok-leipzig.de/",
+          "sources": [
+            {
+              "name": "DOK Leipzig",
+              "url": "https://www.dok-leipzig.de/"
+            },
+            {
+              "name": "t-online Leipzig (dpa)",
+              "url": "https://leipzig.t-online.de/region/leipzig/id_101497260/dok-leipzig-mit-30-weltpremieren-und-filmen-aus-sachsen.html"
+            }
+          ],
+          "publishedAt": "2026-10-26T00:00:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Movie_theater_seats_%28Unsplash%29.jpg/1280px-Movie_theater_seats_%28Unsplash%29.jpg",
+            "credit": "Elijah Flores baesik",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Movie_theater_seats_(Unsplash).jpg",
+            "alt": "Reihen schwarzer Sessel in einem Kinosaal"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "region-jazztage-50-jahre-bilanz",
+          "tier": "more",
+          "headline": "Leipziger Jazztage ziehen zum 50. Jubiläum rund 5.900 Besucher an",
+          "summary": "29 Konzerte an neun Tagen in 13 Spielstätten: Das Jubiläumsfestival war fast zu 88 Prozent ausgelastet.",
+          "body": "Die Leipziger Jazztage haben zu ihrem 50. Jubiläum rund 5.900 Besucher gezählt. Das teilte laut dpa-Meldung bei t-online der Veranstalter mit. Auf dem Programm standen 29 Konzerte an neun Tagen in 13 Spielstätten, die Auslastung lag bei fast 88 Prozent, mehrere Konzerte waren ausverkauft.\n\nDie Musiker waren zwischen 16 und 88 Jahre alt. Zu den bekanntesten Namen zählte der 88-jährige Pianist Alexander von Schlippenbach mit dem Globe Unity Orchestra. Auch der Posaunist Conny Bauer, 83, trat auf, der schon bei der Premiere des Festivals dabei war.\n\nNeu war ein Audiowalk mit sechs Hörstationen zur Leipziger Jazzgeschichte. Außerdem gab es ein Projekt der Musikerin Laura Zöschg mit dem Südtirol Jazzfestival, das im Rahmen der „Euregio Jazzwerkstatt“ entstand. Am Sonntag lief im Lichtspieltheater Connewitz ein Kinderprogramm mit dem Titel „Das Ohr guckt mit ...“.\n\nDie Meldung wurde am 25. Oktober um 18:01 Uhr aktualisiert.",
+          "source": "t-online Leipzig (dpa)",
+          "url": "https://leipzig.t-online.de/region/leipzig/id_101497052/leipziger-jazztage-ziehen-rund-5900-besucher-an.html",
+          "sources": [
+            {
+              "name": "t-online Leipzig (dpa)",
+              "url": "https://leipzig.t-online.de/region/leipzig/id_101497052/leipziger-jazztage-ziehen-rund-5900-besucher-an.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T18:01:00+01:00",
+          "importance": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Concert_crowd_%28Unsplash%29.jpg/1280px-Concert_crowd_%28Unsplash%29.jpg",
+            "credit": "Hannah Rodrigo hannahrodrigo",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Concert_crowd_(Unsplash).jpg",
+            "alt": "Konzertpublikum mit erhobenen Armen in Schwarz-Weiß"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "region-opernball-140000-euro",
+          "tier": "more",
+          "headline": "Leipziger Opernball sammelt 140.000 Euro für Kinder",
+          "summary": "Beim 31. Opernball mit rund 2.000 Gästen stand die Partnerstadt Thessaloniki im Mittelpunkt. Der Erlös geht an die Stiftung „Leipzig hilft Kindern“.",
+          "body": "Der Leipziger Opernball hat am Samstagabend 140.000 Euro für die Stiftung „Leipzig hilft Kindern“ eingebracht. Rund 2.000 Gäste feierten laut dpa-Meldung bei t-online mit. Es war die 31. Ausgabe des Balls. Unter dem Motto „Kalispéra, Thessaloniki!“ würdigte der Ball die 42-jährige Städtepartnerschaft mit der griechischen Stadt.\n\nEhrengäste waren der griechische Botschafter Alexandros Papaioannou und Thessalonikis Bürgermeister Stelios Angeloudis. Aus der sächsischen Regierung kamen Sozialministerin Petra Köpping (SPD) sowie Kulturministerin Barbara Klepsch und Wissenschaftsminister Sebastian Gemkow (beide CDU).\n\nSeit 2008 steht der Ball jedes Jahr im Zeichen eines wechselnden Partnerlandes. Auf sieben Bühnen gab es Musik von Oper bis Soul. Moderator war Malte Arkona, das Gewandhausorchester spielte unter Christoph-Mathias Mueller. Die nächste, 32. Ausgabe ist für den 16. Oktober des Folgejahres angekündigt.\n\nDer Ball dient seit Jahren dazu, Spenden für Kinder- und Jugendprojekte in der Stadt zu sammeln. Die Leipziger Zeitung nennt ihn in ihrer Wochenendbilanz neben dem Grassimesse-Wochenende mit 140 internationalen Designern als einen der Kulturtermine der vergangenen Tage.",
+          "source": "t-online Leipzig (dpa)",
+          "url": "https://leipzig.t-online.de/region/leipzig/id_101496920/opernball-sammelt-140000-euro-fuer-kinder-in-leipzig.html",
+          "sources": [
+            {
+              "name": "t-online Leipzig (dpa)",
+              "url": "https://leipzig.t-online.de/region/leipzig/id_101496920/opernball-sammelt-140000-euro-fuer-kinder-in-leipzig.html"
+            },
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/der-tag/2026/10/das-wochenende-24-25-oktober-2026-anschlag-auf-wahlkreisbuero-und-proteste-gegen-ansiedlung-von-waffenfabrik-in-leipzig-673936"
+            }
+          ],
+          "publishedAt": "2026-10-25T15:21:00+01:00",
+          "importance": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Opernhaus_Leipzig_Langzeitbelichtung_Tag.jpg/1280px-Opernhaus_Leipzig_Langzeitbelichtung_Tag.jpg",
+            "credit": "Ichwarsnur",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Opernhaus_Leipzig_Langzeitbelichtung_Tag.jpg",
+            "alt": "Das Opernhaus Leipzig mit Springbrunnen"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "region-erwachsenenbildung-laendlicher-raum",
+          "tier": "more",
+          "headline": "Eine Million Euro für Erwachsenenbildung im ländlichen Raum Sachsens",
+          "summary": "Die Landesdirektion fördert 2026 den Verein Ländliche Erwachsenenbildung mit rund einer Million Euro. Fast 25.000 Menschen nutzen die Kurse jährlich.",
+          "body": "Die Landesdirektion Sachsen hat für 2026 rund eine Million Euro für den Verein Ländliche Erwachsenenbildung im Freistaat Sachsen bewilligt. Das teilte die Behörde am Sonntag mit. Das Geld soll Allgemeinbildung und gesellschaftliche Teilhabe in ländlichen Gemeinden stärken und die Ausbildung von Ehrenamtlichen und Fachkräften unterstützen.\n\nAußerdem ermöglicht es neue Angebote zu Digitalisierung, Demokratiebildung, Familienbildung und nachhaltiger Regionalentwicklung. Der Verein erreicht nach Angaben der Landesdirektion fast 25.000 Teilnehmende und rund 50.000 Lernstunden pro Jahr.\n\nZu den Kursen zählen Sprachkurse, PC-Kurse, Bewerbungstraining, Elternworkshops zur Medienkompetenz sowie Angebote zu Ernährung, Rückengymnastik, Solartechnik und Wald. „Bildung darf keine Frage des Wohnortes sein“, sagte Béla Bélafi, Präsident der Landesdirektion Sachsen.\n\nDie Mittel kommen damit Gemeinden außerhalb der Großstädte zugute. Die Bewilligung gilt nach Angaben der Behörde für das laufende Jahr 2026 und betrifft ausdrücklich den ländlichen Raum.",
+          "source": "Landesdirektion Sachsen",
+          "url": "https://www.medienservice.sachsen.de/medien/news/1100690",
+          "sources": [
+            {
+              "name": "Landesdirektion Sachsen",
+              "url": "https://www.medienservice.sachsen.de/medien/news/1100690"
+            }
+          ],
+          "publishedAt": "2026-10-25T10:00:00+01:00",
+          "importance": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Burg_Bad_D%C3%BCben_10_2012.jpg/1280px-Burg_Bad_D%C3%BCben_10_2012.jpg",
+            "credit": "S. John, Elsterwerda",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Burg_Bad_D%C3%BCben_10_2012.jpg",
+            "alt": "Die Burg Düben in Bad Düben"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "sport",
+      "title": "Sport",
+      "emoji": "⚽",
+      "items": [
+        {
+          "id": "sport-bayern-gewinnt-in-freiburg",
+          "tier": "top",
+          "headline": "Bayern gewinnt in Freiburg und erobert die Tabellenspitze zurück",
+          "summary": "Der FC Bayern siegt trotz Trainerausfall und sieben fehlender Profis 3:1 beim SC Freiburg und zieht in der Tabelle an Dortmund vorbei.",
+          "body": "Der FC Bayern München hat am Sonntagabend beim SC Freiburg 3:1 (2:0) gewonnen und damit am siebten Spieltag der Fußball-Bundesliga die Tabellenführung zurückerobert. Die Münchner haben nun 17 Punkte, genauso viele wie Borussia Dortmund, liegen aber vorn. Freiburg bleibt mit 13 Punkten Dritter.\n\nDie Tore fielen früh und spät. Dayot Upamecano brachte den Rekordmeister in der 16. Minute nach einem Solo und einem Doppelpass mit Michael Olise in Führung, noch vor der Pause erhöhte Serge Gnabry auf 2:0. Für ihn war es das 100. Bundesliga-Tor. In der 82. Minute verkürzte Freiburg durch ein Eigentor von Tom Bischof, in der Schlussphase wurde es noch einmal eng. Einen Treffer von Sacha Boey erkannte der Schiedsrichter wegen Abseits nicht an, Torwart Jonas Urbig parierte mehrfach. In der Nachspielzeit machte Olise mit dem 3:1 alles klar.\n\n## Bayern ohne Trainer und mit großen Sorgen\n\nSportlich war der Sieg bemerkenswert, weil die Bayern nur mit stark gelichtetem Kader und ohne Chefcoach antraten. Vincent Kompany war am Freitag zusammengebrochen, kam ins Krankenhaus und steht weiter unter ärztlicher Beobachtung. An der Seitenlinie führte sein Assistent Aaron Danks die Mannschaft. Nach Angaben von SPORT1 fehlten außerdem Manuel Neuer, Luis Díaz, Jamal Musiala, Minjae Kim und Aleksandar Pavlovic sowie Bara Ndiaye. Joshua Kimmich war nach einem Trauerfall in der Familie nicht dabei. Olise kehrte nach einer Sperre zurück und prägte das Spiel mit.\n\nSPORT1 meldete im Anschluss, dass sich Kompany nach dem Spiel bei seinem Team gemeldet habe. Wie lange er ausfällt, ist offen, sein Gesundheitszustand wird nicht weiter ausgeführt.\n\n## Die Tabelle bleibt eng\n\nBayern und Dortmund trennen nur die Tordifferenz. Dortmund hatte am Samstag durch ein spätes Tor von Beier 1:0 gegen Frankfurt gewonnen und vorübergehend die Spitze übernommen. Schon am kommenden Samstagabend treffen beide Mannschaften im direkten Duell aufeinander, wie Sportschau berichtet. Für die Münchner wird dann entscheidend sein, wie viele der Verletzten bis dahin zurückkehren und ob Kompany wieder auf der Bank sitzen kann.\n\nRB Leipzig ist nach dem 4:0 gegen Elversberg mit 12 Punkten Fünfter und hat damit fünf Punkte Rückstand auf die Spitze.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/bundesliga/bayern-erobern-sich-gegen-freiburg-tabellenspitze-zurueck,spielbericht-sc-freiburg-bayern-muenchen-108.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/bundesliga/bayern-erobern-sich-gegen-freiburg-tabellenspitze-zurueck,spielbericht-sc-freiburg-bayern-muenchen-108.html"
+            },
+            {
+              "name": "SPORT1",
+              "url": "https://www.sport1.de/news/fussball/bundesliga/2026/10/fc-bayern-zurueck-an-der-spitze-ein-solo-verzueckt-besonders"
+            },
+            {
+              "name": "bundesliga.com",
+              "url": "https://www.bundesliga.com/de/bundesliga"
+            }
+          ],
+          "publishedAt": "2026-10-25T19:47:00+01:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Europa_Park_Stadion_in_Freiburg_mit_Fu%C3%9Fg%C3%A4ngerboulevard.jpg/1280px-Europa_Park_Stadion_in_Freiburg_mit_Fu%C3%9Fg%C3%A4ngerboulevard.jpg",
+            "credit": "Andreas Schwarzkopf",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Europa_Park_Stadion_in_Freiburg_mit_Fu%C3%9Fg%C3%A4ngerboulevard.jpg",
+            "alt": "Europa-Park Stadion in Freiburg mit Fußgängerboulevard"
+          }
+        },
+        {
+          "id": "sport-antonelli-gewinnt-in-austin",
+          "tier": "top",
+          "headline": "Antonelli gewinnt in Austin, die WM-Entscheidung muss warten",
+          "summary": "Mercedes-Pilot Kimi Antonelli siegt beim Großen Preis der USA von der Pole und liegt 123 Punkte vor Teamkollege Russell – den Titel kann er frühestens in Mexiko holen.",
+          "body": "Kimi Antonelli hat den Großen Preis der USA in Austin gewonnen und steht kurz vor dem Formel-1-Weltmeistertitel. Der Mercedes-Fahrer startete von der Pole Position und kam rund 13 Sekunden vor Charles Leclerc im Ferrari ins Ziel. Dritter wurde Max Verstappen im Red Bull, Lewis Hamilton im zweiten Ferrari belegte Rang vier. Es war Antonellis neunter Saisonsieg.\n\nDie vorzeitige Entscheidung blieb dem 20-Jährigen aber noch verwehrt. Nach dem Rennen hat Antonelli 365 Punkte und damit 123 Zähler Vorsprung auf Teamkollege George Russell. Noch sind fünf Rennen mit insgesamt 125 möglichen Punkten zu fahren. Nach Angaben von SPORT1 kann die Meisterschaft schon beim nächsten Lauf in Mexiko-Stadt am kommenden Sonntag fallen; Sportschau schreibt, dafür könnte bereits ein neunter Platz reichen. Wäre er Weltmeister, wäre er der jüngste in der Geschichte der Formel 1.\n\n## Qualifying-Überraschung und kluge Strategie\n\nDie Grundlage für den Sieg legte Antonelli im Qualifying. Er löste dort seine Probleme mit überhitzenden Reifen und holte unerwartet die Pole. Im Rennen setzte Mercedes auf eine Einstoppstrategie, die SPORT1 als die klügere Wahl bezeichnet. Russell, der den Titel noch rechnerisch erreichen könnte, kam nur auf Rang acht. Er erhielt eine Fünf-Sekunden-Strafe, weil er sich im Zweikampf mit Oscar Piastri durch ein frühes Verlassen der Strecke einen Vorteil verschafft hatte.\n\n## Unzufriedener Verstappen\n\nVerstappen haderte nach seinem Podiumsplatz mit dem Fahrverhalten seines Autos und nannte es laut SPORT1 „unfahrbar“. Für Red Bull bleibt der Abstand zur Spitze damit ein Thema. Die beiden Cadillac-Piloten Sergio Pérez und Valtteri Bottas gingen leer aus, Bottas schied spät mit einem Defekt aus.\n\nDas Rennen in Mexiko-Stadt findet kommenden Sonntag statt, die Entscheidung könnte also schon dann fallen. Sollte Antonelli dort nicht genug Punkte sammeln, bleiben ihm anschließend vier weitere Gelegenheiten. Russell hat nach der Strafe als Verfolger weiter 242 Punkte auf dem Konto. Rechnerisch ist der Titel noch nicht entschieden, praktisch bräuchte es aber einen kompletten Einbruch des Spitzenreiters. Auch Hamilton, der in Austin Vierter wurde, liegt mit rund 124 Punkten Rückstand weit zurück.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/motorsport/formel1/formel-1-antonelli-gewinnt-in-austin-titel-ganz-nah,gp-usa-antonelli-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/motorsport/formel1/formel-1-antonelli-gewinnt-in-austin-titel-ganz-nah,gp-usa-antonelli-100.html"
+            },
+            {
+              "name": "SPORT1",
+              "url": "https://www.sport1.de/news/motorsport/formel1/2026/10/antonelli-siegt-in-austin-titelentscheidung-vertagt"
+            }
+          ],
+          "publishedAt": "2026-10-25T22:40:00+01:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Circuit_of_the_Americas_aerial_view_from_WN4430.jpg/1280px-Circuit_of_the_Americas_aerial_view_from_WN4430.jpg",
+            "credit": "Spheroidite",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Circuit_of_the_Americas_aerial_view_from_WN4430.jpg",
+            "alt": "Luftbild des Circuit of the Americas bei Austin"
+          }
+        },
+        {
+          "id": "sport-schindler-verliert-darts-em-finale",
+          "tier": "top",
+          "headline": "Schindler verliert Darts-EM-Finale gegen Ross Smith mit 8:11",
+          "summary": "Martin Schindler erreicht als erster Deutscher ein großes PDC-Finale, unterliegt in Dortmund aber dem Engländer Ross Smith.",
+          "body": "Martin Schindler hat bei der Darts-Europameisterschaft in Dortmund das Finale gegen Ross Smith mit 8:11 verloren und trotzdem Geschichte geschrieben. Der 30-Jährige aus Strausberg ist der erste Deutsche, der das Endspiel eines großen PDC-Turniers erreicht hat. Smith gewann seinen dritten Major-Titel und stieg auf Platz sechs der Weltrangliste.\n\nDas Finale in der Westfalenhalle begann ausgeglichen. Dann zog Smith mit sechs gewonnenen Legs in Folge auf 8:2 davon. Schindler kämpfte sich noch auf 7:9 heran, gewann danach aber kein Leg mehr. Laut Sportschau setzte sich der Engländer am Ende „knapp“ durch.\n\n## Der Weg ins Finale\n\nSchindlers Turnier war eine Serie von Überraschungen. In der ersten Runde schlug er den an Position zwei gesetzten Wessel Nijman mit 6:5, im Viertelfinale folgte ein klares 10:1 gegen Jonny Clayton. Im Halbfinale setzte er sich 11:6 gegen Krzysztof Ratajski durch, der zuvor Weltranglistenerster Luke Littler ausgeschaltet hatte. Titelverteidiger Gian van Veen war schon im Achtelfinale an Luke Woodhouse gescheitert.\n\n## Was der Erfolg bringt\n\nFür Schindler gibt es 80.000 Pfund Preisgeld, außerdem kehrt er in die Top 20 der Order of Merit zurück. Zugleich hat er sich nach Angaben von SPORT1 für den Grand Slam of Darts vom 14. bis 22. November qualifiziert, wo er neben Gabriel Clemens und Jan Schmidt antritt. Nach der Niederlage war er sichtbar bewegt, sagte aber, er sei „sehr, sehr glücklich“.\n\nAuch abseits des Sports war das Turnier ein Erfolg: Mehr als 35.000 Zuschauer kamen an vier Tagen in die Westfalenhalle, ein Rekord für die Veranstaltung. Die EM wird dort seit 2022 ausgetragen. Der nächste große Termin ist der Grand Slam im November, für den sich neben Schindler auch Clemens und Schmidt qualifiziert haben. Damit sind drei Deutsche dabei, wenn das Turnier startet.",
+          "source": "SPORT1",
+          "url": "https://www.sport1.de/news/darts-sport/european-championship/2026/10/em-finale-schindler-schreibt-deutsche-darts-geschichte",
+          "sources": [
+            {
+              "name": "SPORT1",
+              "url": "https://www.sport1.de/news/darts-sport/european-championship/2026/10/em-finale-schindler-schreibt-deutsche-darts-geschichte"
+            },
+            {
+              "name": "Sportschau (WDR)",
+              "url": "https://www.sportschau.de/regional/wdr/wdr-ross-smith-gewinnt-darts-em-in-dortmund-102.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T23:03:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Westfalenhalle_dortmund_6.jpg/1280px-Westfalenhalle_dortmund_6.jpg",
+            "credit": "Arne Müseler / www.arne-mueseler.com",
+            "license": "CC BY-SA 3.0 de",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Westfalenhalle_dortmund_6.jpg",
+            "alt": "Außenansicht der Westfalenhalle in Dortmund"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "sport-hoffenheim-schlaegt-leverkusen",
+          "tier": "more",
+          "headline": "Hoffenheim schlägt Leverkusen mit drei späten Toren 3:0",
+          "summary": "Nach torlosen 78 Minuten entscheiden Kramarić, Prass und Moerstadt die Partie – Prass fliegt nach dem Jubel mit Gelb-Rot.",
+          "body": "Die TSG Hoffenheim hat Bayer Leverkusen am siebten Bundesliga-Spieltag mit 3:0 (0:0) besiegt und die Partie erst in den Schlussminuten entschieden. Lange sah es nach einem torlosen Spiel aus, ehe Andrej Kramarić in der 79. Minute die Führung erzielte.\n\nZehn Minuten später erhöhte Alexander Prass auf 2:0. Beim Jubel zog er sein Trikot aus und sah dafür seine zweite Gelbe Karte, damit musste er in der 90. Minute plus eins mit Gelb-Rot vom Platz. Dem Spiel schadete das nicht mehr: In der Nachspielzeit (90.+6) traf Max Moerstadt zum 3:0-Endstand.\n\n## Tabelle\n\nHoffenheim klettert mit 9 Punkten auf Rang zehn. Leverkusen bleibt trotz der Niederlage mit 13 Punkten Vierter, hat aber den Anschluss an die Spitzenplätze nicht verbessert. Zur Spitze mit Bayern und Dortmund (je 17 Punkte) fehlen vier Zähler.\n\nFür Hoffenheim ist es ein wichtiger Erfolg gegen einen der Titelkandidaten der vergangenen Jahre. Prass wird nach seinem Platzverweis im nächsten Spiel voraussichtlich fehlen, die Sperre ist bei einer Gelb-Roten Karte automatisch. Das Trikotjubel-Verbot gehört zu den Regeln, die Profis bei Toren immer wieder in Schwierigkeiten bringen; SPORT1 sprach von einem „kopflosen Moment“.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/bundesliga/hoffenheim-siegt-im-endspurt-gegen-leverkusen,spielbericht-tsg-hoffenheim-bayer-leverkusen-102.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/bundesliga/hoffenheim-siegt-im-endspurt-gegen-leverkusen,spielbericht-tsg-hoffenheim-bayer-leverkusen-102.html"
+            },
+            {
+              "name": "bundesliga.com",
+              "url": "https://www.bundesliga.com/de/bundesliga"
+            }
+          ],
+          "publishedAt": "2026-10-25T21:30:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Sinsheim_-_Rhein-Neckar-Arena_-_blick_von_der_Burg_Steinsberg_2016-03-28_17-08-31.JPG/1280px-Sinsheim_-_Rhein-Neckar-Arena_-_blick_von_der_Burg_Steinsberg_2016-03-28_17-08-31.JPG",
+            "credit": "Radosław Drożdżewski (Zwiadowca21)",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sinsheim_-_Rhein-Neckar-Arena_-_blick_von_der_Burg_Steinsberg_2016-03-28_17-08-31.JPG",
+            "alt": "Stadion in Sinsheim, gesehen von der Burg Steinsberg"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "sport-braunschweig-derby-hannover-pyro",
+          "tier": "more",
+          "headline": "Braunschweig gewinnt Derby 2:0, Pyro-Chaos unterbricht das Spiel",
+          "summary": "Eintracht Braunschweig schlägt Hannover 96 in der 2. Liga, doch Hannoveraner Fans zünden Pyrotechnik – der Schiedsrichter unterbricht.",
+          "body": "Eintracht Braunschweig hat das 185. Niedersachsenderby gegen Hannover 96 mit 2:0 (1:0) gewonnen. Vor 22.100 Zuschauern traf Max Marie in der 17. Minute, nachdem Hannovers Torwart Leo Weinkauf einen Schuss von Junior Zé nach vorn hatte abprallen lassen. In der Nachspielzeit (90.+2) machte Yann Sturm mit einem Linksschuss alles klar.\n\n## Pyrotechnik im Gästeblock\n\nÜberschattet wurde die Partie von Ausschreitungen im Gästeblock. Hannoveraner Fans zündeten Pyrotechnik, Leuchtraketen flogen laut Sportschau über eine Pufferzone in den Nachbarblock. Starker Rauch zog über die Tribüne, Feuerwehr und Rettungskräfte rückten ins Stadion. Schiedsrichter Tobias Reichel unterbrach das Spiel für mehrere Minuten. Nach dem Abpfiff flogen Böller Richtung Braunschweiger Spieler, die zum Gästeblock gegangen waren.\n\nHannover 96 verurteilte die Vorfälle laut SID als „inakzeptable Eskalation“. Die Täter hätten die Folgen ihres Handelns gekannt und andere Menschen bewusst gefährdet, erklärte der Verein und sagte zu, bei der Identifizierung zu helfen. An- und Abreise sowie der Einlass seien ruhig verlaufen. Sportschau erwartet mögliche Sanktionen, darunter weniger oder gar keine Gästefans im nächsten Derby.\n\n## Tabelle\n\nBraunschweig springt mit dem dritten Saisonsieg auf Rang zehn. Hannover rutscht auf Platz 16 und ist unter Trainer Sandro Wagner nun drei Spiele in Folge ohne Sieg.",
+          "source": "Sportschau (NDR)",
+          "url": "https://www.sportschau.de/regional/ndr/Zweite-Liga-Eintracht-Braunschweig,niedersachsenderby-172.html",
+          "sources": [
+            {
+              "name": "Sportschau (NDR)",
+              "url": "https://www.sportschau.de/regional/ndr/Zweite-Liga-Eintracht-Braunschweig,niedersachsenderby-172.html"
+            },
+            {
+              "name": "SPORT1 (SID)",
+              "url": "https://www.sport1.de/news/fussball/2-bundesliga/2026/10/inakzeptable-eskalation-hannover-verurteilt-derbykrawalle"
+            }
+          ],
+          "publishedAt": "2026-10-25T16:51:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Stadion_an_der_Hamburger_Stra%C3%9Fe.jpg/1280px-Stadion_an_der_Hamburger_Stra%C3%9Fe.jpg",
+            "credit": "Ballon-sz.de",
+            "license": "CC BY-SA 2.0 de",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stadion_an_der_Hamburger_Stra%C3%9Fe.jpg",
+            "alt": "Stadion an der Hamburger Straße in Braunschweig"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "sport-kiel-schlaegt-dynamo-dresden",
+          "tier": "more",
+          "headline": "Kiel feiert ersten Saisonsieg und schlägt Dynamo Dresden 3:0",
+          "summary": "Holstein Kiel verlässt mit dem Heimsieg das Tabellenende der 2. Bundesliga, Dresden fällt auf Rang 15.",
+          "body": "Holstein Kiel hat am neunten Spieltag der 2. Bundesliga seinen ersten Saisonsieg gefeiert und Dynamo Dresden 3:0 geschlagen. Giorgi Kvilitaia brachte die Gastgeber bereits in der 9. Minute in Führung. Jonas Therkelsen erhöhte in der 73. Minute, Phil Harres setzte in der 85. Minute den Schlusspunkt.\n\nFür Kiel war der Erfolg im neunten Anlauf der erste Dreier, er brachte die Mannschaft vom Tabellenende auf Rang 13. Die Norddeutschen haben nun 8 Punkte. Dresden hat mit ebenfalls 8 Punkten die gleiche Ausbeute, fällt aber wegen der schlechteren Tordifferenz auf Platz 15 zurück.\n\n## Einordnung für Sachsen\n\nFür Dynamo, den größten sächsischen Zweitligisten, ist das Ergebnis ein Rückschlag im Abstiegskampf. Kiel und Dresden haben nun beide 8 Punkte, nur die Platzierung trennt sie. Dresden muss in den kommenden Wochen vor allem die Offensive in Gang bringen, in Kiel blieb die Mannschaft ohne eigenen Treffer.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/bundesliga2/kiel-schlaegt-dresden-und-klettert-nach-oben,spielbericht-holstein-kiel-dynamo-dresden-102.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/bundesliga2/kiel-schlaegt-dresden-und-klettert-nach-oben,spielbericht-holstein-kiel-dynamo-dresden-102.html"
+            }
+          ],
+          "publishedAt": "2026-10-26T00:00:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Holstein_Stadion_Westtrib%C3%BCne.JPG/1280px-Holstein_Stadion_Westtrib%C3%BCne.JPG",
+            "credit": "Allmightyjonny at de.wikipedia",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Holstein_Stadion_Westtrib%C3%BCne.JPG",
+            "alt": "Westtribüne des Holstein-Stadions in Kiel"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "sport-gummersbach-schlaegt-flensburg",
+          "tier": "more",
+          "headline": "Gummersbach fügt Flensburg die erste Saisonniederlage zu",
+          "summary": "Der VfL Gummersbach gewinnt das Handball-Bundesliga-Spiel gegen die SG Flensburg-Handewitt mit 31:30.",
+          "body": "Die SG Flensburg-Handewitt hat in der Handball-Bundesliga ihre erste Saisonniederlage kassiert. Beim VfL Gummersbach unterlag das Team am Sonntagabend knapp mit 30:31 (11:14). Gummersbach führte zur Pause mit drei Toren und rettete den Vorsprung in einer engen Schlussphase über die Zeit.\n\nBester Werfer der Gastgeber war Roganovic mit zwölf Treffern, vier davon vom Siebenmeterpunkt. Dahinter folgten Alexander Dujshebaev mit sechs und Schluroff mit fünf Toren. Bei Flensburg trafen Emil Jakobsen (sieben Tore, davon vier Siebenmeter) und Pytlick (sieben) am häufigsten, Siersbaek Bergholt kam auf fünf, Minne auf vier Treffer.\n\n## Weitere Ergebnisse\n\nAuch andere Topteams ließen Federn. Die Rhein-Neckar Löwen verloren zu Hause deutlich gegen den SC Magdeburg, der HC Hamburg unterlag beim Vorletzten Bergischer HC. Eine vollständige Tabelle lag in den Berichten nicht vor.",
+          "source": "Sportschau (NDR)",
+          "url": "https://www.sportschau.de/regional/ndr/gluecklos-in-gummersbach-flensburg-handewitt-kassiert-erste-niederlage,flensburg-handewitt-410.html",
+          "sources": [
+            {
+              "name": "Sportschau (NDR)",
+              "url": "https://www.sportschau.de/regional/ndr/gluecklos-in-gummersbach-flensburg-handewitt-kassiert-erste-niederlage,flensburg-handewitt-410.html"
+            },
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/"
+            }
+          ],
+          "publishedAt": "2026-10-25T19:58:00+01:00",
+          "importance": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Gummersbach_-_Heiner-Brand-Platz_%2B_Schwalbe-Arena_02_ies.jpg/1280px-Gummersbach_-_Heiner-Brand-Platz_%2B_Schwalbe-Arena_02_ies.jpg",
+            "credit": "Frank Vincentz",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gummersbach_-_Heiner-Brand-Platz_%2B_Schwalbe-Arena_02_ies.jpg",
+            "alt": "Heiner-Brand-Platz vor der Schwalbe-Arena in Gummersbach"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "wissenschaft",
+      "title": "Wissenschaft & Raumfahrt",
+      "emoji": "🔭",
+      "items": [
+        {
+          "id": "wissenschaft-lumina-simulation-fruehes-universum",
+          "tier": "top",
+          "headline": "Rekordsimulation zeigt die ersten zwei Milliarden Jahre des Universums",
+          "summary": "Forschende des Harvard-Smithsonian-Zentrums haben mit dem Supercomputer Frontier das bislang größte Modell der kosmischen Frühzeit gerechnet – erstmals samt Helium-Reionisation.",
+          "body": "Ein Team um den Astrophysiker Oliver Zier vom Center for Astrophysics | Harvard & Smithsonian hat eine Simulation des frühen Universums vorgestellt, die in ihrer Größe neue Maßstäbe setzt. Lumina bildet die ersten rund zwei Milliarden Jahre der kosmischen Geschichte nach. Nach Angaben der Forschenden ist es die größte kosmologische Strahlungs-Hydrodynamik-Simulation, die bisher gerechnet wurde.\n\nDas simulierte Volumen ist mehr als 100-mal so groß wie bei vergleichbaren früheren Rechnungen. Es entspricht einem Würfel mit einer Kantenlänge von etwa 1,5 Milliarden Lichtjahren. Gerechnet wurde auf dem Supercomputer Frontier am Oak Ridge National Laboratory im US-Bundesstaat Tennessee, wo mehr als 15.000 Grafikprozessoren im Einsatz waren. Die Arbeit erscheint im Fachjournal Monthly Notices of the Royal Astronomical Society in einer Arbeit zum Lumina-Projekt.\n\n## Was neu ist\n\nDas Besondere an Lumina ist die Helium-Reionisation. Damit bezeichnen Astronomen die Phase, in der das intergalaktische Helium durch energiereiche Strahlung seine Elektronen verlor. Frühere Großsimulationen konnten diesen Vorgang nicht erfassen. Lumina berücksichtigt ihn erstmals samt seiner Rückwirkung auf die Entwicklung des Universums. Mitautor Aaron Smith von der University of Texas at Dallas sagte: „Erstmals können wir verfolgen, wie sich Wasserstoff und Helium in ihre heutige Form wandelten.“\n\nDie Reionisation von Wasserstoff und Helium gehört zu den großen Umbrüchen der kosmischen Geschichte. Sie legt fest, wie sich das Gas zwischen den Galaxien aufheizte und wie sich Sterne und Galaxien danach weiterentwickeln konnten.\n\n## Abgleich mit Teleskopen\n\nDie Forschenden wollen die Ergebnisse mit Beobachtungen des James-Webb-Weltraumteleskops und des Nancy-Roman-Teleskops vergleichen, um bestehende Theorien zu prüfen. Zier betonte, das frühe Universum sei durch das Webb-Teleskop zu einem spannenden neuen Forschungsfeld geworden. Geplant sind Studien zu Gasströmen zwischen Galaxien, zur Strahlung aus der Frühzeit des Universums und zur Entstehung besonders intensiver Sternentstehungsregionen.\n\nDie veröffentlichte Darstellung zeigt einen Ausschnitt des kosmischen Netzes, jenes Geflechts aus Gasfilamenten und Galaxienhaufen, mit einem Durchmesser von etwa 650 Millionen Lichtjahren.\n\n## Einordnung\n\nDie Meldung zeigt, wie eng Beobachtung und Rechnung inzwischen verzahnt sind. Webb liefert immer mehr Daten aus der kosmischen Frühzeit, die sich nur mit sehr großen Modellen einordnen lassen. Solche Simulationen benötigen enorme Rechenleistung, hier mehr als 15.000 Grafikprozessoren. Ob Lumina die Beobachtungen am Ende bestätigt oder Widersprüche aufdeckt, werden erst die angekündigten Vergleiche zeigen.",
+          "source": "Phys.org (Smithsonian)",
+          "url": "https://phys.org/news/2026-10-lumina-simulation-early-universe-life.html",
+          "sources": [
+            {
+              "name": "Phys.org (Smithsonian)",
+              "url": "https://phys.org/news/2026-10-lumina-simulation-early-universe-life.html"
+            },
+            {
+              "name": "EurekAlert (Smithsonian)",
+              "url": "https://www.eurekalert.org/news-releases/1148684"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+02:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Frontier_supercomputer_%2815%29.jpg/1280px-Frontier_supercomputer_%2815%29.jpg",
+            "credit": "Oak Ridge National Laboratory",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Frontier_supercomputer_(15).jpg",
+            "alt": "Der Supercomputer Frontier am Oak Ridge National Laboratory"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "wissenschaft-seegurken-hydrogel-sehnen",
+          "tier": "top",
+          "headline": "Seegurken-Gel soll verletzte Sehnen heilen helfen",
+          "summary": "Ein von Seegurken inspiriertes Hydrogel mit einstellbarer Steifigkeit hat bei Ratten Achillessehnen besser heilen lassen als eine Naht allein. Beim Menschen ist es noch ungetestet.",
+          "body": "Forschende der University of Waterloo in Kanada und der University of Louisville in den USA haben ein Hydrogel entwickelt, das nach dem Vorbild von Seegurken seine Steifigkeit verändern kann. Im Tierversuch an Ratten mit verletzter Achillessehne heilte das Gewebe damit besser als mit einer Naht allein. Die Arbeit ist in der Fachzeitschrift „Advanced Functional Materials“ erschienen, beteiligt waren auch Teams aus den USA, Taiwan, China und Kanada.\n\nSeegurken können ihr Bindegewebe zwischen weich und steif umschalten. Das Team um Yimin Wu und Youchao Teng von der University of Waterloo nutzte dieses Prinzip für ein Gel auf Gelatinebasis. Es wird gerichtet eingefroren, wodurch sich ausgerichtete Faserbündel bilden. Anschließend wird es in verschiedenen Salzlösungen behandelt. So lässt sich die Steifigkeit nach der Herstellung einstellen: Im Labor reichte sie von etwa 9,7 Kilopascal bis 3,59 Megapascal. Am robustesten war die mit Natriumcitrat behandelte Variante, die für die Tierversuche zusätzlich mit einem Enzym stabilisiert wurde.\n\n## Was die Rattenversuche zeigten\n\nIn den Versuchen entfernten die Forschenden ein drei Millimeter langes Stück der Achillessehne und nähten die Enden zusammen. Drei Gruppen wurden verglichen: mit dem optimierten Gel, mit einem weicheren Gelatinegel und mit Naht allein. Nach zwölf Wochen bedeckte Kollagen etwa 81 Prozent der Gewebefläche in der Gruppe mit dem optimierten Gel, rund 63 Prozent beim weicheren Gel und etwa 46 Prozent bei der Naht allein. Die Kollagenfasern lagen im optimierten Fall dichter und paralleler.\n\nBewegungstests näherten sich nach acht Wochen den Werten unverletzter Tiere an, auch Zugfestigkeit und Steifigkeit waren nach zwölf Wochen besser. Per Magnetresonanztomografie zeigte sich, dass das Gel nach rund acht Wochen fast vollständig abgebaut war. Es verschwindet also, sobald das Gewebe selbst trägt.\n\n## Grenzen der Studie\n\nDie Autoren und der Bericht von scinexx nennen mehrere Einschränkungen: kleine Tiergruppen, kein Vergleich mit klinisch genutzten Implantatmaterialien und keine Tests an Muskel, Knorpel, Haut oder Organen. Sicherheit und Wirksamkeit beim Menschen sind nicht geprüft. Als nächste Schritte sind Versuche an größeren Tieren und danach klinische Studien vorgesehen. Zwei Patente wurden beantragt, zudem wurde eine Firma zur Vermarktung gegründet.\n\nDer Bedarf ist da: Sehnenverletzungen heilen oft nur langsam, Achillessehnenrisse sind eine typische Verletzung bei Sportlern. Bis ein solches Gel in Kliniken ankommt, vergehen nach üblichem Verlauf allerdings Jahre. Die Ergebnisse hätten ihn „sehr ermutigt“, sagte Youchao Teng laut scinexx.",
+          "source": "scinexx",
+          "url": "https://www.scinexx.de/news/medizin/seegurken-hydrogel-koennte-geschaedigtes-menschliches-gewebe-heilen/",
+          "sources": [
+            {
+              "name": "scinexx",
+              "url": "https://www.scinexx.de/news/medizin/seegurken-hydrogel-koennte-geschaedigtes-menschliches-gewebe-heilen/"
+            },
+            {
+              "name": "Phys.org (University of Waterloo)",
+              "url": "https://phys.org/news/2026-10-sea-cucumberinspired-gel-tissue-humans.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+02:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Sea_cucumber_swimming_near_Puerto_Rico_April_2015.png/1280px-Sea_cucumber_swimming_near_Puerto_Rico_April_2015.png",
+            "credit": "NOAA Office of Ocean Exploration and Research",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sea_cucumber_swimming_near_Puerto_Rico_April_2015.png",
+            "alt": "Eine Seegurke schwimmt vor Puerto Rico"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "wissenschaft-sonnenflare-baender-rekonnexion",
+          "tier": "more",
+          "headline": "Leuchtende Bänder verraten verborgene Explosionen auf der Sonne",
+          "summary": "Je zerklüfteter die Ränder der Flare-Bänder, desto schneller wandelt sich magnetische Energie um. Das zeigt die Auswertung eines Sonnenausbruchs von 2015.",
+          "body": "Ein Team der University of Colorado Boulder um Marcel F. Corchado Albelo hat untersucht, was die leuchtenden Bänder eines Sonnenausbruchs über dessen Ablauf verraten. Ihre Ränder sind unregelmäßig, und genau diese Unregelmäßigkeit scheint mit dem Tempo der magnetischen Rekonnexion zusammenzuhängen, jenem Prozess, bei dem sich Magnetfelder neu verbinden und Energie freisetzen.\n\nDie Forschenden werteten Daten des NASA-Satelliten IRIS zu einem Flare vom 22. Juni 2015 der Klasse M6.5 aus. Sie verfolgten die hellen Vorderkanten der Bänder und bestimmten über mehrere Größenskalen, wie unregelmäßig sie verlaufen. Zuvor testeten sie das Verfahren an synthetischen Daten. Ergebnis: Je strukturierter die Ränder, desto höher die abgeleitete Rekonnexionsrate. Der Korrelationskoeffizient nach Spearman lag für beide magnetische Polaritäten bei 0,7. Phasen mit komplexen Rändern fielen zudem mit starker harter Röntgenstrahlung zusammen, ein Hinweis auf energiereiche Teilchen. Die Studie erschien im „Astrophysical Journal“.\n\nDie Autoren schränken ein: Es wurde nur ein einziger Flare analysiert, der Zusammenhang muss an schwächeren und stärkeren Ausbrüchen bestätigt werden. Es handelt sich um indirekte Belege, für Vorhersagen von Eruptionen taugt die Methode bisher nicht. Künftige Sonnenobservatorien mit höherer Auflösung könnten die feinsten Randstrukturen genauer erfassen.\n\nDie Befunde helfen, die Physik der Sonnenausbrüche besser zu verstehen.",
+          "source": "scinexx",
+          "url": "https://www.scinexx.de/news/kosmos/leuchtende-baender-enthuellen-verborgene-explosionen-auf-der-sonne/",
+          "sources": [
+            {
+              "name": "scinexx",
+              "url": "https://www.scinexx.de/news/kosmos/leuchtende-baender-enthuellen-verborgene-explosionen-auf-der-sonne/"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+02:00",
+          "importance": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Solar_flare_%28noao-02245%29.jpg/1280px-Solar_flare_%28noao-02245%29.jpg",
+            "credit": "NSO/AURA/NSF",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Solar_flare_(noao-02245).jpg",
+            "alt": "Sonnenflare mit ausgeworfenem Material (Symbolbild)"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "wissenschaft-andreev-qubit-auslesen",
+          "tier": "more",
+          "headline": "Theorie: Quantenbit lässt sich über Suprastrom fast zerstörungsfrei auslesen",
+          "summary": "Ein Verfahren für Andreev-Qubits kommt ohne Hilfsqubits aus. Bisher ist es eine Simulation, die Anordnung existiert noch nicht.",
+          "body": "Forschende der Universität São Paulo in São Carlos und des Beijing Institute of Technology haben einen Vorschlag veröffentlicht, wie sich der Zustand eines Quantenbits auslesen lässt, ohne es dabei zu zerstören. Die Arbeit erschien in „Physical Review B“ unter dem Titel „Andreev qubit readout from dynamic interference supercurrent“. Geleitet wurde sie von José Carlos Egues und Yugui Yao.\n\nIm Mittelpunkt steht ein Andreev-Qubit in einem Quantenpunkt aus einem Indiumarsenid-Nanodraht zwischen zwei Supraleitern. Sein Zustand zeigt sich in einem Suprastrom, der ohne äußere Spannung oszilliert. Das unterscheidet sich vom Wechselstrom-Josephson-Effekt, für den eine Spannung nötig ist. Ein SQUID, ein sehr empfindlicher Magnetfeldsensor, misst das vom Strom erzeugte Magnetfeld. Die Kopplung ist schwach, daher bleibt die Rückwirkung auf das Qubit gering. Hilfsqubits werden nicht gebraucht, und nach jeder Messung muss das Qubit nicht zurückgesetzt werden, die Dynamik lässt sich fortlaufend beobachten.\n\nIn Simulationen mit Rauschen erreichte das Verfahren je nach Zahl der Messungen Genauigkeiten von 99,52, 99,81 und 99,85 Prozent. Die Studie ist rein theoretisch: Laut Egues stammen die Parameter aus bestehenden Systemen, die vorgeschlagene Geometrie wurde aber noch nicht gebaut. Das grundsätzliche Messproblem der Quantenmechanik hebt der Ansatz nicht auf, er nähert sich lediglich einer nahezu zerstörungsfreien Auslese. Eine experimentelle Bestätigung steht aus.\n\nFür Quantencomputer ist das Auslesen ein zentrales Hindernis, weil jede Messung den Zustand stört. Für den Alltag bleibt das vorerst Grundlagenforschung.",
+          "source": "Phys.org (FAPESP)",
+          "url": "https://phys.org/news/2026-10-supercurrent-enables-quantum-destroying.html",
+          "sources": [
+            {
+              "name": "Phys.org (FAPESP)",
+              "url": "https://phys.org/news/2026-10-supercurrent-enables-quantum-destroying.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+02:00",
+          "importance": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Quantum-computer-Chalmers_2017.jpg/1280px-Quantum-computer-Chalmers_2017.jpg",
+            "credit": "Anita Fors (Chalmers)",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Quantum-computer-Chalmers_2017.jpg",
+            "alt": "Quantenprozessor mit drei Qubits"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "wissenschaft-zeitqubit-vorwaerts-rueckwaerts",
+          "tier": "more",
+          "headline": "Hat ein Experiment von 2018 unbemerkt ein „Zeitqubit“ erzeugt?",
+          "summary": "Der Physiker Tai Hyun Yoon deutet alte Photonenexperimente neu. Die Arbeit ist ein noch nicht begutachteter Preprint.",
+          "body": "Der Physiker Tai Hyun Yoon von der Korea University in Seoul argumentiert, dass ein Photonenexperiment aus dem Jahr 2018 möglicherweise einen Quantenzustand erzeugt hat, der sich in einer Überlagerung zweier entgegengesetzter Entwicklungsrichtungen befindet, ein sogenanntes Zeitqubit. Er hat dazu Daten früherer Experimente, an denen er beteiligt war, neu gedeutet. Die Ergebnisse stehen als Preprint auf arXiv, eine unabhängige Begutachtung steht noch aus.\n\nDie theoretische Grundlage ist ein Vorschlag aus dem Jahr 2025, bei dem ein Teilchen zwei Wege mit entgegengesetzten Magnetfeldern durchläuft. In dem Experiment erzeugten zwei spezielle Kristalle, angetrieben von einem gemeinsamen Pumplaser, Photonenpaare aus Signal- und Idler-Photon. Ein zweiter gemeinsamer Laser stimuliert die Paarerzeugung und steuert die Lichtphase. Verschiebt sich die relative Phase der beiden Erzeugungswege um 180 Grad, kehrt sich das Vorzeichen des stimulierten Anteils der Wechselwirkung um, der spontane Anteil bleibt gleich. Weder der Prozess noch die physikalische Zeit laufen dabei rückwärts.\n\nDie Signalphotonen von 2018 zeigten Interferenz mit einem Kontrast von nahezu 99 Prozent, nach Abzug des Detektoruntergrunds. Allerdings nutzten die Messungen Phasendurchläufe ohne die laufende aktive Stabilisierung, die die Theorie verlangt. Eine echte Zeitumkehr und volle Kontrolle des Zeitqubits sind daher nicht gezeigt. Mögliche Anwendungen bei der Quantenfehlerkorrektur oder in Simulationen bleiben theoretisch.\n\nDie Meldung ist ein Beispiel dafür, wie Grundlagenphysik neue Deutungen alter Daten prüft. Ob sich die Idee hält, entscheidet sich erst durch Begutachtung und neue Messungen.",
+          "source": "scinexx",
+          "url": "https://www.scinexx.de/news/physik/haben-physiker-ein-qubit-erzeugt-das-sich-zugleich-vorwaerts-und-rueckwaerts-entwickelt/",
+          "sources": [
+            {
+              "name": "scinexx",
+              "url": "https://www.scinexx.de/news/physik/haben-physiker-ein-qubit-erzeugt-das-sich-zugleich-vorwaerts-und-rueckwaerts-entwickelt/"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+02:00",
+          "importance": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Full_wafer_of_Intel_quantum_computers.jpg/1280px-Full_wafer_of_Intel_quantum_computers.jpg",
+            "credit": "Steve Jurvetson from Menlo Park, USA",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Full_wafer_of_Intel_quantum_computers.jpg",
+            "alt": "Wafer mit Quantenchips"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "gesundheit",
+      "title": "Gesundheit",
+      "emoji": "🩺",
+      "items": [
+        {
+          "id": "gesundheit-divarasib-lungenkrebs-krascendo",
+          "tier": "top",
+          "headline": "Divarasib schlägt etablierte KRAS-Hemmer bei Lungenkrebs",
+          "summary": "In der Phase-3-Studie Krascendo 1 verlängert Divarasib das Überleben stärker als Sotorasib oder Adagrasib. Die Daten erschienen im New England Journal of Medicine.",
+          "body": "Ein neuer Wirkstoff gegen eine bestimmte Form von Lungenkrebs hat in einem direkten Vergleich mit zugelassenen Medikamenten besser abgeschnitten. Das zeigt die Phase-3-Studie Krascendo 1, die auf dem Krebskongress ESMO in Madrid vorgestellt und zeitgleich im New England Journal of Medicine veröffentlicht wurde. Sponsor ist der Hersteller Roche mit seiner Tochter Genentech.\n\nUntersucht wurde der KRAS-G12C-Hemmer Divarasib bei 338 Erwachsenen mit vorbehandeltem, fortgeschrittenem nicht-kleinzelligem Lungenkrebs, dessen Tumor diese Genveränderung trägt. Die Patientinnen und Patienten erhielten nach Zufallsprinzip entweder Divarasib oder einen der beiden bereits zugelassenen Hemmer Sotorasib und Adagrasib. Die Studie lief an 151 Zentren in 26 Ländern.\n\n## Die Ergebnisse\n\nNach einer mittleren Beobachtungszeit von 14,3 Monaten war das Risiko für ein Fortschreiten der Erkrankung unter Divarasib um 42 Prozent niedriger, das Sterberisiko um 44 Prozent. Die mediane Zeit ohne Fortschreiten betrug 9,8 Monate gegenüber 5,7 Monaten, die mediane Gesamtüberlebenszeit 17,7 gegenüber 12 Monaten. Auf den Tumor sprachen 58,4 Prozent der Behandelten an, in der Vergleichsgruppe waren es 32,3 Prozent. Schwere behandlungsbedingte Nebenwirkungen traten bei 25 Prozent unter Divarasib auf, bei 35 Prozent in der Vergleichsgruppe.\n\nRoche hatte bereits im Sommer mitgeteilt, dass die Studie ihr Hauptziel erreicht hat, und vorab angekündigt, dass sie die Grundlage für Zulassungsanträge bildet. Die konkreten Zahlen kamen jetzt mit der Veröffentlichung. Laut Roche ist es die einzige weltweite Studie, die ein Mittel der nächsten Generation direkt mit zugelassenen Mitteln der ersten Generation vergleicht.\n\n## Einordnung\n\nDie Studie hat Grenzen. Sie war nicht verblindet, die Gruppe, die Adagrasib erhielt, war relativ klein, und Patienten mit unbehandelten Hirnmetastasen waren ausgeschlossen. Die Ergebnisse gelten zudem nur für Menschen, die schon eine Therapie hinter sich haben. Eine Zulassung in der EU gibt es für Divarasib bisher nicht.\n\nKRAS-G12C-Mutationen finden sich nach Angaben der Studienautoren bei etwa 14 Prozent der Patienten mit nicht-kleinzelligem Lungenkrebs. Eine Zulassung würde die Auswahl zielgerichteter Therapien erweitern. Ob der Vorteil im Alltag der Kliniken in gleicher Größe auftritt und wie sich der Preis zu den bisherigen Mitteln verhält, ist offen.",
+          "source": "EurekAlert (MD Anderson Cancer Center)",
+          "url": "https://www.eurekalert.org/news-releases/1149098",
+          "sources": [
+            {
+              "name": "EurekAlert (MD Anderson Cancer Center)",
+              "url": "https://www.eurekalert.org/news-releases/1149098"
+            },
+            {
+              "name": "Roche",
+              "url": "https://www.roche.com/media/releases/med-cor-2026-10-19"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+01:00",
+          "importance": 6,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Pancoast_Tumor_2.jpg",
+            "credit": "Jmarchn",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pancoast_Tumor_2.jpg",
+            "alt": "CT-Aufnahme eines Lungentumors im rechten Lungenflügel"
+          }
+        },
+        {
+          "id": "gesundheit-notfallreform-hausaerzte-warnen",
+          "tier": "more",
+          "headline": "Hausärzte warnen Merz vor Personalmangel bei Notfallreform",
+          "summary": "Der Hausärzteverband Sachsen-Anhalt fragt in einem offenen Brief, wer die neuen Aufgaben der beschlossenen Notfallreform übernehmen soll.",
+          "body": "Der Hausärzteverband Sachsen-Anhalt hat Bundeskanzler Friedrich Merz in einem offenen Brief vor ungeklärten Personalfragen in der Notfallreform gewarnt. Das Gesetz wurde vom Bundestag bereits verabschiedet. Verfasser des Schreibens ist der Verbandsvorsitzende Torsten Kudela. Er kritisiert, dass bisher offen sei, wer die zusätzlichen Aufgaben übernehmen soll.\n\nDie Reform sieht rund um die Uhr eine telefonische oder videogestützte Akutversorgung vor, bei Bedarf auch vor Ort. An Kliniken sollen Integrierte Notfallzentren Patienten nach einer Ersteinschätzung weiterleiten, etwa an Kooperationspraxen. Ziel ist es, die Notaufnahmen zu entlasten.\n\nKudela argumentiert, neue Strukturen schüfen keine zusätzlichen Ärzte, sondern verteilten die knappe Arbeitszeit nur neu. Zudem vermisst der Verband einen Abbau von Bürokratie und den erkennbaren Willen, die Gesundheitskompetenz der Bevölkerung zu stärken.\n\nZum Hintergrund nennt die Meldung, die Kassenärztliche Vereinigung Sachsen-Anhalt habe im April vor Doppelstrukturen gewarnt, die Personal binden würden, das nicht vorhanden sei. Nach Angaben der KV könnte bis 2030 etwa ein Drittel der Medizinerinnen und Mediziner in den Ruhestand gehen. Ärztinnen und Ärzte mit ausländischem Abschluss warteten zuletzt im Schnitt 86 Wochen auf ihre Anerkennung.\n\nOb die Reform in der Praxis greift, hängt nach dieser Kritik davon ab, ob genügend Personal für die neuen Strukturen gewonnen werden kann.",
+          "source": "Apotheke Adhoc (dpa)",
+          "url": "https://www.apotheke-adhoc.de/nachrichten/detail/politik/notfallreform-hausaerzte-warnen-vor-personalmangel/",
+          "sources": [
+            {
+              "name": "Apotheke Adhoc (dpa)",
+              "url": "https://www.apotheke-adhoc.de/nachrichten/detail/politik/notfallreform-hausaerzte-warnen-vor-personalmangel/"
+            }
+          ],
+          "publishedAt": "2026-10-25T14:21:00+01:00",
+          "importance": 4,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Stethoscope_and_Laptop_Computer_-_Nci-vol-9713-300.jpg/1280px-Stethoscope_and_Laptop_Computer_-_Nci-vol-9713-300.jpg",
+            "credit": "Daniel Sone (photographer)",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stethoscope_and_Laptop_Computer_-_Nci-vol-9713-300.jpg",
+            "alt": "Hände an einem Laptop, daneben ein Stethoskop"
+          }
+        },
+        {
+          "id": "gesundheit-vapes-aromenverbot-dak",
+          "tier": "more",
+          "headline": "DAK: Jeder Fünfte der 15- bis 17-Jährigen dampft Einweg-Vapes",
+          "summary": "Laut einer Umfrage nutzen 19 Prozent der 15- bis 17-Jährigen Einweg-E-Zigaretten. DAK-Chef Storm fordert ein Verbot von Aromen.",
+          "body": "Einweg-E-Zigaretten sind unter Jugendlichen das beliebteste Nikotinprodukt. Das geht aus einer Umfrage für die DAK-Gesundheit hervor, über die die Deutsche Presse-Agentur am Sonntag berichtete. Demnach haben rund 19 Prozent der 15- bis 17-Jährigen in den vergangenen 30 Tagen mindestens einmal eine Einweg-Vape geraucht. Wiederverwendbare E-Zigaretten nutzten etwa 16 Prozent, normale Zigaretten 17 Prozent. Bei den 11- bis 14-Jährigen gaben 4,9 Prozent an, im Vormonat Einweg-Vapes konsumiert zu haben.\n\nViele Jugendliche greifen laut den Angaben zu mehreren Nikotinprodukten gleichzeitig. Das Institut IFT-Nord warnt deshalb vor höherer Nikotinaufnahme und einem größeren Abhängigkeitsrisiko. Befragt wurden zwischen November 2025 und Februar 2026 insgesamt 28.554 Jugendliche an 141 Schulen. Die Erhebung gehört zum sogenannten Präventionsradar. Es handelt sich um eine Umfrage, nicht um eine Messung des tatsächlichen Konsums.\n\nPolitisch geht es um zwei Hebel. Liquids für E-Zigaretten sollen ab 2027 mit 0,38 Euro je Milliliter besteuert werden, bis 2030 steigt der Satz auf 0,44 Euro. Ursprünglich war nur ein Anstieg um einen Cent vorgesehen. DAK-Chef Andreas Storm begrüßt die höhere Steuer, verlangt aber zusätzlich ein Verbot von Aromen wie Mango oder Menthol. Der Verordnungsentwurf des Agrarministeriums sehe bisher nur Höchstmengen vor, die laut IFT-Nord rein toxikologisch abgeleitet seien.\n\nOb ein Aromenverbot kommt, ist offen.",
+          "source": "Apotheke Adhoc (dpa)",
+          "url": "https://www.apotheke-adhoc.de/nachrichten/detail/politik/vapes-dak-chef-fordert-aromen-verbot/",
+          "sources": [
+            {
+              "name": "Apotheke Adhoc (dpa)",
+              "url": "https://www.apotheke-adhoc.de/nachrichten/detail/politik/vapes-dak-chef-fordert-aromen-verbot/"
+            }
+          ],
+          "publishedAt": "2026-10-25T10:58:00+01:00",
+          "importance": 4,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Vape_Pen_-_E-Cigarette_%2825520466541%29.jpg/1280px-Vape_Pen_-_E-Cigarette_%2825520466541%29.jpg",
+            "credit": "Lindsay Fox from Newport beach, United States",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vape_Pen_-_E-Cigarette_(25520466541).jpg",
+            "alt": "Eine E-Zigarette (Vape-Pen)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "klima",
+      "title": "Klima & Umwelt",
+      "emoji": "🌱",
+      "items": [
+        {
+          "id": "klima-sturmtiefs-europa-stromausfaelle",
+          "tier": "top",
+          "headline": "Sturmtiefs legen Strom und Flugverkehr in Westeuropa lahm",
+          "summary": "Zwei Sturmtiefs sind binnen 24 Stunden über Nordeuropa gezogen: Hunderttausende Haushalte waren zeitweise ohne Strom, in Freiburg musste die Uniklinik Patienten abweisen.",
+          "body": "Am Wochenende sind mehrere Sturmtiefs über Nordwesteuropa und Deutschland hinweggezogen. Nach einem Bericht der Agentur AFP, den Phys.org am Sonntag veröffentlichte, trafen die Stürme „Boelo“ und „Austen“ binnen 24 Stunden kurz hintereinander auf Land. Am Samstag erreichte „Austen“ seinen Höhepunkt, im Westen Schottlands wurden Böen von bis zu 135 Kilometern pro Stunde gemessen.\n\nIn Deutschland berichtet ZDFheute am Sonntagnachmittag über das Sturmtief „Manja“. Wie sich die unterschiedlichen Namen zueinander verhalten, geht aus den beiden Berichten nicht hervor. Beide beschreiben aber dieselbe Wetterlage und ähnliche Folgen.\n\n## Stromausfälle in drei Ländern\n\nAm stärksten betroffen waren die Stromnetze. In Großbritannien waren laut AFP über 82.000 Haushalte ohne Strom, die Energy Networks Association zählte über das Wochenende gerechnet zeitweise mehr als 400.000 betroffene Haushalte. In Frankreich meldete der Netzbetreiber Enedis am Samstag rund 288.000 Haushalte ohne Strom, am Sonntagmittag waren es noch etwa 59.000, vor allem in der Normandie und der Bretagne. Dort waren 2.600 Techniker im Einsatz.\n\nIn Deutschland traf es besonders den Raum Freiburg im Breisgau. Nach Angaben von ZDFheute flog im Stadtteil Littenweiler ein Blechdach in ein Umspannwerk und löste einen Kurzschluss aus. Mehrere Tausend Haushalte saßen im Dunkeln, AFP nennt mindestens 10.000. Die Uniklinik konnte zeitweise nur noch lebensbedrohliche Notfälle aufnehmen, auch das Mobilfunknetz fiel aus.\n\n## Verletzte und gestrichene Flüge\n\nAuf einem Herbstmarkt im rheinland-pfälzischen Nastätten wurden am Samstag zwei Menschen schwer verletzt, als der Sturm Gerüste umwarf. In Brüssel verletzten herabstürzende Bäume vier Menschen. In Großbritannien blockierten umgestürzte Bäume und Leitungen Straßen und Bahnstrecken, in Brighton riss der Sturm einen Teil des Piers weg. Hunderte Flüge wurden gestrichen oder umgeleitet; am Flughafen Amsterdam-Schiphol fielen am Sonntag laut AFP rund 90 Flüge aus. In Nordrhein-Westfalen hatten Feuerwehren viele Einsätze wegen umgestürzter Bäume, die Fähren nach Helgoland sollen frühestens am Dienstag wieder fahren.\n\n## Wie es weitergeht\n\nDer Deutsche Wetterdienst erwartete für die Nordseeküste am Sonntag weiter Böen bis 100 Kilometer pro Stunde. Im Tagesverlauf beruhigte sich das Wetter laut ZDFheute in weiten Teilen des Landes. Für Montag sagt der Dienst im Süden mildere Luft mit 10 bis 16 Grad voraus. Zuvor hatte Sturmtief „Luise“ am Freitag vor allem im Westen und Südwesten Schäden angerichtet, dabei wurden zwei Menschen schwer verletzt.\n\nFür Sachsen und Leipzig nennen die Berichte keine Schäden. Wer in den kommenden Tagen mit Bahn oder Flugzeug nach Westeuropa unterwegs ist, sollte dennoch mit Nachwirkungen rechnen. Fachleute verweisen laut AFP darauf, dass die Erderwärmung Extremwetterereignisse häufiger machen dürfte.",
+          "source": "Phys.org (AFP)",
+          "url": "https://phys.org/news/2026-10-storms-batter-europe-power-flights.html",
+          "sources": [
+            {
+              "name": "Phys.org (AFP)",
+              "url": "https://phys.org/news/2026-10-storms-batter-europe-power-flights.html"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/panorama/wetter-sturm-warnung-sonntag-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T14:13:00+01:00",
+          "importance": 7,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Joshua_Tree_Park_approaching_thunderstorm_02_2013.jpg/1280px-Joshua_Tree_Park_approaching_thunderstorm_02_2013.jpg",
+            "credit": "Tuxyso",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Joshua_Tree_Park_approaching_thunderstorm_02_2013.jpg",
+            "alt": "Dunkle Gewitterwolken über einer Wüstenlandschaft"
+          }
+        },
+        {
+          "id": "klima-umweltpreis-steinmeier-aachen",
+          "tier": "top",
+          "headline": "Steinmeier mahnt bei Umweltpreis zum Umdenken im Wirtschaften",
+          "summary": "Bei der Verleihung des Deutschen Umweltpreises in Aachen forderte der Bundespräsident, Klimaschutz nicht hinter Sicherheitssorgen zurückzustellen. Ausgezeichnet wurden Klimajuristin Roda Verheyen und Ingenieur Klaus Vossenkaul.",
+          "body": "Bundespräsident Frank-Walter Steinmeier hat am Sonntag in Aachen den Deutschen Umweltpreis der Deutschen Bundesstiftung Umwelt (DBU) überreicht und dabei zu einem Kurswechsel aufgerufen. Die Gesellschaft müsse ihre Art zu leben und zu wirtschaften hinterfragen, um Kindern und Enkeln einen lebenswerten Planeten zu hinterlassen, sagte er beim Festakt im Eurogress. Es war die 34. Verleihung des mit insgesamt 500.000 Euro dotierten Preises.\n\n## Ein Appell gegen das Wegschauen\n\nUmwelt- und Klimaschutz seien zuletzt wegen der Sorgen um Stabilität und Sicherheit in den Hintergrund gerückt, so Steinmeier. Der Ernst der Lage sei aber spürbar. Die „Fieberkurve unseres Planeten“ zeige deutlich nach oben, und Europa erwärme sich mehr als doppelt so schnell wie alle anderen Kontinente. Der Bundespräsident hob den Schutz von Böden, Wäldern, Mooren und Meeren hervor, weil sie das Klima stabilisieren helfen.\n\nSteinmeier überreichte den Preis seit 2017 jedes Jahr. Seine Amtszeit endet im kommenden Jahr, es war deshalb seine letzte Verleihung in diesem Amt.\n\n## Die Preisträger\n\nDie Hamburger Umweltjuristin Roda Verheyen wird für ihren Einsatz für Umwelt- und Klimagerechtigkeit ausgezeichnet. Die 54-Jährige ist Rechtsanwältin und Mitglied des Hamburgischen Verfassungsgerichts. Nach Darstellung der DBU gibt sie Menschen Gehör, die unter Klimafolgen leiden, und überträgt abstrakte Vorgaben des nationalen und internationalen Rechts auf konkrete Fälle. Steinmeier würdigte, sie habe maßgeblich dazu beigetragen, dass das Bundesverfassungsgericht das Ziel der Klimaneutralität bis 2045 festgelegt hat.\n\nDer zweite Preis geht an den Ingenieur Klaus Vossenkaul, Gründer der Membion GmbH in Roetgen bei Aachen. Der 61-Jährige entwickelte Hohlfasermembranfilter, die aus Klärschlamm klares Wasser gewinnen. Sie halten Mikroplastik, Krankheitserreger und multiresistente Keime zurück, mit Aktivkohle lassen sich auch Arznei- und Kosmetikrückstände entfernen. DBU-Generalsekretär Alexander Bonde sprach von einer „neuen Ära der Abwasserreinigung“. Steinmeier nannte die Technik platz-, energie- und kostensparend.\n\n## Warum das auch Sachsen betrifft\n\nDie Technik passt zu einer anstehenden Pflicht: Die EU-Kommunalabwasserrichtlinie soll Mikroplastik, Krankheitserreger und Arzneimittelrückstände aus dem Abwasser filtern. Die Mitgliedstaaten müssen sie bis Juli 2027 in nationales Recht umsetzen. Für Kläranlagen auch in Sachsen wird die Frage wichtiger, wie sich solche Anforderungen platz- und energiesparend erfüllen lassen.\n\nDie Auszeichnung der Klimajuristin erinnert zudem daran, dass Klimapolitik zunehmend vor Gericht verhandelt wird. Die Preisträger waren bereits im September bekannt gegeben worden, wie ZDFheute damals berichtete.",
+          "source": "Deutsche Bundesstiftung Umwelt (idw)",
+          "url": "https://idw-online.de/de/news879636",
+          "sources": [
+            {
+              "name": "Deutsche Bundesstiftung Umwelt (idw)",
+              "url": "https://idw-online.de/de/news879636"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/wissen/deutscher-umweltpreis-vergabe-preistraeger-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T13:40:00+01:00",
+          "importance": 5,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/2025_Aachen%2C_Eurogress_%2802%29.jpg/1280px-2025_Aachen%2C_Eurogress_%2802%29.jpg",
+            "credit": "Kleon3",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:2025_Aachen,_Eurogress_(02).jpg",
+            "alt": "Haupteingang des Kongresszentrums Eurogress in Aachen"
+          }
+        },
+        {
+          "id": "klima-korallenriffe-rote-liste",
+          "tier": "top",
+          "headline": "Fast alle Korallenriffe gelten als vom Zusammenbruch bedroht",
+          "summary": "Eine globale IUCN-Bewertung stuft 96 Prozent der untersuchten Korallenriff-Ökosysteme als „critically endangered“ ein. Auch alle 17 Flachwasserriffe Australiens sind betroffen.",
+          "body": "Die Korallenriffe der Erde stehen nach einer neuen globalen Bewertung der Weltnaturschutzunion IUCN vor dem Zusammenbruch. Wie Phys.org unter Berufung auf die University of Melbourne berichtet, gelten 96 Prozent der bewerteten Riff-Ökosysteme als „critically endangered“, also vom Kollaps bedroht. Das ist die höchste Gefährdungsstufe der Roten Liste der Ökosysteme.\n\n## Was die Bewertung umfasst\n\nUntersucht wurden 127 tropische und subtropische Meeresregionen. Mehr als 250 Forschende aus über 80 Ländern und Territorien waren beteiligt, koordiniert von der IUCN, der University of Melbourne und der Organisation CORDIO East Africa. Die wissenschaftliche Leitung hatte Mishal Gudka. Die Ergebnisse liegen bisher als Preprint vor und sind noch nicht von unabhängigen Fachleuten begutachtet.\n\nFür Australien fällt das Urteil besonders deutlich aus: Alle 17 Flachwasser-Riffsysteme des Landes sind als „critically endangered“ eingestuft. Bis 2075 prognostiziert die Studie ein extrem hohes Kollapsrisiko, vor allem wegen der Erwärmung der Ozeane. Ben Fitzpatrick, der die Bewertung für Australien leitete, sieht lokale Schutzmaßnahmen zunehmend vom Klimawandel überlagert und fordert eine rasche Dekarbonisierung.\n\n## 90 Prozent schon heute stark gefährdet\n\nZDFheute hatte bereits am Donnerstag über die Aufnahme der Riffe in die Rote Liste berichtet, die bei der UN-Biodiversitätskonferenz im armenischen Eriwan bekannt wurde. Der Meeresbiologe Georg Flückiger von der National University of Singapore sagte dem Sender, schon jetzt seien etwa 90 Prozent der Riffe stark vom Zusammenbruch bedroht. Berücksichtige man künftige Klimafolgen, steige der Anteil bis 2075 auf rund 96 Prozent. In Ostasien seien 22 von 25 Ökoregionen bereits gefährdet, bis 2075 alle 25.\n\nEine parallele Neubewertung von 892 riffbildenden Korallenarten ergab, dass 44 Prozent vom Aussterben bedroht sind. Korallenriffe bedecken weniger als ein Prozent des Meeresbodens, beherbergen aber rund ein Viertel aller Meeresarten und sind für Millionen Menschen Nahrungs- und Einkommensquelle.\n\n## Einordnung\n\nHauptursache sind steigende Wassertemperaturen, die Korallen ihre Algen abstoßen lassen, sodass sie bleichen. Hinzu kommen Verschmutzung, Übersäuerung, Küstenbebauung und Überfischung. Die Aufnahme in die Rote Liste löst nicht automatisch Schutzmaßnahmen aus, betonen die Fachleute. Gudka versteht die Lage trotz ihrer Schwere als Weckruf, die IUCN-Generaldirektorin Grethel Aguilar nennt Riffe einen der deutlichsten Indikatoren für den Zustand der Ozeane.\n\nFür Leser in Sachsen ist das keine ferne Randnotiz: Die Studie zeigt, wie eng das Schicksal der Riffe an die globalen Emissionen gekoppelt ist. Der UN-Klimareport der Vorwoche sieht die Welt bei gleichbleibender Politik bei etwa 2,8 Grad Erwärmung bis zum Jahrhundertende.",
+          "source": "Phys.org (University of Melbourne)",
+          "url": "https://phys.org/news/2026-10-australian-coral-reefs-collapse-years.html",
+          "sources": [
+            {
+              "name": "Phys.org (University of Melbourne)",
+              "url": "https://phys.org/news/2026-10-australian-coral-reefs-collapse-years.html"
+            },
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/panorama/korallenriff-rote-liste-erderwaermung-oekosystem-100.html"
+            },
+            {
+              "name": "ZDFheute (UN-Klimareport)",
+              "url": "https://www.zdfheute.de/wissen/klimawandel-emissionen-co2-un-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+01:00",
+          "importance": 5,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/6/60/Coral_reef_with_healthy_corals_and_corals_with_signs_of_bleaching.png",
+            "credit": "Unidentified NOAA photographer",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Coral_reef_with_healthy_corals_and_corals_with_signs_of_bleaching.png",
+            "alt": "Korallenriff mit gesunden und teilweise gebleichten Korallen"
+          }
+        },
+        {
+          "id": "klima-co2-speicherung-rekord",
+          "tier": "more",
+          "headline": "Weltweit wurde 2024 so viel CO2 unterirdisch gespeichert wie nie",
+          "summary": "Ein Imperial-College-Register zählt 43,6 Millionen Tonnen gespeichertes CO2 im Jahr 2024. Für das 1,5-Grad-Ziel wäre bis 2050 mehr als das Zwanzigfache nötig.",
+          "body": "Die unterirdische Speicherung von Kohlendioxid hat 2024 einen Höchststand erreicht. Nach dem Jahresbericht 2026 des London Register of Subsurface CO2 Storage, über den Phys.org berichtet, wurden weltweit 43,6 Millionen Tonnen CO2 eingelagert. Das ist mehr als doppelt so viel wie 2016 mit 21,0 Millionen Tonnen. Über drei Jahrzehnte summiert sich die Menge auf 421,7 Millionen Tonnen.\n\nDas Register des Imperial College London erfasst 70 Projekte in 17 Ländern. Das größte Einzelprojekt ist die Anlage von Petrobras im Santos-Becken vor Brasilien mit 14,2 Millionen Tonnen, rund ein Drittel der Jahresmenge. In den USA laufen 23 Projekte mit zusammen 20,2 Millionen Tonnen, China und Australien kommen auf je 1,7 Millionen Tonnen.\n\n## Große Unsicherheiten in der Bilanz\n\nDie Autoren dämpfen die Erfolgsmeldung. Sie haben ihre Zahlen rückwirkend nach unten korrigiert: Die kumulierte Menge bis 2023 sank von 351,4 auf 342,0 Millionen Tonnen, die Jahresmenge 2023 von 45,2 auf 41,7 Millionen Tonnen. Zudem entfallen 82,3 Prozent der gespeicherten Menge auf Projekte, bei denen das CO2 zur Ölförderung eingesetzt wird. Bei rund 112,5 Millionen Tonnen davon ist nur die eingespeiste Menge erfasst, nicht das wieder austretende CO2. Die Netto-Speicherung ist deshalb unsicher. Für 2025 liegen bisher nur unvollständige Daten von 29 Projekten mit 36,2 Millionen Tonnen vor.\n\n## Einordnung\n\nRegisterdirektor Samuel Krevor nennt als Maßstab, dass bis 2050 mindestens eine Milliarde Tonnen CO2 pro Jahr gespeichert werden müssten, um das 1,5-Grad-Ziel zu erreichen. Das ist mehr als das Zwanzigfache der heutigen Menge. Die neuen Zahlen zeigen, wie weit die Technik vom nötigen Maßstab entfernt ist.",
+          "source": "Phys.org (Imperial College London)",
+          "url": "https://phys.org/news/2026-10-global-underground-storage-million-metric.html",
+          "sources": [
+            {
+              "name": "Phys.org (Imperial College London)",
+              "url": "https://phys.org/news/2026-10-global-underground-storage-million-metric.html"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+01:00",
+          "importance": 4,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Heidelberg_Brevik_Carbon_Capture.jpg/1280px-Heidelberg_Brevik_Carbon_Capture.jpg",
+            "credit": "PutTheKettleOn",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Heidelberg_Brevik_Carbon_Capture.jpg",
+            "alt": "CO2-Abscheideanlage am Zementwerk von Heidelberg Materials in Brevik, Norwegen"
+          }
+        },
+        {
+          "id": "klima-quaschning-erneuerbare-iran-krieg",
+          "tier": "more",
+          "headline": "Quaschning: Teure Fossile treiben E-Autos und Wärmepumpen voran",
+          "summary": "In seiner Videokolumne führt der Energieexperte den Aufschwung bei Elektroautos und Wärmepumpen auf die gestiegenen Öl- und Gaspreise zurück.",
+          "body": "Der Energiesystemforscher Volker Quaschning von der HTW Berlin sieht im Preisschub bei Öl und Gas einen Treiber der Energiewende. In seiner Videokolumne bei klimareporter° vom Sonntag argumentiert er, der Ausbau der Erneuerbaren wachse weltweit, weil fossile Energien teurer geworden sind. Ausgelöst worden sei das durch den Krieg im Iran, den er Donald Trump zuschreibt. Es handelt sich um einen Meinungsbeitrag, nicht um eine Nachricht.\n\n## Die Zahlen aus der Kolumne\n\nQuaschning nennt mehrere Entwicklungen in Deutschland. Der Anteil der neu zugelassenen Elektroautos stieg im September gegenüber dem Vorjahresmonat von 19 auf 35 Prozent. Bei Wärmepumpen wurden im ersten Halbjahr 2026 rund 40 Prozent mehr verkauft als im Vorjahreszeitraum, obwohl die Bundesregierung die Förderung gekürzt und neue Erdgasheizungen wieder erlaubt hat. Auch der Photovoltaik-Ausbau sei trotz gekürzter Solarförderung „erstaunlich stabil“. Es sind Angaben des Autors.\n\n## Einordnung\n\nQuaschning folgert, Europa werde dadurch schneller unabhängig von teuren und riskanten Energieimporten. Zugleich betont er, dass die Folgen des Krieges für viele Menschen dramatisch seien: Es gebe Tausende Kriegstote, die hohen Öl- und Gaspreise verursachten weltweit Leid. Trump und die AfD lehnten E-Autos, Solaranlagen und Windräder ab, so der Autor.\n\nFür Haushalte in Sachsen ist die Frage praktisch: Hohe Gas- und Spritpreise verschieben die Rechnung zwischen Verbrenner, Gasheizung und Alternativen. Ob der Schub dauerhaft trägt, hängt auch davon ab, wie die Bundesregierung die Förderung gestaltet.",
+          "source": "klimareporter°",
+          "url": "https://www.klimareporter.de/strom/quaschning-erklaert-energiewende-durch-trump",
+          "sources": [
+            {
+              "name": "klimareporter°",
+              "url": "https://www.klimareporter.de/strom/quaschning-erklaert-energiewende-durch-trump"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+01:00",
+          "importance": 4,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cologne_Germany_Electric-Car-Charging-Point-at-TUV-Rheinland-01.jpg/1280px-Cologne_Germany_Electric-Car-Charging-Point-at-TUV-Rheinland-01.jpg",
+            "credit": "CEphoto, Uwe Aranas",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cologne_Germany_Electric-Car-Charging-Point-at-TUV-Rheinland-01.jpg",
+            "alt": "Ladesäule für Elektroautos in Köln"
+          }
+        }
+      ]
+    },
+    {
+      "id": "entertainment",
+      "title": "Games & Entertainment",
+      "emoji": "🎮",
+      "items": [
+        {
+          "id": "entertainment-sam-fender-stadiontour-preise",
+          "tier": "top",
+          "headline": "Sam Fender streicht Premium-Stehplätze für seine Stadiontour 2027",
+          "summary": "Nach Kritik an teuren Front-Standing-Tickets senkt der britische Sänger die Preise seiner Stadiontour. Der Vorverkauf startet diese Woche.",
+          "body": "Der britische Singer-Songwriter Sam Fender hat die Preispolitik für seine Stadiontour im kommenden Sommer geändert. Wie das Magazin NME berichtet, kündigte er am 24. Oktober in einer Instagram-Story an, dass es keine gesonderten Premium-Plätze direkt vor der Bühne geben wird. Wer einen Stehplatz kauft, habe künftig dieselbe Chance auf einen Platz ganz vorn wie alle anderen.\n\n## Was sich bei den Preisen ändert\n\nZuvor waren nach den im Netz kursierenden Angaben für Wembley 130,75 Pfund für den vorderen Stehbereich und 98,85 Pfund für den allgemeinen Stehbereich vorgesehen. Ähnliche Premium-Zonen sollten offenbar auch in Cardiff, Edinburgh und Manchester angeboten werden. Jetzt kostet der Stehplatz einheitlich 85 Pfund. Sitzplätze liegen bei 95, 75 und 55 Pfund. Alle Preise verstehen sich ohne Gebühren der Veranstalter und Ticketportale sowie ohne ein Pfund pro Karte für den LIVE Trust, der Spielstätten der Nachwuchsszene unterstützt.\n\nDem Bericht zufolge hatte Fender zuvor schon gesagt, mit den ursprünglichen Preisen nicht zufrieden zu sein. Die Korrektur folgt damit auf eine Debatte über steigende Konzertpreise, die Fans in Großbritannien seit Monaten beschäftigt.\n\n## Termine und Vorverkauf\n\nDie „Proper Massive Stadium Tour“ beginnt laut Radio X am 3. Juni 2027 mit zwei Heimspielen im St James' Park in Newcastle, ein zweiter Termin folgt am 5. Juni. Danach spielt Fender in Cardiff (10. Juni), zweimal in Wembley (18. und 20. Juni), in Dublin (1. Juli), in Edinburgh (8. Juli) und zweimal in Manchester (15. und 17. Juli). Als Vorgruppe tritt bei den britischen Stadionshows Wunderhorse auf.\n\nFür den Vorverkauf muss man das vierte Album des Sängers im offiziellen Shop vorbestellen, und zwar bis Montag, den 26. Oktober, 9 Uhr britischer Zeit. Die Zugangscodes verschickt der Shop bis Dienstagabend, der Vorverkauf beginnt am Mittwoch, dem 28. Oktober, um 9:30 Uhr. Der freie Verkauf startet am Freitag, dem 30. Oktober, um 9:30 Uhr über samfender.com. Pro Person sind sechs Karten erlaubt, der Vorverkauf garantiert keine Tickets. Titel und Erscheinungstermin des Albums sind bislang nicht bekannt.\n\n## Einordnung\n\nFür Fans in Deutschland sind die Termine nur mit einer Reise nach Großbritannien oder Irland erreichbar. Die Debatte um Preisstufen und Vorrangplätze betrifft aber auch hiesige Großkonzerte, bei denen dynamische Preise und Premium-Zonen zunehmend zum Streitthema werden.",
+          "source": "NME",
+          "url": "https://www.nme.com/news/music/sam-fender-scraps-front-standing-tickets-reduced-prices-2027-stadium-tour-3974164",
+          "sources": [
+            {
+              "name": "NME",
+              "url": "https://www.nme.com/news/music/sam-fender-scraps-front-standing-tickets-reduced-prices-2027-stadium-tour-3974164"
+            },
+            {
+              "name": "Radio X",
+              "url": "https://www.radiox.co.uk/artists/sam-fender/announces-proper-massive-uk-ire-stadium-tour-tickets/"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+01:00",
+          "importance": 4,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Sam_Fender_%282021%29.jpg/1280px-Sam_Fender_%282021%29.jpg",
+            "credit": "Raph_PH",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sam_Fender_(2021).jpg",
+            "alt": "Sam Fender bei einem Auftritt beim Boardmasters-Festival 2021"
+          }
+        },
+        {
+          "id": "entertainment-tomb-raider-30-jahre",
+          "tier": "top",
+          "headline": "Tomb Raider wird 30: Neue Spiele und Rabattschlacht",
+          "summary": "Lara Crofts Reihe feiert Jubiläum. Zwei neue Titel sind angekündigt, und im Xbox-Shop sind viele Teile um bis zu 90 Prozent reduziert.",
+          "body": "Die Spielereihe Tomb Raider feiert in dieser Woche ihren 30. Geburtstag. Das erste Spiel erschien 1996. Zum Jubiläum gibt es Rabatte, einen Trailer des Studios Aspyr und einen Ausblick auf zwei kommende Titel, wie Nintendo Life und Pure Xbox berichten.\n\n## Neue Spiele angekündigt\n\nFür Februar 2027 ist „Tomb Raider: Legacy of Atlantis“ geplant, eine Neuinterpretation des Originals. Daran arbeiten laut Nintendo Life Crystal Dynamics, Flying Wild Hog und Amazon Game Studios. Das Spiel soll auch für die Switch 2 und weitere Plattformen erscheinen. Ein weiterer neuer Teil mit dem Titel „Tomb Raider: Catalyst“ von Crystal Dynamics ist für 2028 vorgesehen. Beide Angaben stammen aus dem Bericht von Nintendo Life.\n\nAspyr, das die Reihe auf mehreren Plattformen neu aufgelegt hat, veröffentlichte zum Jubiläum einen Rückblick auf seine Arbeit der vergangenen Jahre, darunter Sammlungen älterer Teile. Erst in dieser Woche erschien überraschend „Shadow of the Tomb Raider: Definitive Edition“ für die Switch 2. Damit ist die sogenannte Survivor-Trilogie auf Nintendos neuer Konsole komplett. Die Edition sowie die Trilogie-Sammlung sind im Nintendo-Shop vorübergehend zehn Prozent günstiger.\n\n## Starke Rabatte bei Xbox\n\nNoch deutlicher fallen die Preisnachlässe bei Microsoft aus. In der „Shocktober“-Aktion sind laut Pure Xbox mehr als 40 Spiele um 90 Prozent reduziert, darunter mehrere Tomb-Raider-Titel. In Großbritannien kostet „Tomb Raider: Definitive Edition“ derzeit 1,57 Pfund, „Shadow of the Tomb Raider: Definitive Edition“ 3,49 Pfund und die „Definitive Survival Trilogy“ 4,49 Pfund. In den USA liegen die Preise bei 1,99, 3,99 und 4,99 Dollar. „Tomb Raider I-VI Remastered“ ist um 80 Prozent reduziert. Wann die Aktion endet, nennt der Bericht nicht; wer zugreifen will, sollte also nicht zu lange warten.\n\n## Einordnung\n\nDie Reihe gehört zu den bekanntesten Marken der Branche und hat über drei Jahrzehnte mehrere Studios und Hardware-Generationen überdauert. Für Spieler in Deutschland sind die Rabatte vor allem eine günstige Gelegenheit, ältere Teile nachzuholen, bevor 2027 die Neuauflage des Originals erscheint. Die Preise gelten im jeweiligen Landesshop und können hierzulande in Euro abweichen.",
+          "source": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/video-the-tomb-raider-series-celebrates-its-30th-anniversary-this-week",
+          "sources": [
+            {
+              "name": "Nintendo Life",
+              "url": "https://www.nintendolife.com/news/2026/10/video-the-tomb-raider-series-celebrates-its-30th-anniversary-this-week"
+            },
+            {
+              "name": "Pure Xbox",
+              "url": "https://www.purexbox.com/news/2026/10/40plus-games-are-reduced-by-90percent-in-the-xbox-shocktober-sale-2026"
+            }
+          ],
+          "publishedAt": "2026-10-25T08:00:00+01:00",
+          "importance": 4,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Cosplay_of_Lara_Croft_from_Tomb_Raider_at_Brussels_Comic_Con_2019_%2846391102755%29.jpg/1280px-Cosplay_of_Lara_Croft_from_Tomb_Raider_at_Brussels_Comic_Con_2019_%2846391102755%29.jpg",
+            "credit": "Miguel Discart",
+            "license": "CC BY-SA 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cosplay_of_Lara_Croft_from_Tomb_Raider_at_Brussels_Comic_Con_2019_(46391102755).jpg",
+            "alt": "Cosplay der Spielfigur Lara Croft aus Tomb Raider auf der Comic Con Brüssel 2019"
+          }
+        },
+        {
+          "id": "entertainment-elvis-erben-klagen-anthropic",
+          "tier": "more",
+          "headline": "Elvis-Rechteinhaber verklagen KI-Firma Anthropic wegen 274 Songs",
+          "summary": "Die Erben und Rechteinhaber von Elvis Presley werfen Anthropic vor, Songtexte ohne Erlaubnis für das Training von Claude genutzt zu haben.",
+          "body": "Rechteinhaber des Musikkatalogs von Elvis Presley haben den KI-Entwickler Anthropic verklagt. Nach Angaben von NME wurde die Klage am Freitag, dem 23. Oktober, eingereicht. Klägerin ist unter anderem eine Tochterfirma von Authentic Brands Group, die einen Großteil der Rechte an Presleys Marke kontrolliert, sowie weitere Firmen mit Rechten an seiner Musik. Als Anwalt tritt Richard Busch auf. Welches Gericht zuständig ist, nennt der Bericht nicht.\n\nEs geht um 274 Songs, darunter „Can't Help Falling In Love“, „All Shook Up“ und „Don't Be Cruel“. Die Kläger behaupten, Anthropic habe Kompositionen und Texte ohne Genehmigung und ohne Bezahlung genutzt, um seine Claude-Modelle zu trainieren. Außerdem gebe das System trotz eingebauter Schutzmaßnahmen weiter geschützte Textpassagen wieder. Wenn man es bitte, Lieder „für ein modernes Publikum“ neu zu fassen, erzeuge es Material, das den Originalen sehr nahe komme.\n\nDie Kläger verlangen Schadenersatz von bis zu 150.000 US-Dollar pro Song. Bei 274 Titeln summiert sich das auf rund 41,1 Millionen Dollar. Anthropic hat sich zu der Klage laut NME bislang nicht öffentlich geäußert. Das Unternehmen hat in früheren Verfahren argumentiert, das Training von KI-Modellen mit urheberrechtlich geschützten Werken könne nach dem US-Recht der fairen Nutzung („Fair Use“) zulässig sein.\n\nDer Fall reiht sich in eine wachsende Zahl von Auseinandersetzungen zwischen der Musikbranche und KI-Firmen ein. Der Bericht stützt sich auf eine einzelne Quelle, die Klageschrift selbst wurde nicht eingesehen.",
+          "source": "NME",
+          "url": "https://www.nme.com/news/music/elvis-presley-rightsholders-sue-anthropic-copyright-infringement-274-songs-3974178",
+          "sources": [
+            {
+              "name": "NME",
+              "url": "https://www.nme.com/news/music/elvis-presley-rightsholders-sue-anthropic-copyright-infringement-274-songs-3974178"
+            }
+          ],
+          "publishedAt": "2026-10-25T00:00:00+01:00",
+          "importance": 5,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Groove_and_needle_in_close_embrace_from_beginning_to_end.jpg/1280px-Groove_and_needle_in_close_embrace_from_beginning_to_end.jpg",
+            "credit": "Franz van Duns",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Groove_and_needle_in_close_embrace_from_beginning_to_end.jpg",
+            "alt": "Tonarm eines Plattenspielers über einer Schallplatte, schwarz-weiß"
+          }
+        },
+        {
+          "id": "entertainment-game-pass-letzte-oktobertage",
+          "tier": "more",
+          "headline": "Game Pass: Sechs neue Spiele bis Ende Oktober",
+          "summary": "Microsoft bestätigt sechs Titel für die letzten Oktobertage, darunter Final Fantasy VII Remake Intergrade und der Horrorhit Mouthwashing.",
+          "body": "Xbox Game Pass bekommt in den letzten Oktobertagen Zuwachs. Wie Pure Xbox berichtet, sind sechs Titel bestätigt, die jeweils für Xbox Series X|S, PC und den Cloud-Dienst erscheinen.\n\nDen Anfang macht am 26. Oktober „Scramble Knights Online“, ein Action-Rollenspiel mit leichten Online-Elementen, das im gemeinsamen Königreich Terracott spielt. Einen Tag später, am 27. Oktober, folgt „The Seance of Blake Manor“, ein übernatürlicher Detektivkrimi im Irland des Jahres 1897. Dort verschwindet in einem abgelegenen Hotel eine Frau.\n\nAm 29. Oktober landen gleich vier Spiele im Katalog. „Final Fantasy VII Remake Intergrade“ ist die Neuauflage des Rollenspiel-Klassikers mit einem Zusatzkapitel um die Figur Yuffie Kisaragi. „Mouthwashing“ ist ein Ego-Horrorspiel über die sterbende Besatzung eines havarierten Raumfrachters. „Plants vs. Zombies: Replanted“ ist eine hochauflösende Neufassung des Strategiespiels. „Terrible Lizards“ ist ein Horror-Parkour-Spiel, das an einer ehemaligen Attraktion an der Route 66 spielt.\n\nDie Auswahl passt zum Halloween-Wochenende. Für Abonnenten in Deutschland bedeutet das ohne Zusatzkosten Zugriff auf Titel, die einzeln oft zweistellige Euro-Beträge kosten würden. Welche Spiele den Dienst Ende Oktober verlassen, ist Thema eines gesonderten Berichts; die Daten oben stammen nur aus der Meldung von Pure Xbox, die Angaben gelten für die internationale Katalog-Ankündigung.",
+          "source": "Pure Xbox",
+          "url": "https://www.purexbox.com/news/2026/10/six-xbox-game-pass-titles-are-confirmed-for-the-final-few-days-of-october",
+          "sources": [
+            {
+              "name": "Pure Xbox",
+              "url": "https://www.purexbox.com/news/2026/10/six-xbox-game-pass-titles-are-confirmed-for-the-final-few-days-of-october"
+            }
+          ],
+          "publishedAt": "2026-10-25T12:00:00+01:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Lichtburg-Essen-Kinosaal-2025.jpg/1280px-Lichtburg-Essen-Kinosaal-2025.jpg",
+            "credit": "Tuxyso",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lichtburg-Essen-Kinosaal-2025.jpg",
+            "alt": "Großer Kinosaal der Lichtburg in Essen mit rotem Vorhang"
+          }
+        },
+        {
+          "id": "entertainment-xbox-shocktober-sale-90-prozent",
+          "tier": "more",
+          "headline": "Xbox-Aktion Shocktober: Über 40 Spiele für 90 Prozent weniger",
+          "summary": "Microsoft senkt im Shocktober-Sale viele Horror- und Actionspiele drastisch, einige zu neuen Tiefstpreisen.",
+          "body": "Im Xbox-Shop läuft die Aktion „Shocktober Sale 2026“, bei der viele Spiele stark verbilligt sind. Laut Pure Xbox sind mehr als 40 Titel um 90 Prozent reduziert; die Tabelle der Redaktion führt 44 solche Spiele auf, im Text ist von über 50 die Rede. Wann die Aktion endet, steht in dem Bericht nicht.\n\nBeispiele für 90-Prozent-Rabatte sind „Back 4 Blood“ für 5,99 US-Dollar, „Borderlands 3: Next-Level Edition“ für 6,99 Dollar, „Mortal Kombat 11 Ultimate“ für 8,99 Dollar und „The Quarry: Deluxe Edition“ für 7,99 Dollar. „Dying Light Essentials Edition“ kostet 2,49 Dollar. „The Outlast Trials: Deluxe Edition“ erreicht mit 4,99 Dollar einen neuen Tiefstpreis. Zusätzlich sind mehrere Tomb-Raider-Spiele, die Dead-Island-Reihe, „Killing Floor 2“, „Mad Max“ und „Steelrising“ stark reduziert.\n\nWeniger tief, aber noch deutlich fallen die Nachlässe bei „Alan Wake Remastered“, „Metro Redux Bundle“ und „Dead Rising 4“ aus, die um 85 Prozent günstiger sind. Mit 80 Prozent Rabatt gibt es unter anderem „Resident Evil 2“, „Mortal Kombat 1: Definitive Edition“ und „Dying Light 2: Stay Human – Reloaded“.\n\nWer in Deutschland einkauft, sieht die Preise in Euro und teils abweichend von den im Bericht genannten Pfund- und Dollar-Beträgen. Ein Blick in den Shop lohnt sich, bevor man zugreift, denn die Preise gelten je Region.",
+          "source": "Pure Xbox",
+          "url": "https://www.purexbox.com/news/2026/10/40plus-games-are-reduced-by-90percent-in-the-xbox-shocktober-sale-2026",
+          "sources": [
+            {
+              "name": "Pure Xbox",
+              "url": "https://www.purexbox.com/news/2026/10/40plus-games-are-reduced-by-90percent-in-the-xbox-shocktober-sale-2026"
+            }
+          ],
+          "publishedAt": "2026-10-25T14:00:00+01:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Bowl_of_Popcorn_%28Unsplash%29.jpg/1280px-Bowl_of_Popcorn_%28Unsplash%29.jpg",
+            "credit": "Alex Munsell alexmunsell",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bowl_of_Popcorn_(Unsplash).jpg",
+            "alt": "Schüssel mit Popcorn"
+          }
+        },
+        {
+          "id": "entertainment-modern-warfare-4-switch-2-update",
+          "tier": "more",
+          "headline": "Modern Warfare 4: Erstes Update auch für Switch 2",
+          "summary": "Activision liefert nach dem Start einen kleinen Patch mit Absturz- und Spawn-Korrekturen. Die Switch-2-Version braucht viel Speicherplatz.",
+          "body": "Für „Call of Duty: Modern Warfare 4“ ist ein erstes Update erschienen, das laut Nintendo Life auch für die Switch 2 bereitsteht. Activision nannte es ein „kleines Update“ für alle Plattformen; es trägt das Datum des 24. Oktober. Ein separater Startpatch war bereits am 23. Oktober auf der Webseite der Reihe veröffentlicht worden.\n\nAllgemein beseitigt der Patch Abstürze, Fehler in Menüs und Oberflächen sowie Waffenprobleme, etwa einen visuellen Fehler an der Mündung des M4. Im Mehrspielermodus verbessern die Entwickler Spawns und Respawn-Zeiten im Modus „Hijack“. Außerdem beheben sie Fehler beim Entschärfen der Bombe in „Search and Destroy“, bei den Grenzen der Killstreak-Zone auf der Karte „Rooftops“ und bei den Ausrüstungen des Operators „Collateral“. Im Modus DMZ wurden unter anderem Spieler korrigiert, die in Felsen auf der Karte Hajin feststeckten, sowie verschwindende Evakuierungshubschrauber und die Spawn-Rate von KI-Verstärkung. Zudem wurden verschiedene Exploits geschlossen.\n\nBekannte Probleme bleiben: Die Animation der regionalen Karte ist abgeschaltet, einige Spieler werden beim Zuschauen aus dem Spiel geworfen, und am PC kann es beim Verlassen der Zone mit einer erbeuteten Erkennungsmarke zu Netzwerkfehlern kommen.\n\nFür Switch-2-Besitzer ist die Größe relevant: Der Download wird mit etwa 30 bis 39 Gigabyte angegeben, die komplette Installation mit Mehrspieler, Kampagne und DMZ benötigt rund 91 Gigabyte. Das ist ein großer Teil des internen Speichers der Konsole.",
+          "source": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/psa-call-of-duty-modern-warfare-4-switch-2-update-now-live-here-are-the-details",
+          "sources": [
+            {
+              "name": "Nintendo Life",
+              "url": "https://www.nintendolife.com/news/2026/10/psa-call-of-duty-modern-warfare-4-switch-2-update-now-live-here-are-the-details"
+            }
+          ],
+          "publishedAt": "2026-10-25T05:55:00+01:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/2023_S%C5%82uchawki_Sennheiser_HD_540.jpg/1280px-2023_S%C5%82uchawki_Sennheiser_HD_540.jpg",
+            "credit": "Jacek Halicki",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:2023_S%C5%82uchawki_Sennheiser_HD_540.jpg",
+            "alt": "Offener Kopfhörer auf weißem Hintergrund"
+          }
+        }
+      ]
+    }
+  ]
+}
