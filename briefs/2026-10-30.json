@@ -1,0 +1,1600 @@
+{
+  "schema": 2,
+  "date": "2026-10-30",
+  "generatedAt": "2026-10-30T04:12:57+01:00",
+  "teaser": "EZB-Chefin Lagarde kündigt Abschied an, Zverev wird Weltranglisten-Erster, Tanker treffen Minen in der Straße von Hormus.",
+  "sections": [
+    {
+      "id": "ki",
+      "title": "KI & Tech",
+      "emoji": "🤖",
+      "items": [
+        {
+          "id": "ki-mistral-large-4-offene-gewichte",
+          "tier": "top",
+          "headline": "Mistral gibt Large 4 mit offenen Gewichten frei",
+          "summary": "Der französische KI-Anbieter veröffentlicht sein Flaggschiff mit rund einer Billion Parametern zum Download. Es soll bei Programmieraufgaben unter den offenen Modellen vorn liegen, hinkt der Weltspitze aber hinterher.",
+          "body": "Das französische KI-Unternehmen Mistral hat am Donnerstag die Gewichte von Mistral Large 4 auf der Plattform Hugging Face freigegeben. Das Modell war Anfang Oktober vorgestellt worden und bis dahin nur als Vorschau über die Programmierschnittstelle des Anbieters nutzbar. Nach Angaben von The Decoder umfasst es insgesamt etwa eine Billion Parameter, von denen pro Rechenschritt 52 Milliarden aktiv sind. Es verarbeitet Text und Bilder und gibt Text und Code aus.\n\nUnternehmen und Behörden können das Modell damit selbst herunterladen und im eigenen Rechenzentrum betreiben. Laut The Decoder genügen für die Standardversion acht Nvidia-B300-Grafikprozessoren. Die Lizenz ist eine angepasste MIT-Lizenz: Nutzung, Veränderung und kommerzieller Einsatz sind erlaubt, wer das Modell selbst als kommerziellen Cloud-Dienst anbieten will, braucht aber eine gesonderte Erlaubnis von Mistral.\n\n## Stark beim Programmieren, hinter der Spitze\n\nMistral stellt vor allem die Fähigkeit zum selbstständigen Programmieren heraus. Laut Mistral ist Large 4 das beste offene Modell im Coding Agent Index des Analysehauses Artificial Analysis und braucht je Aufgabe 47 Prozent weniger Tokens als das chinesische Modell GLM-5.3. Im Terminal-Bench 4.0 stieg die Erfolgsquote nach Firmenangaben von 28 auf 41 Prozent. Heise weist darauf hin, dass sich diese Angaben noch nicht unabhängig prüfen ließen.\n\nIm Gesamtvergleich bleibt das Modell hinter der Spitze. Im Intelligence Index von Artificial Analysis kommt es laut The Decoder auf 26 Punkte, Googles Gemini 4 Carbon führt mit 59, Anthropics Claude Opus 5.5 folgt mit 58. Das beste offene Modell ist dort das chinesische Kimi K3.1 Pro mit 46 Punkten. Dafür ist Large 4 günstig: Die API kostet 0,70 US-Dollar je Million Eingabe-Tokens und 2,10 US-Dollar je Million Ausgabe-Tokens.\n\n## Fokus Cyberabwehr\n\nNach der Vorstellung testete Mistral das Modell rund drei Wochen mit Kunden und Cybersicherheitspartnern und trainierte es anschließend per Verstärkungslernen nach. Es soll Bedrohungen erkennen und analysieren helfen, auch ohne Cloud-Anbindung. Mistral nennt eine Ablehnungsquote von 96,6 Prozent bei böswilligen Cyberanfragen, räumt aber ein, dass das Modell Angriffe weiterhin erleichtern könnte, und kündigt strengere Schutzmaßnahmen an. Weil die Gewichte offen sind, lässt sich der Zugang laut Mistral-Forschungschef Pierre Stock nicht abschalten.\n\n„Wir sind ein Frontier-Lab und wollen Spitzenmodelle trainieren“, sagte Pierre Stock gegenüber heise. Der Abstand zwischen den letzten beiden Flaggschiffen betrug rund zehn Monate, künftig plant Mistral kürzere Intervalle.\n\n## Warum es für Deutschland zählt\n\nFür deutsche Firmen und Verwaltungen, die sensible Daten nicht an US-Clouds geben wollen, ist ein offenes europäisches Modell dieser Größe eine Option. Die Hardwarehürde ist allerdings hoch, und die Lücke zu den geschlossenen US-Modellen bleibt vorerst bestehen.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/Mistral-Large-4-Modellgewichte-veroeffentlicht-Coding-Leistung-verbessert-11504965.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/Mistral-Large-4-Modellgewichte-veroeffentlicht-Coding-Leistung-verbessert-11504965.html"
+            },
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/10/29/mistral-releases-weights-for-its-trillion-parameter-ai-model-targeting-cybersecurity/"
+            },
+            {
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/mistral-gibt-le-chonk-frei-stark-unter-offenen-modellen-guenstig-im-betrieb-klar-hinter-der-spitze/"
+            }
+          ],
+          "publishedAt": "2026-10-29T15:00:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Wikimedia_Foundation_Servers-8055_15.jpg/1280px-Wikimedia_Foundation_Servers-8055_15.jpg",
+            "credit": "Victorgrigas",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wikimedia_Foundation_Servers-8055_15.jpg",
+            "alt": "Server-Einschübe in einem Rechenzentrum, Nahaufnahme"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "ki-alphabet-boerseneinbruch",
+          "tier": "top",
+          "headline": "Alphabet verliert nach Quartalszahlen eine halbe Billion Dollar",
+          "summary": "Die Aktie des Google-Konzerns brach um rund ein Achtel ein, so stark wie nie zuvor an einem Tag. Hohe KI-Ausgaben, schwacher Cashflow und ein langsamer wachsendes Suchgeschäft verschreckten Anleger.",
+          "body": "Die Aktie von Alphabet ist am Donnerstag um rund ein Achtel eingebrochen, der Börsenwert des Google-Mutterkonzerns sank um etwa eine halbe Billion US-Dollar. Laut heise online ist das der größte Tagesverlust in der Firmengeschichte, prozentual stärker als im Corona-Crash vom März 2020 und bei der Lehman-Pleite im September 2008. Auslöser waren die eigenen Quartalszahlen, die am Mittwochabend erschienen.\n\n## Das Geschäft wächst, der Cashflow nicht\n\nIm dritten Quartal 2026 stieg der Umsatz laut heise um rund 25 Prozent, der operative Gewinn um 30 Prozent. Der Nettogewinn sank dagegen um fast ein Viertel, der operative Cashflow fiel um etwa 12,5 Prozent auf 42,3 Milliarden Dollar. Die Investitionen erreichten rund 51 Milliarden Dollar und verdoppelten sich damit gegenüber dem Vorjahr. Der freie Cashflow war das zweite Quartal in Folge negativ.\n\nHinzu kommen Belastungen aus der Finanzierung: Die Zinszahlungen stiegen nach Angaben von heise von 143 Millionen Dollar auf fast das Siebenfache. Alphabet nahm im Quartal 29 Milliarden Dollar neue Schulden auf und gab Aktien für netto 12,4 Milliarden Dollar aus. Weitere 27,6 Milliarden Dollar will der Konzern über neue Aktien einsammeln; je niedriger der Kurs, desto mehr Papiere sind dafür nötig, was bestehende Anteile verwässert.\n\n## Suche wächst langsamer als erwartet\n\nThe Decoder verweist auf das Kerngeschäft: Der Umsatz mit Suche und anderen Werbeformaten stieg um rund 12 Prozent auf 63,4 Milliarden Dollar, Analysten hatten etwa 15 Prozent erwartet. Die Konzernführung nannte laut The Decoder eine geringere Monetarisierung im KI-Modus der Suche als bei der klassischen Suche. Googles Cloud-Sparte dagegen verdoppelte ihren Umsatz auf 30,7 Milliarden Dollar, bei einer operativen Marge von 36,2 Prozent. Die Gemini-App kommt nach Konzernangaben auf rund eine Milliarde Nutzer.\n\nDie Investitionsprognose für 2026 blieb unverändert bei 195 bis 205 Milliarden Dollar, für 2027 kündigt Google deutlich höhere Ausgaben an. Heise erwartet, dass die KI-Kosten weiter steigen.\n\n## Einordnung\n\nDer Kurssturz trifft nicht nur einen Konzern. Er zeigt, dass Anleger beim KI-Wettrüsten stärker auf Rendite und Mittelabfluss schauen als auf Wachstumsgeschichten. Für Deutschland ist das mittelbar relevant: Die Hyperscaler sind die größten Abnehmer für Chips und Rechenzentrumstechnik, auch von europäischen Zulieferern. Bremsen sie ihre Ausgaben, spürt das die gesamte Kette bis zu den Halbleiterfabriken, etwa in Dresden. Ob es dazu kommt, ist offen: Alphabet selbst plant ausdrücklich mehr, nicht weniger Investitionen.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/Alphabets-Boersenwert-stuerzt-um-halbe-Billion-Dollar-11505575.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/Alphabets-Boersenwert-stuerzt-um-halbe-Billion-Dollar-11505575.html"
+            },
+            {
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/googles-ki-suche-bremst-die-klassische-suche-und-schickt-die-aktie-trotz-cloud-rekord-auf-talfahrt/"
+            }
+          ],
+          "publishedAt": "2026-10-30T00:01:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Outside_Googleplex_in_Mountain_View%2C_California.jpg/1280px-Outside_Googleplex_in_Mountain_View%2C_California.jpg",
+            "credit": "David Nagle",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Outside_Googleplex_in_Mountain_View,_California.jpg",
+            "alt": "Außenansicht der Google-Zentrale Googleplex in Mountain View, Kalifornien"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "ki-cohere-schwarz-gruppe",
+          "tier": "top",
+          "headline": "Schwarz-Gruppe führt Milliardenrunde beim KI-Anbieter Cohere an",
+          "summary": "Cohere, das Aleph Alpha übernommen hat, schließt die erste Stufe einer Finanzierung von bis zu 7 Milliarden kanadischen Dollar ab. Die Lidl-Mutter führt die Runde an, Kanada steuert bis zu 1,6 Milliarden bei.",
+          "body": "Der kanadisch-deutsche KI-Anbieter Cohere hat die erste Stufe seiner Series-E-Finanzierung abgeschlossen. Angestrebt werden bis zu 7 Milliarden kanadische Dollar, umgerechnet rund 4,7 Milliarden Euro. Das wäre laut heise online die größte private Kapitalaufnahme in der Geschichte der kanadischen Tech-Branche. Wie viel davon bereits verbindlich zugesagt ist, hat Cohere nach Angaben des Handelsblatts nicht mitgeteilt.\n\n## Wer investiert\n\nDie Runde führt die Schwarz-Gruppe an, zu der Lidl und Kaufland gehören. Beteiligt sind außerdem die kanadische Regierung und bestehende Geldgeber wie Nvidia. Premierminister Mark Carney kündigte in Montreal an, Kanada werde bis zu 1,6 Milliarden kanadische Dollar, etwa 1,03 Milliarden Euro, in Cohere investieren. Zudem soll das Unternehmen laut Handelsblatt bis 2030 rund 1,2 Milliarden US-Dollar in neue Recheninfrastruktur im Land stecken. Die Bewertung liegt demnach bei etwa 35,7 Milliarden kanadischen Dollar, rund 23 Milliarden Euro.\n\n## Souveräne KI als Geschäftsmodell\n\nCohere richtet sich an Unternehmen und Regierungen, nicht an Privatkunden. Die Modelle lassen sich in privaten Clouds, auf eigener Infrastruktur oder in abgeschotteten Umgebungen betreiben, unabhängig von den großen US-Rechenzentrumsbetreibern. Die Schwarz-Gruppe will Coheres Modelle in ihrer Cloud STACKIT verankern, die von der Konzerntochter Schwarz Digits betrieben wird. Deren Chef Christian Müller betonte laut heise strategische Wahlfreiheit und die Kontrolle über die eigenen Daten.\n\nDie Verbindung nach Deutschland ist eng: Cohere hat das Heidelberger Unternehmen Aleph Alpha faktisch übernommen, der Standort Heidelberg bleibt als Forschungs- und Entwicklungszentrum bestehen. Daneben unterhält Cohere Büros in Toronto und Berlin. Bundesdigitalminister Karsten Wildberger (CDU) sagte zur Fusion mit Aleph Alpha: „Es wird ein globaler KI-Champion entstehen.“\n\n## Einordnung\n\nCohere-Chef Aidan Gomez sagte gegenüber der dpa, das Kapital sende ein Signal an Fachkräfte, dass Cohere auf höchstem Niveau mithalten wolle. Analysten sehen die Runde laut heise zudem als mögliche Vorbereitung eines Börsengangs.\n\nFür Deutschland ist die Meldung ein Hinweis darauf, wo europäische Antworten auf OpenAI und Google entstehen könnten: weniger über Verbraucher-Chatbots als über Lösungen für Verwaltung und Industrie, die Datenhoheit versprechen. Ob das Modell trägt, hängt davon ab, ob Cohere technisch zu den US-Anbietern aufschließt. Da erst die erste Stufe abgeschlossen ist, sind die Zahlen der Runde noch nicht endgültig.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/unternehmen/dienstleister/ki-unternehmen-cohere-sammelt-milliarden-ein-schwarz-und-nvidia-investieren/100265998.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/unternehmen/dienstleister/ki-unternehmen-cohere-sammelt-milliarden-ein-schwarz-und-nvidia-investieren/100265998.html"
+            },
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/Schwarz-Gruppe-investiert-Milliarden-in-KI-Start-up-Cohere-11505395.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T19:15:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Toronto_-_ON_-_Skyline_bei_Nacht.jpg/1280px-Toronto_-_ON_-_Skyline_bei_Nacht.jpg",
+            "credit": "Wladyslaw (talk)",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Toronto_-_ON_-_Skyline_bei_Nacht.jpg",
+            "alt": "Skyline von Toronto mit CN Tower in der Abenddämmerung"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "ki-nvidia-kartellpruefung-hugging-face",
+          "tier": "more",
+          "headline": "US-Justizministerium prüft Nvidias Kauf von Hugging Face",
+          "summary": "Kartellwächter in den USA und Frankreich untersuchen laut Insidern Nvidias Übernahmen und Verkaufspraktiken. Im Fokus stehen die 12,93 Milliarden Dollar teure Hugging-Face-Übernahme und mögliche Kopplungsgeschäfte.",
+          "body": "Das US-Justizministerium prüft Nvidias geplante Übernahme der KI-Plattform Hugging Face. Das berichtete Reuters am 28. Oktober unter Berufung auf zwei Insider, The Decoder griff die Meldung am Folgetag auf. Beamte fragen demnach, ob Nvidia mit dem Kauf eine zentrale Schnittstelle für die Verbreitung von KI-Modellen kontrollieren und Wettbewerbern schaden könnte. Der Kaufpreis beträgt 12,93 Milliarden US-Dollar, Nvidia rechnet mit dem Abschluss in der ersten Jahreshälfte 2027. Hugging Face soll weiter mit verschiedenen Chip-, Cloud- und KI-Anbietern zusammenarbeiten.\n\nDie Prüfung geht über diesen Zukauf hinaus. Laut den Insidern schauen die US-Behörden auch auf die Übernahmen von SchedMD und Run:ai, den Lizenzdeal mit Groq und ein mögliches Koppelungsangebot: Kunden sollen größere Mengen KI-Chips erhalten haben, wenn sie zusätzlich Nvidias Netzwerktechnik und Groq-Prozessoren kauften. Die Untersuchungen begannen unter Joe Biden und laufen unter Donald Trump weiter.\n\nAuch Frankreichs Wettbewerbsbehörde ermittelt wegen mutmaßlich wettbewerbswidriger Praktiken. Sie sorgt sich laut dem Bericht um die Abhängigkeit von Nvidias Software CUDA und um Beteiligungen an Cloud-Anbietern wie CoreWeave. Genannte Risiken sind Lieferbeschränkungen, unfaire Vertragsbedingungen und die Benachteiligung einzelner Kunden.\n\nOffizielle Stellungnahmen der Behörden liegen nicht vor, die Details stammen aus anonymen Quellen. Für Europa ist der Fall relevant, weil Hugging Face für viele Entwickler die zentrale Anlaufstelle für offene Modelle ist, darunter die von Mistral. Wer Nvidias Chips, Software und Verbreitungsplattform zugleich kontrolliert, hätte eine starke Position, gerade für Firmen, die auf offene Modelle statt auf geschlossene US-Dienste setzen.",
+          "source": "The Decoder",
+          "url": "https://the-decoder.de/us-kartellwaechter-untersuchen-nvidias-hugging-face-uebernahme-und-verkaufspraktiken/",
+          "sources": [
+            {
+              "name": "The Decoder",
+              "url": "https://the-decoder.de/us-kartellwaechter-untersuchen-nvidias-hugging-face-uebernahme-und-verkaufspraktiken/"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Nvidia_sign.jpg/1280px-Nvidia_sign.jpg",
+            "credit": "Will Buckner",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nvidia_sign.jpg",
+            "alt": "Nvidia-Schild vor dem Hauptsitz in Santa Clara, Kalifornien"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "ki-linux-tcp-luecke-claude",
+          "tier": "more",
+          "headline": "Von Claude gefundene Linux-Lücke mit Höchstwertung noch nicht überall geschlossen",
+          "summary": "Eine Race Condition im TCP-Aufbau des Linux-Kerns erhielt 9,8 von 10 Punkten. Anthropic meldet, sein KI-Modell habe dafür einen Root-Exploit geschrieben; für Ubuntu und Red Hat gibt es noch keine Updates.",
+          "body": "Im Linux-Kernel steckt seit Version 4.4 eine Schwachstelle beim Aufbau neuer IPv4-TCP-Verbindungen. Sie trägt die Kennung CVE-2026-98432 und ist eine Race Condition, die zu einem Use-after-Free führt. Das Kernel-CVE-Team vergab die Höchstwertung von 9,8 auf der CVSS-Skala. Andere Hersteller bewerten sie niedriger: Red Hat nennt je nach Dokument 5,9 oder 8,1, Oracle und SUSE 8,1, Amazon 7,0. Das berichtet The Hacker News.\n\nEntdeckt hat sie Xinyang Ge von Anthropic. Das Unternehmen meldete am 27. Oktober, sein Modell Claude habe einen Root-Exploit geschrieben, der Multipath-TCP-Listener angreift. Laut Anthropic dauerte es 48 Minuten, eine Kernel-Adresse auszulesen, und weitere fünf Minuten bis zur Befehlsausführung. Ob Systeme ohne Multipath TCP genauso angreifbar sind, ist offen. IPv6 ist nicht betroffen. Angriffe in freier Wildbahn sind bisher nicht bekannt, die Lücke fehlt im Katalog ausgenutzter Schwachstellen der US-Behörde CISA.\n\nIm Hauptzweig des Kernels wurde der Fehler am 5. Oktober behoben, gefixte Versionen sind etwa 6.1.190, 6.6.159, 6.12.113 und 6.18.56. Bei den Distributionen ist das Bild uneinheitlich: Debian 12 und 13 sowie Oracle Linux und Amazon Linux 2023 (teilweise) sind gepatcht. Für Ubuntu 22.04 bis 26.10 steht der Fix aus, bei Red Hat Enterprise Linux 8, 9 und 10 wurde er verschoben. Red Hat nennt derzeit keinen Workaround, der die eigenen Standards erfüllt.\n\nFür Administratoren in Sachsen heißt das: Server mit Ubuntu oder RHEL sollten auf Updates achten und die Lage täglich prüfen, Debian-Systeme zügig aktualisieren. Der Fall zeigt außerdem, dass KI-Modelle Schwachstellen nicht nur finden, sondern in Minuten in funktionierende Angriffe umsetzen können.",
+          "source": "The Hacker News",
+          "url": "https://thehackernews.com/2026/10/linux-kernel-tcp-flaw-with-98-cvss.html",
+          "sources": [
+            {
+              "name": "The Hacker News",
+              "url": "https://thehackernews.com/2026/10/linux-kernel-tcp-flaw-with-98-cvss.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Digital_Background.jpg/1280px-Digital_Background.jpg",
+            "credit": "Smile_Eh",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Digital_Background.jpg",
+            "alt": "Unscharfer Computercode als Symbolbild"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "ki-php2shell-angriffe-firewalls",
+          "tier": "more",
+          "headline": "Angriffe auf php2shell-Lücke treffen Palo-Alto-Firewalls und VMware ESX",
+          "summary": "Die US-Behörde CISA bestätigt Angriffe auf zwei Schwachstellen. Eine China zugeordnete Gruppe soll mit KI-Hilfe 25 Firewall-Server übernommen haben.",
+          "body": "Die Sicherheitslücken namens php2shell in PHP werden inzwischen aktiv ausgenutzt. Laut heise online hatten die PHP-Entwickler sie in der Vorwoche geschlossen. Palo Alto Networks warnt vor Angriffen auf sein Firewall-Betriebssystem PAN-OS und stellt Hotfixes bereit. Die US-Behörde CISA nahm zwei Schwachstellen in ihren Katalog bekanntermaßen ausgenutzter Lücken auf, die Warnung stammt vom 28. Oktober.\n\nDas Unternehmen Dream berichtet von einer China zugeordneten Gruppe, die mit KI-gestützter Kampagne zuerst php2shell und dann die Linux-Lücke Fragnesia ausgenutzt haben soll. So seien 25 Firewall-Server in den USA, Japan, Taiwan und Südkorea übernommen worden. Welches Produkt betroffen war, nennt der Bericht nicht. Fragnesia (CVE-2026-46300) ist eine lokale Rechteausweitung mit CVSS 7,8, Kernel-Updates gibt es seit Monaten.\n\nEin zweiter Fall betrifft VMware ESX: Die Gruppe Warp Panda, laut CrowdStrike China-nah, griff US-Anwaltskanzleien an und setzte Schadsoftware in deren vCenter-Umgebungen. Um Spuren zu verwischen, nutzte sie eine Lücke (CVE-2026-41709) als Zero-Day, durch die Administratoren bestimmte Aktionen ohne Protokolleintrag ausführen können. Broadcom stuft sie mit CVSS 2,7 als geringfügig ein und hat daran trotz der Angriffe festgehalten; Updates gibt es seit Ende Juli.\n\nDie Empfehlung von heise: Prüfen, ob Server noch veraltete Softwarestände nutzen, und zügig aktualisieren. Wer Palo-Alto-Firewalls mit erreichbarer Verwaltungsoberfläche betreibt, sollte die Hotfixes einspielen und den Zugang einschränken. Das gilt auch für Unternehmen und Behörden in Mitteldeutschland.",
+          "source": "heise online",
+          "url": "https://www.heise.de/news/Angriffe-auf-Linux-und-VMware-ESX-Schwachstellen-11503947.html",
+          "sources": [
+            {
+              "name": "heise online",
+              "url": "https://www.heise.de/news/Angriffe-auf-Linux-und-VMware-ESX-Schwachstellen-11503947.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T08:34:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Happy_Hacking_Keyboard_Professional_2.jpg/1280px-Happy_Hacking_Keyboard_Professional_2.jpg",
+            "credit": "Aon fi",
+            "license": "CC BY 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Happy_Hacking_Keyboard_Professional_2.jpg",
+            "alt": "Computertastatur als Symbolbild"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "wirtschaft",
+      "title": "Wirtschaft & Märkte",
+      "emoji": "📈",
+      "items": [
+        {
+          "id": "wirtschaft-ezb-lagarde-abschied-zinserhoehung",
+          "tier": "top",
+          "headline": "EZB hält Zins bei 2,5 Prozent, Lagarde kündigt Abschied an",
+          "summary": "Die EZB lässt den Einlagezins unverändert, signalisiert aber eine Erhöhung im Dezember. Christine Lagarde tritt am 7. Februar 2027 vorzeitig zurück.",
+          "body": "Die Europäische Zentralbank hat ihren Einlagezins am Donnerstag bei 2,5 Prozent belassen. Das erwarteten die Märkte, wie das Handelsblatt und finanzen.net berichten. Wichtiger als die Pause ist das Signal an die Märkte: Notenbankchefin Christine Lagarde ließ erkennen, dass im Dezember eine weitere Anhebung wahrscheinlich ist.\n\nWenige Stunden vor dem Zinsentscheid hatte die EZB zudem mitgeteilt, dass Lagarde ihr Amt vorzeitig abgibt. Sie scheidet am 7. Februar 2027 aus, knapp neun Monate vor dem regulären Ende ihrer Amtszeit.\n\n## Das Signal für Dezember\n\nNach Angaben des Handelsblatts sagte Lagarde, sofern es keine größeren Entwicklungen gebe, sei die Richtung der Geldpolitik für alle ziemlich klar. Ökonomen von Commerzbank und ING werten das als deutlichen Hinweis auf eine Erhöhung im Dezember. Es wäre die dritte in diesem Jahr. Im EZB-Rat wurde demnach durchaus diskutiert, ob schon jetzt gehandelt werden muss. Am Ende setzte sich die Pause durch.\n\nDer Hintergrund ist die Teuerung. Die Inflationsrate im Euroraum lag zuletzt bei 3,8 Prozent und damit weit über dem Zwei-Prozent-Ziel. Als Treiber nennt finanzen.net die hohen Energiepreise im Zusammenhang mit dem Iran-Konflikt und den Spannungen rund um die Straße von Hormus. Dazu kommt Druck am Anleihemarkt: Die Rendite zehnjähriger französischer Staatsanleihen liegt auf dem höchsten Stand seit 24 Jahren.\n\n## Wechsel an der Spitze\n\nWer Lagarde nachfolgt, ist offen. Nach Angaben des Handelsblatts wird in Regierungskreisen mit einer schnellen Entscheidung gerechnet, die Staats- und Regierungschefs der Euroländer arbeiten demnach an einem Personalpaket. Ob eine Nachfolgerin oder ein Nachfolger schon im Dezember feststeht, ist nicht bestätigt. Lagarde selbst verwies laut Handelsblatt darauf, dass sie ihre Meinung künftig frei äußern wolle, und hielt Kritik am Zeitpunkt entgegen, es gebe geeignete Kandidaten.\n\n## Was das für Sparer und Kreditnehmer heißt\n\nFür Sparer ändert sich kurzfristig wenig: Tages- und Festgeldzinsen dürften zunächst stabil bleiben, große Sprünge sind ohne weitere Erhöhung nicht zu erwarten. Wer eine Baufinanzierung plant, sollte die langfristigen Renditen im Blick behalten. Bauzinsen orientieren sich an ihnen und können steigen, wenn die Inflationserwartungen hoch bleiben, auch ohne Schritt der EZB. Für hoch bewertete Aktien sind höhere Zinsen tendenziell ein Gegenwind.\n\nAls nächste Wegmarken gelten die Inflationszahlen für Oktober und die Ratssitzung im Dezember.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/finanzen/geldpolitik/ezb-notenbank-steuert-auf-dritte-zinserhoehung-im-dezember-zu/100265320.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/finanzen/geldpolitik/ezb-notenbank-steuert-auf-dritte-zinserhoehung-im-dezember-zu/100265320.html"
+            },
+            {
+              "name": "Handelsblatt (Lagarde-Rücktritt)",
+              "url": "https://www.handelsblatt.com/finanzen/geldpolitik/ezb-praesidentin-lagarde-tritt-vorzeitig-ab-nachfolger-schon-im-dezember/100265875.html"
+            },
+            {
+              "name": "finanzen.net",
+              "url": "https://www.finanzen.net/nachricht/zinsen/ezb-zinsentscheid-ezb-besaenftigt-die-maerkte-leitzins-bleibt-unangetastet-erhoehung-im-dezember-15927474"
+            }
+          ],
+          "publishedAt": "2026-10-29T17:24:00+01:00",
+          "importance": 8,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/European_Central_Bank_Frankfurt_Germany_18_Feb_2023.jpg/1280px-European_Central_Bank_Frankfurt_Germany_18_Feb_2023.jpg",
+            "credit": "Norbert Nagel",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:European_Central_Bank_Frankfurt_Germany_18_Feb_2023.jpg",
+            "alt": "Das Hochhaus der Europäischen Zentralbank in Frankfurt am Main"
+          }
+        },
+        {
+          "id": "wirtschaft-dax-ueber-26000-alphabet-rutscht-ab",
+          "tier": "top",
+          "headline": "Dax schließt über 26.000 Punkten, Alphabet verliert 500 Milliarden",
+          "summary": "Der Dax steigt nach dem EZB-Entscheid um 1,3 Prozent auf 26.040 Punkte. An der Wall Street zieht Alphabet die Indizes nach unten.",
+          "body": "Der Dax hat den Handel am Donnerstag klar im Plus beendet. Er schloss nach Angaben von finanzen.net bei 26.039,68 Punkten, ein Gewinn von 335,66 Punkten oder 1,31 Prozent. Laut Handelsblatt ist das der höchste Schlusskurs seit Anfang September und der größte Punktezuwachs an einem Tag seit Juli. Das Rekordhoch vom 28. August beim Schlussstand von 26.569,99 Punkten bleibt allerdings noch ein Stück entfernt.\n\n## Zahlen und Zinsen stützen den Dax\n\nHauptgründe waren überwiegend gute Quartalszahlen und die Entscheidung der EZB, die Zinsen vorerst nicht anzuheben. Adidas gewann 5,8 Prozent und führte damit die Gewinnerliste an. Volkswagen legte um 1,7 Prozent zu, obwohl der Konzern für das dritte Quartal einen Milliardenverlust gemeldet hatte. Henkel stieg um 1,2 Prozent, MTU um 1,6 Prozent, nachdem die Aktie zwischenzeitlich um bis zu 3,1 Prozent gefallen war. Der Euro blieb laut Kursanzeige von finanzen.net bei etwa 1,12 Dollar.\n\n## Wall Street: Alphabet bremst\n\nIn New York verlief der Tag schwächer. Der Dow Jones gab nach Angaben des Handelsblatts um 0,3 Prozent auf 52.343 Punkte nach, der S&P 500 um 0,3 Prozent auf 7.721 Punkte. Die Technologiebörse Nasdaq 100 verlor 1,4 Prozent auf 29.403 Punkte und beendete damit ihre kurze Erholung.\n\nHauptursache war Alphabet. Die Aktie der Google-Mutter brach um 12,6 Prozent ein, nachdem der Konzern bei Umsatz und Gewinn hinter den Erwartungen geblieben war. Der Börsenwert sank um knapp 500 Milliarden Dollar auf 3,47 Billionen Dollar. Laut Handelsblatt ist es der schlechteste Tag des Unternehmens seit dem Börsengang. Der Konzern gab im Quartal mehr für Investitionen aus, als sein Geschäft an Zahlungsmitteln erwirtschaftete. Analyst Jochen Stanzl von der Consorsbank sagte, der Markt belohne derzeit Ausgabendisziplin und bestrafe KI-Investitionen ohne Rückhalt im Cashflow.\n\nAuch andere Werte gerieten stark unter Druck: ServiceNow verlor 27 Prozent, Fortinet 20 Prozent und Caterpillar mehr als 9 Prozent. Gefragt waren dagegen Eli Lilly mit einem Plus von 6,6 Prozent und Mastercard mit 4,2 Prozent. Microsoft gab trotz solider Zahlen leicht um 0,2 Prozent nach.\n\n## Einordnung\n\nFür Anleger in Deutschland zeigt der Tag zwei Themen: Zinsen bleiben das beherrschende Thema, und der KI-Boom wird kritischer geprüft. Die Reaktion auf Alphabet gilt als Warnsignal für Konzerne, die hohe Summen in Rechenzentren stecken. Nach Börsenschluss legte außerdem Intel eine enttäuschende Prognose vor, die den Techsektor weiter belasten könnte.",
+          "source": "finanzen.net",
+          "url": "https://www.finanzen.net/nachricht/aktien/dax-aktuell-dax-schliesst-nach-zinsentscheid-ueber-26-000-punkte-marke-ist-das-der-startschuss-zur-jahresendrally-16018484",
+          "sources": [
+            {
+              "name": "finanzen.net",
+              "url": "https://www.finanzen.net/nachricht/aktien/dax-aktuell-dax-schliesst-nach-zinsentscheid-ueber-26-000-punkte-marke-ist-das-der-startschuss-zur-jahresendrally-16018484"
+            },
+            {
+              "name": "Handelsblatt (Dax)",
+              "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dax-aktuell-dax-gewinnt-deutlich-hinzu-und-schliesst-ueber-26.000-punkte-marke/100265822.html"
+            },
+            {
+              "name": "Handelsblatt (Wall Street)",
+              "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dow-jones-sp-500-nasdaq-alphabet-kursrutsch-vernichtet-500-milliarden-dollar-boersenwert/100265906.html"
+            },
+            {
+              "name": "finanzen.net (New York)",
+              "url": "https://www.finanzen.net/nachricht/aktien/roundup-aktien-new-york-schluss-alphabet-bremst-nasdaq-erholungsrally-aus-16020481"
+            }
+          ],
+          "publishedAt": "2026-10-29T21:58:00+01:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Seat_of_the_European_Central_Bank_and_Frankfurt_Skyline_at_dawn_20150422_1.jpg/1280px-Seat_of_the_European_Central_Bank_and_Frankfurt_Skyline_at_dawn_20150422_1.jpg",
+            "credit": "DXR",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Seat_of_the_European_Central_Bank_and_Frankfurt_Skyline_at_dawn_20150422_1.jpg",
+            "alt": "EZB-Turm und Frankfurter Skyline im Morgengrauen"
+          }
+        },
+        {
+          "id": "wirtschaft-vw-milliardenverlust-porsche-china",
+          "tier": "top",
+          "headline": "VW verbucht Milliardenverlust wegen Porsche und China",
+          "summary": "Volkswagen meldet für das dritte Quartal 5,8 Milliarden Euro Verlust. Sondereffekte von 7,8 Milliarden Euro und das schwache China-Geschäft belasten.",
+          "body": "Volkswagen ist im dritten Quartal tief in die roten Zahlen gerutscht. Wie finanzen.net berichtet, lag der Konzernverlust nach Steuern bei rund 5,82 Milliarden Euro, nach etwa 1,07 Milliarden im Vorjahresquartal. Über die ersten neun Monate summiert sich ein Minus von 2,72 Milliarden Euro, nach einem Überschuss von gut 3,4 Milliarden im Vorjahr. Der Umsatz sank im Quartal um 6,3 Prozent auf 75,3 Milliarden Euro.\n\n## Sondereffekte und China\n\nFür das Ergebnis sind vor allem Sondereffekte von rund 7,8 Milliarden Euro verantwortlich. Den größten Teil macht laut Handelsblatt und finanzen.net die nicht zahlungswirksame Abschreibung auf den Firmenwert der Sportwagentochter Porsche aus, sie beträgt rund 6,4 Milliarden Euro. Hinzu kommt eine weitere Wertberichtigung von etwa einer Milliarde bei Gesellschaften in China sowie Kosten für den Konzernumbau, etwa im Zusammenhang mit dem geplanten Verkauf des Werks Osnabrück. Ohne diese Belastungen hätte VW nach eigenen Angaben 8,8 Milliarden Euro verdient.\n\nIn China schreibt der Konzern erstmals seit dem Start dort Verluste: nach neun Monaten minus 113 Millionen Euro, im Vorjahr standen noch 744 Millionen Euro Gewinn. Die Auslieferungen in China brachen im Quartal um 38,5 Prozent ein, weltweit sanken sie um 14,3 Prozent auf 1,89 Millionen Fahrzeuge. Finanzchef Arno Antlitz warnte laut Handelsblatt, es bestehe das Risiko, dass das China-Geschäft in diesem Jahr nicht mehr die Gewinnschwelle erreicht.\n\n## Prognose und Börse\n\nFür 2026 rechnet VW mit Sonderkosten von rund 10 Milliarden Euro, 8,7 Milliarden sind bereits verbucht. Die operative Umsatzrendite soll höchstens 1 Prozent erreichen, Mitte September hatte der Konzern die Prognose von zuvor 4,0 bis 5,5 Prozent gesenkt. Die US-Zölle belasten VW in diesem Jahr voraussichtlich mit 2,8 Milliarden Euro. Als Gründe für den Druck nennt das Handelsblatt zudem den Absatzeinbruch in China und die geringere Marge bei Elektroautos im Vergleich zu Verbrennern.\n\nAn der Börse reagierten Anleger gelassen: Die Vorzugsaktie schloss laut finanzen.net mit einem Plus von 1,7 Prozent bei 70,20 Euro. Seit Jahresbeginn steht sie dennoch rund ein Drittel im Minus. Analysten urteilten unterschiedlich. JPMorgan stufte die Aktie mit „Neutral“ ein und hob die hohe Liquidität hervor, Jefferies bestätigte „Buy“.\n\n## Bedeutung für Sachsen\n\nVW gehört zu den größten Industriearbeitgebern im Osten, auch in Sachsen. Konkrete Folgen für sächsische Standorte nennen die ausgewerteten Berichte nicht. Klar ist aber: Das Unternehmen steht unter Sparzwang und plant einen weiteren Umbau. Es könnte 2026 den ersten Jahresverlust seit dem Diesel-Skandal verbuchen.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/unternehmen/industrie/autobauer-volkswagen-rutscht-wegen-porsche-und-china-in-die-roten-zahlen/100265266.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/unternehmen/industrie/autobauer-volkswagen-rutscht-wegen-porsche-und-china-in-die-roten-zahlen/100265266.html"
+            },
+            {
+              "name": "finanzen.net",
+              "url": "https://www.finanzen.net/nachricht/aktien/drittes-quartal-im-blick-vw-aktie-dreht-ins-plus-tiefrote-quartalszahlen-milliardenverlust-verbucht-16018077"
+            }
+          ],
+          "publishedAt": "2026-10-29T12:14:00+01:00",
+          "importance": 7,
+          "readingMinutes": 2,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/BMW_Leipzig_MEDIA_050719_Download_Montage_2_max.jpg/1280px-BMW_Leipzig_MEDIA_050719_Download_Montage_2_max.jpg",
+            "credit": "BMW Werk Leipzig",
+            "license": "CC BY-SA 2.0 de",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:BMW_Leipzig_MEDIA_050719_Download_Montage_2_max.jpg",
+            "alt": "Montagehalle im BMW-Werk Leipzig"
+          }
+        },
+        {
+          "id": "wirtschaft-intel-prognose-speicherpreise",
+          "tier": "more",
+          "headline": "Intel enttäuscht mit Prognose, Aktie fällt um ein Fünftel",
+          "summary": "Intel erwartet für das laufende Quartal deutlich weniger Umsatz als gedacht. Teure Speicherchips bremsen den PC-Absatz.",
+          "body": "Der Chiphersteller Intel hat nach US-Börsenschluss eine schwache Prognose vorgelegt, die Aktie brach im nachbörslichen Handel um etwa ein Fünftel ein. Laut Handelsblatt und finanzen.net rechnet das Unternehmen für das laufende Quartal mit 15 bis 16 Milliarden Dollar Umsatz. Analysten hatten rund 17 Milliarden erwartet. Der bereinigte Gewinn je Aktie soll bei 25 US-Cent liegen, erwartet waren 43 Cent.\n\nAls Ursache nennt Finanzchef David Zinsner hohe Speicherpreise, die dazu führen, dass weniger PCs gekauft werden. Das Geschäft schwächele schon seit Wochen und werde mindestens bis zur ersten Jahreshälfte 2027 nicht besser, sagte er dem Sender CNBC. Hinzu kommen Engpässe in der Lieferkette, die Chips für die stark nachgefragten Rechenzentren knapp halten. Konzernchef Lip-Bu Tan erklärte laut Handelsblatt, der gesamte Markt sei betroffen und Speicherpreise blieben auch 2027 ein ernstes Problem. Intel rechnet damit, dass der PC-Markt 2027 um 10 Prozent schrumpft, nach einem Rückgang von 12 Prozent in diesem Jahr.\n\nIm abgelaufenen Quartal war der Umsatz um 21 Prozent auf 16,5 Milliarden Dollar gestiegen, in etwa wie erwartet. Der Nettogewinn sank um 18 Prozent auf 3,3 Milliarden Dollar.\n\nWie stark Speicherhersteller profitieren, zeigt Samsung. Der Konzern verneunfachte laut Handelsblatt seinen Betriebsgewinn im dritten Quartal auf 107,4 Billionen Won, umgerechnet etwa 72 Milliarden Euro. Grund ist der KI-Boom, der Speicherchips knapp und teuer macht. Für Verbraucher bedeutet das: Computer und andere Geräte dürften vorerst teuer bleiben.",
+          "source": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/technik/it-internet/chiphersteller-intel-prognose-enttaeuscht-aktie-bricht-um-ein-fuenftel-ein/100266014.html",
+          "sources": [
+            {
+              "name": "Handelsblatt",
+              "url": "https://www.handelsblatt.com/technik/it-internet/chiphersteller-intel-prognose-enttaeuscht-aktie-bricht-um-ein-fuenftel-ein/100266014.html"
+            },
+            {
+              "name": "finanzen.net",
+              "url": "https://www.finanzen.net/nachricht/aktien/intel-prognose-enttaeuscht-boerse-aktie-bricht-ein-16020470"
+            },
+            {
+              "name": "Handelsblatt (Samsung)",
+              "url": "https://www.handelsblatt.com/technik/it-internet/tech-konzern-samsung-erzielt-rekordgewinn-dank-ki-boom/100265748.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T21:41:00+01:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/C1702A_die.jpg/1280px-C1702A_die.jpg",
+            "credit": "Mister rf",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:C1702A_die.jpg",
+            "alt": "Mikroskopaufnahme eines Halbleiter-Chips (Die) eines Intel-Speicherbausteins"
+          }
+        }
+      ]
+    },
+    {
+      "id": "politik",
+      "title": "Politik",
+      "emoji": "🏛️",
+      "items": [
+        {
+          "id": "politik-eralp-notizen-erschuettern-berliner-koalitionsgespraeche",
+          "tier": "top",
+          "headline": "Eralp-Notizen setzen Berliner Linke und Koalitionsgespräche unter Druck",
+          "summary": "Vertrauliche Anmerkungen der Berliner Linken-Spitzenkandidatin Elif Eralp sind beim „Spiegel“ gelandet. SPD und Grüne gehen auf Distanz, die Linke-Spitze verteidigt sie.",
+          "body": "Die Sondierungen über ein rot-grün-rotes Bündnis in Berlin geraten ins Wanken. Auslöser sind interne Anmerkungen der Linken-Spitzenkandidatin Elif Eralp zu einem Interview, die versehentlich aus ihrem Büro beim „Spiegel“ ankamen. Darin schreibt sie sinngemäß, sie und ihr Mann hätten Angst vor „diesen Leuten“. Gemeint sind nach der Lesart des Berichts Anhänger propalästinensischer Netzwerke mit Hamas-Nähe. Zudem ist von organisierter Kriminalität die Rede; das LKA habe geraten, keine konkreten Personen zu nennen.\n\n## Reaktionen von SPD und Grünen\n\nLaut Tagesspiegel geht es im Kern um den Aktivisten Ibrahim Ibrahim, Gesicht des „Vereinigten Palästinensischen Nationalkomitees“, in dessen Umfeld Teile der Berliner Linken sympathisieren sollen. Eralp wollte ihn in dem Interview offenbar nicht namentlich nennen.\n\nBerlins SPD-Spitzenkandidat Steffen Krach nannte ihre Äußerungen ein „verheerendes Signal“, will die Gespräche vorerst aber fortsetzen. Der frühere Regierende Bürgermeister Michael Müller sagte, eine Regierungschefin wäre im Fall der Richtigkeit erpressbar; das sei eine große Hürde. Der SPD-Innenpolitiker Sebastian Fiedler hält weitere Verhandlungen für unzumutbar. Zwei Berliner SPD-Bundestagsabgeordnete, die zuvor einen Brief für Gespräche mit der Linken mitunterzeichnet hatten, rücken nun ab und verlangen Klarheit vor einem Koalitionsvertrag.\n\nGrünen-Chef Felix Banaszak nannte die Lage erschütternd, Konstantin von Notz „krass und irritierend“. Der Zentralrat der Juden warnte über seinen Präsidenten Josef Schuster davor, der Linken Regierungsverantwortung zu geben.\n\n## Linke verteidigt Eralp\n\nDie Linke-Vorsitzenden Ines Schwerdtner und Luigi Pantisano kritisierten den „Spiegel“: Die Sorge um die Familie gehöre nicht in die Zeitung. Eralp selbst sagte, es sei normal, sich um die Familie zu sorgen, und sie lasse sich nicht einschüchtern. Laut Politico erwägt die Partei eine Beschwerde beim Presserat.\n\nDer kommissarische Berliner CDU-Chef Stefan Evers forderte SPD und Grüne auf, die Gespräche zu beenden. Die CDU stehe für ein Bündnis bereit, auch eine Kenia-Koalition aus CDU, Grünen und SPD hätte eine Mehrheit.\n\n## Einordnung\n\nWas in Berlin geschieht, wirkt bundesweit: Ob die Linke erstmals in einer Hauptstadt-Regierung mit SPD und Grünen sitzt, hat Signalwirkung für künftige Bündnisse, auch im Osten. Bundes-SPD und Grüne hatten ohnehin Vorbehalte gegen das Bündnis; die Parteispitze der SPD äußerte sich bislang nicht.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/linke-eralp-berlin-hamas-terror-angst-koalition-mueller-spd-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/linke-eralp-berlin-hamas-terror-angst-koalition-mueller-spd-100.html"
+            },
+            {
+              "name": "Tagesspiegel",
+              "url": "https://www.tagesspiegel.de/politik/vorgang-ist-krass-und-irritierend-so-reagieren-grune-und-spd-im-bund-auf-eralps-angst-vor-hamas-anhangern-16214787.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T16:41:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Bundestag_Berlin_Deutschland_Reichstagsgeb%C3%A4ude_-_07.jpg/1280px-Bundestag_Berlin_Deutschland_Reichstagsgeb%C3%A4ude_-_07.jpg",
+            "credit": "Norbert Nagel",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bundestag_Berlin_Deutschland_Reichstagsgeb%C3%A4ude_-_07.jpg",
+            "alt": "Deutschlandfahne vor dem Reichstagsgebäude in Berlin"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "politik-gen-z-proteste-samstag-sorge-vor-eskalation",
+          "tier": "top",
+          "headline": "Gen-Z-Proteste am Samstag: Behörden warnen vor Unterwanderung",
+          "summary": "In rund 23 Städten wollen junge Menschen am 31. Oktober demonstrieren. Innenminister Dobrindt warnt vor Vereinnahmung, Händler schließen vorsorglich Filialen.",
+          "body": "Für Samstag, den 31. Oktober, hat die Initiative „Gen Z regelt“ bundesweite Demonstrationen angemeldet. Nach Angaben von AFP, über ZDFheute verbreitet, sind 23 Städte geplant. In Berlin, Hamburg, München, Frankfurt am Main und Köln organisiert die Initiative selbst, in 18 weiteren Orten schließt sie sich lokalen Gruppen an. Fast 140.000 Menschen hatten online zugesagt, die meisten in Köln mit rund 12.000, gefolgt von Frankfurt mit knapp 11.000.\n\n## Worum es den Demonstrierenden geht\n\nDie jungen Leute fordern bessere Bildung, bezahlbares Leben und mehr politische Aufmerksamkeit für Kinder, Jugendliche und junge Erwachsene. Sie wenden sich gegen Kürzungen, mehr Überwachung und die neue Wehrpflicht samt Musterung junger Männer. Die Initiative lehnt Gewalt, Extremismus und Rassismus ausdrücklich ab. Die Klimaaktivistin Luisa Neubauer sagte in einem Video, die Debatte zeige, dass junge Menschen sich nicht ernst genommen fühlten, und mahnte, nicht zu „hyperventilieren“. Die Bundesschülerkonferenz plant zusätzlich eine eigene Demonstration in Berlin.\n\n## Sicherheitsbehörden in Alarmbereitschaft\n\nHintergrund sind Ausschreitungen bei ähnlichen Protesten in Frankreich, wo es auch zu Plünderungen kam. Bundesinnenminister Alexander Dobrindt warnte, die Demonstrationen könnten „gekapert“ werden. Das Bundesamt für Verfassungsschutz beobachtet einschlägige Seiten und Netzwerke und sieht die Gefahr einer Instrumentalisierung durch linksextreme Gruppen. Zugleich erklärten Innenministerium und BKA, es lägen keine konkreten Hinweise auf geplante Gewalt vor. Grünen-Chef Felix Banaszak warnte davor, die Proteste vorschnell zu kriminalisieren. Tausende Polizisten sind im Einsatz; die Polizeigewerkschaft verweist darauf, dass der Termin auf Halloween fällt, was das Vermummungsverbot schwer durchsetzbar macht.\n\n## Folgen im Alltag\n\nDie Sorge reicht bis in den Handel. Wie t-online unter Berufung auf dpa berichtet, schließt die Parfümeriekette Douglas am Samstag vorsorglich zwölf ihrer 347 Filialen, die Standorte nennt sie nicht. Händler auf der Düsseldorfer Königsallee sichern Schaufenster mit Holzplatten und Gerüsten. Wer am Wochenende in Großstädten unterwegs ist, sollte mit Straßensperrungen und Polizeipräsenz rechnen.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/deutschland/gen-z-regelt-proteste-deutschland-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/gen-z-regelt-proteste-deutschland-100.html"
+            },
+            {
+              "name": "ZDFheute (Neubauer)",
+              "url": "https://www.zdfheute.de/politik/deutschland/gen-z-jugend-protest-luisa-neubauer-debatte-100.html"
+            },
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/nachrichten/deutschland/innenpolitik/id_101504252/gen-z-proteste-douglas-schliesst-filialen-haendler-besorgt.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T22:19:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Dresden%2C_S%C3%A4chsische_Staatskanzlei_%28April_2024%29.jpg/1280px-Dresden%2C_S%C3%A4chsische_Staatskanzlei_%28April_2024%29.jpg",
+            "credit": "Romzig",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dresden,_S%C3%A4chsische_Staatskanzlei_(April_2024).jpg",
+            "alt": "Sächsische Staatskanzlei in Dresden"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "politik-frohnmaier-leaks-syrien-geheimhaltung",
+          "tier": "more",
+          "headline": "AfD-Leaks: Frohnmaier und die Mails zum Assad-Regime",
+          "summary": "Geleakte AfD-Mails nähren Fragen zu Markus Frohnmaiers Umgang mit Verschlusssachen und einem Treffen mit Syriens UN-Botschafter. Er weist Vorwürfe zurück.",
+          "body": "ZDF frontal wertet geleakte interne E-Mails der AfD aus und berichtet nun über den Bundestagsabgeordneten Markus Frohnmaier, stellvertretender Fraktionschef und Außenpolitik-Sprecher. Die Mails stammen vor allem aus den Jahren 2017 und 2018. Demnach leiteten Mitarbeiter seines Büros regelmäßig Dokumente mit dem Vermerk „VS-NfD“ an seine private AOL-Adresse weiter, darunter Material des Auswärtigen Amts zum Syrien-Krieg und Bundeswehr-Unterrichtungen zu Auslandseinsätzen. Die Bundestagsverwaltung erklärte, solche Inhalte dürften nur über zugelassene, staatlich betreute IT verarbeitet werden; Verstöße könnten strafrechtlich relevant sein.\n\nIm Juli 2018 traf Frohnmaier in New York den damaligen syrischen UN-Botschafter Baschar al-Dschafari, obwohl Assads Regierung international isoliert war. Wenige Tage später schrieb er an die syrische Vertretung und versprach Informationen zum Programm „Cash for Work“. Sein Büro ließ dazu ein Gutachten des Wissenschaftlichen Dienstes erstellen und fragte einen arabischen Übersetzer an. Im November 2018 folgte eine Kleine Anfrage mit 17 Fragen an die Bundesregierung.\n\nFrohnmaier räumt über seinen Anwalt das Weiterleiten an die private Adresse ein, sagt aber, Unbefugte hätten keinen Zugriff gehabt; die Praxis sei beendet. Er habe sich einmal mit dem Botschafter getroffen, keine Geheimnisse weitergegeben und weder Informationen für fremde Staaten gesammelt noch Gegenleistungen erhalten. ZDF betont, die Korrespondenz sei unvollständig und belege keine Weitergabe an Syrien. Frohnmaier steht wegen seiner Nähe zu Russland seit Längerem in der Kritik.",
+          "source": "ZDFheute",
+          "url": "https://www.zdfheute.de/politik/deutschland/afd-leak-mails-frohnmaier-syrien-russland-100.html",
+          "sources": [
+            {
+              "name": "ZDFheute",
+              "url": "https://www.zdfheute.de/politik/deutschland/afd-leak-mails-frohnmaier-syrien-russland-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T20:06:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/190930_Schuppenartige_Verglasung_der_Kuppel_auf_dem_Reichstagsgeb%C3%A4ude.jpg/1280px-190930_Schuppenartige_Verglasung_der_Kuppel_auf_dem_Reichstagsgeb%C3%A4ude.jpg",
+            "credit": "Ole Neitzel",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:190930_Schuppenartige_Verglasung_der_Kuppel_auf_dem_Reichstagsgeb%C3%A4ude.jpg",
+            "alt": "Gläserne Kuppel auf dem Reichstagsgebäude, davor eine Deutschlandfahne"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "politik-afd-niedersachsen-bleibt-beobachtungsobjekt",
+          "tier": "more",
+          "headline": "Niedersachsens AfD bleibt Beobachtungsobjekt des Verfassungsschutzes",
+          "summary": "Das Oberverwaltungsgericht Lüneburg hat die Beschwerde des AfD-Landesverbands abgewiesen. Die Entscheidung ist unanfechtbar, das Hauptverfahren läuft weiter.",
+          "body": "Die AfD in Niedersachsen darf vorerst weiter vom Verfassungsschutz als Beobachtungsobjekt geführt werden. Das Oberverwaltungsgericht Lüneburg wies am Donnerstag die Beschwerde des Landesverbands zurück, wie AFP und dpa berichten.\n\nDer Landesverfassungsschutz hatte die Partei im Februar 2026 vom Verdachtsfall zum „Beobachtungsobjekt von erheblicher Bedeutung“ hochgestuft. Dagegen stellte die AfD einen Eilantrag, den das Verwaltungsgericht Hannover Anfang Juni ablehnte. Das Oberverwaltungsgericht bestätigte nun diese Linie. Nach Auffassung des Senats lägen Tatsachen vor, die eine gegen die freiheitliche demokratische Grundordnung gerichtete Bestrebung belegten.\n\nDer Beschluss kann nicht angefochten werden. Er betrifft allerdings nur das Eilverfahren: Das Hauptsacheverfahren ist weiterhin beim Verwaltungsgericht Hannover anhängig. Bis dahin darf der Verfassungsschutz die Partei mit nachrichtendienstlichen Mitteln beobachten.\n\nFür die Debatte um den Umgang mit der AfD ist die Entscheidung ein weiteres Signal aus der Justiz: Gerichte halten die Einstufung bislang für tragfähig, ein abschließendes Urteil steht aber noch aus.",
+          "source": "Tagesspiegel (AFP/dpa)",
+          "url": "https://www.tagesspiegel.de/politik/afp-dpa-niederlage-vor-dem-ovg-niedersachsische-afd-bleibt-vorerst-beobachtungsobjekt-des-verfassungsschutzes-16216610.html",
+          "sources": [
+            {
+              "name": "Tagesspiegel (AFP/dpa)",
+              "url": "https://www.tagesspiegel.de/politik/afp-dpa-niederlage-vor-dem-ovg-niedersachsische-afd-bleibt-vorerst-beobachtungsobjekt-des-verfassungsschutzes-16216610.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T17:04:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Lueneburg-OVG1-Bubo.JPG/1280px-Lueneburg-OVG1-Bubo.JPG",
+            "credit": "Bubo",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lueneburg-OVG1-Bubo.JPG",
+            "alt": "Gebäude des Niedersächsischen Oberverwaltungsgerichts in Lüneburg"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "welt",
+      "title": "Welt",
+      "emoji": "🌍",
+      "items": [
+        {
+          "id": "welt-hormus-tanker-minen",
+          "tier": "top",
+          "headline": "Iran meldet Tanker nach Minentreffern in der Straße von Hormus",
+          "summary": "Die Revolutionsgarden sprechen von brennenden Tankern auf einer „unerlaubten“ Route. Unabhängig bestätigt ist bislang nur ein Schiffsbrand in der Meerenge.",
+          "body": "Die iranischen Revolutionsgarden (IRGC) haben nach eigenen Angaben drei Öltanker in der Straße von Hormus durch Seeminen getroffen. Nach einer Erklärung, die das iranische Staatsfernsehen am Donnerstag verbreitete, gerieten die Schiffe innerhalb von 24 Stunden in Brand, explodierten und liegen nun verlassen an der Südküste der Meerenge. Am Freitagmorgen berichtete Al Jazeera unter Berufung auf die Marine der Garden sogar von insgesamt vier Schiffen: Ein weiteres Schiff sei im östlichen Teil der Wasserstraße auf Minen gelaufen.\n\nZu Opfern, Flaggen oder Namen der Schiffe machte die IRGC keine Angaben. Die britische Seehandelsüberwachung UKMTO meldete am Donnerstag zwar einen Brand auf einem Schiff in der Meerenge, nannte aber weder Ursache noch Verletzte. Ein Kapitän berichtete zudem von einem Feuer rund 17 Kilometer nördlich der omanischen Stadt Chasab. Die iranische Darstellung lässt sich damit nicht unabhängig prüfen.\n\n## Teheran will den Verkehr kontrollieren\n\nDer Vorfall passt in ein Muster. Iran versucht nach Berichten von Euronews, die Durchfahrt zu beschränken, und verlangt für alle Schiffe eine Passiergenehmigung. Tanker, die stattdessen eine Route im Süden nahe Oman nehmen, bezeichnet die IRGC als „unerlaubt“. Schon am 15. und am 20. Oktober hatten Minen laut Euronews Tanker in Brand gesetzt, zwei Frachter sanken. Die Garden drohten nun, ihre Antwort könne über die Meerenge hinausgehen, falls die USA Tankern bei der Nutzung solcher Routen helfen. Zudem erklärte sie, ihre Luftabwehr habe über der Meerenge die 14. US-Drohne vom Typ MQ-1 abgeschossen.\n\nHintergrund ist der Krieg der USA und Israels gegen Iran, den Al Jazeera als laufend führt. Eine Absichtserklärung zwischen Washington und Teheran vom 17. Juni sollte die Lage an der Meerenge beruhigen, doch die Zwischenfälle reißen nicht ab.\n\n## Was das für Deutschland bedeutet\n\nDie Straße von Hormus ist eine der wichtigsten Öl-Handelsrouten der Welt. Jede Störung wirkt deshalb auf Rohölpreise, Frachtkosten und Versicherungsprämien und schlägt am Ende an deutschen Tankstellen und in den Energiekosten der Industrie durch, auch in Sachsen. Zusätzlich belastet es die ohnehin angespannte Lage an den Energiemärkten, nachdem der europäische Gaspreis zuletzt über 100 Euro gestiegen war.\n\nOb die Minen tatsächlich so wirkten, wie die IRGC es darstellt, bleibt offen. Klar ist: Die Gefahr für die Handelsschifffahrt ist real, und eine Ausweitung der Angriffe über die Meerenge hinaus würde die Lage für Europa weiter verschärfen.",
+          "source": "Euronews",
+          "url": "https://de.euronews.com/2026/10/29/tanker-strasse-von-hormus",
+          "sources": [
+            {
+              "name": "Euronews",
+              "url": "https://de.euronews.com/2026/10/29/tanker-strasse-von-hormus"
+            },
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/liveblog/2026/10/30/iran-war-live-irgc-says-four-tankers-struck-mines-in-strait-of-hormuz"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 8,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Strait_of_Hormuz_OSM.webp/1280px-Strait_of_Hormuz_OSM.webp",
+            "credit": "OpenStreetMap",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Strait_of_Hormuz_OSM.webp",
+            "alt": "Topografische Karte der Straße von Hormus"
+          }
+        },
+        {
+          "id": "welt-dnipro-drohne-bahnhof",
+          "tier": "top",
+          "headline": "Russische Drohne trifft Bahnsteig in Dnipro, mindestens 13 Tote",
+          "summary": "Der Angriff auf zwei stehende Züge gehört zu den schwersten auf die ukrainische Bahn. Selenskyj kritisiert die Lockerung von Sanktionen durch Trump und Putin.",
+          "body": "Bei einem russischen Drohnenangriff auf einen Bahnhof in Dnipro sind am Donnerstag mindestens 13 Menschen getötet worden. Das teilte Präsident Wolodymyr Selenskyj nach Angaben von France 24 mit; Euronews nannte zum Zeitpunkt der Veröffentlichung 14 Tote. Nach Angaben der ukrainischen Polizei wurden mindestens zehn weitere Menschen verletzt. Die Drohne schlug auf einem Bahnsteig ein, an dem ein Pendlerzug und ein Personenzug standen; beide Züge brannten aus.\n\nDie ukrainische Luftwaffe erklärte, sie habe bei dem Tagesangriff drei strahlgetriebene Drohnen abgefangen, eine vierte sei aber durchgekommen. Der Chef der ukrainischen Eisenbahn, Oleksandr Pertsowskyj, schrieb auf Facebook, vorab sei eine erhöhte Bedrohungslage ausgerufen worden, dennoch hätten sich noch viele Menschen auf dem Bahnsteig befunden.\n\n## Weitere Angriffe im ganzen Land\n\nNach Angaben örtlicher Behörden kamen bei separaten Angriffen mindestens fünf weitere Menschen ums Leben. In Tschernihiw starben bei einem Schlag auf das Stadtzentrum zwei 15-jährige Mädchen, mehr als ein Dutzend Menschen wurden verletzt. In Krementschuk traf eine Drohne ein Wohnhaus, zwei Menschen starben, darunter wurden mehrere verletzt, auch ein sechsjähriges Kind. Der Bahnverkehr ist seit Langem Ziel russischer Drohnen: Allein im September wurden laut der ukrainischen Bahn Fahrgäste von mehr als 5.800 Zugverbindungen wegen Drohnengefahr evakuiert.\n\nIn der Nacht meldete Moskaus Bürgermeister Sergej Sobjanin nach Euronews 613 ukrainische Drohnen auf dem Weg in die Region Moskau, 231 davon seien im Anflug auf die Hauptstadt zerstört worden. In Moskau läuft derzeit ein Russland-Afrika-Gipfel.\n\n## Streit um Sanktionen\n\nSelenskyj nannte den Angriff „grauenhaft“ und forderte Verbündete auf, Sanktionen gegen Moskau nicht zu lockern. Er kritisierte eine Vereinbarung zwischen US-Präsident Donald Trump und Wladimir Putin aus diesem Monat, die Russland erlaubt, Diesel auf den Weltmarkt zu bringen. Die USA und Europa bräuchten nach seinen Worten entschlossene und gerechte Maßnahmen gegen die russische Eskalation.\n\nDer Angriff fällt in eine Phase fragiler Annäherung: In der besetzten Stadt Oleschky hielt eine lokale Waffenruhe den dritten Tag, und Selenskyj sagte, die Ukraine, die USA und Russland wollten im November in einem Dreiertreffen die stockenden Friedensgespräche wiederbeleben.\n\nFür Deutschland bleibt die Ukraine eine Frage der Sicherheit und der Kosten: Die Angriffe auf zivile Infrastruktur erhöhen den Druck auf Flüchtlingsaufnahme, Luftverteidigungshilfe und die Debatte, ob Europa Sanktionen auch ohne die USA aufrechterhält.",
+          "source": "Euronews",
+          "url": "https://de.euronews.com/2026/10/29/grauenhaft-14-tote-bei-russischem-angriff-auf-bahnhof-in-der-ukraine",
+          "sources": [
+            {
+              "name": "Euronews",
+              "url": "https://de.euronews.com/2026/10/29/grauenhaft-14-tote-bei-russischem-angriff-auf-bahnhof-in-der-ukraine"
+            },
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/europe/20261029-at-least-13-killed-in-horrific-russian-drone-strike-at-ukraine-train-station"
+            }
+          ],
+          "publishedAt": "2026-10-29T14:00:00+01:00",
+          "importance": 8,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Dnipro_railway_station%2C_Dnipro%2C_Ukraine%3B_07.08.19_%282%29.jpg/1280px-Dnipro_railway_station%2C_Dnipro%2C_Ukraine%3B_07.08.19_%282%29.jpg",
+            "credit": "VKras",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dnipro_railway_station,_Dnipro,_Ukraine;_07.08.19_(2).jpg",
+            "alt": "Der Hauptbahnhof von Dnipro, Archivfoto von 2019"
+          }
+        },
+        {
+          "id": "welt-israel-endergebnis-patt",
+          "tier": "top",
+          "headline": "Israel-Wahl: Endergebnis ohne Mehrheit für Netanjahu oder Eisenkot",
+          "summary": "Netanjahus Block kommt auf 53 Sitze, die Opposition auf 48. Arabische Listen mit 19 Mandaten entscheiden über die Regierungsbildung.",
+          "body": "Nach Abschluss der Stimmenauszählung hat in Israel weder das Lager von Regierungschef Benjamin Netanjahu noch der Oppositionsblock unter Gadi Eisenkot eine Mehrheit. Laut France 24 und AFP kommt Netanjahus Bündnis aus rechten und rechtsextremen Parteien auf 53 der 120 Knesset-Sitze, Likud ist mit 27 Mandaten die stärkste Fraktion. Der Block um den Mitte-Politiker Eisenkot erreicht 48 Sitze. Arabische Listen, darunter Raam und die Gemeinsame Liste, stellen zusammen 19 Abgeordnete. Für eine Mehrheit sind 61 Sitze nötig. Das Ergebnis gilt nach Angaben von Al Jazeera bis zur amtlichen Bestätigung als vorläufig.\n\n## Wer mit wem?\n\nAn der Zahl 61 hängt nun alles. Eisenkot traf sich laut Al Jazeera mit Naftali Bennett, dessen Liste „Gemeinsam“ zum Oppositionslager gehört, und mit Yair Golan von den Demokraten, der wiederum mit Raam-Chef Mansour Abbas sprach. Eisenkot hat zugesagt, nicht mit arabisch-israelischen Parteien zu koalieren. Eine Regierung gegen Netanjahu bräuchte aber deren Unterstützung, was Al Jazeera als großes Hindernis beschreibt. Jusef Dschabarin von der Gemeinsamen Liste kündigte an, mit der Opposition auf Netanjahus Sturz hinzuarbeiten, aber keiner Regierung beizutreten.\n\nEisenkot sagte, die Zeit, in der Netanjahu staatliche Institutionen gegen israelische Interessen für persönliche Zwecke einsetze, sei vorbei. Netanjahus Lager erhebt dagegen Vorwürfe, arabische Parteien hätten die Wahl mit ausländischer Hilfe „gestohlen“. Belege dafür gibt es nicht. Der Chef der Wahlkommission, Noam Solberg, erklärte, er könne die Behauptungen nicht bestätigen, und bat den Inlandsgeheimdienst Schin Bet um Prüfung. Die Polizei nahm nach Angaben von France 24 drei Verdächtige fest; die Wahlkommission sprach von einem isolierten lokalen Fall.\n\n## Mögliche Neuwahl\n\nDie Koalitionsverhandlungen dürften schwierig werden und nach Einschätzung von France 24 Wochen dauern. Scheitern sie, ist eine weitere Wahl möglich. Bis dahin bliebe Israel ohne klare Regierungsmehrheit.\n\nFür Deutschland ist das mehr als Ferne: Die Bundesregierung hat in der Nahostpolitik, bei Waffenlieferungen und im Verhältnis zur Zweistaatenlösung auf einen verlässlichen Gesprächspartner in Jerusalem gesetzt. Eine wochenlange Regierungsbildung oder eine Neuwahl verzögert Entscheidungen zu Gaza, zum Iran-Konflikt und zur Sicherheit der Handelswege, die auch Europas Wirtschaft betreffen.",
+          "source": "France 24",
+          "url": "https://www.france24.com/en/middle-east/20261030-netanyahu-bloc-in-lead-without-majority-in-israel-election-say-official-results",
+          "sources": [
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/middle-east/20261030-netanyahu-bloc-in-lead-without-majority-in-israel-election-say-official-results"
+            },
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/29/israel-election-result-shows-no-overall-majority-as-vote-count-complete"
+            }
+          ],
+          "publishedAt": "2026-10-30T03:29:00+01:00",
+          "importance": 7,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Knesset_Menorah_P5200013.JPG/1280px-Knesset_Menorah_P5200013.JPG",
+            "credit": "Deror avi",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Knesset_Menorah_P5200013.JPG",
+            "alt": "Die Knesset-Menora vor dem israelischen Parlament in Jerusalem"
+          }
+        },
+        {
+          "id": "welt-eufor-hubschrauber-bosnien",
+          "tier": "more",
+          "headline": "Hubschrauberabsturz der EU-Truppe in Bosnien tötet vier Italiener",
+          "summary": "Eine Chinook der EUFOR stürzte bei einem Trainingsflug nahe Brčko ab. Unter den Toten sind zwei Soldaten und zwei Freiwillige des Roten Kreuzes.",
+          "body": "Beim Absturz eines Transporthubschraubers der EU-Truppe EUFOR in Bosnien und Herzegowina sind am Donnerstag vier Menschen ums Leben gekommen. Das berichtet Al Jazeera. Die Maschine vom Typ CH-47 Chinook gehörte zum italienischen Kontingent und stürzte in der Region Brčko ab, rund 180 Kilometer nördlich von Sarajevo. EUFOR sprach von einem Routinetraining.\n\nNach Angaben des italienischen Verteidigungsministeriums sind zwei Soldaten und zwei Freiwillige des Roten Kreuzes gestorben. Drei starben an der Unglücksstelle, ein Vierter im Krankenhaus. An Bord waren 15 Menschen, 11 wurden verletzt. Sie werden laut EUFOR behandelt und sind stabil. Alle Insassen waren nach Angaben der italienischen Regierung italienische Staatsbürger.\n\nZur Ursache gibt es bislang keine Informationen. EUFOR kündigte eine umfassende Untersuchung an und will weitere Angaben erst nach Überprüfung machen.\n\nDie European Union Force ist seit 2004 in Bosnien stationiert, wo sie die NATO-geführte Friedenstruppe ablöste. Sie umfasst nach Angaben von Al Jazeera zwischen 1.000 und 1.500 Soldatinnen und Soldaten und überwacht die Umsetzung des Friedensabkommens von Dayton.  Der Absturz erinnert daran, dass die Stabilisierung des Westbalkans eine EU-Aufgabe bleibt, die Europa mit eigenen Kräften trägt und die auch Risiken für die beteiligten Soldaten mit sich bringt.",
+          "source": "Al Jazeera",
+          "url": "https://www.aljazeera.com/news/2026/10/30/eu-force-helicopter-crash-kills-four-in-bosnia",
+          "sources": [
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/30/eu-force-helicopter-crash-kills-four-in-bosnia"
+            }
+          ],
+          "publishedAt": "2026-10-30T00:00:00+01:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/U.S._Army_Boeing_CH-47F_Chinook_11-08097_FDK_MD1.jpg/1280px-U.S._Army_Boeing_CH-47F_Chinook_11-08097_FDK_MD1.jpg",
+            "credit": "Acroterion",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:U.S._Army_Boeing_CH-47F_Chinook_11-08097_FDK_MD1.jpg",
+            "alt": "Ein Transporthubschrauber vom Typ CH-47F Chinook im Schwebeflug, Symbolbild"
+          }
+        },
+        {
+          "id": "welt-huthi-angriffe-saudi-arabien",
+          "tier": "more",
+          "headline": "Huthi melden sechs Angriffe auf saudische Flughäfen und Ölanlagen",
+          "summary": "Die Rebellen nennen unter anderem Ras Tanura und Riad als Ziele. Saudi-Arabien bestätigt nur den Abschuss zweier Raketen über Riad.",
+          "body": "Die jemenitischen Huthi-Rebellen haben nach eigenen Angaben sechs Angriffe auf Ziele in Saudi-Arabien verübt. Wie Al Jazeera berichtet, nannte Huthi-Sprecher Yahya Saree in einer Erklärung auf X unter anderem die Raffinerie Ras Tanura, eine Aramco-Anlage in Abqaiq, die Raffinerie Rabigh, die internationalen Flughäfen in Riad und Dammam sowie ein Militärhauptquartier in der Region Nadschran. Eine unabhängige Bestätigung gibt es nicht.\n\nSaudi-Arabien äußerte sich nur zu einem Teil. Koalitionssprecher Turki al-Maliki erklärte, die Luftabwehr habe zwei ballistische Raketen auf Riad abgefangen. Nach Angaben des Zivilschutzes wurde durch Trümmer eines Abfangs ein saudischer Bürger in Riad verletzt, ein Haus und ein Fahrzeug wurden beschädigt. In Riad, al-Charsch und Nadschran wurden Warnungen ausgegeben.\n\nDie Angriffe folgen auf ein Treffen in Teheran am Montag, an dem Iran, Saudi-Arabien, die Türkei und Pakistan teilnahmen und vereinbarten, über regionale Zusammenarbeit im Gespräch zu bleiben. Das saudische Außenministerium betonte, Verhandlungskanäle seien wichtig, um eine Rückkehr zur militärischen Eskalation zu verhindern. Parallel bat Jemens international anerkannte Regierung den UN-Sicherheitsrat um abschreckende Maßnahmen wegen Huthi-Angriffen auf den Flughafen von Aden.\n\nFür Deutschland zählt vor allem die Energieseite: Saudi-Arabien ist einer der größten Ölexporteure, und schon die Drohung gegen Raffinerien und Häfen treibt Preise und Versicherungskosten. Zusammen mit den Meldungen aus der Straße von Hormus wächst das Risiko, dass sich der Konflikt um Iran weiter auf die Golfregion ausweitet.",
+          "source": "Al Jazeera",
+          "url": "https://www.aljazeera.com/news/2026/10/30/houthi-forces-claim-six-attacks-on-saudi-airports-oil-facilities",
+          "sources": [
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/30/houthi-forces-claim-six-attacks-on-saudi-airports-oil-facilities"
+            }
+          ],
+          "publishedAt": "2026-10-30T00:00:00+01:00",
+          "importance": 6,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Riyadh_North_Skyline_.jpg/1280px-Riyadh_North_Skyline_.jpg",
+            "credit": "B.alotaby",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Riyadh_North_Skyline_.jpg",
+            "alt": "Die Skyline im Norden von Riad mit Kingdom Tower"
+          }
+        },
+        {
+          "id": "welt-alaska-wahl-justizministerium",
+          "tier": "more",
+          "headline": "US-Justizministerium will Alaskas Senatswahl notfalls für ungültig erklären lassen",
+          "summary": "Die überarbeitete Klage richtet sich gegen einen mutmaßlichen Spoiler-Kandidaten. Eine Woche vor den Midterms am 3. November sorgt sie für Streit.",
+          "body": "Wenige Tage vor den US-Zwischenwahlen am 3. November hat das Justizministerium der Trump-Regierung eine überarbeitete Klage zur Senatswahl in Alaska eingereicht. Nach Angaben von Al Jazeera will es erreichen, dass das Ergebnis nicht anerkannt wird, falls der republikanische Amtsinhaber Dan Sullivan knapp verliert. Der Hintergrund: Die Demokratin Mary Peltola tritt gegen Sullivan an, zusätzlich kandidiert der pensionierte Lehrer Dan J. Sullivan Jr. Das Ministerium behauptet, die Demokraten hätten seine Kandidatur orchestriert, um Wähler zu täuschen. Ein Bericht der New York Times hatte zuvor geschildert, Peltolas Wahlkampfteam habe ihn mit angeworben; Peltolas Lager bestreitet jede Beteiligung.\n\nMit der überarbeiteten Klage wurden laut Reuters, auf das sich Al Jazeera beruft, 40 Vorladungen und Aufforderungen zur Aktensicherung verschickt. Alaskas Gouverneur Mike Dunleavy ordnete eine strafrechtliche Untersuchung an. Alaskas Oberster Gerichtshof hatte im Juni entschieden, dass Sullivan Jr. antreten darf. Justin Levitt, früher im Justizministerium unter Biden, stellte die rechtliche Zuständigkeit der Bundesregierung in dem Fall infrage.\n\nDie Republikaner halten derzeit 53 der 100 Senatssitze; Alaska gehört zu sieben besonders umkämpften Rennen. Dass eine Bundesbehörde im Vorfeld einer Wahl ein mögliches Ergebnis anficht, ist ungewöhnlich und nährt Sorgen, das Vertrauen in den Wahlausgang könnte leiden.\n\nFür Deutschland sind die Midterms wichtig, weil sie die Handlungsfähigkeit des Weißen Hauses bei Ukraine-Hilfe, Zöllen und Nato-Politik prägen. Ein Streit über die Anerkennung von Ergebnissen würde Washington monatelang lähmen und Europa mit unsicheren Partnern zurücklassen.",
+          "source": "Al Jazeera",
+          "url": "https://www.aljazeera.com/news/2026/10/30/trump-administration-renews-bid-to-block-alaska-election-results",
+          "sources": [
+            {
+              "name": "Al Jazeera",
+              "url": "https://www.aljazeera.com/news/2026/10/30/trump-administration-renews-bid-to-block-alaska-election-results"
+            }
+          ],
+          "publishedAt": "2026-10-30T00:00:00+01:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Capitol_at_Dusk_2.jpg/1280px-Capitol_at_Dusk_2.jpg",
+            "credit": "Martin Falbisoner",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Capitol_at_Dusk_2.jpg",
+            "alt": "Das Kapitol in Washington in der Abenddämmerung"
+          }
+        },
+        {
+          "id": "welt-paris-schuesse-rassistisches-motiv",
+          "tier": "more",
+          "headline": "Pariser Schütze räumt gezielte Angriffe auf Muslime und Afrikaner ein",
+          "summary": "Der Terrorstaatsanwalt nennt die Tat von Trappes hochgradig vorbereitet. Der 39-jährige Verdächtige wurde wegen Mordes in terroristischem Zusammenhang angeklagt.",
+          "body": "Nach den Schüssen von Trappes und La Verrière westlich von Paris hat der nationale Terrorismus-Staatsanwalt Olivier Christen ein rassistisches Motiv des Verdächtigen bestätigt. Wie France 24 berichtet, gab der 39-jährige Kevin T. zu, Menschen angegriffen zu haben, die „muslimisch, afrikanisch oder nordafrikanisch“ wirkten. Er hatte am Freitag, 23. Oktober, aus einem fahrenden Auto mit einer Maschinenpistole geschossen und wurde noch am selben Tag festgenommen.\n\nEin 26-jähriger Franzose kongolesischer Herkunft, Pengo Bossio Wangi, starb. Die Zahl der Verletzten wurde von fünf auf sieben korrigiert, darunter ein elfjähriges Kind. Drei Opfer lagen am Donnerstag noch im Krankenhaus, eines in Lebensgefahr. Der Verdächtige, der vier Vorstrafen hat, bestreitet eine terroristische Absicht und zeigt laut Staatsanwalt keine Reue. Er hatte sich im September Teile einer Sten-Maschinenpistole, eine Polizeibinde und Handschellen besorgt. Bei der Hausdurchsuchung fanden Ermittler einen Schalldämpfer, ein Bajonett sowie Bücher, darunter Koran, Bibel und „Mein Kampf“, außerdem Aufkleber, die das rechtsextreme Rassemblement National loben; die Partei hat sie nicht hergestellt.\n\nKevin T. wurde wegen Mordes und versuchten Mordes im Zusammenhang mit einer terroristischen Vereinigung angeklagt. Nach Angaben einer Quelle aus den Ermittlungen radikalisierte er sich seit zehn Jahren zunehmend rechtsextrem. Präsident Emmanuel Macron machte bestimmte rechtsextreme Strömungen verantwortlich, ein RN-Abgeordneter dagegen den Präsidenten. Die Behörden verboten ein rechtsextremes „Remigrations“-Symposium und eine geplante Pariser Demonstration.\n\nFür Deutschland ist der Fall ein Warnsignal: Auch hierzulande beobachten Sicherheitsbehörden rechtsextreme Einzeltäter, die sich online radikalisieren, und der Umgang mit Waffenbeschaffung bleibt eine offene Frage.",
+          "source": "France 24",
+          "url": "https://www.france24.com/en/france/20261029-live-french-anti-terrorism-prosecutor-to-give-press-conference-on-racist-paris-shooting",
+          "sources": [
+            {
+              "name": "France 24",
+              "url": "https://www.france24.com/en/france/20261029-live-french-anti-terrorism-prosecutor-to-give-press-conference-on-racist-paris-shooting"
+            }
+          ],
+          "publishedAt": "2026-10-29T10:48:00+01:00",
+          "importance": 5,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Eiffel_Tower_in_2022_02.jpg/1280px-Eiffel_Tower_in_2022_02.jpg",
+            "credit": "Maksim Sokolov (maxergon.com)",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Eiffel_Tower_in_2022_02.jpg",
+            "alt": "Der Eiffelturm in Paris, Symbolbild"
+          }
+        }
+      ]
+    },
+    {
+      "id": "region",
+      "title": "Leipzig & Region",
+      "emoji": "📍",
+      "items": [
+        {
+          "id": "region-leipzig-verhandelt-mit-ruestungsfirmen",
+          "tier": "top",
+          "headline": "Leipzig verhandelt mit fünf weiteren Rüstungsfirmen",
+          "summary": "Die Stadt führt Gespräche mit fünf Waffenunternehmen und hat 17 Anfragen erhalten. Zugleich wächst der Protest: Eine Petition sammelte mehr als 11.000 Unterschriften.",
+          "body": "Die Stadt Leipzig verhandelt derzeit mit fünf weiteren Rüstungsunternehmen über mögliche Ansiedlungen. Das hat Wirtschaftsbürgermeister Clemens Schülke (CDU) am Mittwoch im Stadtrat mitgeteilt. Nach t-online unter Berufung auf dpa gingen bei der Stadt insgesamt 17 Anfragen aus der Branche ein, sieben davon wurden abgelehnt.\n\nAusgeschlossen sind laut Schülke Firmen, die mit Sprengstoffen oder gefährlichen Chemikalien arbeiten. In drei bis vier Fällen meldeten sich Interessenten nach dem ersten Kontakt nicht mehr. Details zu einzelnen Verhandlungen nannte die Stadt nicht.\n\n## Zwei Namen sind bekannt\n\nBekannt sind bislang zwei Unternehmen. Der US-israelische Hersteller Covenant ist bereits genehmigt und will ab 2027 Marschflugkörper in Leipzig bauen. Das Düsseldorfer Unternehmen Falk Defence sucht einen Standort in der Region, entschieden ist dort noch nichts. Zusammen könnten beide Firmen nach Schülkes Angaben rund 700 Arbeitsplätze schaffen.\n\nAnlass der Debatte war eine Anfrage der Linksfraktion. Oberbürgermeister Burkhard Jung wies die Einschätzung zurück, Leipzig werde zum Zentrum der Rüstungsindustrie; die großen Standorte lägen anderswo, etwa in München. Schülke sagte, die Verwaltung wolle keinen Rüstungscluster aufbauen und halte an den bisherigen Innovations- und Schwerpunktbranchen fest. Anfragen aus der Verteidigungsbranche beantworte man wie die anderer Wirtschaftszweige. Sie gehöre zu den wenigen Branchen, die derzeit in Deutschland, Sachsen und Leipzig Industrieflächen suchten.\n\n## Protest und Petition\n\nGegen die Ansiedlung von Covenant gibt es Widerstand. Am vergangenen Wochenende demonstrierten nach dem Bericht rund 400 Menschen. Das Bündnis „Leipzig bleibt friedlich!“ übergab seine Online-Petition an die Stadt und den Sächsischen Landtag; sie haben mehr als 11.000 Menschen unterzeichnet. Laut der Leipziger Zeitung läuft sie seit dem 1. September und trägt den Titel „Aus der Stadt der Friedlichen Revolution darf keine Stadt der Waffen werden!“.\n\nDie Initiative fordert volle Transparenz über bestehende und geplante Rüstungsfirmen, eine öffentliche Debatte mit Bürgerbeteiligung und bis dahin keine weiteren politischen Zusagen für Ansiedlungen. Die Stadt bestätigte den Eingang der Petition am 23. Oktober. Mehrere Petitionen zum Thema sollen gemeinsam behandelt werden, die Verwaltung bereitet dazu eine Stellungnahme vor. Einen Termin nennt die Leipziger Zeitung nicht.\n\n## Einordnung\n\nNach den Angaben der Initiative will Covenant im ersten Jahr rund 1.000 Marschflugkörper des Typs Anthem fertigen und bis 2028 auf 5.000 pro Jahr kommen. Leipzig soll damit der größte Standort des Unternehmens weltweit werden. Für die Region geht es damit um Arbeitsplätze und Gewerbeflächen, aber auch um die Frage, welches Bild die Stadt der Friedlichen Revolution von sich zeichnen will.",
+          "source": "t-online (dpa)",
+          "url": "https://leipzig.t-online.de/region/leipzig/id_101503650/ruestungsunternehmen-in-leipzig-stadt-verhandelt-mit-weiteren-waffenfirmen.html",
+          "sources": [
+            {
+              "name": "t-online (dpa)",
+              "url": "https://leipzig.t-online.de/region/leipzig/id_101503650/ruestungsunternehmen-in-leipzig-stadt-verhandelt-mit-weiteren-waffenfirmen.html"
+            },
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/politik/engagement/2026/10/petition-hat-mehr-als-10-000-unterschriften-leipziger-friedensinitiative-grundsatzdebatte-rustungsindustrie-674142"
+            }
+          ],
+          "publishedAt": "2026-10-29T16:27:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Exterior_of_Altes_Rathaus_%28Leipzig%29_2025.jpg/1280px-Exterior_of_Altes_Rathaus_%28Leipzig%29_2025.jpg",
+            "credit": "Thomas Dahlstrøm Nielsen",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Exterior_of_Altes_Rathaus_(Leipzig)_2025.jpg",
+            "alt": "Das Alte Rathaus am Markt in Leipzig"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "region-uni-leipzig-nach-hackerangriff-offline",
+          "tier": "top",
+          "headline": "Uni Leipzig bleibt nach Hackerangriff weiter offline",
+          "summary": "Seit Mittwoch sind alle Server der Universität vom Netz. Die Präsenzlehre läuft, doch E-Mail und digitale Angebote fehlen; einen Termin für die Rückkehr gibt es nicht.",
+          "body": "Die Universität Leipzig bleibt auch am Donnerstag nach einem Hackerangriff offline. Der Universitätsbetrieb ist laut dpa stark gestört. Betroffen sind rund 30.000 Studierende und die Beschäftigten. Die Hintergründe des Angriffs sind nach Angaben des Berichts noch unklar.\n\nDie Hochschule selbst hatte den Angriff am Mittwoch um 11:10 Uhr auf ihrer Website bestätigt. Um den Schaden zu begrenzen, wurden alle mit dem Internet verbundenen Dienste vollständig vom Netz genommen, damit sie weiter analysiert werden können. Am Abend teilte die Universität mit, dass Studierende und Beschäftigte über ihre Uni-Mailadressen derzeit nicht erreichbar sind. Dringende Anfragen sollen an die auf der Website genannten Kontaktadressen gehen.\n\n## Krisenstab und Notfalldienstleister\n\nEin Krisenstab unter Leitung von Rektorin Eva Inés Obergfell arbeitet nach Angaben der Universität seit Bekanntwerden des Vorfalls an der Lösung. Ein IT-Notfalldienstleister wurde eingeschaltet, die zuständigen Behörden sind informiert. Oberste Priorität habe die Datensicherheit. Am Donnerstagabend hieß es auf der Website, der Regelbetrieb solle „mindestens teilweise bald wieder“ möglich sein; einen konkreten Termin nannte die Hochschule nicht. Eine FAQ-Seite informiert über den Stand.\n\n## Was weiterläuft\n\nDie Präsenzlehre findet wie geplant in den vorgesehenen Räumen statt. Digitale Veranstaltungen werden dagegen gegebenenfalls verschoben oder über externe Server abgehalten. Die hochschulöffentliche Vorstellung der Kandidatin für die Rektorwahl soll am Freitag, dem 30. Oktober, wie angekündigt stattfinden. Wegen des Angriffs gibt es dafür keinen Livestream. Einen Termin für die Wahl selbst nennen weder die Universität noch dpa.\n\n## Einordnung\n\nFür Studierende bedeutet der Ausfall vor allem, dass Mail, Lernplattformen und andere Online-Dienste der Hochschule nicht zur Verfügung stehen, während der Lehrbetrieb vor Ort weiterläuft. Ob Daten abgeflossen sind, ist nach den vorliegenden Angaben nicht bekannt. Ebenso ist offen, wer hinter dem Angriff steckt. Dass die Universität die Dienste vorsorglich komplett abschaltete und externe Fachleute holte, spricht dafür, dass sie den Vorfall als ernst einstuft.",
+          "source": "t-online (dpa)",
+          "url": "https://leipzig.t-online.de/region/leipzig/id_101502922/uni-leipzig-nach-hackerangriff-weiter-offline.html",
+          "sources": [
+            {
+              "name": "t-online (dpa)",
+              "url": "https://leipzig.t-online.de/region/leipzig/id_101502922/uni-leipzig-nach-hackerangriff-weiter-offline.html"
+            },
+            {
+              "name": "Universität Leipzig",
+              "url": "https://www.uni-leipzig.de/"
+            }
+          ],
+          "publishedAt": "2026-10-29T19:17:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Leipzig_Universit%C3%A4t_lub_2025-03-22_img01_Neues_Augusteum.jpg/1280px-Leipzig_Universit%C3%A4t_lub_2025-03-22_img01_Neues_Augusteum.jpg",
+            "credit": "Lukas Beck",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Leipzig_Universit%C3%A4t_lub_2025-03-22_img01_Neues_Augusteum.jpg",
+            "alt": "Neues Augusteum der Universität Leipzig"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "region-adfc-demo-sichere-radwege",
+          "tier": "top",
+          "headline": "ADFC ruft nach tödlichem Radunfall zur Demo auf",
+          "summary": "Nach dem Tod einer 20-jährigen Radfahrerin fordert der ADFC sichere Radwege auf sieben Leipziger Straßen. Die Demonstration startet heute um 16:30 Uhr am Wilhelm-Leuschner-Platz.",
+          "body": "Der ADFC Leipzig ruft für heute, Freitag, den 30. Oktober, zu einer Fahrraddemonstration auf. Sie beginnt um 16:30 Uhr am Wilhelm-Leuschner-Platz unter dem Motto „Sichere Radwege jetzt!“. Teilnehmende sollen Blumen und Transparente mitbringen. Anlass ist der Tod einer 20-jährigen Radfahrerin, die am Mittwoch, dem 21. Oktober, auf der Arthur-Hoffmann-Straße verunglückte.\n\nNach dem Bericht der Leipziger Zeitung kollidierte die junge Frau auf der Straße mit einem Lastwagen, im Bereich der Einmündung der Scharnhorststraße. Die Unfallursache ist nicht geklärt. Auch ein Hinweis auf Schäden an der Fahrbahn nahe den Straßenbahngleisen müsse nichts mit dem Unglück zu tun haben, heißt es.\n\n## Sieben Straßen im Fokus\n\nDer ADFC verlangt sichere Radinfrastruktur auf sieben Straßen: Arthur-Hoffmann-Straße, Zschochersche Straße, Georg-Schwarz-Straße, Käthe-Kollwitz-Straße, Mockauer Straße, Zweinaundorfer Straße und Breite Straße. Wo dauerhafte Lösungen nicht sofort möglich sind, sollen provisorische Radspuren entstehen. Radwege sollen Vorrang vor Parkplätzen bekommen, Lieferzonen sollen mitgedacht werden.\n\nAußerdem fordert der Verein strengere Kontrollen gegen Falschparker auf Gehwegen und Radwegen sowie gegen zu enges Überholen. Weitere Punkte sind sichere Schulwege, ein stadtweites Tempo 30 und Geld für die Verkehrssicherheit im nächsten städtischen Haushalt.\n\n## Auch der Ökolöwe fordert Radwege\n\nBereits am 24. Oktober hatte der Umweltverband Ökolöwe sichere Radwege auf der Arthur-Hoffmann-Straße verlangt. Zwischen Arno-Nitzsche-Straße und Bayerischer Platz gibt es abgesehen von einem kurzen Stück im Norden keine Radwege. Die Straße gilt als wichtige Alternative zur stark befahrenen Karl-Liebknecht-Straße. Die Zählungen 2025 ergaben rund 5.600 Radfahrende täglich nahe dem Bayerischen Platz.\n\nDer Ökolöwe verweist darauf, dass viele Routen aus dem Radverkehrsentwicklungsplan von 2012 nie gebaut wurden. Eine Petition von 2020 führte 2021 zu einem Stadtratsbeschluss, einige Strecken fanden Eingang in das städtische „Aktionsprogramm Rad“. Für den ruhigeren südlichen Abschnitt schlägt der Verband eine Tempo-30-Zone und neue Straßenbäume statt Radstreifen vor.\n\n## Was das für Pendler bedeutet\n\nWer am späten Nachmittag durch die Innenstadt fährt, sollte rund um den Wilhelm-Leuschner-Platz mit Behinderungen rechnen. Die Route der Demonstration nennt die Leipziger Zeitung nicht.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/wirtschaft/mobilitaet/2026/10/sichere-radwege-jetzt-adfc-leipzig-fahrraddemonstration-todlicher-unfall-arthur-hoffmann-strasse-674288",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/wirtschaft/mobilitaet/2026/10/sichere-radwege-jetzt-adfc-leipzig-fahrraddemonstration-todlicher-unfall-arthur-hoffmann-strasse-674288"
+            },
+            {
+              "name": "Leipziger Zeitung (Ökolöwe)",
+              "url": "https://www.l-iz.de/politik/brennpunkt/2026/10/nach-todlichem-verkehrsunfall-okolowe-fordert-sichere-radwege-673810"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Arthur-Hoffmann-Stra%C3%9Fe%2C_Leipzig_2023.jpg/1280px-Arthur-Hoffmann-Stra%C3%9Fe%2C_Leipzig_2023.jpg",
+            "credit": "Frank Eritt",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arthur-Hoffmann-Stra%C3%9Fe,_Leipzig_2023.jpg",
+            "alt": "Die Arthur-Hoffmann-Straße in Leipzig"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "region-stadtbad-leipzig-perspektive",
+          "tier": "more",
+          "headline": "Leipziger Stadtbad: Sanierung würde knapp 80 Millionen Euro kosten",
+          "summary": "Seit 22 Jahren ist das Stadtbad geschlossen. Die Förderstiftung warnt vor einem Verkauf, den die SPD beantragt hat; die Stadt rechnet an Varianten.",
+          "body": "Das Leipziger Stadtbad, 1916 eröffnet, ist seit 22 Jahren geschlossen. Die Stadt wollte es verkaufen, fand aber keinen Käufer mit tragfähigem Konzept. 2021 beendete der Stadtrat die Verkaufsbemühungen, das Gebäude blieb in städtischem Besitz. Heute finden dort unter anderem Dinnershows statt, zudem wird das Gebäude mit Reparaturen erhalten.\n\nNun fordert die SPD-Fraktion in einem Haushaltsantrag erneut den Verkauf. Dagegen wendet sich die Förderstiftung Leipziger Stadtbad, auch die Stadtverwaltung hat Einwände. Stiftungsvorstand Dirk Thärichen sagte der Leipziger Zeitung schriftlich, der Zustand des Hauses sei relativ gut, gestützt auf eine Studie, die nach dem Beschluss von 2021 finanziert wurde. Die ursprüngliche Wellenanlage aus der Eröffnungszeit war die erste ihrer Art in einem Hallenbad in Europa. Sie wurde in den 1980er-Jahren durch eine pneumatische Anlage ersetzt, die nicht mehr funktioniert. Auch die übrige Technik ist größtenteils außer Betrieb; nur der Veranstaltungsbereich hat erneuerte Elektro- und Wasserleitungen.\n\nRund fünf Millionen Euro flossen in 20 Jahren in die Erhaltung. Die Sanierung des gesamten Komplexes beziffert Thärichen auf knapp 80 Millionen Euro. Die Verwaltung bezeichnet das als Schätzung, die Kosten könnten höher liegen. Stadt und Stiftung arbeiten an Kostenschätzungen für einen vollen oder teilweisen Badbetrieb. Eine bevorzugte Variante soll dem Stadtrat vorgelegt werden, der entscheiden muss, bevor Geld für die Sanierung eingeworben werden kann. Der Autor des Beitrags würde eine Wiedereröffnung begrüßen, bezweifelt aber die Wirtschaftlichkeit.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/leben/gesellschaft/2026/10/hat-das-stadtbad-in-leipzig-noch-eine-reale-perspektive-bei-der-foerderstiftung-nachgefragt-674284",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/leben/gesellschaft/2026/10/hat-das-stadtbad-in-leipzig-noch-eine-reale-perspektive-bei-der-foerderstiftung-nachgefragt-674284"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Stadtbad_Leipzig_Innenansicht_Eingangsbereich_2011.jpg/1280px-Stadtbad_Leipzig_Innenansicht_Eingangsbereich_2011.jpg",
+            "credit": "Appaloosa",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stadtbad_Leipzig_Innenansicht_Eingangsbereich_2011.jpg",
+            "alt": "Eingangsbereich des Stadtbades in Leipzig"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "region-bild-gegen-bnd-bundesverwaltungsgericht",
+          "tier": "more",
+          "headline": "Bundesverwaltungsgericht verhandelt über BND-Akten zu Fix-und-Foxi-Verleger",
+          "summary": "In Leipzig klagt die „Bild“ gegen den Bundesnachrichtendienst. Es geht um Auskünfte zu möglichen Verbindungen des Comic-Verlegers Rolf Kauka zum BND.",
+          "body": "Das Bundesverwaltungsgericht in Leipzig hat am Donnerstag das Verfahren BVerwG 10 A 4.25 verhandelt, in dem die „Bild“ gegen den Bundesnachrichtendienst klagt. Wie die Leipziger Zeitung berichtet, verweigert der BND nach Darstellung der Zeitung seit acht Jahren Antworten auf Fragen zu einer möglichen Zusammenarbeit mit dem 2000 gestorbenen Comic-Verleger Rolf Kauka, dem Schöpfer von „Fix und Foxi“. Ein Urteil nennt der Bericht nicht.\n\nEs geht nicht um die gesamten Akten, sondern um fünf einzelne Fragen. Der Journalist Hans-Wilhelm Saure berichtet, der BND halte rund 1.800 Seiten zu Kauka und seinem Münchner Verlag. Das Bundeskanzleramt hat sie als geheim eingestuft und verweist auf Risiken für das Wohl und die Sicherheit Deutschlands.\n\nKauka war mit dem früheren BND-Präsidenten Gerhard Wessel befreundet, beide kannten sich aus der Wehrmacht. Laut „Bild“ wollte Kauka an seinem Ferienhaus in Italien eine Relaisstation errichten lassen, was Proteste vor Ort verhinderten. Außerdem soll er „Beschaffungshelfer“ des BND gewesen sein. Diese Behauptungen sind nicht bewiesen. Einen früheren Rechtsstreit um Akteneinsicht verlor die „Bild“ 2025, eine Beschwerde liegt beim Europäischen Gerichtshof für Menschenrechte. Kauka wurde 1917 in Markranstädt bei Leipzig geboren, seine ersten Zeichnungen erschienen 1937 in den „Leipziger Neuesten Nachrichten“.",
+          "source": "Leipziger Zeitung",
+          "url": "https://www.l-iz.de/der-tag/2026/10/hallo-leipzig-so-startet-donnerstag-der-29-oktober-2026-674313",
+          "sources": [
+            {
+              "name": "Leipziger Zeitung",
+              "url": "https://www.l-iz.de/der-tag/2026/10/hallo-leipzig-so-startet-donnerstag-der-29-oktober-2026-674313"
+            }
+          ],
+          "publishedAt": "2026-10-29T06:00:00+01:00",
+          "importance": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Bundesverwaltungsgericht_Leipzig_Eingang_2013.jpg/1280px-Bundesverwaltungsgericht_Leipzig_Eingang_2013.jpg",
+            "credit": "Tuxyso",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bundesverwaltungsgericht_Leipzig_Eingang_2013.jpg",
+            "alt": "Eingang des Bundesverwaltungsgerichts in Leipzig"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "sport",
+      "title": "Sport",
+      "emoji": "⚽",
+      "items": [
+        {
+          "id": "sport-zverev-wird-nummer-eins",
+          "tier": "top",
+          "headline": "Zverev wird als zweiter Deutscher die Nummer eins der Welt",
+          "summary": "Mit einem 6:4, 7:5 gegen Griekspoor in Wien sichert sich Alexander Zverev ab Montag Platz eins der Weltrangliste. Vor ihm war nur Boris Becker so weit oben.",
+          "body": "Alexander Zverev steht ab Montag an der Spitze der Tennis-Weltrangliste. Der 29-Jährige gewann am Donnerstagabend im Achtelfinale des ATP-Turniers in Wien gegen den Niederländer Tallon Griekspoor mit 6:4 und 7:5 und machte damit den Sprung auf Platz eins perfekt. Offiziell wird er die Position am 2. November übernehmen.\n\nZverev ist damit der zweite deutsche Spieler nach Boris Becker, der die Rangliste anführt. Becker stand 1991 an der Spitze, also vor rund 35 Jahren. Insgesamt ist Zverev laut Sportschau erst der 30. Profi, der seit Einführung der Weltrangliste im Jahr 1973 Platz eins erreicht hat. Bei den deutschen Frauen schafften das bislang nur Steffi Graf und Angelique Kerber.\n\n## Wie das Match verlief\n\nZverev nahm seinem Gegner gleich im ersten Spiel den Aufschlag ab. Im zweiten Durchgang entschied ein Break beim Stand von 5:5 die Partie. Kurz vor dem Matchgewinn gab es eine ungewöhnliche Unterbrechung: Eine defekte LED-Bande lenkte den Hamburger ab, ehe Mitarbeiter die Lichter mit einem Handtuch abdeckten und er das Spiel zu Ende bringen konnte.\n\n„Das ist eines der besten Gefühle auf der Welt“, sagte Zverev nach dem Spiel über den Moment. Gegen wen er im Viertelfinale antritt, geht aus den Berichten nicht hervor.\n\n## Warum er jetzt oben steht\n\nZverev löst den Italiener Jannik Sinner ab, dessen Saison wegen einer Verletzung vorzeitig beendet ist. Laut Sport1 half ihm außerdem das frühe Ausscheiden von Carlos Alcaraz. Zverev hat zwei Grand-Slam-Titel gewonnen, die French Open und die US Open, wie Sport1 berichtet. Der Bericht erinnert auch daran, wie weit der Weg war: Im Achtelfinale der French Open 2022 zog er sich eine schwere Knöchelverletzung zu und musste lange pausieren.\n\nDie Glückwünsche kamen schnell. Becker gratulierte noch am Donnerstagabend auf X, ebenso meldeten sich unter anderem Nico Rosberg, Lothar Matthäus, Oliver Kahn und Jens Lehmann. Für den deutschen Tennissport ist es ein seltener Moment, denn seit Beckers Zeit hatte kein deutscher Herrenspieler mehr Platz eins erreicht. Zverev steht in Wien im Viertelfinale.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/tennis/zverev-ab-montag-die-nummer-eins-der-tennis-welt,atp-wien-zverev-griekspoor-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/tennis/zverev-ab-montag-die-nummer-eins-der-tennis-welt,atp-wien-zverev-griekspoor-100.html"
+            },
+            {
+              "name": "Sport1",
+              "url": "https://www.sport1.de/news/tennis/atp/2026/10/mit-zwei-worten-so-reagiert-boris-becker-auf-kroenung-von-alexander-zverev"
+            }
+          ],
+          "publishedAt": "2026-10-29T20:35:00+01:00",
+          "importance": 8,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Alexander_Zverev_%2824400648976%29.jpg/1280px-Alexander_Zverev_%2824400648976%29.jpg",
+            "credit": "Carine06 from UK",
+            "license": "CC BY-SA 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alexander_Zverev_(24400648976).jpg",
+            "alt": "Alexander Zverev im Spiel in Wimbledon 2015"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "sport-struff-bezwingt-djokovic-in-basel",
+          "tier": "top",
+          "headline": "Struff schlägt Djokovic nach acht Niederlagen erstmals",
+          "summary": "Jan-Lennard Struff gewinnt bei den Swiss Indoors in Basel 6:7, 7:5, 7:6 gegen Novak Djokovic und steht im Viertelfinale.",
+          "body": "Im neunten Duell hat es geklappt: Jan-Lennard Struff hat bei den Swiss Indoors in Basel erstmals Novak Djokovic besiegt. Der 36-Jährige aus Warstein gewann das Achtelfinale am Donnerstagabend mit 6:7 (4:7), 7:5, 7:6 (7:5) und hatte dafür gut zweieinhalb Stunden gebraucht. Zuvor hatte Struff gegen den früheren Weltranglistenersten acht Mal verloren und dabei nur einen einzigen Satz gewonnen.\n\nDass es diesmal reichte, lag an einem starken Aufschlag. Struff beendete die Partie mit seinem 27. Ass und verwandelte seinen dritten Matchball. Nach dem verlorenen ersten Tiebreak rettete er im zweiten Satz alle vier Breakbälle, die er zuließ. Beim Stand von 5:5 holte er sich erstmals ein Break gegen Djokovic und ging mit 6:5 in Führung, danach glich er nach Sätzen aus. Im dritten Durchgang war der 39-jährige Serbe sichtbar frustriert, musste aber im entscheidenden Tiebreak den Kürzeren ziehen.\n\n## Der Weg ins Viertelfinale\n\nIm Viertelfinale trifft Struff laut Sportschau auf den Portugiesen Nuno Borges. In der ersten Runde hatte er Yannick Hanfmann mit 6:4 und 6:3 geschlagen. Der Sieg kommt nach einer starken Woche: In Brüssel hatte Struff vor einer Woche das Finale gegen Tallon Griekspoor knapp mit 6:4, 3:6, 4:6 verloren und damit den zweiten Turniersieg seiner Karriere verpasst. Seinen bisher einzigen Titel hatte er 2024 in München geholt.\n\nWeniger gut lief der Abend für einen anderen deutschen Profi. Daniel Altmaier unterlag dem an Position acht gesetzten Tschechen Jiří Lehečka mit 5:7 und 4:6. Für ihn geht es damit weiter um den letzten freien Platz im deutschen Davis-Cup-Team für das Finalturnier in Bologna, das vom 24. bis 29. November stattfindet. Struff dagegen hat mit dem Erfolg über Djokovic ein persönliches Highlight gesetzt.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/tennis/struff-bezwingt-erstmals-djokovic,struff-schlaegt-djokovic-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/tennis/struff-bezwingt-erstmals-djokovic,struff-schlaegt-djokovic-100.html"
+            },
+            {
+              "name": "Sport1",
+              "url": "https://www.sport1.de/news/tennis/atp/2026/10/struff-bezwingt-djokovic-erstmals-viertelfinale-in-basel"
+            }
+          ],
+          "publishedAt": "2026-10-29T23:25:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/b/bd/ATP_World_Tour_500_2016_J._Struff_%28GER%29_vs_J._Isner_%28USA%29-5.jpg",
+            "credit": "MacKrys",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:ATP_World_Tour_500_2016_J._Struff_(GER)_vs_J._Isner_(USA)-5.jpg",
+            "alt": "Jan-Lennard Struff im Spiel in Wien 2016"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "sport-klassiker-bayern-dortmund-ohne-kompany",
+          "tier": "top",
+          "headline": "Klassiker: Bayern gegen Dortmund ohne den erkrankten Kompany",
+          "summary": "Am Samstag treffen die beiden einzigen ungeschlagenen Bundesligisten aufeinander. Bayerns Trainer Kompany fehlt wegen einer Hirnhautreizung, Co-Trainer Danks übernimmt.",
+          "body": "Am achten Spieltag der Fußball-Bundesliga kommt es am Samstagabend zum Spitzenspiel: Der FC Bayern München empfängt Borussia Dortmund. Beide Teams sind in dieser Saison noch ungeschlagen, beide haben 17 Punkte. Die Bayern führen die Tabelle wegen der um 11 Tore besseren Tordifferenz an. Das Spiel ist live bei Sky zu sehen, die Sportschau bietet Audiostream und Liveticker an und zeigt ab Mitternacht in der Nacht zu Montag die Zusammenfassung.\n\n## Kompany fehlt\n\nBayern muss auf Trainer Vincent Kompany verzichten. Der 40-Jährige war am vergangenen Freitag beim Training mit der Amateurmannschaft zusammengebrochen und im Krankenhaus behandelt worden. Als Ursache nannten die Ärzte eine Hirnhautreizung. Sportvorstand Max Eberl bestätigte im ARD-Interview vor dem Pokalspiel gegen Magdeburg, dass Kompany am Mittwoch entlassen wurde und sich zu Hause erholt. Es gehe ihm den Umständen entsprechend gut, sagte Eberl. Wann er zurückkehrt, entscheiden seine Ärzte. Co-Trainer Aaron Danks leitet das Team gegen den BVB. Zur Klarstellung: Die Schlagzeile „Kompany entlassen“ aus dem gestrigen Briefing bezog sich auf die Entlassung aus dem Krankenhaus, nicht auf seinen Job.\n\n## Zwei Mannschaften, zwei Stärken\n\nSportlich stehen sich die beste Offensive und die beste Defensive gegenüber. Bayern hat in sieben Ligaspielen 25 Tore erzielt, so viele wie kein anderes Team, Dortmund 12. Der BVB blieb dafür fünf Mal ohne Gegentor und kassierte erst vier Treffer. Bei den Bayern wird mit Manuel Neuer und Harry Kane in der Startelf gerechnet. Fraglich ist Joshua Kimmich, der wegen eines Todesfalls in der Familie die beiden letzten Spiele verpasst hat.\n\nBei Dortmund hofft Trainer Niko Kovac auf die Rückkehr des 18-jährigen Konstantinos Karetsas. Der griechische Nationalspieler hatte sich beim 0:0 bei Union Berlin einen Bänderriss im Fuß zugezogen und drei Pflichtspiele verpasst. Am Donnerstag trainierte er erstmals wieder teilweise mit der Mannschaft; über eine Reise nach München fällt nach dem Abschlusstraining am Freitag die Entscheidung.\n\nDie Bilanz spricht für die Münchner: Von den letzten 17 Pflichtspielen gegen Dortmund verloren sie nur eines, im März 2024 mit 0:2 zu Hause. Zuletzt gewannen die Bayern im Supercup in Dortmund mit 2:1.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/fussball/bundesliga/bayern-gegen-dortmund-mehr-topspiel-geht-nicht,vorschau-bundesliga-bayern-muenchen-borussia-dortmund-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/fussball/bundesliga/bayern-gegen-dortmund-mehr-topspiel-geht-nicht,vorschau-bundesliga-bayern-muenchen-borussia-dortmund-100.html"
+            },
+            {
+              "name": "Bundesliga.com",
+              "url": "https://www.bundesliga.com/de/bundesliga/news/eberl-bestatigt-kompany-aus-krankenhaus-entlassen-39766"
+            },
+            {
+              "name": "Sport1",
+              "url": "https://www.sport1.de/news/fussball/bundesliga/2026/10/bvb-hofft-auf-karetsas-comeback-gegen-bayern"
+            }
+          ],
+          "publishedAt": "2026-10-29T15:59:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Berliner_Olympiastadion_night.jpg/1280px-Berliner_Olympiastadion_night.jpg",
+            "credit": "Tobi 87",
+            "license": "CC BY 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Berliner_Olympiastadion_night.jpg",
+            "alt": "Das Berliner Olympiastadion bei Nacht"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "sport-regionalliga-reform-dfb-praesidium",
+          "tier": "more",
+          "headline": "DFB-Präsidium entscheidet über Reform der Regionalligen",
+          "summary": "Am Freitag legt sich das DFB-Präsidium fest, welches Modell zum Bundestag im Dezember geht. Sachsen und Thüringen könnten in eine neue Südost-Liga rücken.",
+          "body": "Das 17-köpfige Präsidium des Deutschen Fußball-Bundes entscheidet am Freitag, welchen Vorschlag zur Neuordnung der Regionalligen es dem außerordentlichen DFB-Bundestag am 18. Dezember vorlegt. Ein endgültiger Beschluss fällt noch nicht. Ausgangspunkt ist ein altes Ärgernis: Nicht jeder Meister der fünf Regionalligen steigt direkt in die 3. Liga auf. Über das Ziel, das zu ändern, sind sich alle einig, über den Weg nicht.\n\nDer DFB unter Präsident Bernd Neuendorf favorisiert das sogenannte Kompassmodell mit vier statt fünf Staffeln zu je 20 Vereinen. Eine KI würde die Klubs nach geografischen Gesichtspunkten zuteilen, die Zuordnung könnte sich von Saison zu Saison ändern. Als Anreiz sind 500.000 Euro je Verband und 40.000 Euro je Verein vorgesehen.\n\n## Wenig Rückhalt\n\nLaut Sportschau ist die Unterstützung schwach. Für eine Reform braucht es zwei Drittel der 257 Delegierten und zuvor eine Satzungsänderung. Skepsis gibt es vor allem im Südwesten und in Bayern; Vereine fürchten wegfallende Derbys, längere Fahrten und Einnahmeverluste. Bayern bringt ein eigenes Modell ins Spiel: eine 3. Liga mit 22 Klubs und fünf Absteigern, bei dem alle Regionalligen bestehen blieben. Der Südwesten schlägt vier feste Regionen vor, in denen Sachsen und Thüringen mit Bayern eine Südost-Liga bilden würden. Nach MDR-Angaben unterstützen Zwickau und Aue den DFB-Vorschlag.\n\nDer aktuelle Plan sieht 2027/28 eine Qualifikationssaison vor, die neuen Ligen würden 2028/29 starten. Für Klubs der Regionalliga Nordost wie die Leipziger Vereine wäre eine Neuordnung folgenreich, welche Auswirkungen konkret drohen, nennt die Quelle nicht.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/regional/mdr/regionalliga-reform-kompassmodell-faq-dfb-sitzung-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/regional/mdr/regionalliga-reform-kompassmodell-faq-dfb-sitzung-100.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Bruno-Plache-Stadion.jpg/1280px-Bruno-Plache-Stadion.jpg",
+            "credit": "Brandelok",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bruno-Plache-Stadion.jpg",
+            "alt": "Das Bruno-Plache-Stadion in Leipzig bei Flutlicht"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "sport-bayern-basketball-klatsche-in-belgrad",
+          "tier": "more",
+          "headline": "Bayern-Basketballer verlieren in Belgrad mit 73:103",
+          "summary": "Die Münchner kassieren in der EuroLeague bei Roter Stern die vierte Niederlage in Folge und stehen nach neun Spielen bei sieben Pleiten.",
+          "body": "Die Basketballer des FC Bayern stecken in der EuroLeague in einer tiefen Krise. Bei Roter Stern Belgrad unterlagen sie am neunten Spieltag mit 73:103, zur Pause hatte es bereits 31:48 gestanden. Es war die siebte Niederlage im neunten Spiel und die vierte in Serie.\n\nEntscheidend war das dritte Viertel, in dem die Gastgeber in zehn Minuten 31 Punkte erzielten. Laut Sportschau hatte das Team von Trainer Anton Gavel weder körperlich noch spielerisch eine Antwort. Bester Münchner Werfer war Duane Washington mit 16 Punkten. In der Halle waren rund 15.000 Zuschauer.\n\nSchon zwei Tage zuvor hatte Bayern zu Hause mit 84:88 gegen den FC Barcelona verloren. Den Blick richtet das Team nun auf die Bundesliga, in der die Münchner ungeschlagen vorn liegen. Am Sonntag geht es zu den Rostock Seawolves, zwei Tage später kommt Löwen Braunschweig nach München. Die Tabellenlage in der EuroLeague nennt die Quelle nicht.",
+          "source": "Sportschau",
+          "url": "https://www.sportschau.de/basketball/euroleague/fc-bayern-schon-wieder-ohne-chance,bayern-basketball-belgrad-100.html",
+          "sources": [
+            {
+              "name": "Sportschau",
+              "url": "https://www.sportschau.de/basketball/euroleague/fc-bayern-schon-wieder-ohne-chance,bayern-basketball-belgrad-100.html"
+            },
+            {
+              "name": "Sport1",
+              "url": "https://www.sport1.de/tv-video/video/roter-stern-meridianbet-belgrad-fc-bayern-muenchen-highlights__2cd649f9-b12c-41ca-a86d-c86ae5f49d94"
+            }
+          ],
+          "publishedAt": "2026-10-29T23:13:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Hamersley_indoor_basketball_court_2.jpg/1280px-Hamersley_indoor_basketball_court_2.jpg",
+            "credit": "Orderinchaos",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hamersley_indoor_basketball_court_2.jpg",
+            "alt": "Leere Basketballhalle mit Holzboden"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "wissenschaft",
+      "title": "Wissenschaft & Raumfahrt",
+      "emoji": "🔭",
+      "items": [
+        {
+          "id": "wissenschaft-zwergplanet-kandidat-2026-ed138",
+          "tier": "top",
+          "headline": "Rubin-Teleskop findet möglichen neuen Zwergplaneten jenseits von Neptun",
+          "summary": "Der Himmelskörper 2026 ED138 misst grob 1.000 Kilometer und könnte der sechste anerkannte Zwergplanet werden. Entdeckt wurde er in Daten des Rubin-Observatoriums in Chile.",
+          "body": "Astronominnen und Astronomen haben in den Daten des Vera-C.-Rubin-Observatoriums in Chile einen Kandidaten für einen neuen Zwergplaneten entdeckt. Der Körper trägt die vorläufige Bezeichnung 2026 ED138 und umkreist die Sonne jenseits der Neptunbahn. Nach Angaben von science.ORF.at, die sich auf Agenturmeldungen stützt, wurde der Fund bei einer Fachtagung in Spokane im US-Bundesstaat Washington vorgestellt.\n\n## Was bisher bekannt ist\n\nEntdeckt hat das Objekt laut der University of Washington der Astronom Matthew Holman vom Harvard & Smithsonian Center for Astrophysics. Er stieß am 13. Oktober darauf, als er mit einem selbst geschriebenen Programm gemeinsam mit Kevin Napier die Rubin-Daten durchsuchte. Mario Jurić von der University of Washington, der das Sonnensystem-Team des Observatoriums leitet, steuerte weitere Beobachtungen bei.\n\nDer Durchmesser wird derzeit auf 600 bis 1.500 Kilometer geschätzt, als Richtwert nennt Jurić rund 1.000 Kilometer. Die Entfernung zur Sonne beträgt etwa das 46-Fache des Erdabstands, Pluto liegt im Mittel bei rund dem 40-Fachen. Jurić nannte das Objekt den größten Körper jenseits von Neptun, der in etwa 20 Jahren gefunden wurde.\n\n## Warum es noch ein Kandidat ist\n\nVon einem Zwergplaneten spricht die Fachwelt erst, wenn ein Körper massereich genug ist, um sich unter der eigenen Schwerkraft rund zu formen. Ob 2026 ED138 diese Bedingung erfüllt, ist offen; die Größe und die Beschaffenheit müssen erst genauer bestimmt werden. Helfen könnte laut ORF das Radioteleskop-Netz ALMA in Chile, das die Eigenstrahlung des Körpers im längeren Wellenbereich messen und so die Größe eingrenzen kann.\n\nBislang erkennt die Internationale Astronomische Union fünf Zwergplaneten an: Pluto, Eris, Haumea, Makemake und Ceres. Ein sechster wäre eine kleine Zäsur für die Lehrbücher.\n\nDass der Körper so lange unentdeckt blieb, liegt an seiner Position am Himmel: Er steht nahe der Ebene der Milchstraße, wo dichte Sternfelder die Suche erschweren. Mit Hilfe von Archivaufnahmen ab 2016 konnte sein Lauf über mehr als zehn Jahre zurückverfolgt werden.\n\n## Einordnung\n\nDie große Durchmusterung des Rubin-Observatoriums läuft seit Juni 2026 und soll zehn Jahre dauern. Schon im April hatte das Team von mehr als 11.000 neu gefundenen Asteroiden berichtet, darunter rund 380 neue Objekte jenseits von Neptun. Für Deutschland ist das Projekt auch deshalb interessant, weil europäische Forschungsgruppen Zugriff auf die Daten haben und ähnliche Funde künftig häufiger zu erwarten sind. Bestätigt sich der Kandidat, ginge der Titel eines der größten Körper im äußeren Sonnensystem nach langer Zeit an einen Neuling.",
+          "source": "science.ORF.at",
+          "url": "https://science.orf.at/stories/3237939/",
+          "sources": [
+            {
+              "name": "science.ORF.at",
+              "url": "https://science.orf.at/stories/3237939/"
+            },
+            {
+              "name": "UW News",
+              "url": "https://www.washington.edu/news/?p=93767"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 6,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/14-281-KuiperBeltObject-ArtistsConcept-20141015.jpg",
+            "credit": "ASA, ESA, and G. Bacon (STScI)",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:14-281-KuiperBeltObject-ArtistsConcept-20141015.jpg",
+            "alt": "Künstlerische Darstellung eines Objekts im Kuipergürtel (Symbolbild)"
+          }
+        },
+        {
+          "id": "wissenschaft-rubin-entdeckt-aquarius-iv",
+          "tier": "top",
+          "headline": "Rubin-Daten verraten zwei neue Begleiter der Milchstraße",
+          "summary": "Im Testmaterial des Rubin-Observatoriums stecken eine mutmaßliche Zwerggalaxie namens Aquarius IV und ein Kugelsternhaufen. Beide Einordnungen sind noch vorläufig.",
+          "body": "Das Vera-C.-Rubin-Observatorium hat schon in seinen Testdaten zwei bislang unbekannte Begleiter der Milchstraße verraten. Das berichtet scinexx unter Berufung auf zwei Fachstudien. Ausgewertet wurde die sogenannte Early Data Preview 2, Testaufnahmen von April 2025 bis Januar 2026, die rund 3.000 Quadratgrad oder etwa sieben Prozent des Himmels abdecken.\n\n## Aquarius IV\n\nDas erste Objekt heißt Aquarius IV. Ein Team der Yale University um William Cerny hält es für eine extrem lichtschwache Zwerggalaxie. Sie liegt im äußeren Halo der Milchstraße, etwa 109 Kiloparsec oder rund 355.000 Lichtjahre entfernt. Ihre Sterne sind sehr alt, rund 13 Milliarden Jahre, und arm an schweren Elementen.\n\nIn den Rubin-Daten erscheint das Objekt mit etwa acht Sigma, in älteren Aufnahmen der Dark Energy Camera fanden es die Forschenden unabhängig mit rund sechs Sigma wieder. Die Arbeit erschien allerdings nur als kurze Research Note der American Astronomical Society ohne reguläres Peer-Review. Auch ein ungewöhnlich großer Kugelsternhaufen lässt sich noch nicht ausschließen, wie EarthSky unter Verweis auf die Studie schreibt. Nötig sind tiefere Aufnahmen und Spektren, die Bewegung und chemische Zusammensetzung der Sterne zeigen.\n\n## Rubin-GC1\n\nDas zweite Objekt, Rubin-GC1, fand ein Team der University of Chicago um Aashay Pai. Es handelt sich wahrscheinlich um einen lichtschwachen Kugelsternhaufen im Sternbild Schlangenträger, etwa 31 Kiloparsec beziehungsweise 101.000 Lichtjahre entfernt, mitten in einer staubreichen Region. Sein Alter wird auf gut neun Milliarden Jahre geschätzt. Bewegungsdaten des Satelliten Gaia deuten darauf hin, dass der Haufen einst zur Sagittarius-Zwerggalaxie gehörte; sicher belegt ist das nicht.\n\n## Warum der Unterschied zählt\n\nGut 60 bis 65 Satellitengalaxien der Milchstraße sind bekannt, Modelle sagen deutlich mehr voraus. Ob ein schwaches Objekt eine Zwerggalaxie oder ein Sternhaufen ist, entscheidet darüber, was es über die Entstehung von Galaxien und über Dunkle Materie verrät. Zwerggalaxien gelten als die am stärksten von Dunkler Materie dominierten Systeme, die man kennt.\n\nDas Observatorium hat im Juni 2026 seine zehnjährige Himmelsdurchmusterung begonnen. Seine Kamera hat 3,2 Milliarden Pixel. Cerny sagte laut scinexx, die Funde seien für Rubin erst der Anfang. Weitere Kandidaten dürften folgen, und auch deutsche Forschungsgruppen werten solche Kataloge für Studien zur Dunklen Materie aus.",
+          "source": "scinexx",
+          "url": "https://www.scinexx.de/news/kosmos/zwei-verborgene-begleiter-der-milchstrasse-in-daten-des-rubin-teleskops-entdeckt/",
+          "sources": [
+            {
+              "name": "scinexx",
+              "url": "https://www.scinexx.de/news/kosmos/zwei-verborgene-begleiter-der-milchstrasse-in-daten-des-rubin-teleskops-entdeckt/"
+            },
+            {
+              "name": "EarthSky",
+              "url": "https://earthsky.org/space/1st-ultra-faint-milky-way-satellite-galaxy-aquarius-iv-rubin/"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 5,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg/1280px-Vera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg",
+            "credit": "NOIRLab/NSF/AURA/C. Corco",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vera_C_Rubin_Observatory_in_the_Snow_(IMG_0315-CC).jpg",
+            "alt": "Das Vera-C.-Rubin-Observatorium auf dem Cerro Pachón an einem verschneiten Tag"
+          }
+        },
+        {
+          "id": "wissenschaft-kohlenstoff-nanoband-leitet-wie-metall",
+          "tier": "top",
+          "headline": "Kohlenstoff-Nanoband leitet Strom wie ein Metall",
+          "summary": "Chinesische Forschende haben ein nur 0,9 Nanometer breites Band aus Fünf- und Siebenerringen hergestellt. Eine Variante verhält sich metallisch, für Chips ist es aber noch zu früh.",
+          "body": "Ein Team der University of Science and Technology of China in Hefei hat erstmals ultradünne Kohlenstoffbänder synthetisiert, die Strom wie ein Metall leiten. Die Arbeit unter Leitung von Qitang Fan erschien im Fachjournal Nature. Die Bänder sind rund 0,9 Nanometer breit, und ihre Kohlenstoffatome bilden anders als bei Graphen keine Sechser-, sondern Fünf- und Siebenerringe.\n\n## So entstehen die Bänder\n\nAusgangspunkt waren Moleküle mit acht Kohlenstoffatomen im Ring, die das Team auf eine Silberoberfläche aufbrachte. Beim Erhitzen wandelten sich die Achterringe in verbundene Fünferringe um, bei weiterem Erhitzen verschmolzen benachbarte Reihen zu Siebenerringen. Die Anordnung bestätigten die Forschenden mit hochauflösender Raster-Tunnel- und Rasterkraftmikroskopie.\n\nEs entstanden zwei Varianten. Die erste, CPHN 1, ist metallisch, weil die Fünferketten an den Rändern auf beiden Seiten gleich ausgerichtet sind. Die zweite, CPHN 2, ist mit einer Bandlücke von etwa 0,22 Elektronenvolt ein Halbleiter, weil die Randketten unterschiedlich liegen.\n\n## Messwerte\n\nFür die Strommessung hob die Spitze eines Rastertunnelmikroskops ein Ende eines Bands an. Bei einer Messspannung von 10 Millivolt erreichte CPHN 1 laut scinexx eine Leitfähigkeit von etwa 0,9 Leitfähigkeitsquanten. Der Wert blieb über eine Strecke von rund vier Nanometern nahezu konstant, was auf einen fast ballistischen Elektronentransport hindeutet, also auf einen Stromfluss praktisch ohne Streuung. CPHN 2 leitete etwa hundertmal schlechter.\n\n## Einordnung\n\nSchmale Kohlenstoffbänder gelten als Kandidaten für winzige Leiterbahnen künftiger Elektronik, weil sie sich atomar genau bauen lassen. Allerdings sind es bisher einzelne Strukturen unter Laborbedingungen auf Silber. Die Autoren schreiben laut Phys.org, für den Einbau in Bauelemente seien weitere Optimierungen der Synthese nötig. Scinexx fasst es so zusammen: noch kein fertiger Draht für Mikrochips.\n\nFür Sachsen ist das Feld nicht fremd: Dresden und Chemnitz gehören zu den Zentren der europäischen Mikroelektronik und der Forschung an Kohlenstoffmaterialien. Grundlagenergebnisse dieser Art zeigen, in welche Richtung sich die Chipforschung jenseits des Siliziums bewegen könnte, auch wenn bis zu einem Produkt noch viele Jahre vergehen dürften.",
+          "source": "scinexx",
+          "url": "https://www.scinexx.de/news/physik/ultraduennes-kohlenstoff-nanoband-leitet-strom-wie-ein-metall/",
+          "sources": [
+            {
+              "name": "scinexx",
+              "url": "https://www.scinexx.de/news/physik/ultraduennes-kohlenstoff-nanoband-leitet-strom-wie-ein-metall/"
+            },
+            {
+              "name": "Phys.org",
+              "url": "https://phys.org/news/2026-10-ultrathin-carbon-ribbons-electricity-metals.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 4,
+          "readingMinutes": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/d/de/4pp-graphene.jpg",
+            "credit": "Bert Voigtlaender",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:4pp-graphene.jpg",
+            "alt": "Rasterelektronenmikroskop-Aufnahme: vier Messspitzen kontaktieren ein Graphen-Nanoband (Symbolbild)"
+          }
+        },
+        {
+          "id": "wissenschaft-uvex-ultraviolett-teleskop-2031",
+          "tier": "more",
+          "headline": "NASA-Teleskop UVEX soll 2031 den Ultraviolett-Himmel kartieren",
+          "summary": "Das von Caltech geleitete Weltraumteleskop soll den ganzen Himmel im Ultraviolett durchmustern, deutlich empfindlicher als sein Vorgänger GALEX.",
+          "body": "Die NASA will 2031 ein neues Weltraumteleskop für ultraviolettes Licht starten. Die Mission UVEX (UltraViolet EXplorer) steht unter Leitung des California Institute of Technology. Darüber berichtet Universe Today in einem von Phys.org übernommenen Beitrag.\n\nGeplant ist eine Himmelsdurchmusterung im nahen und fernen Ultraviolett über zunächst zwei Jahre. Sie soll laut einem Fachpapier 50- bis 100-mal tiefer reichen als die des Satelliten GALEX, der 2013 seinen Betrieb beendete. UVEX wäre damit das erste neue UV-Teleskop seit rund 20 Jahren und die erste Mission, die tiefe UV-Karten des Himmels anfertigt.\n\nDie Wissenschaft steht auf drei Säulen: kleine, metallarme Galaxien, zeitabhängige Phänomene wie frühe Sternexplosionen und schnelle UV-Blitze sowie ein großes öffentliches UV-Archiv, vergleichbar mit dem der europäischen Gaia-Mission. Auch bei Gravitationswellen-Alarmen soll UVEX nachsehen und das ultraviolette Nachleuchten verschmelzender Neutronensterne suchen.\n\nDas Teleskop ergänzt andere Durchmusterungen: das Roman-Teleskop der NASA im Infrarot, das Rubin-Observatorium mit seinem zehnjährigen Dauerblick, Europas Euclid und SPHEREx. Für europäische Astronomie ist die Mission vor allem als Datenquelle interessant, weil UV-Beobachtungen vom Erdboden aus unmöglich sind.",
+          "source": "Phys.org (Universe Today)",
+          "url": "https://phys.org/news/2026-10-nasa-uv-space-telescope.html",
+          "sources": [
+            {
+              "name": "Phys.org (Universe Today)",
+              "url": "https://phys.org/news/2026-10-nasa-uv-space-telescope.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Ultraviolet_image_of_the_Cygnus_Loop_Nebula_crop.jpg/1280px-Ultraviolet_image_of_the_Cygnus_Loop_Nebula_crop.jpg",
+            "credit": "NASA/JPL-Caltech",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ultraviolet_image_of_the_Cygnus_Loop_Nebula_crop.jpg",
+            "alt": "Ultraviolettaufnahme des Cygnus-Loop-Nebels durch den NASA-Satelliten GALEX"
+          }
+        },
+        {
+          "id": "wissenschaft-schwacher-gammablitz-heller-nachschein",
+          "tier": "more",
+          "headline": "Schwacher Gammablitz hinterließ ungewöhnlich hellen Nachschein",
+          "summary": "Der Ausbruch GRB 260310A war kurz und energiearm, sein Nachleuchten gehörte aber zu den hellsten je beobachteten. Ein schräg gesehener Jet könnte das erklären.",
+          "body": "Am 10. März 2026 registrierte das Weltraumteleskop Fermi der NASA den Gammablitz GRB 260310A. Der erste Puls dauerte etwa 53 Sekunden und war vergleichsweise energiearm. Das Nachleuchten dagegen war außergewöhnlich: Wie scinexx berichtet, gehörte es im sichtbaren Licht und im Röntgenbereich zu den hellsten ein Prozent der verglichenen Ausbrüche, im Radiobereich war es heller als rund 95 Prozent.\n\nEin Team um Yu-Han Yang von der Universität Rom Tor Vergata beobachtete die Quelle viele Wochen lang mit optischen, Radio- und Röntgenteleskopen. Das sichtbare Licht nahm zunächst über mehrere Stunden zu, statt sofort zu verblassen. Rund 20 bis 30 Tage nach dem Ausbruch folgte eine zweite Röntgenaufhellung, die das Chandra-Observatorium der gleichen Quelle zuordnete. Eine Supernova mit breiten Spektrallinien belegt, dass ein massereicher Stern kollabierte.\n\nDie Rotverschiebung beträgt etwa 0,153, der Ausbruch war also vergleichsweise nah, was ihn heller erscheinen lässt. Seine tatsächliche Leuchtkraft liegt im üblichen Rahmen.\n\nAls Erklärung schlagen die Forschenden vor, die Erde habe den Jet von der Seite gesehen. Ein Jet mit schnellem, energiereichem Kern und langsamerer Hülle könnte den schwachen Anfangspuls und die späte Aufhellung erklären. Von vorn betrachtet wäre der Ausbruch viel intensiver erschienen. Bestätigt ist das Modell nicht: Kein einfaches Modell passt zu allen Messungen von Radio bis Röntgen, auch eine spätere Energiezufuhr in die Stoßwelle ist möglich. Die Studie erschien im Astrophysical Journal Letters.",
+          "source": "scinexx",
+          "url": "https://www.scinexx.de/news/kosmos/schwacher-gammablitz-hinterliess-einen-der-hellsten-je-beobachteten-nachscheine/",
+          "sources": [
+            {
+              "name": "scinexx",
+              "url": "https://www.scinexx.de/news/kosmos/schwacher-gammablitz-hinterliess-einen-der-hellsten-je-beobachteten-nachscheine/"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Radio_telescope_The_Dish.jpg/1280px-Radio_telescope_The_Dish.jpg",
+            "credit": "Steve Jurvetson from Menlo Park, USA",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Radio_telescope_The_Dish.jpg",
+            "alt": "Das Radioteleskop „The Dish“ der Stanford University"
+          }
+        },
+        {
+          "id": "wissenschaft-dunkle-energie-einstein-gleichungen",
+          "tier": "more",
+          "headline": "Mathematiker stellen Notwendigkeit der Dunklen Energie infrage",
+          "summary": "Ein Team um Blake Temple argumentiert, das kosmologische Standardmodell beruhe auf einem instabilen Fundament. Es ist ein theoretischer Einwand, kein Beobachtungsbeweis.",
+          "body": "Brauchen wir Dunkle Energie, um die beschleunigte Expansion des Universums zu erklären? Mathematiker der University of California, Davis, halten das für unsicher. In der Zeitschrift Proceedings of the Royal Society A argumentieren C. Alexander, Blake Temple und Z. Vogler, das Standardmodell der Kosmologie ruhe auf einem mathematisch instabilen Rahmen. Das berichtet ScienceDaily auf Grundlage einer Mitteilung der Hochschule.\n\nGemeint sind die Friedmann-Raumzeiten, auf denen das Lambda-CDM-Modell aufbaut. Mit den Einstein-Euler-Gleichungen, die Allgemeine Relativitätstheorie und Strömungslehre verbinden, zeigen die Autoren nach eigener Darstellung, dass diese Raumzeiten bei großen Längenskalen instabil gegenüber radialen Störungen sind. Temple sagt, das scheine das Modell als stabile Lösung auszuschließen. Eine beschleunigte Expansion könne sich dann auch ohne Dunkle Energie ergeben.\n\nDer Ansatz hat einen Haken: Er setzt eine besondere zentrale Lage voraus und stellt damit das kopernikanische Prinzip infrage, wonach unser Platz im Kosmos nichts Besonderes ist. Die Mitteilung betont selbst, dass es sich um eine theoretische Herausforderung handelt und nicht um einen Beobachtungsbeweis.\n\nHintergrund: Nachdem Edwin Hubble 1929 die Expansion belegt hatte, verwarf Einstein seine kosmologische Konstante als größte Eselei. In den 1990er-Jahren entdeckte man die beschleunigte Expansion, seither gilt Dunkle Energie als Hauptverdächtige. Bis andere Gruppen die Rechnung prüfen und Messungen, etwa von Euclid oder dem Rubin-Observatorium, Stellung beziehen, bleibt die Arbeit eine Anregung für die Fachdebatte.",
+          "source": "ScienceDaily",
+          "url": "https://www.sciencedaily.com/releases/2026/10/261028232719.htm",
+          "sources": [
+            {
+              "name": "ScienceDaily",
+              "url": "https://www.sciencedaily.com/releases/2026/10/261028232719.htm"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 3,
+          "readingMinutes": 1,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Center_of_the_Milky_Way_Galaxy_IV_%E2%80%93_Composite.jpg/1280px-Center_of_the_Milky_Way_Galaxy_IV_%E2%80%93_Composite.jpg",
+            "credit": "NASA/JPL-Caltech/ESA/CXC/STScI",
+            "license": "Public domain",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Center_of_the_Milky_Way_Galaxy_IV_%E2%80%93_Composite.jpg",
+            "alt": "Das Zentrum der Milchstraße, kombiniert aus Aufnahmen dreier NASA-Observatorien"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gesundheit",
+      "title": "Gesundheit",
+      "emoji": "🩺",
+      "items": [
+        {
+          "id": "gesundheit-linnemann-pflege-sparen",
+          "tier": "top",
+          "headline": "Linnemann schließt Kürzungen bei der Pflegeversicherung nicht aus",
+          "summary": "Gesundheitsminister Linnemann will Zuzahlungen 2027 nicht erneut erhöhen, in der Pflege aber rund zehn Prozent sparen. Leistungskürzungen schließt er nicht aus.",
+          "body": "Bundesgesundheitsminister Carsten Linnemann (CDU) hat angekündigt, die Zuzahlungen in der gesetzlichen Krankenversicherung im kommenden Jahr nicht noch einmal anzuheben. In der Pflegeversicherung dagegen schließt er Leistungskürzungen ausdrücklich nicht aus. Das geht aus einem Interview mit dem Handelsblatt hervor, über das am Donnerstag mehrere Fachmedien berichteten.\n\nZur Pflege sagte Linnemann: „Wir müssen rund zehn Prozent einsparen.“ Er wolle die Leistungen zielgenauer auf den tatsächlichen Bedarf ausrichten und Menschen länger zu Hause versorgen lassen. Zugleich sieht er wenig Spielraum für höhere Beiträge der Versicherten, der Zuschlag für Kinderlose sei an seiner Grenze. Eine Pflicht zur privaten Pflegeversicherung lehnt er ab und setzt stattdessen auf steuerliche Anreize für private Vorsorge. Einen SPD-Vorschlag, die Eigenanteile in Pflegeheimen zu deckeln, weist er zurück, weil das die Kosten nicht senke.\n\n## Warum die Pflegekasse unter Druck steht\n\nNach den Angaben im Bericht des Deutschen Ärzteblatts fehlten der sozialen Pflegeversicherung ohne Reform 2027 rund acht Milliarden Euro. Die Zahl der Pflegebedürftigen stieg demnach von 2,8 Millionen im Jahr 2015 auf sechs Millionen im Jahr 2025. Etwa 5,1 Millionen von ihnen werden zu Hause von Angehörigen oder Bekannten versorgt, rund 710.000 leben in Pflegeheimen. Über weitere Einsparungen will Linnemann erst entscheiden, wenn die Finanzkommission Gesundheit ihre Vorschläge vorgelegt hat.\n\nBei der Krankenversicherung nannte der Minister als Ziel stabile Beiträge über 2027 hinaus und mittelfristig sinkende Beiträge. Höhere Zuzahlungen seien dafür kein geeigneter Weg. Er verwies auf hohe Gesundheitsausgaben: Deutschland habe das zweitteuerste Gesundheitssystem der Welt, aber eine unterdurchschnittliche Lebenserwartung im europäischen Vergleich. Teure Krebstherapien könnten bis zu 40.000 Euro im Monat kosten.\n\n## Kritik aus Verbänden und Wissenschaft\n\nThomas Knieling vom Verband der Deutschen Alten- und Behindertenhilfe hält weitere Kürzungen für kaum vorstellbar, denn das Pflegeneuordnungsgesetz enthalte bereits Leistungseinschnitte. Eugen Brysch von der Deutschen Stiftung Patientenschutz warnt vor Kürzungen bei der häuslichen Pflege und fordert, dass der Bund Corona-Schulden von fünf Milliarden Euro zurückzahlt sowie die Rentenbeiträge pflegender Angehöriger übernimmt, die jährlich mehr als fünf Milliarden Euro ausmachen. DIW-Präsident Marcel Fratzscher nannte zehn Prozent Einsparung richtig und realistisch, warnte aber vor einem pauschalen Vorgehen.\n\nFür Pflegebedürftige und ihre Familien in Sachsen ist die Debatte konkret: Der größte Teil wird zu Hause gepflegt, und genau dort könnten Kürzungen ankommen. Konkrete Gesetzentwürfe liegen noch nicht vor.",
+          "source": "Apotheke Adhoc",
+          "url": "https://www.apotheke-adhoc.de/nachrichten/detail/politik/pflege-linnemann-schliesst-leistungskuerzungen-nicht-aus/",
+          "sources": [
+            {
+              "name": "Apotheke Adhoc",
+              "url": "https://www.apotheke-adhoc.de/nachrichten/detail/politik/pflege-linnemann-schliesst-leistungskuerzungen-nicht-aus/"
+            },
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/linnemann-schliesst-kurzungen-bei-pflegeversicherung-nicht-aus-41c233bf-24ed-4fa8-ae9f-fac96ad08f98"
+            }
+          ],
+          "publishedAt": "2026-10-29T07:53:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Pflegeheim_Haus_Allmend%C3%A4cker_Maichingen_02.jpg/1280px-Pflegeheim_Haus_Allmend%C3%A4cker_Maichingen_02.jpg",
+            "credit": "Giftzwerg 88",
+            "license": "CC BY-SA 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pflegeheim_Haus_Allmend%C3%A4cker_Maichingen_02.jpg",
+            "alt": "Gebäude eines modernen Pflegeheims"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "gesundheit-notfallreform-dispensierrecht-streit",
+          "tier": "top",
+          "headline": "Apotheker laufen gegen Dispensierrecht der Notfallreform Sturm",
+          "summary": "Die Abda fordert die Länder auf, das im Bundestag beschlossene Abgaberecht für Ärzte in der Notfallreform zu stoppen. Am 20. November steht das Gesetz auf der Tagesordnung des Bundesrats.",
+          "body": "Der Apothekerverband Abda erhöht den Druck auf die Länder: Sie sollen verhindern, dass Ärzte im Rahmen der Notfallreform Arzneimittel selbst abgeben dürfen. Abda-Präsident Thomas Preis lehnt das Dispensierrecht „strikt“ ab und verlangt eine Korrektur, wie Apotheke Adhoc am Donnerstag berichtete. Der Bundestag hat das Gesetz bereits beschlossen. Nach Angaben des Fachportals steht am 4. November eine Beratung im Gesundheitsausschuss an, am 20. November soll sich der Bundesrat damit befassen.\n\n## Was das Gesetz erlaubt\n\nUrsprünglich sollte das eingeschränkte Abgaberecht nur für die Integrierten Notfallzentren gelten, in denen Notaufnahmen und ärztlicher Bereitschaftsdienst zusammenarbeiten. Auf den letzten Metern des Gesetzgebungsverfahrens hat der Bundestag es laut Pharmazeutischer Zeitung auf den aufsuchenden ärztlichen Notdienst ausgeweitet, also auf Hausbesuche außerhalb der Praxiszeiten. Statt eines Bedarfs für drei Tage dürfen Ärzte nun ganze Packungen der kleinsten Größe abgeben. Außerdem können Vereinbarungen zum Sprechstundenbedarf künftig auch Sortimente, Abgabe und Bezugswege regeln.\n\n## Die Einwände der Apotheker\n\nPreis argumentiert, Apotheker seien die letzte Kontrollinstanz vor der Abgabe, das Vier-Augen-Prinzip von Arzt und Apotheker schütze vor Fehlmedikation. Der Notdienst funktioniere bundesweit, das Gesetz schaffe Parallelstrukturen ohne erkennbaren Bedarf. Fielen Verordnungen aus dem Notdienst weg, werde der Apothekennotdienst unwirtschaftlicher, und weitere Schließungen seien möglich. Zum „Kernproblem“ erklärte er den parallelen Bezugsweg: Ärzte könnten Ware möglicherweise direkt vom Hersteller beziehen, was die Apothekenpflicht und die Arzneimittelpreisverordnung untergraben würde.\n\nDie Abda nennt weitere offene Punkte. Für Ärzte gelten weder die Apothekenbetriebsordnung noch Rabattverträge, Zuzahlungseinzug oder Lagerungsvorgaben, und die Echtheitsprüfung nach Securpharm sei ungeklärt. Als Alternative schlägt der Verband vor, die bereits erlaubte Direktanwendung von Sprechstundenbedarf zeitlich eng begrenzt auszuweiten. Der Bundesverband Deutscher Apothekenkooperationen unterstützt die Abda und will die Apothekenpflicht vollständig erhalten.\n\nFür Patienten in Sachsen geht es um die Frage, wo sie nachts und am Wochenende ihre Medikamente erhalten. Befürworter sehen kürzere Wege, Gegner eine Schwächung der Notdienstapotheken im ländlichen Raum. Ob die Länder eingreifen, entscheidet sich frühestens im November.",
+          "source": "Apotheke Adhoc",
+          "url": "https://www.apotheke-adhoc.de/nachrichten/detail/politik/preis-notfallreform-umgeht-apothekenpflicht/",
+          "sources": [
+            {
+              "name": "Apotheke Adhoc",
+              "url": "https://www.apotheke-adhoc.de/nachrichten/detail/politik/preis-notfallreform-umgeht-apothekenpflicht/"
+            },
+            {
+              "name": "Pharmazeutische Zeitung",
+              "url": "https://www.pharmazeutische-zeitung.de/dispensierrecht-untergraebt-apothekenpflicht-171460/"
+            },
+            {
+              "name": "Apotheke Adhoc (27.10.)",
+              "url": "https://www.apotheke-adhoc.de/nachrichten/detail/politik/dispensierrecht-direktbezug-ohne-apotheke/"
+            }
+          ],
+          "publishedAt": "2026-10-29T15:00:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Norderney%2C_Kur-Apotheke_--_2025_--_9417.jpg/1280px-Norderney%2C_Kur-Apotheke_--_2025_--_9417.jpg",
+            "credit": "Dietmar Rabich",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Norderney,_Kur-Apotheke_--_2025_--_9417.jpg",
+            "alt": "Schriftzug „Kur-Apotheke“ an einer Hauswand"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "gesundheit-lilly-quartal-abnehmspritze",
+          "tier": "top",
+          "headline": "Lilly hebt Umsatzprognose dank Abnehmmitteln auf 92 Milliarden",
+          "summary": "Der US-Konzern steigert den Umsatz im dritten Quartal um 39 Prozent auf 24,4 Milliarden Dollar. Treiber sind Mounjaro und Zepbound.",
+          "body": "Der Pharmakonzern Eli Lilly hat im dritten Quartal 2026 deutlich mehr umgesetzt als erwartet und seine Jahresprognose kräftig angehoben. Der Umsatz stieg um 39 Prozent auf 24,4 Milliarden US-Dollar, Analysten hatten mit rund 22,5 Milliarden gerechnet. Das geht aus der Mitteilung des Unternehmens vom 29. Oktober und einem Bericht der Nachrichtenagentur dpa hervor. Wichtigste Treiber sind die Wirkstoffe gegen Diabetes und Übergewicht.\n\n## Die Zahlen im Einzelnen\n\nMounjaro, das Diabetesmittel mit dem Wirkstoff Tirzepatid, erlöste laut Lilly 10,7 Milliarden Dollar, ein Plus von 65 Prozent. Das in den USA als Abnehmmittel verkaufte Zepbound kam auf 5,4 Milliarden Dollar, 49 Prozent mehr als im Vorjahresquartal. Die erst vor kurzem eingeführte Abnehmtablette Foundayo spielte 184 Millionen Dollar ein, seit Jahresbeginn sind es 281 Millionen. Der Nettogewinn stieg um 16 Prozent auf 6,5 Milliarden Dollar.\n\nFür das Gesamtjahr erwartet Lilly nun 91 bis 92 Milliarden Dollar Umsatz statt zuvor 85 bis 87 Milliarden. Die Gewinnprognose je Aktie senkte das Unternehmen dagegen leicht auf 35 bis 36 Dollar, weil im dritten Quartal hohe Aufwendungen für zugekaufte Forschungsprojekte von 4,57 Dollar je Aktie anfielen.\n\n## Neue Studiendaten, härterer Wettbewerb\n\nLilly meldete außerdem positive erste Ergebnisse einer Phase-3-Studie zum noch nicht zugelassenen Wirkstoff Retatrutide. Im direkten Vergleich mit Ozempic in der höchsten zugelassenen Dosis bei Erwachsenen mit Typ-2-Diabetes senkte er den Langzeitblutzucker stärker und führte nach Angaben des Konzerns zu mehr als doppelt so viel Gewichtsverlust. Es handelt sich um Herstellerangaben aus einer Mitteilung, eine begutachtete Veröffentlichung liegt nicht vor. Zugleich rief Lilly Onlineplattformen, Zahlungsdienstleister und Behörden auf, den illegalen Schwarzmarkt für Retatrutide zu schließen. Laut dpa wächst der Preisdruck im Markt, weil Konkurrent Novo Nordisk Marktanteile zurückgewinnen will.\n\nFür Patienten in Deutschland bleibt die Lage unverändert: Abnehmmittel gelten hierzulande als Lifestyle-Arzneimittel und werden nicht von der gesetzlichen Krankenversicherung bezahlt. Nach Angaben des Deutschen Ärzteblatts kostet die seit dem Herbst erhältliche Wegovy-Tablette im Erhaltungsbereich rund 278 Euro im Monat. Fachleute betonen dort, dass Medikamente allein nicht reichen, sondern ärztliche Begleitung, Ernährung und Bewegung dazugehören.",
+          "source": "Apotheke Adhoc",
+          "url": "https://www.apotheke-adhoc.de/nachrichten/detail/markt/lilly-allein-107-milliarden-dollar-umsatz-mit-mounjaro/",
+          "sources": [
+            {
+              "name": "Apotheke Adhoc",
+              "url": "https://www.apotheke-adhoc.de/nachrichten/detail/markt/lilly-allein-107-milliarden-dollar-umsatz-mit-mounjaro/"
+            },
+            {
+              "name": "Eli Lilly (Quartalsmitteilung bei der SEC)",
+              "url": "https://www.sec.gov/Archives/edgar/data/0000059478/000005947826000104/q326lillysalesandearningsp.htm"
+            },
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/vor-dem-verkaufsstart-in-deutschland-was-bringt-orales-semaglutid-07cae03a-487e-4540-bb94-a440374b79ac"
+            }
+          ],
+          "publishedAt": "2026-10-29T17:33:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Lilly_-_Building_44.jpg/1280px-Lilly_-_Building_44.jpg",
+            "credit": "Paul Sableman",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lilly_-_Building_44.jpg",
+            "alt": "Firmenzentrale von Eli Lilly in Indianapolis"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "gesundheit-kassen-anlageverluste-aufarbeitung",
+          "tier": "more",
+          "headline": "Kassenverluste bei Immobilienfonds: Aufarbeitung dauert an",
+          "summary": "Gesetzliche Krankenkassen halten noch Anlagen mit gut 700 Millionen Euro Restbuchwert. Weitere Abschreibungen für 2026 sind angekündigt.",
+          "body": "Die Aufarbeitung der Verluste, die Krankenkassen und Kassenärztliche Vereinigungen mit Anlagen in Immobilienfinanzierungsfonds gemacht haben, zieht sich hin. Das geht aus der Antwort der Bundesregierung auf eine Kleine Anfrage der AfD im Bundestag hervor, über die das Deutsche Ärzteblatt am Donnerstag berichtete.\n\nDanach lag der Restbuchwert der betroffenen Anlagen bei den bundesunmittelbaren Krankenkassen zum 31. Dezember 2025 bei etwas über 700 Millionen Euro. Für 2026 haben die Kassen demnach weitere Wertberichtigungen angekündigt, deren Höhe noch nicht feststeht. Bei einer Pflegekasse nennt die Antwort einen Nennwert von rund einer Million Euro und Abschreibungen von etwa 400 Millionen Euro bis Ende 2025. Die beiden Angaben passen so nicht zusammen; das Ärzteblatt rät, sie am Originaldokument zu prüfen.\n\n## Prüfung läuft noch\n\nDie Bundesregierung betont, der Sachverhalt müsse nach den strengen Regeln des Sozialgesetzbuchs IV gründlich ermittelt werden. Das Bundesgesundheitsministerium befragt dazu die Aufsichtsbehörden der Länder zu belasteten Anlagen landesunmittelbarer Kassen und der Kassenärztlichen Vereinigungen. Die Ergebnisse sind noch unvollständig. Das Bundesamt für Soziale Sicherung soll die Rückmeldungen bündeln und auswerten, das Bundesarbeitsministerium beteiligt sich am Austausch der Erkenntnisse.\n\nEin nächster Termin steht fest: Die 109. Aufsichtsbehördentagung von Bund und Ländern am 11. und 12. November hat Geldanlage und Risikomanagement zum Thema. Für Versicherte ist die Frage wichtig, weil Verluste der Kassen letztlich die Beitragszahler treffen können, während die Politik über stabile Beiträge debattiert.",
+          "source": "Deutsches Ärzteblatt",
+          "url": "https://www.aerzteblatt.de/news/anlagegeschafte-aufarbeitung-nach-verlusten-von-krankenkassen-dauert-an-aae46e22-23a4-4b79-8a93-9001ecb27b78",
+          "sources": [
+            {
+              "name": "Deutsches Ärzteblatt",
+              "url": "https://www.aerzteblatt.de/news/anlagegeschafte-aufarbeitung-nach-verlusten-von-krankenkassen-dauert-an-aae46e22-23a4-4b79-8a93-9001ecb27b78"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/M%C3%BCllerstra%C3%9Fe_41._Bild_1..JPG/1280px-M%C3%BCllerstra%C3%9Fe_41._Bild_1..JPG",
+            "credit": "(dwt).",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:M%C3%BCllerstra%C3%9Fe_41._Bild_1..JPG",
+            "alt": "Verwaltungsgebäude in Chemnitz, in dem eine große Krankenkasse ihre Geschäftsstelle hat"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "gesundheit-shop-apotheke-zuzahlung-bonus",
+          "tier": "more",
+          "headline": "Shop Apotheke erlässt Neukunden die Zuzahlung beim ersten E-Rezept",
+          "summary": "Der Versender wirbt mit null Euro Zuzahlung beim ersten E-Rezept. Rx-Kunden machen aber nur einen kleinen Teil des Wachstums aus.",
+          "body": "Die Versandapotheke Shop Apotheke, Teil des Konzerns Redcare, erlässt neuen Kunden die Zuzahlung für die erste digital eingelöste E-Rezept-Bestellung. Das berichtet Apotheke Adhoc. Ausgenommen sind Aufzahlungen wegen Festbetragsdifferenzen, Privatrezepte, Rezepte nach Paragraf 27a SGB V und Bestellungen über „Now!“. Für jedes weitere Kassenrezept gibt es laut Bericht einen Bonus je Medikament, der vom Apothekenverkaufspreis abhängt: 2,50 Euro unter 60 Euro, 5 Euro ab 60 Euro, 10 Euro ab 250 Euro und 20 Euro ab 1.000 Euro. Beworben wird das Modell mit mindestens 40 Prozent Ersparnis auf die Zuzahlungen.\n\nKonzernchef Peter Schmid von Linstow zeigte sich zufrieden und kündigte an, das Modell jederzeit ändern zu können. Höhere Zuzahlungen ab dem kommenden Jahr nannte er eine Chance, Boni für ausgewählte Kunden zu erhöhen. Finanzchef Hendrik Krampe bezifferte den zusätzlichen Spielraum auf etwa eine Million Euro pro Quartal.\n\n## Was die Quartalszahlen zeigen\n\nDie Zahl aktiver Kunden stieg binnen eines Jahres um 1,5 Millionen auf mehr als 15 Millionen. Nur 300.000 davon sind Rezeptkunden. Im dritten Quartal kamen 500.000 Kunden hinzu, 123.000 davon im Rezeptgeschäft. Aktive Rx-Kunden gibt es nun 1,858 Millionen, gegenüber knapp 1,6 Millionen vor dem Start der bundesweiten Zuzahlungsrabatte vor einem Jahr. Das sind 17 Prozent mehr, bei allen Kunden waren es 9,5 Prozent.\n\nRedcare schrieb in den ersten neun Monaten weiter einen Nettoverlust von 6 Millionen Euro, nach 10,2 Millionen im Vorjahr. Das Betriebsergebnis drehte auf plus 20,5 Millionen Euro. Für das vierte Quartal warnte das Management vor einem schwachen Start, weil die Erkältungssaison spät begonnen habe.",
+          "source": "Apotheke Adhoc",
+          "url": "https://www.apotheke-adhoc.de/nachrichten/detail/markt/shop-apotheke-erlaesst-zuzahlung-komplett/",
+          "sources": [
+            {
+              "name": "Apotheke Adhoc",
+              "url": "https://www.apotheke-adhoc.de/nachrichten/detail/markt/shop-apotheke-erlaesst-zuzahlung-komplett/"
+            },
+            {
+              "name": "Apotheke Adhoc (Redcare-Zahlen)",
+              "url": "https://www.apotheke-adhoc.de/nachrichten/detail/markt/redcare-rx-bonus-bringt-300000-neukunden/"
+            }
+          ],
+          "publishedAt": "2026-10-29T11:20:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/2012_02_22_2223936_OG_Schild_der_Hirsch_Apotheke.jpg/1280px-2012_02_22_2223936_OG_Schild_der_Hirsch_Apotheke.jpg",
+            "credit": "Peter Nath",
+            "license": "CC BY 3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:2012_02_22_2223936_OG_Schild_der_Hirsch_Apotheke.jpg",
+            "alt": "Schmiedeeisernes Apothekenschild an einer Hauswand"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "gesundheit-instanyl-kehrt-zurueck",
+          "tier": "more",
+          "headline": "Fentanyl-Nasenspray Instanyl kommt mit neuem Hersteller zurück",
+          "summary": "Das 2024 vom Markt genommene Schmerzmittel für Tumorpatienten ist ab nächster Woche wieder lieferbar, jetzt von Gentili Pharma.",
+          "body": "Das Fentanyl-Nasenspray Instanyl kehrt nach Deutschland zurück. Wie Apotheke Adhoc berichtet, liefert der italienische Hersteller Gentili Pharma das Präparat ab der kommenden Woche. Takeda hatte es seit 2009 vertrieben und 2024 vom Markt genommen. Das Mittel ist für Durchbruchschmerzen bei Erwachsenen zugelassen, die wegen Tumorschmerzen bereits eine Opioid-Basistherapie erhalten.\n\nDie Stärken von 50, 100 und 200 Mikrogramm pro Sprühstoß bleiben unverändert. Neu ist der Applikator „DoseGuard“ mit elektronischer Anzeige, Kindersicherung und Entsperrtaste. Die Packung mit 40 Dosen (5,3 Milliliter) kostet 542,07 Euro und damit so viel wie zuvor; die kleineren Packungen von Takeda wird es offenbar nicht geben. Apotheken bestellen über den Großhandel, der von Movianto beliefert wird. Schulungsmaterial ist bereits bestellbar, Geschäftsführer Tobias Weizel nennt Gentili Pharma als Verantwortlichen.\n\n## Strenge Dosierregeln\n\nPro Tag sind höchstens vier Episoden mit jeweils maximal zwei Dosen im Abstand von mindestens zehn Minuten vorgesehen. Häufige Nebenwirkungen sind Schläfrigkeit, Schwindel, Kopfschmerzen, Hitzewallungen, Halsreizung, Übelkeit und Erbrechen. Gefährlich ist vor allem eine Atemdepression, die Kombination mit Beruhigungsmitteln erfordert Vorsicht, gleichzeitig abschwellende Nasensprays sollten vermieden werden.\n\nDer Bericht betont das Missbrauchsrisiko, besonders durch Kinder. Er erinnert an einen Todesfall aus dem Jahr 2021: Ein 28-Jähriger hatte das Spray seiner Freundin für ein Schnupfenmittel gehalten und starb nach zwei bis vier Sprühstößen an den Folgen einer Atemdepression. Für Patienten ist die Rückkehr relevant, weil damit wieder ein schnell wirksames Mittel gegen Durchbruchschmerzen verfügbar wird.",
+          "source": "Apotheke Adhoc",
+          "url": "https://www.apotheke-adhoc.de/nachrichten/detail/pharmazie/instanyl-kommt-zurueck/",
+          "sources": [
+            {
+              "name": "Apotheke Adhoc",
+              "url": "https://www.apotheke-adhoc.de/nachrichten/detail/pharmazie/instanyl-kommt-zurueck/"
+            }
+          ],
+          "publishedAt": "2026-10-29T11:58:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Nasal_Spray_%2846057881342%29.jpg/1280px-Nasal_Spray_%2846057881342%29.jpg",
+            "credit": "NIAID",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nasal_Spray_(46057881342).jpg",
+            "alt": "Eine Frau sprüht sich ein Nasenspray in die Nase"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "klima",
+      "title": "Klima & Umwelt",
+      "emoji": "🌱",
+      "items": [
+        {
+          "id": "klima-offshore-wind-flaechenrueckgabe",
+          "tier": "top",
+          "headline": "Berlin erwägt Rückgabeoption für Offshore-Windflächen",
+          "summary": "Das Bundeswirtschaftsministerium prüft, ob Entwickler teuer ersteigerte Meeresflächen ohne Ausbau wieder abgeben dürfen. Der Plan trifft das Ausbauziel von 70 Gigawatt bis 2045.",
+          "body": "Das Bundeswirtschaftsministerium prüft eine einmalige Möglichkeit, bereits vergebene Offshore-Windflächen zurückzugeben. Nach Berichten des Tagesspiegel Background und des Handelsblatt, die das Portal Clean Energy Wire am Donnerstag zusammenfasste, geht es um Flächen, für die Firmen in Auktionen Milliarden geboten haben, die sie aber nicht mehr bebauen wollen. Ein Ministeriumssprecher bestätigte gegenüber einem Nachrichtendienst, dass für Flächen ohne zentrale Voruntersuchung aus den Jahren 2023 und 2024 eine geordnete, einmalige und befristete Rückgabeoption geschaffen werden soll.\n\nDie Unternehmen verhandeln demnach über einen Ausstieg aus ihren Zusagen. Sie nennen Probleme beim Netzanschluss und ein verschlechtertes wirtschaftliches Umfeld. Das Ministerium hatte den Vorschlag zunächst abgelehnt. Nun erwägt es laut den Berichten, die Flächen in Sonderausschreibungen neu zu vergeben. Frühere Inhaber wären davon ausgeschlossen und müssten Strafzahlungen an die Übertragungsnetzbetreiber leisten, damit Rückgaben die Ausnahme bleiben.\n\n## Milliardenzusagen von 2023\n\nWie groß die Kehrtwende ist, zeigt der Blick zurück: Mitte 2023 hatten die Ölkonzerne TotalEnergies und BP zusammen 12,6 Milliarden Euro für das Recht zugesagt, Windparks in Nord- und Ostsee zu bauen. Eine Ausschreibungsrunde 2025 erhielt dagegen kein einziges Gebot. Der Branchenverband BWO und der Energieverband BDEW fordern, zurückgegebene Flächen neu auszuschreiben.\n\nDer BDEW beziffert das Problem so: Seit 2023 seien Projekte mit zusammen 18 Gigawatt ohne staatliche Förderung bezuschlagt worden, 16 Gigawatt davon hätten noch keine finale Investitionsentscheidung. Der Verband hält die Umsetzung einiger Vorhaben für akut gefährdet und macht das Ausschreibungsdesign der vergangenen Jahre verantwortlich. Sein Vorschlag soll als Gesamtpaket in die laufende Novelle des Windenergie-auf-See-Gesetzes aufgenommen werden; den Regierungsentwurf vom August, der eine Rückgabe nicht vorsieht, hält er für unzureichend.\n\n## Ausbauziel unter Druck\n\nDer Bundestag berät die Novelle derzeit. Aus Ministeriumskreisen zitierte das Handelsblatt, entscheidend sei nicht die ausgeschriebene Menge, sondern dass Windparks tatsächlich gebaut werden. Deutschland will bis 2045 mindestens 70 Gigawatt Offshore-Wind installieren; Mitte 2026 waren laut BWO fast 11 Gigawatt in Betrieb. Im ersten Halbjahr 2026 deckten Erneuerbare einen Rekordanteil von 58 Prozent des Stromverbrauchs, Offshore-Wind lieferte rund 6 Prozent der Erzeugung.\n\nFür Deutschland und damit auch für Sachsen hängt viel an dem Ziel, denn Windstrom von See soll künftig einen großen Teil des Bedarfs decken, während die Kohle ausläuft. Verzögerungen auf See würden den Umbau verlangsamen. Zugleich zeigt die Debatte, dass der Netzanschluss zum Engpass für den Ausbau geworden ist. Ob Berlin die Rückgabe wirklich zulässt, soll sich in den Beratungen über das Gesetz entscheiden.",
+          "source": "Clean Energy Wire",
+          "url": "https://www.cleanenergywire.org/news/german-economy-ministry-weighs-exit-option-some-offshore-wind-site-holders",
+          "sources": [
+            {
+              "name": "Clean Energy Wire",
+              "url": "https://www.cleanenergywire.org/news/german-economy-ministry-weighs-exit-option-some-offshore-wind-site-holders"
+            },
+            {
+              "name": "BDEW",
+              "url": "https://www.bdew.de/service/rueckgabe-und-neuausschreibung-von-offshore-wind-flaechen/"
+            }
+          ],
+          "publishedAt": "2026-10-29T11:57:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Nordsee_One_Offshore_Windpark.jpg/1280px-Nordsee_One_Offshore_Windpark.jpg",
+            "credit": "Capmat007",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nordsee_One_Offshore_Windpark.jpg",
+            "alt": "Offshore-Windpark Nordsee One auf dem Meer"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "klima-co2-pipeline-nrw-widerstand",
+          "tier": "top",
+          "headline": "Widerstand gegen CO2-Pipeline durch Nordrhein-Westfalen wächst",
+          "summary": "Der BUND NRW kritisiert die geplante CO2-Leitung des Netzbetreibers OGE scharf. Mehr als 1.400 Stellungnahmen gingen in vier Wochen ein, Städte und Initiativen wehren sich gegen die Trasse.",
+          "body": "Die geplante CO2-Pipeline durch Nordrhein-Westfalen stößt auf wachsenden Widerstand. Nach Angaben des BUND NRW gingen im Beteiligungsverfahren zur Raumverträglichkeitsprüfung in gut vier Wochen mehr als 1.400 Stellungnahmen ein; die Frist endete am Montag. Der Umweltverband kündigte an, sich mit allen politischen und rechtsstaatlichen Mitteln zu wehren. Das berichtet das Magazin Energiezukunft.\n\nEs geht um den deutschen Teil des Projekts Delta Rhine Corridor, das die Industrie in NRW mit dem Hafen Rotterdam verbinden soll. Neben einer Leitung für grünen Wasserstoff ist eine für Kohlendioxid vorgesehen: Das in Raffinerien, Chemie- und Stahlwerken abgeschiedene CO2 soll bis zur Nordsee fließen und dort unter dem Meeresboden gespeichert werden. Geplant wird die Leitung vom Gasnetzbetreiber Open Grid Europe (OGE). Betroffen ist ein etwa 200 Kilometer langer Abschnitt, der von Wesseling und Gelsenkirchen-Scholven über Duisburg bis zur niederländischen Grenze führt.\n\n## Kritik an Klimanutzen und Trasse\n\nDer BUND-Vertreter Thomas Krämerkämper sagt, die Pipeline verzögere den Abschied von Öl und Gas. CO2-Speicherung werde nicht für wirklich unvermeidbare Emissionen genutzt, sondern für Standorte, die seit Jahrzehnten von fossilen Rohstoffen abhängen. Klimareferent Dario Deilmann argumentiert, ein Netz dieser Größe rechne sich nur, wenn über Jahrzehnte viel CO2 fließe, was den Druck zur Umstellung der Industrie mindere. Zudem schade schon der Bau: Laut BUND wären auf der bevorzugten Trasse rund 23 Kilometer Wald betroffen sowie Feuchtgebiete im Schwalm-Nette-Raum und Moorlebensräume auf der Bergischen Heideterrasse.\n\nAuch vor Ort regt sich Protest. Wie das Portal Cleanthinking Mitte Oktober berichtete, könnten im Duisburger Stadtwald und im Mülheimer Uhlenhorst bis zu 17 Hektar Wald wegfallen. Eine Petition der Waldjugend sammelte über 8.700 Unterschriften, in Duisburg demonstrierten rund 1.000 Menschen. Der Ausschuss der Stadt Nettetal lehnte die Pläne einstimmig ab, weil Naturschutzgebiete durchschnitten würden. Insgesamt liegen 60 Städte und Gemeinden in den geprüften Korridoren.\n\n## Sicherheitsfragen offen\n\nDer BUND verweist auf Sicherheitsrisiken: CO2 ist schwerer als Luft, sammelt sich in Senken und kann in hoher Konzentration ersticken. Die Unterlagen enthielten keine Berechnungen zur Ausbreitung bei einem Leitungsbruch, und über einen zehn Meter breiten Schutzstreifen hinaus sei kein Abstand zu Wohnhäusern vorgesehen. Wer Ausrüstung und Schulung für Feuerwehren und Katastrophenschutz bezahlt, sei offen.\n\nRechtlich hat der Bund den Weg frei gemacht: Ein reformiertes CO2-Speichergesetz gilt seit Ende 2025 und stuft solche Vorhaben grundsätzlich als Projekte von überragendem öffentlichem Interesse ein. OGE will bis März 2027 eine Vorzugsvariante festlegen, danach folgt das Genehmigungsverfahren mit weiterer Bürgerbeteiligung. Inbetriebnahme ist frühestens 2033 vorgesehen. Für die separate Leitung Ruhbens von Wesseling an die belgische Grenze läuft die Beteiligung noch bis zum 6. November. Beide Projekte gehören zu einem geplanten bundesweiten CO2-Netz mit einer Kapazität von 120 Millionen Tonnen pro Jahr.\n\nFür Sachsen ist die Debatte ein Vorgeschmack: Wo Industrie mit unvermeidbaren Prozessemissionen CO2 abscheiden will, braucht es Leitungen und Speicher. Auch der Streit um Wald, Sicherheit und Kosten dürfte sich dort wiederholen.",
+          "source": "Energiezukunft",
+          "url": "https://www.energiezukunft.eu/wirtschaft/kritik-an-geplanter-co2-pipeline-durch-nrw",
+          "sources": [
+            {
+              "name": "Energiezukunft",
+              "url": "https://www.energiezukunft.eu/wirtschaft/kritik-an-geplanter-co2-pipeline-durch-nrw"
+            },
+            {
+              "name": "Cleanthinking",
+              "url": "https://www.cleanthinking.de/?p=1074434"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Wesseling_Refinery_at_Dusk%2C_March_2018.jpg/1280px-Wesseling_Refinery_at_Dusk%2C_March_2018.jpg",
+            "credit": "Martin Falbisoner",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wesseling_Refinery_at_Dusk,_March_2018.jpg",
+            "alt": "Raffinerie in Wesseling in der blauen Stunde"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "klima-un-bericht-renaturierung-tempo",
+          "tier": "top",
+          "headline": "UN-Bericht: Renaturierung wirkt, geht aber zu langsam",
+          "summary": "In 149 Ländern werden 252 Millionen Hektar wiederhergestellt. Für das 2030-Ziel reicht das laut UNEP, FAO und Biodiversitätskonvention nicht, die Investitionen müssten mehr als vervierfacht werden.",
+          "body": "Weltweit werden derzeit 252 Millionen Hektar Land und Wasser wiederhergestellt, verteilt auf 149 Länder. Das ist die größte bisher dokumentierte Renaturierung, heißt es im Bericht „Nature’s comeback“ von UN-Umweltprogramm UNEP, Welternährungsorganisation FAO und dem Sekretariat der Biodiversitätskonvention. Die Fortschritte reichen aber nicht, um die Zusagen für 2030 zu erfüllen. Vorgestellt wurde der Bericht zur UN-Biodiversitätskonferenz COP17.\n\nDas Kunming-Montreal-Abkommen verlangt, dass bis 2030 mindestens 30 Prozent der geschädigten Ökosysteme an Land, im Süßwasser, im Meer und an den Küsten wirksam wiederhergestellt werden. Hinzu kommen Zusagen für rund eine Milliarde Hektar. Der Bericht erscheint zur Halbzeit der UN-Dekade für Ökosystemwiederherstellung, die von 2021 bis 2030 läuft.\n\n## Land vorn, Wasser hinten\n\nAm weitesten ist die Wiederherstellung an Land: Hier ist fast die Hälfte des globalen 30-Prozent-Ziels erreicht. China meldet mit 127,4 Millionen Hektar die größte Fläche. Süßwasser-Ökosysteme kommen auf 11 Millionen Hektar in 62 Ländern, Meere und Küsten auf 5,7 Millionen Hektar in 46 Ländern. Da die Berichterstattung zu Gewässern lückenhaft ist, liegen diese Zahlen wohl zu niedrig. Nach Kontinenten steht Asien mit 192,2 Millionen Hektar vorn, Afrika folgt mit 36,3 und Europa mit 9,1 Millionen Hektar. Die Autoren betonen, das sei kein Leistungsranking, sondern spiegele Umfang, Landfläche und Überwachungskapazitäten.\n\nBei Feuchtgebieten gibt es Fortschritt: Der Anteil der Vertragsparteien mit umgesetzten Programmen stieg seit 2022 von 8 auf 54 Prozent. Die Maßnahmen haben außerdem mehr als eine Million grüne Arbeitsplätze geschaffen; bis 2030 könnten es laut Bericht weltweit etwa 32 Millionen werden.\n\n## Geld als Engpass\n\nEntscheidend ist die Finanzierung. Die jährlichen Investitionen sollen von 64 Milliarden US-Dollar auf 296 Milliarden bis 2030 steigen, also mehr als vervierfacht werden. Den größten Bedarf sehen die Autoren bei Agroforstwirtschaft mit 87 Milliarden Dollar jährlich, gefolgt von Aufforstung mit 52, Moorrestaurierung mit 44 und Seegraswiesen mit 28 Milliarden. UNEP-Chefin Inger Andersen sagte, die Welt stelle die Natur noch nicht im nötigen Maßstab und Tempo wieder her. Als Nutzen nennt der Bericht, dass die Wiederherstellung von 15 Prozent der Prioritätsflächen etwa 30 Prozent der seit der Industrialisierung angefallenen Emissionen binden und 60 Prozent des Artensterbens verhindern könnte.\n\nFür Deutschland ist das Thema greifbar. Der Bericht nennt Moorrestaurierung als einen der großen Investitionsposten, und Europa kommt auf dokumentierte 9,1 Millionen Hektar; ein Leistungsranking ist das laut Bericht allerdings nicht.",
+          "source": "Phys.org (UNEP)",
+          "url": "https://phys.org/news/2026-10-efforts-faster.html",
+          "sources": [
+            {
+              "name": "Phys.org (UNEP)",
+              "url": "https://phys.org/news/2026-10-efforts-faster.html"
+            },
+            {
+              "name": "LexisNexis LNB News",
+              "url": "https://www.lexisnexis.co.uk/legal/news/unep-publishes-report-on-global-ecosystem-restoration-progress"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/%C4%B6emeru_purva_laipa.jpg/1280px-%C4%B6emeru_purva_laipa.jpg",
+            "credit": "Jolanta Liva",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:%C4%B6emeru_purva_laipa.jpg",
+            "alt": "Holzsteg durch ein Moor im Morgennebel"
+          },
+          "readingMinutes": 2
+        },
+        {
+          "id": "klima-redispatch-vorbehalt-bne",
+          "tier": "more",
+          "headline": "bne warnt: Redispatch-Vorbehalt könnte Gerichte beschäftigen",
+          "summary": "Der Verband bne sieht im geplanten Redispatch-Vorbehalt ein rechtliches Risiko. Netzsteuerung und Daten seien zu mangelhaft, um Abregelungen unentschädigt zu lassen.",
+          "body": "Der Bundesverband Neue Energiewirtschaft (bne) warnt in einem Hintergrundpapier, der geplante Redispatch-Vorbehalt könne das Abregelungssystem rechtlich ins Wanken bringen. Der Vorbehalt sieht vor, dass Anlagen in Netzengpassgebieten für Abregelungen nicht vergütet werden. Verlieren Betreiber ihren Entschädigungsanspruch, steige der Anreiz, Eingriffe gerichtlich prüfen zu lassen, so der Verband. Streit drohe etwa darüber, ob Abregelungen korrekt angeordnet, umgesetzt und abgerechnet wurden.\n\nDer bne verweist auf technische Mängel: fehlerhafte Stammdaten, komplizierte IT-Prozesse, veraltete Steuerungstechnik und Funkrundsteuergeräte ohne Rückkanal, sodass Netzbetreiber nicht zuverlässig prüfen können, ob abgeregelt wurde. Laut dem Steuerbarkeitscheck 2025 der Übertragungsnetzbetreiber ist die Steuerbarkeit bei 73 Prozent der Solar- und 86 Prozent der Windleistung nachgewiesen, bei Anlagen zwischen 100 Kilowatt und 1 Megawatt nur bei 57 Prozent.\n\nStatt des Vorbehalts verlangt der Verband zuerst eine nachweisbar funktionierende Steuerung, einheitliche Daten, automatisierte Abrechnung und verbindliche Qualitätsstandards, die auch für Netzbetreiber Folgen haben. Zudem sollten Speicher einbezogen werden.\n\nDer Vorbehalt ist Teil des Netzanschlusspakets. Der bne kritisiert ihn seit Längerem. Nach seiner Analyse entfallen 73 Prozent der Redispatch-Mengen im Verteilnetz auf Netzgesellschaften von E.ON, die aber nur 26,1 Prozent der Netzanschlusspunkte betreiben; E.ON profitiere daher besonders, wie das Fachportal top agrar Ende September berichtete. Für Betreiber von Solar- und Windparks, auch in Sachsen, geht es um die Frage, wer die Kosten von Netzengpässen trägt.",
+          "source": "Energiezukunft",
+          "url": "https://www.energiezukunft.eu/erneuerbare-energien/stromnetze-speicher/defizite-bei-der-netzsteuerung-koennten-demnaechst-gerichte-beschaeftigen",
+          "sources": [
+            {
+              "name": "Energiezukunft",
+              "url": "https://www.energiezukunft.eu/erneuerbare-energien/stromnetze-speicher/defizite-bei-der-netzsteuerung-koennten-demnaechst-gerichte-beschaeftigen"
+            },
+            {
+              "name": "top agrar",
+              "url": "https://www.topagrar.com/energie/news/analyse-vom-redispatch-vorbehalt-profitieren-vor-allem-eon-tochter-zufall-20029553.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 5,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Renewable_Energy_on_the_Grid.jpg",
+            "credit": "Kenueone",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Renewable_Energy_on_the_Grid.jpg",
+            "alt": "Solarmodule, Windräder und Strommasten in einer Landschaft"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "klima-amoc-fehlt-in-anpassungsplaenen",
+          "tier": "more",
+          "headline": "Atlantikströmung fehlt fast überall in nationalen Anpassungsplänen",
+          "summary": "Von 91 Anpassungsplänen erwähnen nur zwei die Atlantische Umwälzzirkulation. Eine Studie in Nature Sustainability fordert Stresstests für Investitionen.",
+          "body": "Die Atlantische Meridionale Umwälzzirkulation (AMOC) könnte sich in diesem Jahrhundert stark abschwächen, doch fast kein Staat plant dafür. Das schreiben Brenden Jongman und Jim Hall in einem Beitrag für The Conversation, der auf ihrer Studie in der Fachzeitschrift Nature Sustainability beruht. Von 91 nationalen Anpassungsplänen bei der UN-Klimarahmenkonvention erwähnen demnach nur zwei das Risiko, Brasilien und Irland. Keiner enthält konkrete Maßnahmen für einen möglichen Kollaps.\n\nDie AMOC transportiert warmes Oberflächenwasser nach Norden und kaltes Tiefenwasser zurück und beeinflusst Wetter und Temperaturen weit über den Atlantik hinaus. Eine im Beitrag zitierte Studie projiziert bis 2100 bei mittleren Emissionen eine Abschwächung um etwa 50 Prozent; ein vollständiger Kollaps vor 2100 gilt als unwahrscheinlich. Mögliche Folgen reichen von extremeren Wintern in Nordeuropa bis zu schwächeren Monsunen, in Modellen um 29 Prozent in Westafrika und 19 Prozent in Indien, sowie mehr Dürre in Teilen Mittelamerikas, Westafrikas und Amazoniens.\n\nDie Autoren empfehlen fünf Schritte: besonders gefährdete Investitionen identifizieren, sie mit Kollapsszenarien testen, flexible Lösungen bevorzugen, die Strömung beobachten und Klimaprojektionen überarbeiten. Dafür müsse man den Zeitpunkt eines Kollapses nicht kennen. Die Schritte sollten nicht von Emissionsminderung ablenken. Für Deutschland heißt das: Planungen etwa für Energie, Landwirtschaft und Hochwasserschutz sollten auch Extremszenarien mitdenken.",
+          "source": "Phys.org (The Conversation)",
+          "url": "https://phys.org/news/2026-10-key-atlantic-currents-collapse-century.html",
+          "sources": [
+            {
+              "name": "Phys.org (The Conversation)",
+              "url": "https://phys.org/news/2026-10-key-atlantic-currents-collapse-century.html"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Marmolada%2C_Italy.jpg/1280px-Marmolada%2C_Italy.jpg",
+            "credit": "Marco Bonomo",
+            "license": "CC0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Marmolada,_Italy.jpg",
+            "alt": "Schneebedeckte Gipfel der Marmolata in den Dolomiten"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    },
+    {
+      "id": "entertainment",
+      "title": "Games & Entertainment",
+      "emoji": "🎮",
+      "items": [
+        {
+          "id": "entertainment-patrick-stewart-gestorben",
+          "tier": "top",
+          "headline": "Patrick Stewart ist mit 86 Jahren gestorben",
+          "summary": "Der britische Schauspieler, bekannt als Captain Picard und Professor X, starb laut seinem Sprecher an Alzheimer und Lewy-Body-Demenz. Sein Management machte den Tod am Donnerstag öffentlich.",
+          "body": "Der britische Schauspieler Sir Patrick Stewart ist im Alter von 86 Jahren gestorben. Das teilte seine langjährige Sprecherin Kelly Bush Novak am Donnerstag, dem 29. Oktober, mit. Nach ihren Angaben starb er im Beisein seiner Frau Sunny nach einem kurzen Weg mit Alzheimer und Lewy-Body-Demenz, so berichten übereinstimmend ABC News und Nintendo Life. Der Todestag war demnach Mittwoch, der 28. Oktober; in Los Angeles, wie es in der Mitteilung heißt.\n\nStewart wurde weltweit als Captain Jean-Luc Picard in „Star Trek: The Next Generation“ bekannt, die Rolle spielte er von 1987 an sieben Staffeln lang und kehrte später in „Star Trek: Picard“ zurück. Ebenso prägte er über mehr als zwei Jahrzehnte als Professor Charles Xavier die „X-Men“-Filme. Seine letzte Rolle spielte er laut ABC in „Avengers: Doomsday“, der am 18. Dezember in die Kinos kommen soll.\n\n## Vom Theater zum Weltstar\n\nGeboren wurde Stewart 1940 im englischen Mirfield. Mit 15 verließ er die Schule, um Theater zu spielen, später schloss er sich der Royal Shakespeare Company an, bei der er laut ABC von 1966 bis 1982 blieb. Das Fernsehen kannte ihn schon aus britischen Produktionen, bevor Picard ihn international berühmt machte. 2010 schlug ihn die Queen zum Ritter. Seine Familie bat t-online zufolge statt Blumen um Spenden für die Alzheimer-Forschung.\n\n## Auch in Spielen zu hören\n\nAuch Gamer kennen seine Stimme: Nintendo Life erinnert daran, dass Stewart in mehreren Spielen seine Star-Trek- und X-Men-Figuren sprach, außerdem den Zobek in „Castlevania: Lords of Shadow“ und Kaiser Uriel Septim VII in „The Elder Scrolls IV: Oblivion“. Marvel Studios und Kollegen wie Ian McKellen reagierten mit Beileidsbekundungen.\n\nEr hinterlässt seine Frau und zwei Kinder aus erster Ehe.",
+          "source": "t-online",
+          "url": "https://www.t-online.de/unterhaltung/stars/id_101504198/star-aus-star-trek-und-x-men-schauspieler-patrick-stewart-ist-tot.html",
+          "sources": [
+            {
+              "name": "t-online",
+              "url": "https://www.t-online.de/unterhaltung/stars/id_101504198/star-aus-star-trek-und-x-men-schauspieler-patrick-stewart-ist-tot.html"
+            },
+            {
+              "name": "ABC News",
+              "url": "https://abcnews.com/GMA/Culture/star-trek-star-patrick-stewart-dies-86/story?id=137684409"
+            },
+            {
+              "name": "Nintendo Life",
+              "url": "https://www.nintendolife.com/news/2026/10/patrick-stewart-the-legendary-star-trek-and-x-men-actor-has-passed-away"
+            }
+          ],
+          "publishedAt": "2026-10-29T21:47:00+01:00",
+          "importance": 7,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Patrick_Stewart_%287268441858%29.jpg/1280px-Patrick_Stewart_%287268441858%29.jpg",
+            "credit": "Peabody Awards",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Patrick_Stewart_(7268441858).jpg",
+            "alt": "Patrick Stewart bei einer Preisverleihung 2012"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "entertainment-u2-stadiontour-2027-berlin",
+          "tier": "top",
+          "headline": "U2 kündigen Stadiontour 2027 mit Berlin-Konzert an",
+          "summary": "Die Band spielt am 30. Juni 2027 im Berliner Olympiastadion, Wolf Alice sind Vorgruppe. Der Vorverkauf für Abonnenten von U2.com beginnt am Montag.",
+          "body": "U2 gehen 2027 wieder auf Stadiontour und machen dabei auch in Deutschland Station. Nach Angaben des Musikmagazins NME spielt die Band am 30. Juni 2027 im Berliner Olympiastadion; es ist der einzige deutsche Termin der jetzt veröffentlichten Liste. Die Tour trägt den Namen „The Greatest Show on Earth“, in Europa spielt die britische Band Wolf Alice bei allen Konzerten im Vorprogramm.\n\n## Die Termine in Europa\n\nLos geht der europäische Teil laut NME am 26. und 28. April in Stockholm. Es folgen Paris mit zwei Konzerten im Stade de France am 5. und 8. Mai, Lissabon am 27. Mai sowie Amsterdam am 5. und 6. Juni. In London treten U2 am 18. und 19. Juni im Tottenham Hotspur Stadium auf, danach in Berlin. Den Abschluss der jetzt genannten Daten bilden zwei Abende im Mailänder San Siro am 5. und 6. Juli. Weitere Termine in Irland, Spanien und Nordamerika sollen laut NME bald folgen; The Edge sagte demnach, die Tour ende in Irland.\n\n## Vorverkauf und Lateinamerika\n\nDer Vorverkauf startet am Montag, dem 2. November, um 10 Uhr zunächst für Abonnenten von U2.com. Das bestätigt auch die Band selbst auf ihrer Webseite, wo sie die Europa-Termine am 29. Oktober vorstellte. Einen allgemeinen Verkaufsstart nennt NME nicht. Tickets gibt es zudem über Ticketmaster UK.\n\nVorher touren U2 durch Lateinamerika: Auftakt ist Ende Februar in Mexiko-Stadt, später folgen São Paulo und Buenos Aires, dort mit Beck als Gast.\n\nFür Fans aus Nordsachsen ist Berlin damit die nächstgelegene Station der Europa-Termine; wer dabei sein will, sollte den Vorverkaufsstart am 2. November im Blick behalten.",
+          "source": "NME",
+          "url": "https://www.nme.com/news/music/u2-announce-the-greatest-show-on-earth-2027-uk-and-european-stadium-tour-with-wolf-alice-tickets-3974542",
+          "sources": [
+            {
+              "name": "NME",
+              "url": "https://www.nme.com/news/music/u2-announce-the-greatest-show-on-earth-2027-uk-and-european-stadium-tour-with-wolf-alice-tickets-3974542"
+            },
+            {
+              "name": "U2.com",
+              "url": "https://www.u2.com"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/U2_%40_Scott_Stadium_2.jpg/1280px-U2_%40_Scott_Stadium_2.jpg",
+            "credit": "John Athayde",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:U2_@_Scott_Stadium_2.jpg",
+            "alt": "Bono und Adam Clayton bei einem U2-Konzert 2009"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "entertainment-xbox-umsatz-quartal",
+          "tier": "top",
+          "headline": "Xbox-Umsatz sinkt im Quartal nur noch um zwei Prozent",
+          "summary": "Microsoft meldet für Xbox-Inhalte und -Dienste ein Minus von 2 Prozent, die Hardware schwächelt weiter. Xbox-Chefin Asha Sharma spricht von Fortschritten.",
+          "body": "Das Xbox-Geschäft von Microsoft schrumpft weiter, aber deutlich langsamer als zuvor. Laut der Pressemitteilung zum ersten Geschäftsquartal 2027 (Juli bis September) sank der Umsatz mit Xbox-Inhalten und -Diensten um 2 Prozent im Jahresvergleich, währungsbereinigt um 1 Prozent. Die gesamte Xbox-Produktlinie inklusive Hardware kam auf 5,379 Milliarden US-Dollar nach 5,508 Milliarden im Vorjahr.\n\n## Hardware weiter im Minus\n\nZur Hardware weist Microsoft keine eigene Zahl aus. Das Fachportal Pure Xbox nennt unter Berufung auf die Unterlagen ein Minus von 14 Prozent bei Konsolen. Im Vorquartal hatte der Bereich Inhalte und Dienste noch zehn Prozent verloren. Xbox-Chefin Asha Sharma wertete den Rückgang in ihrer Stellungnahme als Fortschritt und verwies auf Rekorde bei Minecraft und „WoW Forever“. Auch der jüngste Call of Duty sei die am besten bewertete Ausgabe seit mehr als zehn Jahren. Der PC-Umsatz der Plattform wachse zweistellig, Konsolen seien dagegen durch knappes Angebot gebremst. „Wir machen Fortschritte, aber es liegt noch viel Arbeit vor uns“, sagte Sharma.\n\n## Ausblick und Einordnung\n\nFinanzchefin Amy Hood stellte für das laufende Quartal bei Inhalten und Diensten ein Wachstum von etwa 5 bis 10 Prozent in Aussicht, bei der Hardware erwartet sie erneut einen Rückgang. Microsoft hat seine Segmente zum Geschäftsjahr 2027 neu zugeschnitten; das frühere Segment More Personal Computing erscheint nun als Devices and Consumer mit 15,484 Milliarden Dollar Umsatz, ein Minus von 3 Prozent.\n\nPure Xbox schildert, dass viele Leser die Begründung mit Lieferengpässen anzweifeln und kein echtes Wachstum erkennen; das ist eine Leserstimme, keine belegte Tatsache. Für Spieler in Deutschland bleibt die Frage, wie Microsoft Game Pass, Exklusivität und PC-Strategie ausrichtet. Die Zahlen deuten darauf hin, dass der Konzern seinen Kurs, Spiele breiter auf PC und anderen Plattformen anzubieten, vorerst fortsetzt.",
+          "source": "Pure Xbox",
+          "url": "https://www.purexbox.com/news/2026/10/xbox-ceo-reacts-to-latest-revenue-figures-with-official-statement",
+          "sources": [
+            {
+              "name": "Pure Xbox",
+              "url": "https://www.purexbox.com/news/2026/10/xbox-ceo-reacts-to-latest-revenue-figures-with-official-statement"
+            },
+            {
+              "name": "Microsoft Investor Relations",
+              "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2027-Q1/press-release-webcast"
+            }
+          ],
+          "publishedAt": "2026-10-29T12:00:00+01:00",
+          "importance": 6,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Xbox_Series_X%E3%81%A8Series_S.jpg/1280px-Xbox_Series_X%E3%81%A8Series_S.jpg",
+            "credit": "Kyu3a",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Xbox_Series_X%E3%81%A8Series_S.jpg",
+            "alt": "Xbox Series X und Series S"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "entertainment-duskbloods-auf-2027-verschoben",
+          "tier": "more",
+          "headline": "FromSoftware verschiebt The Duskbloods auf 2027",
+          "summary": "Das Switch-2-Exklusivspiel erscheint nicht mehr 2026. Das Studio will nach dem Netzwerktest Regeln und Balancing nachschärfen.",
+          "body": "Das Actionspiel „The Duskbloods“ von FromSoftware erscheint nicht mehr in diesem Jahr. Wie Nintendo Life berichtet, hat das Studio den Start für die Nintendo Switch 2 auf 2027 verschoben. Einen konkreten Termin nannte FromSoftware nicht, auch Nintendo Lifes Spielprofil führt für Europa und die USA lediglich 2027.\n\nAls Grund gab das Studio an, es brauche zusätzliche Zeit für abschließende Anpassungen an Spielregeln und Balancing. Dabei habe man Rückmeldungen aus dem Netzwerktest zu Kampf, strategischer Tiefe und den Ausdrucksmöglichkeiten der Spielenden berücksichtigt. FromSoftware veröffentlichte die Mitteilung nach Angaben des Magazins auf seinen Social-Media-Kanälen.\n\nDer Netzwerktest im August war nicht reibungslos verlaufen: Wie Fachmedien berichteten, musste der erste Tag wegen Serverproblemen abgebrochen werden. Zuletzt hatten Fans spekuliert, der Termin könne rutschen, weil der Veröffentlichungskalender für 2026 voll ist. Die Muttergesellschaft Kadokawa hatte zuvor an einem Start 2026 festgehalten.\n\nFür Switch-2-Besitzer in Deutschland heißt das: Der Titel, der exklusiv für die Konsole erscheint, ist in diesem Jahr nicht mehr zu erwarten. Einen konkreten Termin hat das Studio bislang nicht genannt.",
+          "source": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/the-duskbloods-switch-2-release-has-been-delayed-to-2027",
+          "sources": [
+            {
+              "name": "Nintendo Life",
+              "url": "https://www.nintendolife.com/news/2026/10/the-duskbloods-switch-2-release-has-been-delayed-to-2027"
+            }
+          ],
+          "publishedAt": "2026-10-29T14:45:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Nintendo_Switch_2_%E2%80%93_Tischmodus_20250606.png/1280px-Nintendo_Switch_2_%E2%80%93_Tischmodus_20250606.png",
+            "credit": "PantheraLeo1359531",
+            "license": "CC BY 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nintendo_Switch_2_%E2%80%93_Tischmodus_20250606.png",
+            "alt": "Nintendo Switch 2 im Tischmodus"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "entertainment-hunger-games-sunrise-reaktionen",
+          "tier": "more",
+          "headline": "Erste Reaktionen zu neuem „Hunger Games“-Film euphorisch",
+          "summary": "Nach der Londoner Premiere loben Kritiker und Influencer den sechsten Teil der Reihe. Offizielle Kritiken stehen noch unter Sperrfrist, Kinostart ist der 20. November.",
+          "body": "Der sechste Film der „Hunger Games“-Reihe, „Sunrise on the Reaping“ unter der Regie von Francis Lawrence, bekommt vor dem Kinostart überschwängliche erste Reaktionen. Nach der Premiere am Mittwochabend in London äußerten sich laut NME mehrere Kritiker und Filmaccounts in sozialen Netzwerken. Der Film startet am 20. November.\n\nDie Filmkritikerin Clotilde Chinicci nannte ihn den bisher besten Teil der Reihe. Das Konto DawsOnScreen schrieb, er sei brutaler, als man sich vorstellen könne. Matt Neglia, Chefredakteur von Next Best Picture, hob Glenn Close als Szenendiebin hervor. Die Nerds of Color lobten Joseph Zada als Haymitch und stuften den Film als Reihenbestleistung ein. Weitere Stimmen priesen auch Mckenna Grace und Jesse Plemons.\n\nEinzuordnen ist das vorsichtig: Es handelt sich um spontane Kurzkommentare direkt nach der Premiere, vollständige Kritiken stehen laut NME noch unter Sperrfrist. Erfahrungsgemäß fallen solche ersten Reaktionen meist positiver aus als spätere Rezensionen.\n\nFür Kinogänger in Leipzig und Umgebung bleibt damit bis zum 20. November Zeit, sich auf einen Besuch vorzubereiten. Es ist der sechste Film der Reihe.",
+          "source": "NME",
+          "url": "https://www.nme.com/news/film/the-hunger-games-sunrise-on-the-reaping-first-reactions-franchise-best-3974506",
+          "sources": [
+            {
+              "name": "NME",
+              "url": "https://www.nme.com/news/film/the-hunger-games-sunrise-on-the-reaping-first-reactions-franchise-best-3974506"
+            }
+          ],
+          "publishedAt": "2026-10-29T00:00:00+01:00",
+          "importance": 3,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Hunger_Games_Book_Collection.jpg/1280px-Hunger_Games_Book_Collection.jpg",
+            "credit": "ajay_suresh",
+            "license": "CC BY 2.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hunger_Games_Book_Collection.jpg",
+            "alt": "Sammlung der Hunger-Games-Bücher"
+          },
+          "readingMinutes": 1
+        },
+        {
+          "id": "entertainment-pokemon-happy-meal-rollout",
+          "tier": "more",
+          "headline": "Pokémon-Karten kehren in McDonald's Happy Meals zurück",
+          "summary": "Die Aktion startet im November in den USA und Frankreich, in Deutschland im Dezember. Das bestätigt die Pokémon Company.",
+          "body": "Pokémon-Karten und Spielzeug kehren in die Happy Meals von McDonald's zurück. Nintendo Life hat seine Meldung am Donnerstag mit einer offiziellen Ankündigung der Pokémon Company aktualisiert und nennt nun den Fahrplan nach Ländern.\n\nIm November beginnt die Aktion unter anderem in den USA, Kanada, Frankreich, Spanien, Australien und Neuseeland. Im Dezember folgen rund 40 Länder, darunter Deutschland und die Niederlande. Im Januar 2027 kommen etwa 22 weitere Länder dazu, etwa Italien und Brasilien; Irland und Großbritannien bilden im Februar 2027 den Schluss.\n\nZum Inhalt: Drei Happy-Meal-Boxen zeigen Pikachu, Umbreon und Torchic, jede enthält ein Spielzeug in Boxform. Für die USA berichtete zunächst PokéBeach von 15 Karten in der Sammlung, darunter sieben Holo-Karten, bei einer Laufzeit vom 5. November bis 9. Dezember. Nintendo Life weist darauf hin, dass die Berichte bei der Zahl der Karten pro Box voneinander abweichen. Die Aktion gilt nur, solange der Vorrat reicht.\n\nDas Magazin erinnert daran, dass es in der Vergangenheit Probleme mit Scalpern gab, etwa Kaufbegrenzungen in Großbritannien 2021 und einen Ausverkauf in Japan im Vorjahr. Für Sammler in Deutschland beginnt die Aktion damit erst im Dezember.",
+          "source": "Nintendo Life",
+          "url": "https://www.nintendolife.com/news/2026/10/pokemon-cards-and-toys-are-officially-returning-to-mcdonalds-happy-meals-soon",
+          "sources": [
+            {
+              "name": "Nintendo Life",
+              "url": "https://www.nintendolife.com/news/2026/10/pokemon-cards-and-toys-are-officially-returning-to-mcdonalds-happy-meals-soon"
+            }
+          ],
+          "publishedAt": "2026-10-29T16:15:00+01:00",
+          "importance": 4,
+          "image": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Pokemon_cards_and_sets.jpg/1280px-Pokemon_cards_and_sets.jpg",
+            "credit": "Fernando Martello",
+            "license": "CC BY-SA 4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pokemon_cards_and_sets.jpg",
+            "alt": "Pokémon-Sammelkarten und Sets"
+          },
+          "readingMinutes": 1
+        }
+      ]
+    }
+  ]
+}
