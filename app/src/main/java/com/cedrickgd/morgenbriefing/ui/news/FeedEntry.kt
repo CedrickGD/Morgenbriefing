@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Article
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Headphones
@@ -97,7 +98,10 @@ internal const val MORE_LABEL = "Weiterlesen"
  */
 @Stable
 class FeedActions(
+    /** Opens the article: the in-app reader, or the browser when the user prefers that. */
     val onOpen: (FeedArticle) -> Unit,
+    /** Always the browser (⋮ menu), even when [onOpen] reads in the app. */
+    val onOpenExternal: (FeedArticle) -> Unit,
     val onListen: (FeedArticle) -> Unit,
     val onStopListening: () -> Unit,
     val onShare: (FeedArticle) -> Unit,
@@ -409,7 +413,8 @@ private fun FeedMenu(article: FeedArticle, actions: FeedActions) {
             tonalElevation = 0.dp,
             shadowElevation = 12.dp,
         ) {
-            MenuItem("Artikel öffnen", Icons.AutoMirrored.Rounded.OpenInNew) { open = false; actions.onOpen(article) }
+            MenuItem("Artikel lesen", Icons.AutoMirrored.Rounded.Article) { open = false; actions.onOpen(article) }
+            MenuItem("Im Browser öffnen", Icons.AutoMirrored.Rounded.OpenInNew) { open = false; actions.onOpenExternal(article) }
             MenuItem("Link kopieren", Icons.Rounded.ContentCopy) { open = false; actions.onCopyLink(article) }
             actions.onHideSource?.let { hide ->
                 MenuItem("„$source“ ausblenden", Icons.Rounded.VolumeOff) { open = false; hide(article) }

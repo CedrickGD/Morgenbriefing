@@ -128,6 +128,7 @@ fun TodayScreen(
     contentPadding: PaddingValues,
     openTodaySignal: Int,
     onOpenSettings: () -> Unit,
+    onOpenArticle: (FeedArticle) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TodayViewModel = viewModel(factory = TodayViewModel.Factory),
 ) {
@@ -167,6 +168,7 @@ fun TodayScreen(
         onRetryWeather = viewModel::retryWeather,
         onRetryNews = viewModel::retryNews,
         onOpenSettingsAt = openSettingsAt,
+        onOpenArticle = onOpenArticle,
         onSetTopicVisible = viewModel::setTopicVisible,
         onSetTopicOrder = viewModel::setTopicOrder,
         onSetSourceEnabled = viewModel::setSourceEnabled,
@@ -197,6 +199,7 @@ private class TodayCallbacks(
     val onRetryWeather: () -> Unit,
     val onRetryNews: () -> Unit,
     val onOpenSettingsAt: (SettingsTarget) -> Unit,
+    val onOpenArticle: (FeedArticle) -> Unit,
     val onSetTopicVisible: (String, Boolean) -> Unit,
     val onSetTopicOrder: (List<String>) -> Unit,
     val onSetSourceEnabled: (String, Boolean) -> Unit,
@@ -265,6 +268,7 @@ private fun TodayContent(
         onMessage = { snackbar.say(scope, it) },
         onHideTopic = { hideTopic(it.topic) },
         onHideSource = hideSource,
+        onOpenArticle = callbacks.onOpenArticle.takeIf { state.prefs?.readInApp != false },
     )
     val onSelect: (FeedFilter) -> Unit = { filter ->
         // Always remember the tap: after a hidden topic fell back to "Für dich", the stored key

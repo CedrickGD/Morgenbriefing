@@ -245,6 +245,7 @@ class SettingsViewModel(
     fun setSectionSize(size: Int) = edit { it.copy(sectionSize = size.coerceIn(AppSettings.MIN_SECTION_SIZE, AppSettings.MAX_SECTION_SIZE)) }
 
     fun setShowImages(show: Boolean) = edit { it.copy(showImages = show) }
+    fun setReadInApp(inApp: Boolean) = edit { it.copy(readInApp = inApp) }
 
     fun setNewsAge(age: NewsAge) = edit { it.copy(newsAge = age) }
 

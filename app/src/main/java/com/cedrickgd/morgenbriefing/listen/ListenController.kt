@@ -162,24 +162,30 @@ class ListenController(context: Context) {
             dispatch(utteranceId) { index, silence -> if (!silence) onPartRange(index, start) }
     }
 
+    /** The running script reads the article's full text (the reader), not only the teaser. */
+    private var scriptIsFull = false
+
     /**
-     * Reads [item] aloud. Another article that is being read is replaced; the same article
-     * keeps reading (or resumes when it was paused). Tapping the mini player opens the article.
+     * Reads [item] aloud — with [body] (the reader's full text) the whole article, else headline
+     * and teaser. Another article that is being read is replaced; the same article keeps reading
+     * (or resumes when it was paused) unless the full text arrives for a teaser that is playing.
+     * Tapping the mini player opens the article.
      */
-    fun play(item: NewsItem) = onMain {
+    fun play(item: NewsItem, body: String? = null) = onMain {
         val key = item.key
         val current = mutableState.value
-        if (script != null && current.articleKey == key) {
+        if (script != null && current.articleKey == key && (body.isNullOrBlank() || scriptIsFull)) {
             if (current.paused) resume()
             return@onMain
         }
         val maxLength = runCatching { TextToSpeech.getMaxSpeechInputLength() }.getOrDefault(ListenScript.DEFAULT_MAX_LENGTH)
-        val next = ListenScript.from(item, maxLength)
+        val next = ListenScript.from(item, maxLength, body)
         if (next.isEmpty) return@onMain
 
         session++
         tts?.stop()
         script = next
+        scriptIsFull = !body.isNullOrBlank()
         position = 0
         restartsLeft = 1
         resumeOnFocusGain = false

@@ -64,7 +64,7 @@ für Android.
   ein – er soll sich nie wie eine Leiste anfühlen. Während eine Liste scrollt, hält die Aurora
   still. Mit 3-Tasten-Navigation hebt ein weicher Verlauf die Systemtasten vom Inhalt ab.
 * Haptik: leichter Tick beim Seitenwechsel.
-* Artikel öffnen im In-App-Browser (Custom Tab) direkt bei der Redaktion; Sheets (Themen, Ort)
+* Artikel öffnen im Reader der App (§7: Bild unter der Statusleiste, Serif-Überschrift, Textblöcke, Glas-Controls); „Im Browser öffnen“ bleibt als Ausweg; Sheets (Themen, Ort)
   liegen als Glas über der Seite.
 * Innere horizontale Scroller (Chip-Reihe, Leser-Pager) haben Vorrang vor dem Seitenwischen:
   was die Chip-Reihe am Anfang/Ende nicht mehr nutzt, verschluckt sie (kein Seitenwechsel).

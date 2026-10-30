@@ -63,10 +63,16 @@ internal class ListenScript(val parts: List<SpeechPart>) {
          * Builds the script for [item]. [maxLength] is the engine's hard limit per utterance
          * (`TextToSpeech.getMaxSpeechInputLength()`); every part stays below it.
          */
-        fun from(item: NewsItem, maxLength: Int = DEFAULT_MAX_LENGTH): ListenScript {
+        fun from(item: NewsItem, maxLength: Int = DEFAULT_MAX_LENGTH, body: String? = null): ListenScript {
             val builder = Builder(maxLength)
             builder.add(item.headline, PAUSE_HEADLINE_MS)
-            builder.add(item.summary, PAUSE_LEAD_MS)
+            // The reader's full text (paragraphs separated by blank lines) replaces the teaser.
+            val paragraphs = body?.split(PARAGRAPH_BREAK)?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
+            if (paragraphs.isEmpty()) {
+                builder.add(item.summary, PAUSE_LEAD_MS)
+            } else {
+                paragraphs.forEachIndexed { i, paragraph -> builder.add(paragraph, if (i == 0) PAUSE_LEAD_MS else PAUSE_PARAGRAPH_MS) }
+            }
             sourcesSentence(item)?.let { sentence ->
                 builder.breathe(PAUSE_SECTION_MS)
                 builder.add(sentence, 0)
@@ -76,6 +82,8 @@ internal class ListenScript(val parts: List<SpeechPart>) {
 
         /** 4000 on every engine we know; used when the platform value is unavailable (tests). */
         const val DEFAULT_MAX_LENGTH = 4000
+
+        private val PARAGRAPH_BREAK = Regex("\\n\\s*\\n")
 
         /** "Quelle: tagesschau." — null when no source is known. */
         internal fun sourcesSentence(item: NewsItem): String? {

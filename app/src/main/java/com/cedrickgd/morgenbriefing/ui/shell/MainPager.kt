@@ -118,6 +118,7 @@ internal fun MainPager(
                         contentPadding = contentPadding,
                         openTodaySignal = openTodaySignal,
                         onOpenSettings = { navigator.showPage(MainPage.SETTINGS) },
+                        onOpenArticle = { navigator.openArticle(entry, it.item) },
                         viewModel = todayViewModel,
                     )
 

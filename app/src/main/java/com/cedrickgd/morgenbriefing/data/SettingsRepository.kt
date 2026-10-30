@@ -85,6 +85,7 @@ class SettingsRepository(context: Context) {
             regionChosenByUser = this[Keys.REGION_CHOSEN] ?: defaults.regionChosenByUser,
             sectionSize = this[Keys.SECTION_SIZE]?.coerceIn(AppSettings.MIN_SECTION_SIZE, AppSettings.MAX_SECTION_SIZE) ?: defaults.sectionSize,
             showImages = this[Keys.SHOW_IMAGES] ?: defaults.showImages,
+            readInApp = this[Keys.READ_IN_APP] ?: defaults.readInApp,
             newsAge = NewsAge.fromName(this[Keys.NEWS_AGE]) ?: defaults.newsAge,
             weatherCards = this[Keys.WEATHER_CARDS]?.let { raw ->
                 idSet(raw).mapNotNull { name -> WeatherCard.entries.firstOrNull { it.name == name } }.toSet()
@@ -121,6 +122,7 @@ class SettingsRepository(context: Context) {
         this[Keys.REGION_CHOSEN] = s.regionChosenByUser
         this[Keys.SECTION_SIZE] = s.sectionSize.coerceIn(AppSettings.MIN_SECTION_SIZE, AppSettings.MAX_SECTION_SIZE)
         this[Keys.SHOW_IMAGES] = s.showImages
+        this[Keys.READ_IN_APP] = s.readInApp
         this[Keys.NEWS_AGE] = s.newsAge.name
         this[Keys.WEATHER_CARDS] = s.weatherCards.map { it.name }.sorted().joinToString(",")
     }
@@ -174,6 +176,7 @@ class SettingsRepository(context: Context) {
         val REGION_CHOSEN = booleanPreferencesKey("region_chosen")
         val SECTION_SIZE = intPreferencesKey("section_size")
         val SHOW_IMAGES = booleanPreferencesKey("show_images")
+        val READ_IN_APP = booleanPreferencesKey("read_in_app")
         val NEWS_AGE = stringPreferencesKey("news_age")
         val WEATHER_CARDS = stringPreferencesKey("weather_cards")
     }

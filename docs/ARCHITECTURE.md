@@ -64,7 +64,9 @@ keine KI.
 | `ui/today`, `ui/news` | Heute-Seite, News-Feed (Chips, Rubriken, endlose Listen, Themen-Sheet) |
 | `ui/settings` | Einstellungen: Status, Wecker, Themen (mit eigenen), Quellen, Feed, Darstellung, Orte (Picker-Sheet mit Standort), Wetterblöcke, App/Updates |
 | `ui/theme` | Theme, Akzent-Schemata, Typografie, `Reading` (Serif-Lesestile) |
-| `ui/nav` | `MainRoute` (der Pager); Artikel öffnen im In-App-Browser (Custom Tab) |
+| `ui/nav` | `MainRoute` (der Pager) und `ArticleRoute` (der Artikel-Reader darüber) |
+| `ui/article` | `ArticleScreen` + `ArticleViewModel`: der Lesemodus (Bild, Überschrift, Teaser, Textblöcke, Zuhören, Teilen, Browser als Ausweg) |
+| `data/article` | `ArticleExtractor` (Readability4J + jsoup → `ArticleBlock`s), `ArticleRepository` (Seite laden, extrahieren, Cache `store/articles/<id>.json`, 7 Tage) |
 
 Kein DI-Framework: `AppContainer` (ein Objekt pro Prozess) wird über `context.container`
 erreicht, Vorlesen über `context.listen`. ViewModels über `viewModelFactory { initializer { … } }`.

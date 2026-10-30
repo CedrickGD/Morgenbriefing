@@ -124,6 +124,7 @@ fun AppRoot(
             initialPage = initialPage,
             pageRequest = pageRequest,
             onPageRequestHandled = onPageRequestHandled,
+            readInApp = settings.readInApp,
         )
     }
 }
@@ -133,6 +134,7 @@ private fun AppShell(
     initialPage: MainPage,
     pageRequest: PageRequest?,
     onPageRequestHandled: (PageRequest) -> Unit,
+    readInApp: Boolean,
 ) {
     // One TodayViewModel for the activity: the Today page and the sky share its weather.
     val owner: ViewModelStoreOwner = (LocalActivity.current as? ViewModelStoreOwner)
@@ -181,7 +183,7 @@ private fun AppShell(
             parallax = { pagerState.currentPage + pagerState.currentPageOffsetFraction - MainPage.TODAY.index },
             // The aurora holds still while content scrolls or pages glide: every frame goes to them.
             paused = { chrome.scrolling || pagerState.isScrollInProgress },
-            covered = false,
+            covered = !mainOnTop,
         )
         CompositionLocalProvider(
             LocalGlassState provides hazeState,
@@ -202,7 +204,7 @@ private fun AppShell(
                 indicatorVisible = mainOnTop && chrome.indicatorVisible && !keyboardOpen,
                 playerAllowed = true,
                 navScrim = mainOnTop,
-                onOpenArticle = links::open,
+                onOpenArticle = { url -> if (readInApp) navigator.openArticle(url) else links.open(url) },
                 onSelectPage = { index ->
                     val page = MainPage.ofIndex(index)
                     // Tapping the sun while already on "Heute" scrolls it back to the top.

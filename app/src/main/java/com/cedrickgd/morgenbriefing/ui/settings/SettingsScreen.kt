@@ -326,6 +326,7 @@ fun SettingsScreen(
                         onSectionSize = viewModel::setSectionSize,
                         onNewsAge = viewModel::setNewsAge,
                         onShowImages = viewModel::setShowImages,
+                        onReadInApp = viewModel::setReadInApp,
                         onWeatherCard = viewModel::setWeatherCard,
                         onEditPlace = ::openPlacePicker,
                         onDayWindow = viewModel::setDayWindow,
@@ -478,6 +479,7 @@ private class BlockCallbacks(
     val onSectionSize: (Int) -> Unit,
     val onNewsAge: (com.cedrickgd.morgenbriefing.data.model.NewsAge) -> Unit,
     val onShowImages: (Boolean) -> Unit,
+    val onReadInApp: (Boolean) -> Unit,
     val onWeatherCard: (com.cedrickgd.morgenbriefing.data.model.WeatherCard, Boolean) -> Unit,
     val onEditPlace: (PlaceTarget) -> Unit,
     val onDayWindow: (Int, Int) -> Unit,
@@ -555,6 +557,7 @@ private fun SettingsBlock(
             onSectionSize = callbacks.onSectionSize,
             onNewsAge = callbacks.onNewsAge,
             onShowImages = callbacks.onShowImages,
+            onReadInApp = callbacks.onReadInApp,
             modifier = modifier,
         )
         Block.H_LOOK -> SectionHeading("Dein Look", "Darstellung", modifier)

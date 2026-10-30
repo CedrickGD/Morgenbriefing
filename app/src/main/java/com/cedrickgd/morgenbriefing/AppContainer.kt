@@ -6,6 +6,7 @@ import com.cedrickgd.morgenbriefing.data.AppJson
 import com.cedrickgd.morgenbriefing.data.NewsRepository
 import com.cedrickgd.morgenbriefing.data.SettingsRepository
 import com.cedrickgd.morgenbriefing.data.WeatherRepository
+import com.cedrickgd.morgenbriefing.data.article.ArticleRepository
 import com.cedrickgd.morgenbriefing.data.local.NewsCache
 import com.cedrickgd.morgenbriefing.data.local.WeatherStore
 import com.cedrickgd.morgenbriefing.data.news.RssParser
@@ -38,6 +39,7 @@ class AppContainer(context: Context) {
     val weather = WeatherRepository(openMeteo, weatherStore)
     val rss = RssClient(http, RssParser { Xml.newPullParser() })
     val news = NewsRepository(rss, newsCache)
+    val articles = ArticleRepository(http, storeDir, json)
     val location = LocationFinder(app)
 }
 

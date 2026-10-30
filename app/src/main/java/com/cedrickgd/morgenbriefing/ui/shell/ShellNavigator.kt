@@ -6,7 +6,13 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
+import androidx.navigation.toRoute
+import com.cedrickgd.morgenbriefing.data.model.NewsItem
+import com.cedrickgd.morgenbriefing.ui.nav.ArticleRoute
 import com.cedrickgd.morgenbriefing.ui.nav.MainRoute
 import com.cedrickgd.morgenbriefing.ui.nav.isMain
 import kotlinx.coroutines.CoroutineScope
@@ -55,6 +61,22 @@ class ShellNavigator internal constructor(
             pagerState.requestScrollToPage(page.index)
             navController.popBackStack<MainRoute>(inclusive = false)
         }
+    }
+
+    /**
+     * Opens [item] in the article reader over the pager. [from] is the entry the tap came from:
+     * a tap while that entry is already leaving (double tap, back in flight) is ignored.
+     */
+    fun openArticle(from: NavBackStackEntry, item: NewsItem) {
+        if (!from.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
+        navController.navigate(ArticleRoute(url = item.url, itemId = item.id, topicId = item.topicId))
+    }
+
+    /** Opens the article at [url] (the mini player) unless it is already on top. */
+    fun openArticle(url: String) {
+        val top = navController.currentBackStackEntry ?: return
+        if (top.destination.hasRoute<ArticleRoute>() && top.toRoute<ArticleRoute>().url == url) return
+        navController.navigate(ArticleRoute(url = url))
     }
 
     /** Handles a [PageRequest] (always lands on the page; "Heute" also scrolls to the top). */

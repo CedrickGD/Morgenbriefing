@@ -15,6 +15,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Article
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +53,7 @@ internal fun FeedCard(
     onSectionSize: (Int) -> Unit,
     onNewsAge: (NewsAge) -> Unit,
     onShowImages: (Boolean) -> Unit,
+    onReadInApp: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // Local while dragging; follows the stored value whenever it changes.
@@ -115,6 +117,14 @@ internal fun FeedCard(
             checked = settings.showImages,
             onCheckedChange = onShowImages,
             leading = { IconBadge(Icons.Rounded.Image) },
+        )
+        Spacer(Modifier.height(4.dp))
+        ToggleRow(
+            title = "Artikel in der App lesen",
+            subtitle = if (settings.readInApp) "Volltext mit Bildern – ohne Werbung und Cookie-Banner" else "Jeder Artikel öffnet im Browser",
+            checked = settings.readInApp,
+            onCheckedChange = onReadInApp,
+            leading = { IconBadge(Icons.AutoMirrored.Rounded.Article) },
         )
     }
 }

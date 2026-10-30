@@ -15,7 +15,7 @@ Android-App (Kotlin, Jetpack Compose, Material 3), ab **Android 7.0** (API 24).
 |---|---|
 | **Heute** | Oben ein animierter Himmel passend zu Wetter und Tageszeit. Darunter „Vor der Tür“ an deinem Ort (jetzt und die nächsten Stunden, Sonnenauf- und -untergang), die Tageskurve für dein Zeitfenster mit Regenwahrscheinlichkeit, Wetterwarnungen und was du anziehen solltest – jeder Block abschaltbar. Dann die Nachrichten: **„Für dich“** zeigt pro Thema die neuesten Meldungen, **„Neueste“** alles chronologisch, und jedes Thema hat einen eigenen Chip mit **endlos scrollbarer** Liste. |
 | **Immer aktuell** | Die App holt die Feeds beim Öffnen, beim Herunterziehen und morgens zur Benachrichtigung. Die letzten Meldungen bleiben gespeichert, auch offline. Standardmäßig siehst du die letzten 24 Stunden; der Zeitraum ist einstellbar. |
-| **Artikel lesen** | Ein Tipp öffnet den Artikel im In-App-Browser direkt bei der Redaktion. Teilen, Link kopieren, Quelle oder Thema ausblenden – alles im ⋮-Menü. „Zuhören“ liest Schlagzeile und Teaser vor. |
+| **Artikel lesen** | Ein Tipp öffnet den Artikel **in der App**: Bild, Überschrift und der Text der Seite, ohne Werbung, Cookie-Banner und Navigation (Lesemodus nach Mozillas Readability). „Zuhören“ liest dort den ganzen Artikel vor. Teilen, Link kopieren, im Browser öffnen, Quelle oder Thema ausblenden – alles im ⋮-Menü. Wer lieber im Browser liest, schaltet das unter Feed um. |
 | **10 Themen** + eigene | 🤖 KI & Tech · 📈 Wirtschaft & Märkte · 🏛️ Politik · 🌍 Welt · 📍 Region · ⚽ Sport · 🔭 Wissenschaft & Raumfahrt · 🩺 Gesundheit · 🌱 Klima & Umwelt · 🎮 Games & Entertainment. Reihenfolge und Auswahl legst du fest – und du kannst **eigene Themen** anlegen (Name, Emoji, Farbe) und mit beliebigen Feeds füllen. |
 | **Quellen** | Rund 60 geprüfte deutschsprachige Feeds (tagesschau, SPIEGEL, ZEIT, FAZ, SZ, heise, Golem, kicker, Spektrum …), jeder einzeln abschaltbar. **Eigene Quelle hinzufügen:** Feed-Adresse oder einfach die Website eintippen – die App findet den Feed. |
 | **Region** | Das Thema „Region“ nimmt die öffentlich-rechtlichen Sender deines Bundeslandes (MDR, NDR, WDR, BR24, SWR, hessenschau, rbb24 …). Die Region folgt deinem Ort oder du wählst sie selbst. |
@@ -39,8 +39,9 @@ Beim Öffnen / Herunterziehen / morgens (AlarmManager, exakt)
 
 - **Wetter** kommt live von [Open-Meteo](https://open-meteo.com) (ohne Schlüssel, ohne Konto).
 - **Nachrichten** liest die App direkt aus den öffentlichen RSS-/Atom-Feeds der Redaktionen –
-  Schlagzeile, Teaser, Bild und Link. Der vollständige Artikel bleibt bei der Redaktion und öffnet
-  im In-App-Browser. Die Liste der eingebauten Quellen steht in
+  Schlagzeile, Teaser, Bild und Link. Den ganzen Artikel zeigt die App im eigenen Lesemodus: sie
+  lädt die Seite der Redaktion und zeigt nur Text und Bilder, ohne Werbung, Skripte und
+  Cookie-Banner. Die Liste der eingebauten Quellen steht in
   [`FeedCatalog.kt`](app/src/main/java/com/cedrickgd/morgenbriefing/data/news/FeedCatalog.kt).
 - **Fällt eine Quelle aus**, bleiben ihre letzten Meldungen drei Tage sichtbar; die Einstellungen
   zeigen, welche Quelle gerade nicht antwortet.

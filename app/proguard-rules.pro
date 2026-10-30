@@ -16,3 +16,6 @@
 -dontwarn org.bouncycastle.**
 -dontwarn org.conscrypt.**
 -dontwarn org.openjsse.**
+
+# Readability4J logs through slf4j-api without a binding
+-dontwarn org.slf4j.**

@@ -124,6 +124,9 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.haze)
     implementation(libs.haze.materials)
+    // Reader view: Mozilla's Readability (Readability4J) on jsoup
+    implementation(libs.jsoup)
+    implementation(libs.readability4j)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

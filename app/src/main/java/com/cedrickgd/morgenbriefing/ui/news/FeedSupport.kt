@@ -75,6 +75,7 @@ internal fun rememberFeedActions(
     onMessage: (String) -> Unit,
     onHideTopic: ((FeedArticle) -> Unit)?,
     onHideSource: ((FeedArticle) -> Unit)?,
+    onOpenArticle: ((FeedArticle) -> Unit)? = null,
 ): FeedActions {
     val context = LocalContext.current
     val links = rememberLinkActions()
@@ -82,11 +83,14 @@ internal fun rememberFeedActions(
     val message by rememberUpdatedState(onMessage)
     val hide by rememberUpdatedState(onHideTopic)
     val hideSource by rememberUpdatedState(onHideSource)
+    val openArticle by rememberUpdatedState(onOpenArticle)
     val canHide = onHideTopic != null
     val canHideSource = onHideSource != null
-    return remember(context, links, listen, canHide, canHideSource) {
+    val readsInApp = onOpenArticle != null
+    return remember(context, links, listen, canHide, canHideSource, readsInApp) {
         FeedActions(
-            onOpen = { links.open(it.item.url) },
+            onOpen = { article -> openArticle?.invoke(article) ?: links.open(article.item.url) },
+            onOpenExternal = { links.open(it.item.url) },
             onListen = { article ->
                 try {
                     listen?.play(article.item) ?: message("Vorlesen ist hier gerade nicht verfügbar.")

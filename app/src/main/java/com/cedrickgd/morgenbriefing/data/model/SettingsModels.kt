@@ -94,6 +94,8 @@ data class AppSettings(
     val sectionSize: Int = DEFAULT_SECTION_SIZE,
     /** Pictures in the feed (off: quiet typographic covers, less data). */
     val showImages: Boolean = true,
+    /** Articles open in the app's own reader (full text, pictures, no ads); false: in the browser. */
+    val readInApp: Boolean = true,
     val newsAge: NewsAge = NewsAge.DAY,
     /** Weather blocks shown on "Heute" besides the hero. */
     val weatherCards: Set<WeatherCard> = WeatherCard.ALL,

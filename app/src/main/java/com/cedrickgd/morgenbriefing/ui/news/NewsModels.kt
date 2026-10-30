@@ -24,6 +24,8 @@ data class FeedPrefs(
     val sectionSize: Int = AppSettings.DEFAULT_SECTION_SIZE,
     val newsAge: NewsAge = NewsAge.DAY,
     val showImages: Boolean = true,
+    /** Articles open in the app's reader; false: in the browser. */
+    val readInApp: Boolean = true,
     /** Every topic the user has, hidden ones included (for the topic sheet). */
     val catalogue: List<Topic> = topics,
     val hidden: Set<String> = emptySet(),
@@ -35,6 +37,7 @@ data class FeedPrefs(
         sectionSize = settings.sectionSize,
         newsAge = settings.newsAge,
         showImages = settings.showImages,
+        readInApp = settings.readInApp,
         catalogue = Topics.catalogue(settings),
         hidden = settings.hiddenTopics,
         disabledFeeds = settings.disabledFeeds,
