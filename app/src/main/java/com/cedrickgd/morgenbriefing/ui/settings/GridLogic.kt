@@ -5,7 +5,6 @@ import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import com.cedrickgd.morgenbriefing.domain.Condition
 import com.cedrickgd.morgenbriefing.domain.Fmt
-import com.cedrickgd.morgenbriefing.ui.history.representativeHour
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import kotlin.math.floor
@@ -96,3 +95,7 @@ internal fun placeWeather(
 }
 
 private const val OVERCAST_CODE = 3
+
+/** Hour of the day window that best represents the day (closest to early afternoon). */
+internal fun representativeHour(day: com.cedrickgd.morgenbriefing.data.model.DayWeather): com.cedrickgd.morgenbriefing.data.model.HourPoint? =
+    day.hours.minByOrNull { kotlin.math.abs(it.hour - 14) }

@@ -65,35 +65,31 @@ internal fun rememberListeningKey(listen: ListenController?): State<NowListening
 }
 
 /**
- * [FeedActions] for a screen: share, listen and copy are handled here; opening, sources,
- * hiding and asking are the screen's. Null [onHideTopic]/[onAsk] hide those menu items.
+ * [FeedActions] for a screen: opening (in-app browser), sharing, listening and copying are
+ * handled here; hiding a topic or a source is the screen's. Null callbacks hide those menu items.
  *
  * @param onMessage shows a short message (snackbar), e.g. "Link kopiert".
  */
 @Composable
 internal fun rememberFeedActions(
-    onOpen: (FeedArticle) -> Unit,
-    onShowSources: (FeedArticle) -> Unit,
     onMessage: (String) -> Unit,
     onHideTopic: ((FeedArticle) -> Unit)?,
-    onAsk: ((FeedArticle) -> Unit)?,
+    onHideSource: ((FeedArticle) -> Unit)?,
 ): FeedActions {
     val context = LocalContext.current
     val links = rememberLinkActions()
     val listen = rememberListenController()
-    val open by rememberUpdatedState(onOpen)
-    val sources by rememberUpdatedState(onShowSources)
     val message by rememberUpdatedState(onMessage)
     val hide by rememberUpdatedState(onHideTopic)
-    val ask by rememberUpdatedState(onAsk)
+    val hideSource by rememberUpdatedState(onHideSource)
     val canHide = onHideTopic != null
-    val canAsk = onAsk != null
-    return remember(context, links, listen, canHide, canAsk) {
+    val canHideSource = onHideSource != null
+    return remember(context, links, listen, canHide, canHideSource) {
         FeedActions(
-            onOpen = { open(it) },
+            onOpen = { links.open(it.item.url) },
             onListen = { article ->
                 try {
-                    listen?.play(article.item, article.date) ?: message("Vorlesen ist hier gerade nicht verfügbar.")
+                    listen?.play(article.item) ?: message("Vorlesen ist hier gerade nicht verfügbar.")
                 } catch (e: Exception) {
                     Log.w(TAG, "Could not start reading aloud", e)
                     message("Vorlesen klappt gerade nicht.")
@@ -107,7 +103,6 @@ internal fun rememberFeedActions(
                 }
             },
             onShare = { links.shareArticle(it.item) },
-            onShowSources = { sources(it) },
             onCopyLink = { article ->
                 val copied = copyLink(context, article.item.headline, article.item.url)
                 // Android 13+ confirms copying itself; only older versions get our message.
@@ -118,7 +113,7 @@ internal fun rememberFeedActions(
                 }
             },
             onHideTopic = if (canHide) { article -> hide?.invoke(article) } else null,
-            onAsk = if (canAsk) { article -> ask?.invoke(article) } else null,
+            onHideSource = if (canHideSource) { article -> hideSource?.invoke(article) } else null,
         )
     }
 }
@@ -152,4 +147,3 @@ internal fun SnackbarHostState.say(scope: CoroutineScope, text: String, action: 
         if (result == SnackbarResult.ActionPerformed) onAction()
     }
 }
-

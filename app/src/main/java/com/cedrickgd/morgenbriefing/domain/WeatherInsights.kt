@@ -1,6 +1,5 @@
 package com.cedrickgd.morgenbriefing.domain
 
-import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.DayWeather
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import kotlin.math.max
@@ -83,15 +82,13 @@ object WeatherInsights {
     }
 
     /**
-     * Text for the 5:30 notification. [brief] may be null or older than today. [newsPending]:
-     * a follow-up will bring today's news (there is a token); without one (demo) the news line
-     * must not promise any.
+     * Text for the morning notification. [headlines] are the top stories of the morning (may be
+     * empty when nothing could be fetched).
      */
-    fun notification(s: WeatherSnapshot?, brief: Brief?, today: String, newsPending: Boolean = true): NotificationText {
-        val todaysBrief = brief?.takeIf { it.date.trim() == today.trim() }
-        val news = newsLine(todaysBrief, newsPending)
+    fun notification(s: WeatherSnapshot?, headlines: List<String>): NotificationText {
+        val news = newsLine(headlines)
         if (s == null) {
-            val text = todaysBrief?.teaser?.takeIf { it.isNotBlank() }
+            val text = headlines.firstOrNull()?.trim()?.takeIf { it.isNotBlank() }
                 ?: "Wetter gerade nicht erreichbar – öffne die App für ein Update."
             val bigText = listOf("🌦️ Das Wetter ließ sich gerade nicht laden – in der App gibt's gleich ein Update.", news)
             return NotificationText(title = "☀️ Dein Morgenbriefing", text = text, bigText = bigText.joinToString("\n"))
@@ -667,20 +664,8 @@ object WeatherInsights {
         }
     }
 
-    private fun newsLine(todaysBrief: Brief?, newsPending: Boolean): String {
-        if (todaysBrief == null) {
-            return if (newsPending) "📰 Die News kommen gleich." else "📰 Demo-Modus – mit deinem GitHub-Token kommen hier deine News."
-        }
-        val top = todaysBrief.sections
-            .flatMap { it.items }
-            .filter { it.headline.isNotBlank() }
-            .sortedByDescending { it.importance }
-            .take(3)
-            .map { it.headline.trim() }
-        return when {
-            top.isNotEmpty() -> "📰 " + top.joinToString(" · ")
-            todaysBrief.teaser.isNotBlank() -> "📰 ${todaysBrief.teaser.trim()}"
-            else -> "📰 Heute gibt's keine Meldungen."
-        }
+    private fun newsLine(headlines: List<String>): String {
+        val top = headlines.map { it.trim() }.filter { it.isNotEmpty() }.take(3)
+        return if (top.isEmpty()) "📰 Die Nachrichten warten in der App." else "📰 " + top.joinToString(" · ")
     }
 }

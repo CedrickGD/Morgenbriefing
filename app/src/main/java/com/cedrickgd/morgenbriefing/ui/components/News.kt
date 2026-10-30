@@ -2,15 +2,11 @@ package com.cedrickgd.morgenbriefing.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -20,20 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
@@ -41,25 +31,22 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cedrickgd.morgenbriefing.domain.Fmt
-import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
-import com.cedrickgd.morgenbriefing.ui.glass.glass
 import com.cedrickgd.morgenbriefing.ui.glass.isGlassDark
 import com.cedrickgd.morgenbriefing.ui.theme.OverlineLetterSpacing
-import com.cedrickgd.morgenbriefing.ui.theme.german
 
 /**
- * Opens the news part of a page: overline ("DEINE NACHRICHTEN · STAND 05:07") and a serif
+ * Opens the news part of a page: overline ("DEINE NACHRICHTEN · STAND 07:12") and a serif
  * title, straight on the sky.
+ *
+ * @param stand "07:12" of the last fetch, or empty.
  */
 @Composable
-fun NewsSectionTitle(generatedAt: String?, modifier: Modifier = Modifier, title: String = "Heute in den News") {
+fun NewsSectionTitle(stand: String, modifier: Modifier = Modifier, title: String = "Deine Nachrichten") {
     val colors = MaterialTheme.colorScheme
-    val stand = remember(generatedAt) { generatedAt?.let(Fmt::clock).orEmpty() }
     Column(modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
         Text(
-            text = if (stand.isBlank()) "DEINE NACHRICHTEN" else "DEINE NACHRICHTEN · STAND $stand",
+            text = if (stand.isBlank()) "AKTUELL" else "AKTUELL · STAND $stand",
             style = MaterialTheme.typography.labelMedium.copy(letterSpacing = OverlineLetterSpacing),
             color = headerOverlineColor(colors.onSurfaceVariant, colors.onSurface),
         )
@@ -74,138 +61,8 @@ fun NewsSectionTitle(generatedAt: String?, modifier: Modifier = Modifier, title:
 }
 
 /**
- * The brief's summary as an editorial pull quote directly on the sky — no card: an accent rule,
- * the teaser large in serif, a quiet "12 Meldungen · 4 Themen" line, a calm note when the brief
- * is not today's, and an optional [action] (e.g. [AskBriefingPill]) below.
- */
-@Composable
-fun BriefingPullQuote(
-    teaser: String,
-    modifier: Modifier = Modifier,
-    meta: String? = null,
-    stale: Boolean = false,
-    action: (@Composable () -> Unit)? = null,
-) {
-    val colors = MaterialTheme.colorScheme
-    Column(modifier.fillMaxWidth()) {
-        Row(Modifier.height(IntrinsicSize.Min)) {
-            // The rule of a newspaper pull quote, fading out downwards.
-            Box(
-                Modifier
-                    .padding(top = 6.dp, bottom = 6.dp, end = 16.dp)
-                    .width(3.dp)
-                    .fillMaxHeight()
-                    .background(Brush.verticalGradient(listOf(colors.primary, colors.primary.copy(alpha = 0.15f))), CircleShape),
-            )
-            Column(Modifier.weight(1f)) {
-                Text(
-                    text = teaser.ifBlank { "Die wichtigsten Meldungen des Morgens – ganz in Ruhe zum Nachlesen." },
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontFamily = FontFamily.Serif,
-                        fontSize = 22.sp,
-                        lineHeight = 31.sp,
-                        letterSpacing = 0.sp,
-                    ).german(),
-                    color = colors.onSurface,
-                )
-                if (!meta.isNullOrBlank()) {
-                    Spacer(Modifier.height(10.dp))
-                    Text(
-                        // Non-breaking around the dot: a line never starts with "·".
-                        text = meta.replace(" · ", " · "),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = colors.onSurfaceVariant,
-                    )
-                }
-                if (stale) {
-                    Spacer(Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Rounded.Schedule, contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Text(
-                            text = "Noch das letzte Briefing – das neue kommt gleich.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = colors.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
-        }
-        if (action != null) {
-            Spacer(Modifier.height(16.dp))
-            action()
-        }
-    }
-}
-
-/**
- * Title and pull quote together (the day detail's news intro).
- *
- * @param title the serif title, e.g. "Die News des Tages".
- * @param meta optional quiet line under the teaser ("27 Meldungen · 11 Themen").
- */
-@Composable
-fun NewsTeaser(
-    teaser: String,
-    generatedAt: String?,
-    stale: Boolean,
-    modifier: Modifier = Modifier,
-    title: String = "Heute in den News",
-    meta: String? = null,
-) {
-    Column(modifier.fillMaxWidth()) {
-        NewsSectionTitle(generatedAt = generatedAt, title = title)
-        Spacer(Modifier.height(18.dp))
-        BriefingPullQuote(teaser = teaser, meta = meta, stale = stale, modifier = Modifier.padding(horizontal = 4.dp))
-    }
-}
-
-/**
- * "✨ Frag dein Briefing →": an inline glass pill into the chat about the whole brief
- * (docs/AI.md §1) — part of the pull quote, not another card.
- */
-@Composable
-fun AskBriefingPill(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val colors = MaterialTheme.colorScheme
-    val interaction = remember { MutableInteractionSource() }
-    Row(
-        modifier = modifier
-            .heightIn(min = 48.dp)
-            .pressScale(interaction, pressedScale = 0.96f)
-            .glass(shape = GlassShapes.pill, level = GlassLevel.Thin, tint = colors.primaryContainer)
-            .clickable(
-                interactionSource = interaction,
-                indication = ripple(),
-                role = Role.Button,
-                onClickLabel = "Chat zum Briefing öffnen",
-                onClick = onClick,
-            )
-            .padding(start = 8.dp, end = 16.dp, top = 6.dp, bottom = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(30.dp)
-                .background(Brush.linearGradient(listOf(colors.primary, colors.tertiary)), CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = colors.onPrimary, modifier = Modifier.size(16.dp))
-        }
-        Spacer(Modifier.width(10.dp))
-        Text(text = "Frag dein Briefing", style = MaterialTheme.typography.labelLarge, color = colors.onPrimaryContainer)
-        Spacer(Modifier.width(6.dp))
-        Icon(
-            imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-            contentDescription = null,
-            tint = colors.onPrimaryContainer,
-            modifier = Modifier.size(18.dp),
-        )
-    }
-}
-
-/**
- * A slim tinted banner for a hint about the news (demo brief, offline, token problem): emoji,
- * one bold line, one quiet line, and the action as a text button — much lighter than a card.
+ * A slim tinted banner for a hint about the news (offline, sources down): emoji, one bold
+ * line, one quiet line, and the action as a text button — much lighter than a card.
  */
 @Composable
 fun NoticeBanner(
@@ -253,12 +110,12 @@ fun NoticeBanner(
 }
 
 /**
- * The calm end of a page: "Stand 05:07 · Wetter: Open-Meteo" and a serif "Bis morgen ☀️".
+ * The calm end of a page: "Stand 07:12 · 128 Meldungen aus 31 Quellen" and a serif farewell.
  *
  * @param line the small info line; blank lines are left out.
  */
 @Composable
-fun PageFooter(line: String, modifier: Modifier = Modifier, farewell: String = "Bis morgen") {
+fun PageFooter(line: String, modifier: Modifier = Modifier, farewell: String = "Bis später") {
     val colors = MaterialTheme.colorScheme
     Column(
         modifier = modifier

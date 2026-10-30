@@ -12,11 +12,8 @@ import java.io.IOException
 
 /**
  * Asks GitHub for the newest release of the (private) app repo:
- * `GET {api}/repos/{owner}/{repo}/releases/latest` with the user's fine-grained token
- * (`Contents: Read` is enough), and decides whether it is an update for [installedVersionName].
- *
- * The token is only ever put into the `Authorization` header — never into a URL, a log line or
- * an exception message.
+ * `GET {api}/repos/{owner}/{repo}/releases/latest` (public repo,
+ * no token) and decides whether it is an update for [installedVersionName].
  */
 class UpdateChecker(
     private val http: OkHttpClient,
@@ -34,13 +31,9 @@ class UpdateChecker(
     }
 
     /** Never throws (except for cancellation): every failure is a [UpdateCheckResult.Failed]. */
-    suspend fun check(token: String?): UpdateCheckResult {
-        val clean = token?.trim().orEmpty()
-        if (clean.isEmpty()) return UpdateCheckResult.Failed(UpdateError.NO_TOKEN)
-
+    suspend fun check(): UpdateCheckResult {
         val url = apiUrl.repoUrl(owner, repo, "releases", "latest")
-        val request = gitHubRequest(url, clean, accept = "application/vnd.github+json")
-            ?: return UpdateCheckResult.Failed(UpdateError.UNAUTHORIZED)
+        val request = gitHubRequest(url, accept = "application/vnd.github+json")
 
         val body = try {
             http.newCall(request).await().use { response ->

@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.VisibilityOff
@@ -72,7 +73,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.data.model.Topic
-import com.cedrickgd.morgenbriefing.data.model.Topics
 import com.cedrickgd.morgenbriefing.ui.components.Emoji
 import com.cedrickgd.morgenbriefing.ui.components.EmojiSupport
 import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
@@ -95,7 +95,8 @@ import kotlin.math.roundToInt
  */
 @Composable
 internal fun TopicGrid(
-    storedOrder: List<String>,
+    topics: List<Topic>,
+    defaultOrder: List<String>,
     hidden: Set<String>,
     reduceMotion: Boolean,
     listState: LazyListState,
@@ -104,8 +105,11 @@ internal fun TopicGrid(
     onToggle: (id: String, visible: Boolean) -> Unit,
     onOrder: (List<String>) -> Unit,
     onReset: () -> Unit,
+    onAddTopic: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val storedOrder = remember(topics) { topics.map { it.id } }
+    val byId = remember(topics) { topics.associateBy { it.id } }
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     // Local copy so a drag can reorder tiles before anything is written; follows the store.
@@ -145,7 +149,7 @@ internal fun TopicGrid(
             content = {
                 order.forEach { id ->
                     key(id) {
-                        val topic = Topics.byId(id)
+                        val topic = byId[id]
                         if (topic != null) {
                             val index = order.indexOf(id)
                             TopicTile(
@@ -235,8 +239,9 @@ internal fun TopicGrid(
         TopicsFooterRow(
             visibleCount = TopicList.visibleCount(order, hidden),
             total = order.size,
-            canReset = !(TopicList.isDefaultOrder(order) && hidden.isEmpty()),
+            canReset = order != defaultOrder || hidden.isNotEmpty(),
             onReset = onReset,
+            onAddTopic = onAddTopic,
         )
     }
 }
@@ -501,9 +506,10 @@ private fun TopicTile(
     }
 }
 
-/** "8 von 10 sichtbar · Lange drücken zum Sortieren" + "Zurücksetzen". */
+/** "8 von 10 sichtbar · Lange drücken zum Sortieren" + "Zurücksetzen" + "Eigenes Thema". */
 @Composable
-private fun TopicsFooterRow(visibleCount: Int, total: Int, canReset: Boolean, onReset: () -> Unit) {
+private fun TopicsFooterRow(visibleCount: Int, total: Int, canReset: Boolean, onReset: () -> Unit, onAddTopic: () -> Unit) {
+    Column(Modifier.fillMaxWidth()) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -537,6 +543,16 @@ private fun TopicsFooterRow(visibleCount: Int, total: Int, canReset: Boolean, on
                 style = PillStyle.Tonal,
             )
         }
+    }
+    Row(Modifier.padding(top = 12.dp)) {
+        GlassPillButton(
+            text = "Eigenes Thema",
+            onClick = onAddTopic,
+            icon = Icons.Rounded.Add,
+            onGlass = false,
+            style = PillStyle.Tonal,
+        )
+    }
     }
 }
 

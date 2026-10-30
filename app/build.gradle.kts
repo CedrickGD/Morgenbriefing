@@ -28,10 +28,9 @@ android {
         versionCode = (findProperty("MB_VERSION_CODE") as String?)?.toInt() ?: 1
         versionName = (findProperty("MB_VERSION_NAME") as String?) ?: "1.0.0"
 
-        // Where the cloud routine publishes the daily briefs (private repo, data branch).
-        buildConfigField("String", "BRIEF_OWNER", "\"CedrickGD\"")
-        buildConfigField("String", "BRIEF_REPO", "\"Morgenbriefing\"")
-        buildConfigField("String", "BRIEF_BRANCH", "\"briefs\"")
+        // Where the in-app updater looks for new releases (GitHub Releases of this repo).
+        buildConfigField("String", "REPO_OWNER", "\"CedrickGD\"")
+        buildConfigField("String", "REPO_NAME", "\"Morgenbriefing\"")
 
         vectorDrawables { useSupportLibrary = true }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -85,11 +84,6 @@ android {
 
     testOptions {
         unitTests.isReturnDefaultValues = true
-        unitTests.all { test ->
-            // MockServerContractTest runs only against a live tools/mock-ai-server.mjs: setting or
-            // clearing the variable must re-run the tests instead of reusing an up-to-date result.
-            test.inputs.property("mockAiServer", providers.environmentVariable("MOCK_AI_SERVER").orElse(""))
-        }
     }
 }
 
@@ -130,29 +124,10 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.haze)
     implementation(libs.haze.materials)
-    implementation(libs.anthropic.java)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
-}
-
-// Jackson reaches the Anthropic SDK's JSON model (com.anthropic.core, Values.kt) only through
-// annotations, so R8 does not see that it is used (proguard-rules.pro, "Anthropic Java SDK").
-// Fail the release build when R8 removed one of these classes anyway: in the app every Claude
-// request would then fail before it reaches the network.
-val r8KeptJsonModel = Regex(
-    """com\.anthropic\.core\.(ExcludeMissing|KnownValue|MultipartField|BaseSerializer|BaseDeserializer|""" +
-        """Json(Field|Value|Missing|Null|Boolean|Number|String|Array|Object))(\$.*)?""",
-)
-tasks.matching { it.name == "minifyReleaseWithR8" }.configureEach {
-    val usage = layout.buildDirectory.file("outputs/mapping/release/usage.txt")
-    doLast {
-        val file = usage.get().asFile
-        if (!file.exists()) return@doLast
-        val removed = file.readLines().filter { !it.startsWith(" ") && r8KeptJsonModel.matches(it.trim()) }
-        check(removed.isEmpty()) {
-            "R8 removed classes that Jackson needs to (de)serialize Claude requests: $removed – see proguard-rules.pro"
-        }
-    }
+    // The RSS parser runs on Android's XmlPullParser; unit tests use the same implementation (kXML).
+    testImplementation(libs.kxml2)
 }

@@ -19,15 +19,15 @@ class UpdateServices(context: Context, container: AppContainer) {
     val checker = UpdateChecker(
         http = container.http,
         json = container.json,
-        owner = BuildConfig.BRIEF_OWNER,
-        repo = BuildConfig.BRIEF_REPO,
+        owner = BuildConfig.REPO_OWNER,
+        repo = BuildConfig.REPO_NAME,
         installedVersionName = BuildConfig.VERSION_NAME,
     )
 
     val downloader = ApkDownloader(
         http = container.http,
-        owner = BuildConfig.BRIEF_OWNER,
-        repo = BuildConfig.BRIEF_REPO,
+        owner = BuildConfig.REPO_OWNER,
+        repo = BuildConfig.REPO_NAME,
         directory = File(app.cacheDir, UPDATES_DIR),
     )
 

@@ -1,16 +1,12 @@
 package com.cedrickgd.morgenbriefing.ui.settings
 
 import com.cedrickgd.morgenbriefing.data.model.AccentId
-import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
-import com.cedrickgd.morgenbriefing.data.model.BriefSourceException
 import com.cedrickgd.morgenbriefing.data.model.Place
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.IOException
-import java.net.SocketTimeoutException
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -177,29 +173,6 @@ class SettingsLogicTest {
         // In Berlin itself nothing changes.
         val berlin = nextBriefingAt(now, 5, 30, ZoneId.of("Europe/Berlin"))
         assertEquals("Nächstes Briefing: morgen · in 23 Std.", nextBriefingCountdown(now, berlin))
-    }
-
-    @Test
-    fun `token check messages`() {
-        assertNull(tokenCheckMessage(TokenCheck.Idle))
-        assertEquals("✓ Verbindung klappt – ab morgen kommen deine News.", tokenCheckMessage(TokenCheck.Success))
-        assertEquals("✗ Token ungültig oder abgelaufen", tokenCheckMessage(TokenCheck.Failed(BriefErrorKind.UNAUTHORIZED)))
-        assertEquals(
-            "✗ Repo nicht gefunden – hat der Token Zugriff auf Morgenbriefing?",
-            tokenCheckMessage(TokenCheck.Failed(BriefErrorKind.NOT_FOUND)),
-        )
-        assertEquals("✗ Keine Verbindung", tokenCheckMessage(TokenCheck.Failed(BriefErrorKind.NETWORK)))
-        BriefErrorKind.entries.forEach { kind ->
-            assertTrue(kind.name, tokenCheckMessage(TokenCheck.Failed(kind))!!.startsWith("✗"))
-        }
-    }
-
-    @Test
-    fun `thrown errors map to error kinds`() {
-        assertEquals(BriefErrorKind.NOT_FOUND, BriefSourceException(BriefErrorKind.NOT_FOUND).toBriefErrorKind())
-        assertEquals(BriefErrorKind.NETWORK, IOException("offline").toBriefErrorKind())
-        assertEquals(BriefErrorKind.NETWORK, SocketTimeoutException().toBriefErrorKind())
-        assertEquals(BriefErrorKind.UNKNOWN, IllegalStateException().toBriefErrorKind())
     }
 
     @Test

@@ -1,7 +1,6 @@
 package com.cedrickgd.morgenbriefing.listen
 
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
-import com.cedrickgd.morgenbriefing.data.model.SourceRef
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -13,11 +12,9 @@ class ListenScriptTest {
     private fun item(
         headline: String = "Telekom will mit KI sparen",
         summary: String = "Die Telekom setzt auf KI.",
-        body: String = "",
         source: String = "Handelsblatt",
         url: String = "https://www.handelsblatt.com/a",
-        sources: List<SourceRef> = emptyList(),
-    ) = NewsItem(id = "ki-a", headline = headline, summary = summary, body = body, source = source, url = url, sources = sources)
+    ) = NewsItem(id = "ki-a", headline = headline, summary = summary, url = url, source = source, sourceId = "hb", topicId = "ki")
 
     private fun texts(script: ListenScript) = script.parts.map { it.text }
 
@@ -79,57 +76,36 @@ class ListenScriptTest {
 
     @Test
     fun `every script part stays below the engine limit`() {
-        val body = (1..30).joinToString("\n\n") { "Absatz $it. " + "Ein recht langer Satz über Märkte und Zinsen. ".repeat(12) }
-        val script = ListenScript.from(item(body = body), maxLength = 200)
+        val summary = (1..30).joinToString(" ") { "Absatz $it. " + "Ein recht langer Satz über Märkte und Zinsen. ".repeat(12) }
+        val script = ListenScript.from(item(summary = summary), maxLength = 200)
         assertTrue(script.parts.isNotEmpty())
         assertTrue(script.parts.all { it.text.length < 200 })
     }
 
-    // --- markers --------------------------------------------------------------------------
+    // --- script ---------------------------------------------------------------------------
 
     @Test
-    fun `subheading and bullet markers become sentences with pauses`() {
-        val body = "Erster Absatz.\n\n## Was jetzt kommt\n\n- erster Punkt\n- zweiter Punkt!\n\nLetzter Absatz."
-        val script = ListenScript.from(item(body = body))
-        val all = texts(script)
-        assertTrue(all.none { it.contains("##") || it.startsWith("- ") })
-        assertTrue("Was jetzt kommt." in all)
-        assertTrue("erster Punkt." in all)
-        assertTrue("zweiter Punkt!" in all)
-        val heading = script.parts.indexOfFirst { it.text == "Was jetzt kommt." }
-        assertEquals(ListenScript.PAUSE_SECTION_MS, script.parts[heading - 1].pauseAfterMs)
-        assertEquals(ListenScript.PAUSE_SUBHEADING_MS, script.parts[heading].pauseAfterMs)
-        assertEquals(ListenScript.PAUSE_BULLET_MS, script.parts.first { it.text == "erster Punkt." }.pauseAfterMs)
-    }
-
-    @Test
-    fun `reads headline, lead, body and sources in that order`() {
-        val script = ListenScript.from(
-            item(
-                body = "Der Text.",
-                sources = listOf(SourceRef("Handelsblatt", "https://www.handelsblatt.com/a"), SourceRef("ZEIT", "https://zeit.de/b")),
-            ),
-        )
+    fun `reads headline, lead and source in that order`() {
+        val script = ListenScript.from(item())
         assertEquals(
-            listOf("Telekom will mit KI sparen", "Die Telekom setzt auf KI.", "Der Text.", "Quellen: Handelsblatt und ZEIT."),
+            listOf("Telekom will mit KI sparen", "Die Telekom setzt auf KI.", "Quelle: Handelsblatt."),
             texts(script),
         )
         assertEquals(ListenScript.PAUSE_HEADLINE_MS, script.parts[0].pauseAfterMs)
+        assertEquals(ListenScript.PAUSE_SECTION_MS, script.parts[1].pauseAfterMs)
         assertEquals("nothing after the last part", 0, script.parts.last().pauseAfterMs)
     }
 
     @Test
     fun `markup in the text is not read out`() {
-        val script = ListenScript.from(item(summary = "Mehr bei **[tagesschau](https://x.de)** &amp; <b>MDR</b>."))
+        val script = ListenScript.from(item(summary = "Mehr bei <a href='https://x.de'>tagesschau</a> &amp; <b>MDR</b>."))
         assertEquals("Mehr bei tagesschau & MDR.", script.parts[1].text)
     }
 
     @Test
-    fun `sources sentence lists names naturally`() {
+    fun `sources sentence names the newsroom`() {
         assertEquals("Quelle: Handelsblatt.", ListenScript.sourcesSentence(item()))
-        val three = item(sources = listOf(SourceRef("A", "https://a.de"), SourceRef("B", "https://b.de"), SourceRef("C", "https://c.de")))
-        assertEquals("Quellen: Handelsblatt, A, B und C.", ListenScript.sourcesSentence(three))
-        assertNull(ListenScript.sourcesSentence(item(source = "", url = "")))
+        assertNull(ListenScript.sourcesSentence(item(source = "")))
     }
 
     @Test
@@ -166,7 +142,7 @@ class ListenScriptTest {
 
     @Test
     fun `progress never goes backwards while reading through a real script`() {
-        val script = ListenScript.from(item(body = "Erster Absatz mit Text.\n\n## Zwischentitel\n\n- a\n- b\n\nSchluss."))
+        val script = ListenScript.from(item(summary = "Erster Satz mit Text. Zweiter Satz folgt. Dritter Satz! Schluss."))
         var last = -1f
         script.parts.forEachIndexed { i, part ->
             for (offset in 0..part.text.length step 3) {

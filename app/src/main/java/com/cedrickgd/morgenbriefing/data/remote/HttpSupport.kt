@@ -51,7 +51,7 @@ internal suspend fun OkHttpClient.fetchText(request: Request): HttpText {
 }
 
 /** Suspends until the response headers arrived; cancelling the coroutine cancels the call. */
-private suspend fun Call.await(): Response = suspendCancellableCoroutine { cont ->
+internal suspend fun Call.await(): Response = suspendCancellableCoroutine { cont ->
     cont.invokeOnCancellation {
         try {
             cancel()

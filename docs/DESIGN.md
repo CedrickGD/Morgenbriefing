@@ -54,23 +54,22 @@ für Android.
 
 ## 3. Navigation ohne Leiste
 
-* Drei Seiten nebeneinander in einem **HorizontalPager**: **Verlauf ← Heute → Einstellungen**.
-  Start ist „Heute“ (Mitte). Zurück-Geste auf Verlauf/Einstellungen → sanft zu „Heute“.
+* Zwei Seiten nebeneinander in einem **HorizontalPager**: **Heute → Einstellungen**.
+  Start ist „Heute“. Zurück-Geste auf Einstellungen → sanft zu „Heute“.
 * Keine Bottom-Bar. Stattdessen ein **schwebender Glas-Indikator** (Pill, 44 dp hoch, mittig,
-  12 dp über der Systemleiste): drei kleine Symbole (Verlauf · Sonne · Zahnrad); eine farbige
+  12 dp über der Systemleiste): zwei kleine Symbole (Sonne · Zahnrad); eine farbige
   „Flüssigkeits“-Kapsel gleitet mit dem Wischen von Symbol zu Symbol (folgt
   `currentPageOffsetFraction`). Antippen springt zur Seite. Er blendet beim Runterscrollen aus
   und beim Hochscrollen, an der Spitze und ~0,65 s nach Stillstand (auch am Listenende) wieder
   ein – er soll sich nie wie eine Leiste anfühlen. Während eine Liste scrollt, hält die Aurora
   still. Mit 3-Tasten-Navigation hebt ein weicher Verlauf die Systemtasten vom Inhalt ab.
 * Haptik: leichter Tick beim Seitenwechsel.
-* Unterseiten (Artikel-Leser, Tagesdetail) öffnen sich **über** dem Pager; Predictive Back.
+* Artikel öffnen im In-App-Browser (Custom Tab) direkt bei der Redaktion; Sheets (Themen, Ort)
+  liegen als Glas über der Seite.
 * Innere horizontale Scroller (Chip-Reihe, Leser-Pager) haben Vorrang vor dem Seitenwischen:
   was die Chip-Reihe am Anfang/Ende nicht mehr nutzt, verschluckt sie (kein Seitenwechsel).
-* Querverweise in die Einstellungen landen am Ziel („Token eintragen“ → News-Quelle mit offenem
-  Dialog, „Anbieter wählen“ → KI mit offener Anbieterwahl). Den KI-Key trägt man dort ein, wo man
-  ihn braucht (Chat, Live) – im Key-Dialog genau des Anbieters, der gerade fehlt, an Ort und
-  Stelle; Zurück führt dorthin zurück.
+* Querverweise in die Einstellungen landen am Ziel („Ort wählen“ → Orte mit offenem Picker,
+  „Quellen & eigene Themen“ → Quellen).
 
 ## 4. Seitenkopf
 
@@ -84,7 +83,7 @@ für Android.
 ## 5. Typografie & Rhythmus
 
 * Serif (SemiBold) für Seitentitel, Schlagzeilen, große Zahlen (Temperatur, Uhrzeit).
-* Sans für alles andere; Fließtext 16 sp / 1.55, Leser 17 sp / 1.6 (× Textgröße).
+* Sans für alles andere; Fließtext 16 sp / 1.55, Lead im Feed 18 sp / 1.5.
 * Raster 4 dp; Außenabstand 16 dp, zwischen Karten 14–16 dp, in Karten 20 dp.
 * Jede Sektion hat eine Overline + Titel; nie zwei gleich aussehende Blöcke direkt
   untereinander ohne Hierarchie.
@@ -105,17 +104,18 @@ für Android.
 (`.claude/design-ref/news-feed-reference.jpg`, Google-Discover-artig, editorial):
 
 * **Themen-Chips** in einer horizontalen Reihe: „Für dich“ (alle Themen in Nutzer-Reihenfolge,
-  je Thema eine Sektion mit „+ Mehr zu …“), „Top“ (die wichtigsten Meldungen über alle Themen
-  nach Wichtigkeit), dann je ein Chip pro sichtbarem Thema (gefiltert, alle Artikel des Themas).
+  je Thema eine Sektion mit den ersten Meldungen und „Alle … Meldungen zu …“), „Neueste“ (alles
+  chronologisch), dann je ein Chip pro sichtbarem Thema (alle Meldungen des Themas, endlos:
+  die Liste enthüllt sich seitenweise beim Scrollen und endet mit „Das war's · n Meldungen“).
   Glas-Pills; aktiver Chip gefüllt in Themen-/Akzentfarbe. Erreicht die Chip-Reihe die
   Glas-Kopfleiste, nimmt die Leiste sie auf: **eine** Glasfläche (Titel + Chips) mit einer Kante.
-* „Für dich“ beginnt mit der Zusammenfassung als **Pull-Quote** direkt auf dem Himmel (Akzentlinie,
-  große Serif, „12 Meldungen · 4 Themen“), darin „✨ Frag dein Briefing →“ als Glas-Pill; Hinweise
-  (Demo, offline) als schmales getöntes Band – keine Kartenstapel vor dem ersten Artikel.
-* Themen beginnen mit einer feinen Linie und „🤖 KI & TECH … 3 Meldungen“ (keine Pill).
-* Ohne freies Bild ein **typografisches Cover**: Mesh-Verlauf in Themenfarbe, große Serif-Initiale
-  als Wasserzeichen, kleines Glas-Badge mit Thema – kein Riesen-Emoji. Rechts daneben ein runder Glas-Button
-  „Themen“ (Herz-mit-Plus-Symbol) → Bottom-Sheet zum Ein-/Ausblenden und Sortieren.
+* Hinweise (offline, Quellen antworten nicht, alles ausgeblendet) als schmales getöntes Band über
+  dem Feed – keine Kartenstapel vor dem ersten Artikel.
+* Themen beginnen mit einer feinen Linie und „🤖 KI & TECH … 37 Meldungen“ (keine Pill).
+* Ohne Bild im Feed (oder mit „Bilder anzeigen“ aus) ein **typografisches Cover**: Mesh-Verlauf
+  in Themenfarbe, große Serif-Initiale als Wasserzeichen, kleines Glas-Badge mit Thema – kein
+  Riesen-Emoji. Rechts neben den Chips ein runder Glas-Button „Themen“ (Herz-mit-Plus-Symbol) →
+  Bottom-Sheet zum Ein-/Ausblenden und Sortieren, mit Sprung zu „Quellen & eigene Themen“.
 * **Feed-Eintrag ohne Kartenrahmen**, direkt auf dem Hintergrund: Bild in voller Breite,
   22–24 dp Radius, ~16:10 (oder generiertes Cover in Themenfarbe); darunter die **Schlagzeile
   groß in Serif** (headlineSmall, ~26 sp, 3 Zeilen max.); darunter der Lead in **Serif**
@@ -123,59 +123,30 @@ für Android.
   dann die Meta-Zeile: „vor 3 Std. · Quelle“ links, rechts **„🎧 Zuhören“**, Teilen, ⋮-Menü
   (Thema ausblenden, Quellen anzeigen, Link kopieren). 24–32 dp Abstand zwischen Einträgen,
   dezente Trennlinie optional. Antippen (Bild/Schlagzeile/Text) → Artikel-Leser.
-* **Zuhören**: Android TextToSpeech (Deutsch) liest Schlagzeile + Artikel vor; ein schwebender
-  Glas-Mini-Player (über dem Seitenindikator) zeigt Titel, Pause/Weiter, Stopp.
-* Unten ein ruhiger Ausklang (Stand, Quellen, kleines „Bis morgen ☀️“).
-
-**Artikel-Leser** – gleiche Typografie wie der Feed (Serif-Schlagzeile, Serif-Fließtext), großes
-Bild oben, Glas-Steuerleiste (Zurück, Zuhören, Textgröße, Teilen), Quellen am Ende, Wischen
-zum nächsten Artikel; unten die Pill „✨ Frag zu diesem Artikel nach“.
-
-**Frag nach** (Chat) – Nachrichten direkt auf dem Himmel, Glas-Kopfleiste und schwebende
-Glas-Eingabe. Über jeder Antwort ein kleines „✦ Gemini“ (Name des Anbieters), die Antwort in der
-Leser-Serif, Quellen als Glas-Pills. Kann der Chat nicht im Netz suchen (Gemini oder OpenRouter
-kostenlos, Mistral, DeepSeek, eigener Server), steht das einmal als ruhige Zeile mit Symbol über dem
-Gespräch. Unter einer Antwort mit Google-Suche stehen Googles Suchvorschläge **unverändert** in
-ihrem eigenen Look (hell/dunkel nach dem Look der App) und so breit wie die Antwort – das ist die
-einzige Fläche, die die Glas-Regeln bewusst nicht übernimmt.
-
-**Verlauf** – Kopf „DEIN ARCHIV / Verlauf“. Eine **Zeitleiste**: dünne vertikale Linie links,
-pro Tag ein Punkt; Monatsüberschriften als Glas-Pills; jeder Tag eine Glas-Karte mit großer
-Tageszahl (Serif), Wochentag, Teaser (2 Zeilen), Mini-Wetter (Emoji + „9° → 21°“) und Anzahl
-Artikel; heute hervorgehoben.
+* **Zuhören**: Android TextToSpeech (Deutsch) liest Schlagzeile + Teaser vor; ein schwebender
+  Glas-Mini-Player (über dem Seitenindikator) zeigt Titel, Pause/Weiter, Stopp; Antippen öffnet
+  den Artikel.
+* Unten ein ruhiger Ausklang (Stand, Anzahl Meldungen, kleines „Bis später ☀️“).
 
 **Einstellungen** – Kopf „DEIN MORGEN / Einstellungen“, dann:
-1. **Status-Karte**: großes ✓ „Alles bereit für morgen, 05:30“ oder freundliche Hinweise;
-   Status-Pills (Benachrichtigungen, Exakte Uhrzeit, Akku, News-Verbindung, KI mit dem Namen des
-   Anbieters) grün/amber/neutral – Antippen behebt; die KI-Pill hält das Briefing nie auf.
-2. **Morgenbriefing**: riesige Uhrzeit in Serif („05:30“, antippen → Zeitwahl), Schalter,
+1. **Status-Karte**: großes ✓ „Alles bereit für morgen, 06:30“ oder freundliche Hinweise;
+   Status-Pills (Benachrichtigungen, Exakte Uhrzeit, Akku) grün/amber – Antippen behebt.
+2. **Morgenbriefing**: riesige Uhrzeit in Serif („06:30“, antippen → Zeitwahl), Schalter,
    „Nächstes Briefing: morgen · in 9 Std.“, Test-Benachrichtigung als Glas-Pill.
-3. **Darstellung**: drei Vorschau-Kacheln (Mini-Handy mit Himmel + Glaskarte) für
+3. **Themen**: farbige Themen-Kacheln (Emoji, Name) – antippen an/aus, lange drücken zum
+   Sortieren; „Eigenes Thema“ (Name, Emoji, Farbe aus zwölf Perlen).
+4. **Quellen**: eine Glaskarte mit „Deine Region“ (Bundesland-Preset) und je Thema einer
+   aufklappbaren Zeile: alle Feeds mit Schalter, „Eigene Quelle“ (Adresse oder Website, die App
+   findet den Feed und zeigt Titel + Anzahl vor dem Speichern), bei eigenen Themen Bearbeiten/Löschen.
+5. **Feed**: Meldungen pro Thema als große Zahl mit ruhigem Slider, Zeitraum als Auswahl-Pills,
+   „Bilder anzeigen“.
+6. **Darstellung**: drei Vorschau-Kacheln (Mini-Handy mit Himmel + Glaskarte) für
    System/Hell/Dunkel; Akzentfarben als große Farbperlen mit gleitendem Auswahlring + Name.
-4. **Themen**: farbige Themen-Kacheln (Emoji, Name) – antippen an/aus, lange drücken zum
-   Sortieren.
-5. **Orte & Zeitfenster**: zwei Ortskarten mit Live-Mini-Wetter; Zeitfenster-Slider mit
-   Sonnensymbolen.
-6. **Lesen**: Textgröße mit Live-Vorschau im Leser-Stil.
-7. **KI** („DEIN ERKLÄRER / KI“): eine Glaskarte mit
-   * **Anbieter** als starke Lamina: Name in Serif, Tagline, Fähigkeits-Pills (✓/✗ Chat, Websuche,
-     Live, Android 7; grün bzw. gedämpft, für TalkBack ein Satz) und „Wechseln“ → Dialog
-     „KI-Anbieter wählen“ (eine Karte je Anbieter mit Radiopunkt und Akzentring, Status „Key
-     gespeichert ✓“/„Kein Key“; nicht lauffähige Anbieter gedimmt, nicht wählbar). Ohne Key öffnet
-     die Wahl gleich den Key-Dialog;
-   * **Key-Zeile** (eigener Server: Server-Zeile) und den Key-Dialog je Anbieter: Anleitung in
-     nummerierten Schritten (Gemini: eine Zeile „aistudio.google.com → Get API key → Create API
-     key“), Tipp-Lamina, Link-Pill zur Konsole, Passwortfeld mit Formathinweis, „Speichern &
-     testen“; Claude mit aufklappbarem „Erweitert: Workspace-ID“;
-   * bei Gemini den **Tarif** als zwei Auswahlzeilen („Kostenlos (ohne Abrechnung)“ / „Mit
-     Abrechnung (Paid Tier)“) mit je einer Zeile Erklärung und dem Datenschutzsatz darunter;
-   * **Modell**: Auswahlzeilen mit Preis je 1 Mio. Tokens, „Standard“-Badge, „nur mit Abrechnung“
-     gedimmt, „Eigenes Modell …“;
-   * **⚡ Live**: „Live über OpenAI (wie Chat)“ + „Ändern“ – oder, wenn der Chat-Anbieter kein Live
-     kann, ein Satz in Amber und „Live-Anbieter wählen“;
-   * in Debug-Builds „Entwickler: Basis-URL“; dann Monatslimit, Verbrauch und Live-Automatik.
-8. **News-Quelle**: Verbindungs-Pill („Verbunden ✓ · geprüft 18:52“), Token nie anzeigen.
-9. **App**: Version, Update-Karte, Links (Open-Meteo, Quellcode).
+7. **Orte & Zeitfenster**: zwei Ortskarten mit Live-Mini-Wetter; Zeitfenster-Slider mit
+   Sonnensymbolen. Der Ort-Picker ist ein Glas-Sheet: Suchfeld mit Live-Ergebnissen (Flagge, Name,
+   Region), „Mein Standort“ als Akzent-Pill, Schnellauswahl großer Städte, der aktuelle Ort als
+   Chip. Darunter die Wetterblöcke von „Heute“ als Schalter.
+8. **App**: Version, Update-Karte, Links (Open-Meteo, Quellen, Quellcode).
 
 ## 8. Qualitätsregeln
 

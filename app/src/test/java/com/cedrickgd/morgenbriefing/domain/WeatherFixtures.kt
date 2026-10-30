@@ -1,12 +1,9 @@
 package com.cedrickgd.morgenbriefing.domain
 
-import com.cedrickgd.morgenbriefing.data.model.Brief
 import com.cedrickgd.morgenbriefing.data.model.CurrentConditions
 import com.cedrickgd.morgenbriefing.data.model.DayWeather
 import com.cedrickgd.morgenbriefing.data.model.HomeWeather
 import com.cedrickgd.morgenbriefing.data.model.HourPoint
-import com.cedrickgd.morgenbriefing.data.model.NewsItem
-import com.cedrickgd.morgenbriefing.data.model.NewsSection
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import java.util.Locale
@@ -257,40 +254,4 @@ object WeatherFixtures {
             "tomorrowEvening" to tomorrowEvening,
         )
 
-    fun brief(date: String) = Brief(
-        date = date,
-        generatedAt = "${date}T05:07:12+02:00",
-        teaser = "Ein ruhiger Nachrichtentag.",
-        sections = listOf(
-            NewsSection(
-                id = "ki", title = "KI & Tech", emoji = "🤖",
-                items = listOf(
-                    news("KI-Taskforce startet", 8),
-                    news("Neues Smartphone vorgestellt", 4),
-                ),
-            ),
-            NewsSection(
-                id = "wirtschaft", title = "Wirtschaft & Märkte", emoji = "📈",
-                items = listOf(
-                    news("Euro fällt auf Jahrestief", 9),
-                    news("DAX schließt leicht im Plus", 5),
-                ),
-            ),
-            NewsSection(
-                id = "politik", title = "Politik", emoji = "🏛️",
-                items = listOf(
-                    news("Bundestag beschließt Haushalt", 8),
-                    news("Landtag debattiert Schulgesetz", 3),
-                ),
-            ),
-        ),
-    )
-
-    private fun news(headline: String, importance: Int) = NewsItem(
-        headline = headline,
-        summary = "Kurz zusammengefasst.",
-        source = "Quelle",
-        url = "https://example.org/${headline.hashCode()}",
-        importance = importance,
-    )
 }

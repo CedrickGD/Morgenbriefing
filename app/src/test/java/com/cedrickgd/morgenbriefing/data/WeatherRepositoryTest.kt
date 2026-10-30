@@ -1,6 +1,6 @@
 package com.cedrickgd.morgenbriefing.data
 
-import com.cedrickgd.morgenbriefing.data.local.BriefStore
+import com.cedrickgd.morgenbriefing.data.local.WeatherStore
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.remote.OpenMeteoClient
@@ -24,7 +24,7 @@ class WeatherRepositoryTest {
     val tmp = TemporaryFolder()
 
     private lateinit var server: MockWebServer
-    private lateinit var store: BriefStore
+    private lateinit var store: WeatherStore
     private lateinit var repo: WeatherRepository
 
     /** Same place twice → exactly one request per attempt. */
@@ -35,7 +35,7 @@ class WeatherRepositoryTest {
         server = MockWebServer()
         server.start()
         val base = server.url("/").toString()
-        store = BriefStore(tmp.newFolder("store"), AppJson)
+        store = WeatherStore(tmp.newFolder("store"), AppJson)
         repo = WeatherRepository(OpenMeteoClient(OkHttpClient(), AppJson, baseUrl = base, geocodingUrl = base), store)
     }
 

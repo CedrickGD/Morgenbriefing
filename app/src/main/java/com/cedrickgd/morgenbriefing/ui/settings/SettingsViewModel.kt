@@ -1,6 +1,7 @@
 package com.cedrickgd.morgenbriefing.ui.settings
 
 import android.util.Log
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -9,23 +10,24 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
-import com.cedrickgd.morgenbriefing.ai.AiServices
-import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
-import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.AccentId
-import com.cedrickgd.morgenbriefing.data.model.AiProviderId
-import com.cedrickgd.morgenbriefing.data.model.GeminiTier
-import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
+import com.cedrickgd.morgenbriefing.data.model.FeedSource
+import com.cedrickgd.morgenbriefing.data.model.NewsAge
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.model.ThemeMode
+import com.cedrickgd.morgenbriefing.data.model.Topic
 import com.cedrickgd.morgenbriefing.data.model.Topics
+import com.cedrickgd.morgenbriefing.data.model.WeatherCard
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
-import com.cedrickgd.morgenbriefing.util.AppSignals
+import com.cedrickgd.morgenbriefing.data.news.FeedCatalog
+import com.cedrickgd.morgenbriefing.data.news.Regions
+import com.cedrickgd.morgenbriefing.data.remote.FeedException
+import com.cedrickgd.morgenbriefing.location.LocationException
+import com.cedrickgd.morgenbriefing.location.LocationIssue
 import com.cedrickgd.morgenbriefing.util.attempt
 import com.cedrickgd.morgenbriefing.util.flatten
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -36,26 +38,39 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 
+/** "Mein Standort" in the place picker. */
+@Immutable
+data class LocationState(
+    val searching: Boolean = false,
+    /** Why the last attempt failed; null when it worked or never ran. */
+    val issue: LocationIssue? = null,
+)
+
+/** "Quelle hinzufügen": the feed behind the typed address is looked up before it is saved. */
+@Immutable
+sealed interface AddFeedState {
+    data object Idle : AddFeedState
+    data object Checking : AddFeedState
+    data class Found(val url: String, val title: String, val itemCount: Int) : AddFeedState
+    data class Failed(val reason: String) : AddFeedState
+    data object Saved : AddFeedState
+}
+
 /**
  * Settings: every change is written straight to the DataStore (theme and topics apply live,
- * the alarm is re-synced by [MorgenbriefingApp]). Also runs the place search, the GitHub token
- * and AI key checks, the news connection status and the AI usage. The in-app updater has its
- * own [UpdateViewModel].
- *
- * @param ai the AI facade (safe on every API level; created on first use).
+ * the alarm is re-synced by [MorgenbriefingApp]). Also runs the place search and "Mein
+ * Standort", the feed lookup for own sources, and the mini weather of the place cards. The
+ * in-app updater has its own [UpdateViewModel].
  */
 class SettingsViewModel(
     private val container: AppContainer,
-    private val ai: () -> AiServices,
     private val clock: () -> ZonedDateTime = { ZonedDateTime.now(BERLIN) },
 ) : ViewModel() {
 
@@ -64,40 +79,14 @@ class SettingsViewModel(
         .catch { e -> Log.w(TAG, "Settings unavailable", e) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
-    private val _tokenCheck = MutableStateFlow<TokenCheck>(TokenCheck.Idle)
-    val tokenCheck: StateFlow<TokenCheck> = _tokenCheck.asStateFlow()
-
     private val _placeSearch = MutableStateFlow(PlaceSearchState())
     val placeSearch: StateFlow<PlaceSearchState> = _placeSearch.asStateFlow()
 
-    private val _source = MutableStateFlow<SourceStatus>(SourceStatus.Unknown)
+    private val _location = MutableStateFlow(LocationState())
+    val location: StateFlow<LocationState> = _location.asStateFlow()
 
-    /** Connection to the briefs repo (status hero + "News-Quelle"). */
-    val source: StateFlow<SourceStatus> = _source.asStateFlow()
-
-    private val _serverModels = MutableStateFlow(ServerModels())
-
-    /** The own server's models (last connection test or "Vom Server laden"). */
-    internal val serverModels: StateFlow<ServerModels> = _serverModels.asStateFlow()
-
-    private val _freeModels = MutableStateFlow(FreeModels())
-
-    /** OpenRouter's free models for the model picker of its free tariff. */
-    internal val freeModels: StateFlow<FreeModels> = _freeModels.asStateFlow()
-
-    private var freeModelsJob: Job? = null
-
-    /** OpenRouter on its free tariff answers the chat: the settings show its free models. */
-    @Volatile
-    private var freeModelsWanted = false
-
-    private val aiKeyEditor = AiKeyEditor(viewModelScope, container, ai) { ids -> _serverModels.value = ServerModels(ids) }
-    val aiKey: StateFlow<AiKeyState> = aiKeyEditor.state
-
-    /** This month's AI spending; zeros when the facade is not available. */
-    val usage: StateFlow<UsageSnapshot> = aiUsageOrNull() ?: MutableStateFlow(UsageSnapshot()).asStateFlow()
-
-    private var serverModelsJob: Job? = null
+    private val _addFeed = MutableStateFlow<AddFeedState>(AddFeedState.Idle)
+    val addFeed: StateFlow<AddFeedState> = _addFeed.asStateFlow()
 
     private val _weather = MutableStateFlow<WeatherSnapshot?>(null)
 
@@ -118,9 +107,8 @@ class SettingsViewModel(
     val messages: Flow<String> = _messages.receiveAsFlow()
 
     private var searchJob: Job? = null
-    private var tokenJob: Job? = null
-    private var sourceJob: Job? = null
-    private var lastSourceCheck: ZonedDateTime? = null
+    private var locationJob: Job? = null
+    private var addFeedJob: Job? = null
 
     init {
         loadWeather()
@@ -139,43 +127,11 @@ class SettingsViewModel(
             delay(WEATHER_WAIT_MS)
             _weatherLoading.value = false
         }
-        // OpenRouter on its free tariff answers the chat: the picker needs the day's free models.
-        viewModelScope.launch {
-            container.settings.settings
-                .map { it.ai.provider == AiProviderId.OPENROUTER && it.ai.isOpenRouterFree(AiProviderId.OPENROUTER) }
-                .distinctUntilChanged()
-                .catch { e -> Log.w(TAG, "Settings unavailable", e) }
-                .collect { free ->
-                    freeModelsWanted = free
-                    if (free) loadFreeModels()
-                }
-        }
-        // Token added or removed (here or in onboarding): update the connection status.
-        viewModelScope.launch {
-            container.settings.settings
-                .map { it.hasToken }
-                .distinctUntilChanged()
-                .catch { e -> Log.w(TAG, "Settings unavailable", e) }
-                .collect { hasToken ->
-                    if (!hasToken) {
-                        sourceJob?.cancel()
-                        _source.value = SourceStatus.NoToken
-                    } else if (tokenJob?.isActive != true) {
-                        checkSource(force = true)
-                    }
-                }
-        }
     }
 
-    /**
-     * Screen resumed: fresh weather, re-check the connection when the last check is old, and the
-     * free models again — the day's list costs no download, while the built-in list shown offline
-     * (or a list older than a day) is replaced as soon as OpenRouter answers.
-     */
+    /** Screen resumed: fresh weather for the place cards. */
     fun onResume() {
         loadWeather()
-        checkSource(force = false)
-        if (freeModelsWanted) loadFreeModels()
     }
 
     fun setThemeMode(mode: ThemeMode) = edit { it.copy(themeMode = mode) }
@@ -192,9 +148,16 @@ class SettingsViewModel(
         }
     }
 
+    /**
+     * Stores [place] for [target]. A new home place in Germany also moves the "Region" topic to
+     * its Bundesland when the region was never chosen by hand (the first place of a new install).
+     */
     fun setPlace(target: PlaceTarget, place: Place) = edit {
         when (target) {
-            PlaceTarget.HOME -> it.copy(home = place)
+            PlaceTarget.HOME -> {
+                val guessed = Regions.guess(place)?.key
+                it.copy(home = place, region = if (it.regionChosenByUser || guessed == null) it.region else guessed)
+            }
             PlaceTarget.DAY -> it.copy(day = place)
         }
     }
@@ -205,14 +168,15 @@ class SettingsViewModel(
     }
 
     /**
-     * Shows or hides a topic. Hiding the last visible topic is refused with a hint — the brief
+     * Shows or hides a topic. Hiding the last visible topic is refused with a hint — the feed
      * would otherwise be empty.
      */
     fun setTopicVisible(id: String, visible: Boolean) {
         viewModelScope.launch {
             var refused = false
             val saved = persist { current ->
-                val order = TopicList.normalize(current.topicOrder)
+                val catalogue = Topics.catalogue(current).map { it.id }
+                val order = TopicList.normalize(current.topicOrder, catalogue)
                 val hidden = TopicList.setVisible(order, current.hiddenTopics, id, visible)
                 refused = !visible && id in order && id !in hidden
                 current.copy(hiddenTopics = hidden)
@@ -222,114 +186,122 @@ class SettingsViewModel(
     }
 
     /** Stores a new topic order (after a drag or a move action). */
-    fun setTopicOrder(order: List<String>) = edit { it.copy(topicOrder = TopicList.normalize(order)) }
-
-    /** "Reihenfolge zurücksetzen": catalogue order; hidden topics stay hidden. */
-    fun resetTopicOrder() = edit(successMessage = "Reihenfolge zurückgesetzt.") {
-        it.copy(topicOrder = Topics.DEFAULT_ORDER)
+    fun setTopicOrder(order: List<String>) = edit {
+        it.copy(topicOrder = TopicList.normalize(order, Topics.catalogue(it).map { t -> t.id }))
     }
 
-    /** "Zurücksetzen" of the topic grid: catalogue order and every topic visible again. */
+    /** "Zurücksetzen" of the topic grid: catalogue order and every topic visible again (own topics stay). */
     fun resetTopics() = edit(successMessage = "Alle Themen sind wieder da – in der ursprünglichen Reihenfolge.") {
-        it.copy(topicOrder = Topics.DEFAULT_ORDER, hiddenTopics = emptySet())
+        it.copy(topicOrder = Topics.DEFAULT_ORDER + it.customTopics.map { t -> t.id }, hiddenTopics = emptySet())
     }
 
-    /** Article text size, rounded to 5 % steps within 85–140 %. */
-    fun setReaderTextScale(scale: Float) = edit { it.copy(readerTextScale = ReaderScale.normalize(scale)) }
+    /** Creates an own topic; it appears at the end of the order, visible. */
+    fun addCustomTopic(title: String, emoji: String, seed: Long) {
+        val clean = title.trim()
+        if (clean.isEmpty()) return
+        val topic = Topic(id = Topics.newCustomId(), title = clean.take(MAX_TITLE), emoji = emoji.trim().take(4), seed = seed, custom = true)
+        edit(successMessage = "„${topic.title}“ angelegt – füge jetzt eine Quelle hinzu.") {
+            it.copy(customTopics = it.customTopics + topic, topicOrder = it.topicOrder + topic.id)
+        }
+    }
 
-    /** "Frag nach" (and Live, unless it has its own provider) runs with [provider] from now on. */
-    fun setAiProvider(provider: AiProviderId) = edit { it.copy(ai = it.ai.copy(provider = provider)) }
+    /** Renames / recolors an own topic. */
+    fun updateCustomTopic(id: String, title: String, emoji: String, seed: Long) = edit {
+        it.copy(customTopics = it.customTopics.map { t -> if (t.id == id) t.copy(title = title.trim().take(MAX_TITLE).ifEmpty { t.title }, emoji = emoji.trim().take(4), seed = seed) else t })
+    }
 
-    /**
-     * The Live provider as picked in the Live picker: null ("Wie Chat") and the chat provider
-     * itself are stored as "same as chat" ([liveProviderToStore]).
-     */
-    fun setLiveProvider(picked: AiProviderId?) = edit { it.copy(ai = it.ai.copy(liveProvider = liveProviderToStore(it.ai, picked))) }
-
-    /** [modelId] for [provider] (curated or free text); null = the catalog default. */
-    fun setAiModel(provider: AiProviderId, modelId: String?) = edit { it.copy(ai = it.ai.withModel(provider, modelId)) }
-
-    /**
-     * The "Tarif" of the Gemini key (G1); a free key never searches and costs nothing. A key that
-     * could not search before is offered Google Search again with the new tariff.
-     */
-    fun setGeminiTier(tier: GeminiTier) {
+    /** Deletes an own topic with its sources; its cached articles go too. */
+    fun deleteCustomTopic(id: String) {
         viewModelScope.launch {
-            val saved = attempt { container.settings.setGeminiTier(tier) }
-            ai().providerSetupSaved(AiProviderId.GEMINI)
-            if (saved.isFailure) {
-                Log.w(TAG, "Gemini tier could not be stored", saved.exceptionOrNull())
-                _messages.send("Das konnte gerade nicht gespeichert werden.")
+            val saved = persist {
+                it.copy(
+                    customTopics = it.customTopics.filterNot { t -> t.id == id },
+                    customFeeds = it.customFeeds.filterNot { f -> f.topicId == id },
+                    topicOrder = it.topicOrder - id,
+                    hiddenTopics = it.hiddenTopics - id,
+                )
+            }
+            if (saved) {
+                attempt { container.news.forget(id) }.onFailure { Log.w(TAG, "Could not forget $id", it) }
+                _messages.send("Thema gelöscht.")
             }
         }
     }
 
-    /**
-     * The "Tarif" of the OpenRouter key: the free models without web search, or every model on
-     * the account's credits.
-     */
-    fun setOpenRouterTier(tier: OpenRouterTier) {
-        viewModelScope.launch {
-            val saved = attempt { container.settings.setOpenRouterTier(tier) }
-            if (saved.isFailure) {
-                Log.w(TAG, "OpenRouter tier could not be stored", saved.exceptionOrNull())
-                _messages.send("Das konnte gerade nicht gespeichert werden.")
-            }
-        }
+    /** Switches a built-in or own source on or off. */
+    fun setSourceEnabled(sourceId: String, enabled: Boolean) = edit {
+        it.copy(disabledFeeds = if (enabled) it.disabledFeeds - sourceId else it.disabledFeeds + sourceId)
+    }
+
+    /** All sources of [topicId] back on. */
+    fun enableAllSources(topicId: String) = edit { current ->
+        val ids = FeedCatalog.allSourcesFor(topicId, current).map { it.id }.toSet()
+        current.copy(disabledFeeds = current.disabledFeeds - ids)
+    }
+
+    /** The region preset of the "Region" topic; chosen by hand from now on. */
+    fun setRegion(key: String) = edit { it.copy(region = Regions.byKey(key).key, regionChosenByUser = true) }
+
+    fun setSectionSize(size: Int) = edit { it.copy(sectionSize = size.coerceIn(AppSettings.MIN_SECTION_SIZE, AppSettings.MAX_SECTION_SIZE)) }
+
+    fun setShowImages(show: Boolean) = edit { it.copy(showImages = show) }
+
+    fun setNewsAge(age: NewsAge) = edit { it.copy(newsAge = age) }
+
+    fun setWeatherCard(card: WeatherCard, shown: Boolean) = edit {
+        it.copy(weatherCards = if (shown) it.weatherCards + card else it.weatherCards - card)
     }
 
     /**
-     * OpenRouter's free models for the picker: the day's list, else a new one ([force]: always a
-     * new one). Without network the last list or the built-in one.
+     * "Quelle hinzufügen": looks the feed up behind [input] (a feed URL or a website) and reports
+     * what it found in [addFeed]; [saveFoundFeed] stores it.
      */
-    fun loadFreeModels(force: Boolean = false) {
-        if (freeModelsJob?.isActive == true) return
-        freeModelsJob = viewModelScope.launch {
-            _freeModels.update { it.copy(loading = true) }
-            val list = attempt { ai().openRouterFreeModels(force) }.getOrNull()
+    fun lookUpFeed(input: String) {
+        addFeedJob?.cancel()
+        val text = input.trim()
+        if (text.isEmpty()) {
+            _addFeed.value = AddFeedState.Idle
+            return
+        }
+        addFeedJob = viewModelScope.launch {
+            _addFeed.value = AddFeedState.Checking
+            val result = attempt { container.rss.discover(text) }
             ensureActive()
-            _freeModels.value = FreeModels(list = list ?: _freeModels.value.list, loading = false)
-        }
-    }
-
-    /**
-     * Debug builds only (G5): points every provider of [urls] at its URL (a local mock server);
-     * null clears it. Release builds store nothing.
-     */
-    fun setDebugBaseUrls(urls: Map<AiProviderId, String?>) {
-        viewModelScope.launch {
-            val stored = attempt { urls.all { (provider, url) -> container.settings.setDebugBaseUrl(provider, url) } }
-            val redirected = urls.values.count { !it.isNullOrBlank() }
-            _messages.send(
-                when {
-                    stored.getOrNull() != true -> "Die Basis-URLs konnten nicht gespeichert werden."
-                    redirected == 0 -> "Alle Anbieter nutzen wieder ihre echte API."
-                    else -> "Gespeichert – $redirected von ${urls.size} Anbietern gehen an den Testserver."
+            _addFeed.value = result.fold(
+                onSuccess = { AddFeedState.Found(it.url, it.title, it.itemCount) },
+                onFailure = { e ->
+                    Log.i(TAG, "Feed lookup failed: ${e.message}")
+                    AddFeedState.Failed((e as? FeedException)?.reason ?: "Hier ist kein Feed zu finden")
                 },
             )
         }
     }
 
-    /**
-     * "Vom Server laden": the model ids of the own server at its stored address (with its stored
-     * key). An empty answer is reported as failed.
-     */
-    fun loadServerModels() {
-        if (serverModelsJob?.isActive == true) return
-        serverModelsJob = viewModelScope.launch {
-            val baseUrl = attempt { container.settings.current().ai.of(AiProviderId.CUSTOM).baseUrl }.getOrNull()
-            if (baseUrl.isNullOrBlank()) return@launch
-            _serverModels.update { it.copy(loading = true, failed = false) }
-            val ids = attempt { ai().listServerModels(baseUrl) }.getOrNull().orEmpty()
-            ensureActive()
-            _serverModels.value = if (ids.isEmpty()) _serverModels.value.copy(loading = false, failed = true) else ServerModels(ids)
+    /** Stores the feed found by [lookUpFeed] for [topicId] under [name]. */
+    fun saveFoundFeed(topicId: String, name: String) {
+        val found = _addFeed.value as? AddFeedState.Found ?: return
+        val clean = name.trim().ifEmpty { found.title }.take(MAX_TITLE)
+        viewModelScope.launch {
+            val saved = persist { current ->
+                if (current.customFeeds.any { it.url == found.url && it.topicId == topicId }) return@persist current
+                current.copy(customFeeds = current.customFeeds + FeedSource(FeedCatalog.newCustomId(), clean, found.url, topicId, builtIn = false))
+            }
+            if (saved) {
+                _addFeed.value = AddFeedState.Saved
+                _messages.send("„$clean“ hinzugefügt.")
+            }
         }
     }
 
-    /** Monthly AI cap in whole dollars, 0 = none. */
-    fun setAiMonthlyLimit(usd: Double) = edit { it.copy(aiMonthlyLimitUsd = AiLimit.normalize(usd)) }
+    fun resetAddFeed() {
+        addFeedJob?.cancel()
+        _addFeed.value = AddFeedState.Idle
+    }
 
-    fun setLiveAutoRefresh(enabled: Boolean) = edit { it.copy(liveAutoRefresh = enabled) }
+    /** Deletes an own source. */
+    fun removeCustomFeed(sourceId: String) = edit(successMessage = "Quelle entfernt.") {
+        it.copy(customFeeds = it.customFeeds.filterNot { f -> f.id == sourceId }, disabledFeeds = it.disabledFeeds - sourceId)
+    }
 
     /** Debounced (350 ms) geocoding search; queries shorter than 2 characters clear the list. */
     fun onPlaceQueryChange(query: String) {
@@ -360,118 +332,28 @@ class SettingsViewModel(
     /** Fresh, empty search whenever the picker opens. */
     fun resetPlaceSearch() {
         searchJob?.cancel()
+        locationJob?.cancel()
         _placeSearch.value = PlaceSearchState()
+        _location.value = LocationState()
     }
 
-    /**
-     * "Speichern & testen": stores the token (encrypted by the repository), then checks access
-     * to the briefs repo and reports the outcome in [tokenCheck] and [source].
-     */
-    fun saveAndTestToken(raw: String) {
-        val token = raw.trim()
-        if (token.isEmpty()) return
-        tokenJob?.cancel()
-        sourceJob?.cancel()
-        tokenJob = viewModelScope.launch {
-            _tokenCheck.value = TokenCheck.Checking
-            _source.value = SourceStatus.Checking
-            val saved = attempt { container.settings.setToken(token) }
-            if (saved.isFailure) {
-                Log.w(TAG, "Token could not be stored", saved.exceptionOrNull())
-                _tokenCheck.value = TokenCheck.SaveFailed
-                _source.value = SourceStatus.Unknown
-                return@launch
-            }
-            AppSignals.notifyBriefSourceChanged()
-            val check = attempt { container.briefs.checkAccess(token) }
+    /** "Mein Standort": asks the system for the place and stores it for [target] through [onFound]. */
+    fun useCurrentLocation(onFound: (Place) -> Unit) {
+        if (locationJob?.isActive == true) return
+        locationJob = viewModelScope.launch {
+            _location.value = LocationState(searching = true)
+            val result = attempt { container.location.currentPlace() }
             ensureActive()
-            val now = clock()
-            lastSourceCheck = now
-            _tokenCheck.value = check.fold(
-                onSuccess = { TokenCheck.Success },
-                onFailure = { TokenCheck.Failed(it.toBriefErrorKind()) },
-            )
-            _source.value = check.fold(
-                onSuccess = { SourceStatus.Connected(now.toInstant().toEpochMilli()) },
-                onFailure = { SourceStatus.Failed(it.toBriefErrorKind(), now.toInstant().toEpochMilli()) },
-            )
-        }
-    }
-
-    fun resetTokenCheck() {
-        tokenJob?.cancel()
-        _tokenCheck.value = TokenCheck.Idle
-        if (_source.value == SourceStatus.Checking) checkSource(force = true)
-    }
-
-    fun removeToken() {
-        viewModelScope.launch {
-            val removed = attempt { container.settings.setToken(null) }
-            if (removed.isSuccess) {
-                AppSignals.notifyBriefSourceChanged()
-                _messages.send("Token entfernt – du siehst wieder das Demo-Briefing.")
-            } else {
-                Log.w(TAG, "Token could not be removed", removed.exceptionOrNull())
-                _messages.send("Der Token konnte nicht entfernt werden.")
-            }
-        }
-    }
-
-    /**
-     * Checks the stored token against the briefs repo. Without [force] it skips when the last
-     * check is recent or one is running.
-     */
-    fun checkSource(force: Boolean) {
-        if (sourceJob?.isActive == true || tokenJob?.isActive == true) return
-        val last = lastSourceCheck
-        if (!force && last != null && last.plusMinutes(SOURCE_RECHECK_MINUTES).isAfter(clock())) return
-        sourceJob = viewModelScope.launch {
-            val token = attempt { container.settings.token() }.getOrNull()
-            if (token.isNullOrBlank()) {
-                _source.value = SourceStatus.NoToken
-                return@launch
-            }
-            _source.value = SourceStatus.Checking
-            val check = attempt { container.briefs.checkAccess(token) }
-            ensureActive()
-            val now = clock()
-            lastSourceCheck = now
-            val at = now.toInstant().toEpochMilli()
-            _source.value = check.fold(
-                onSuccess = { SourceStatus.Connected(at) },
-                onFailure = {
-                    Log.w(TAG, "Source check failed", it)
-                    SourceStatus.Failed(it.toBriefErrorKind(), at)
+            result.fold(
+                onSuccess = { place ->
+                    _location.value = LocationState()
+                    onFound(place)
+                },
+                onFailure = { e ->
+                    Log.i(TAG, "Location unavailable: ${e.message}")
+                    _location.value = LocationState(issue = (e as? LocationException)?.issue ?: LocationIssue.UNAVAILABLE)
                 },
             )
-        }
-    }
-
-    /**
-     * "Speichern & testen" of a key (own server: connection) for [provider]: one check through
-     * the AI facade with as few tokens as possible; only what works is stored. With
-     * [KeySubmission.skipTest] it is stored without the check (offline).
-     */
-    internal fun saveAndTestAiKey(provider: AiProviderId, submission: KeySubmission) = aiKeyEditor.saveAndTest(provider, submission)
-
-    fun resetAiKeyState() = aiKeyEditor.reset()
-
-    /** Removes the key of [provider]; for the own server also its address. */
-    fun removeAiKey(provider: AiProviderId) {
-        viewModelScope.launch {
-            val removed = attempt {
-                container.settings.setAiKey(provider, null)
-                if (provider == AiProviderId.CUSTOM) container.settings.setCustomBaseUrl(null)
-            }
-            if (provider == AiProviderId.CUSTOM) _serverModels.value = ServerModels()
-            _messages.send(
-                when {
-                    removed.isFailure -> "Das konnte nicht entfernt werden."
-                    provider == AiProviderId.CUSTOM -> "Server entfernt."
-                    else -> "Key entfernt – ${ProviderCatalog.spec(provider).brand} ist jetzt aus."
-                },
-            )
-            if (removed.isFailure) Log.w(TAG, "Key could not be removed", removed.exceptionOrNull())
         }
     }
 
@@ -484,16 +366,6 @@ class SettingsViewModel(
                 _weather.value = cached
                 _weatherLoading.value = false
             }
-        }
-    }
-
-    /** The facade's usage flow; null when the facade is not available. */
-    private fun aiUsageOrNull(): StateFlow<UsageSnapshot>? {
-        return try {
-            ai().usage.usage
-        } catch (e: Exception) {
-            Log.w(TAG, "AI usage unavailable", e)
-            null
         }
     }
 
@@ -517,13 +389,13 @@ class SettingsViewModel(
         private const val TAG = "SettingsViewModel"
         private const val STOP_TIMEOUT_MS = 5_000L
         private const val SEARCH_DEBOUNCE_MS = 350L
-        private const val SOURCE_RECHECK_MINUTES = 10L
         private const val WEATHER_WAIT_MS = 20_000L
+        private const val MAX_TITLE = 40
 
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as MorgenbriefingApp
-                SettingsViewModel(container = app.container, ai = { app.ai })
+                SettingsViewModel(container = app.container)
             }
         }
     }

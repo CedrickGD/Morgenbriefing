@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The GitHub token is encrypted with an Android Keystore key that does not survive a
-     restore, so the settings store is excluded; briefs and weather history are fine. -->
-<full-backup-content>
-    <exclude domain="file" path="datastore/settings.preferences_pb" />
-</full-backup-content>
+<!-- Nothing secret is stored any more (no tokens, no API keys): settings and caches may be backed
+     up, so a new phone starts with the same topics, sources and places. -->
+<full-backup-content />

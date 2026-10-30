@@ -80,8 +80,9 @@ class WeatherInsightsTest {
     }
 
     @Test
-    fun `foggy autumn notification with today's brief`() {
-        val n = WeatherInsights.notification(foggyAutumn, WeatherFixtures.brief("2026-10-06"), "2026-10-06")
+    fun `foggy autumn notification with headlines`() {
+        val headlines = listOf("Euro fällt auf Jahrestief", "KI-Taskforce startet", "Bundestag beschließt Haushalt", "Vierte Meldung")
+        val n = WeatherInsights.notification(foggyAutumn, headlines)
         assertEquals("🌫️ 9° in Bad Düben · gefühlt 8°", n.title)
         assertEquals("Leipzig 10–18 Uhr: 13→21°, sonnig · Morgens Jacke, ab Mittag T-Shirt, kein Schirm", n.text)
         val lines = n.bigText.lines()
@@ -90,41 +91,27 @@ class WeatherInsightsTest {
         assertEquals("Leipzig 10–18 Uhr: " + WeatherInsights.daySummary(foggyAutumn), lines[1])
         // The first advised item (the jacket) leads the clothing line.
         assertEquals("🧥 Morgens Jacke, ab Mittag T-Shirt, kein Schirm.", lines[2])
-        // Top 3 by importance, ties keep the brief's order.
+        // At most three headlines.
         assertEquals("📰 Euro fällt auf Jahrestief · KI-Taskforce startet · Bundestag beschließt Haushalt", lines[3])
     }
 
     @Test
-    fun `notification with yesterday's brief says the news are coming`() {
-        val n = WeatherInsights.notification(foggyAutumn, WeatherFixtures.brief("2026-10-05"), "2026-10-06")
-        assertEquals("📰 Die News kommen gleich.", n.bigText.lines().last())
-        val none = WeatherInsights.notification(foggyAutumn, null, "2026-10-06")
-        assertEquals("📰 Die News kommen gleich.", none.bigText.lines().last())
-    }
-
-    @Test
-    fun `without a token the notification does not promise news`() {
-        // Demo mode: no follow-up will ever bring today's news.
-        val demo = WeatherInsights.notification(foggyAutumn, WeatherFixtures.brief("2026-10-05"), "2026-10-06", newsPending = false)
-        assertEquals("📰 Demo-Modus – mit deinem GitHub-Token kommen hier deine News.", demo.bigText.lines().last())
-        val noWeather = WeatherInsights.notification(null, null, "2026-10-06", newsPending = false)
-        assertEquals("📰 Demo-Modus – mit deinem GitHub-Token kommen hier deine News.", noWeather.bigText.lines().last())
-        // Today's brief at hand: its headlines, whatever the follow-up does.
-        val today = WeatherInsights.notification(foggyAutumn, WeatherFixtures.brief("2026-10-06"), "2026-10-06", newsPending = false)
-        assertTrue(today.bigText.lines().last().startsWith("📰 Euro fällt auf Jahrestief"))
+    fun `notification without headlines points to the app`() {
+        val none = WeatherInsights.notification(foggyAutumn, emptyList())
+        assertEquals("📰 Die Nachrichten warten in der App.", none.bigText.lines().last())
     }
 
     @Test
     fun `notification without weather still works`() {
-        val n = WeatherInsights.notification(null, WeatherFixtures.brief("2026-10-06"), "2026-10-06")
+        val n = WeatherInsights.notification(null, listOf("Euro fällt auf Jahrestief"))
         assertEquals("☀️ Dein Morgenbriefing", n.title)
-        assertEquals("Ein ruhiger Nachrichtentag.", n.text)
+        assertEquals("Euro fällt auf Jahrestief", n.text)
         assertTrue(n.bigText.lines().last().startsWith("📰 Euro fällt auf Jahrestief"))
 
-        val empty = WeatherInsights.notification(null, null, "2026-10-06")
+        val empty = WeatherInsights.notification(null, emptyList())
         assertEquals("☀️ Dein Morgenbriefing", empty.title)
         assertTrue(empty.text.isNotBlank())
-        assertEquals("📰 Die News kommen gleich.", empty.bigText.lines().last())
+        assertEquals("📰 Die Nachrichten warten in der App.", empty.bigText.lines().last())
     }
 
     // --- Frosty winter morning with freezing rain -------------------------------------------
@@ -197,7 +184,7 @@ class WeatherInsightsTest {
     fun `the notification's clothing line starts with the first advised item`() {
         listOf(foggyAutumn, frostyWinter, summerThunder, rainyWindy, tomorrowEvening).forEach { snapshot ->
             val advice = WeatherInsights.clothing(snapshot)
-            val line = WeatherInsights.notification(snapshot, null, "2026-10-06").bigText.lines()
+            val line = WeatherInsights.notification(snapshot, emptyList()).bigText.lines()
                 .single { it.endsWith(advice.short) }
             assertEquals("${advice.items.first().emoji} ${advice.short}", line)
         }
@@ -214,7 +201,7 @@ class WeatherInsightsTest {
             "Von 26° auf 31°, erst viel Sonne, ab 16 Uhr Gewitter möglich.",
             WeatherInsights.daySummary(summerThunder),
         )
-        val n = WeatherInsights.notification(summerThunder, null, "2026-07-15")
+        val n = WeatherInsights.notification(summerThunder, emptyList())
         assertTrue(n.text, n.text.startsWith("Leipzig 10–18 Uhr: 26→31°, Gewitter ab 16 Uhr · "))
     }
 
@@ -251,7 +238,7 @@ class WeatherInsightsTest {
         val headline = WeatherInsights.headline(tomorrowEvening)
         assertTrue(headline, headline.startsWith("Morgen: "))
         assertEquals("Morgen: Grauer Tag bei 15°, ab 14 Uhr Regen.", headline)
-        val n = WeatherInsights.notification(tomorrowEvening, null, "2026-10-06")
+        val n = WeatherInsights.notification(tomorrowEvening, emptyList())
         assertTrue(n.text, n.text.startsWith("Leipzig morgen 10–18 Uhr: 12→15°, Regen ab 14 Uhr · "))
     }
 
@@ -372,7 +359,7 @@ class WeatherInsightsTest {
         val hours = WeatherFixtures.window("2026-11-21", 10, temps = List(9) { 8.0 }, codes = List(9) { 3 })
         val s = foggyAutumn.copy(day = WeatherFixtures.day("2026-11-21", hours))
         assertTrue(WeatherInsights.daySummary(s).startsWith("Um die 8°, meist grau"))
-        val text = WeatherInsights.notification(s, null, "2026-11-21").text
+        val text = WeatherInsights.notification(s, emptyList()).text
         assertTrue(text, text.startsWith("Leipzig 10–18 Uhr: um 8°, bedeckt · "))
     }
 
@@ -382,7 +369,7 @@ class WeatherInsightsTest {
         assertTrue(WeatherInsights.headline(empty).isNotBlank())
         assertTrue(WeatherInsights.daySummary(empty).startsWith("Zwischen "))
         assertTrue(WeatherInsights.clothing(empty).items.size in 2..5)
-        assertNotNull(WeatherInsights.notification(empty, null, "2026-10-06"))
+        assertNotNull(WeatherInsights.notification(empty, emptyList()))
     }
 
     // --- Invariants over many synthetic days --------------------------------------------------
@@ -454,7 +441,7 @@ class WeatherInsightsTest {
             assertEquals(warnings.map { it.title }.distinct(), warnings.map { it.title })
             assertEquals(warnings.sortedByDescending { it.level.ordinal }, warnings)
 
-            val n = WeatherInsights.notification(s, null, s.day.date)
+            val n = WeatherInsights.notification(s, emptyList())
             val texts = listOf(headline, note, WeatherInsights.daySummary(s), clothing.text, clothing.short, n.title, n.text, n.bigText) +
                 warnings.map { it.text }
             for (text in texts) {

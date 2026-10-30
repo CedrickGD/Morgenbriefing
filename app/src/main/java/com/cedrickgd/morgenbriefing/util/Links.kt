@@ -18,11 +18,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
 
-/** Opening and sharing links. Brief URLs come from a JSON file, so only http(s) is ever opened. */
+/** Opening and sharing links. Article URLs come from feeds, so only http(s) is ever opened. */
 internal object Links {
     const val OPEN_METEO = "https://open-meteo.com/"
     const val SOURCE_CODE = "https://github.com/CedrickGD/Morgenbriefing"
-    const val NEW_GITHUB_TOKEN = "https://github.com/settings/personal-access-tokens/new"
 
     /** True for an absolute `http(s)://host…` URL without whitespace. Pure, unit-tested. */
     fun isWebUrl(url: String): Boolean {

@@ -1,22 +1,17 @@
 package com.cedrickgd.morgenbriefing.listen
 
 import com.cedrickgd.morgenbriefing.data.model.NewsItem
-import com.cedrickgd.morgenbriefing.ui.news.BodyBlock
-import com.cedrickgd.morgenbriefing.ui.news.parseArticleBody
-import com.cedrickgd.morgenbriefing.ui.news.plainText
-import com.cedrickgd.morgenbriefing.ui.news.sourceLabel
-import com.cedrickgd.morgenbriefing.ui.news.sourcesOf
+import com.cedrickgd.morgenbriefing.data.news.HtmlText
 
 /**
  * One utterance handed to TextToSpeech, followed by [pauseAfterMs] of silence (a natural break
- * after a headline, a paragraph or a list item).
+ * after a headline or a paragraph).
  */
 internal data class SpeechPart(val text: String, val pauseAfterMs: Int = 0)
 
 /**
- * What "Zuhören" reads for one article, already cut into utterances: headline, lead, the body
- * (subheadings and list items become their own sentences with pauses instead of `## ` / `- `
- * markers) and finally the sources. Pure — built and unit-tested without Android.
+ * What "Zuhören" reads for one article, already cut into utterances: headline, teaser and the
+ * source. Pure — built and unit-tested without Android.
  */
 internal class ListenScript(val parts: List<SpeechPart>) {
 
@@ -63,8 +58,6 @@ internal class ListenScript(val parts: List<SpeechPart>) {
         const val PAUSE_LEAD_MS = 600
         const val PAUSE_PARAGRAPH_MS = 420
         const val PAUSE_SECTION_MS = 650
-        const val PAUSE_SUBHEADING_MS = 380
-        const val PAUSE_BULLET_MS = 260
 
         /**
          * Builds the script for [item]. [maxLength] is the engine's hard limit per utterance
@@ -74,21 +67,6 @@ internal class ListenScript(val parts: List<SpeechPart>) {
             val builder = Builder(maxLength)
             builder.add(item.headline, PAUSE_HEADLINE_MS)
             builder.add(item.summary, PAUSE_LEAD_MS)
-            parseArticleBody(item.body).forEach { block ->
-                when (block) {
-                    is BodyBlock.Paragraph -> builder.add(block.text, PAUSE_PARAGRAPH_MS)
-                    is BodyBlock.Subheading -> {
-                        builder.breathe(PAUSE_SECTION_MS)
-                        builder.add(asSentence(block.text), PAUSE_SUBHEADING_MS)
-                    }
-                    is BodyBlock.Bullets -> {
-                        block.items.forEachIndexed { i, text ->
-                            val pause = if (i == block.items.lastIndex) PAUSE_PARAGRAPH_MS else PAUSE_BULLET_MS
-                            builder.add(asSentence(text), pause)
-                        }
-                    }
-                }
-            }
             sourcesSentence(item)?.let { sentence ->
                 builder.breathe(PAUSE_SECTION_MS)
                 builder.add(sentence, 0)
@@ -99,15 +77,11 @@ internal class ListenScript(val parts: List<SpeechPart>) {
         /** 4000 on every engine we know; used when the platform value is unavailable (tests). */
         const val DEFAULT_MAX_LENGTH = 4000
 
-        /** "Quelle: Handelsblatt." / "Quellen: A, B und C." — null when no source is known. */
+        /** "Quelle: tagesschau." — null when no source is known. */
         internal fun sourcesSentence(item: NewsItem): String? {
-            val names = sourcesOf(item)
-                .map { cleanForSpeech(sourceLabel(it)) }
-                .filter { it.isNotEmpty() }
-                .distinctBy { it.lowercase() }
-            if (names.isEmpty()) return null
-            val list = if (names.size == 1) names.first() else names.dropLast(1).joinToString(", ") + " und " + names.last()
-            return (if (names.size == 1) "Quelle: " else "Quellen: ") + list + "."
+            val name = cleanForSpeech(item.source)
+            if (name.isEmpty()) return null
+            return "Quelle: $name."
         }
     }
 
@@ -164,10 +138,10 @@ private val ABBREVIATIONS = setOf(
 )
 
 /**
- * Text as it should be spoken: markup reduced to plain text (shared with the reader's body
- * parser), line breaks and runs of spaces collapsed.
+ * Text as it should be spoken: markup reduced to plain text, line breaks and runs of spaces
+ * collapsed.
  */
-internal fun cleanForSpeech(raw: String): String = WHITESPACE.replace(plainText(raw.replace('\n', ' ')), " ").trim()
+internal fun cleanForSpeech(raw: String): String = WHITESPACE.replace(HtmlText.toPlain(raw.replace('\n', ' ')), " ").trim()
 
 /** A list item or subheading read as its own sentence: ends with punctuation for a natural cadence. */
 internal fun asSentence(text: String): String {

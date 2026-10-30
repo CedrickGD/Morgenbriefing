@@ -2,7 +2,6 @@ package com.cedrickgd.morgenbriefing
 
 import android.app.Application
 import android.util.Log
-import com.cedrickgd.morgenbriefing.ai.AiServices
 import com.cedrickgd.morgenbriefing.listen.ListenController
 import com.cedrickgd.morgenbriefing.notify.AlarmScheduler
 import com.cedrickgd.morgenbriefing.notify.Notifications
@@ -22,9 +21,6 @@ class MorgenbriefingApp : Application() {
 
     /** In-app updater (release check, download, verification); created on first use. */
     val updates: UpdateServices by lazy { UpdateServices(this, container) }
-
-    /** AI chat, live news and usage (docs/AI.md); safe on every API level. */
-    val ai: AiServices by lazy { AiServices(this, container) }
 
     /** "Zuhören": text-to-speech for articles. */
     val listen: ListenController by lazy { ListenController(this) }

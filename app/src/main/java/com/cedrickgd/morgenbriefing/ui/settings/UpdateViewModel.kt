@@ -115,8 +115,7 @@ class UpdateViewModel(
         if (_state.value.busy) return
         job = viewModelScope.launch {
             setPhase(UpdatePhase.Checking)
-            val token = readToken() ?: return@launch setPhase(UpdatePhase.Failed(UpdateError.NO_TOKEN, null))
-            val result = services.checker.check(token)
+            val result = services.checker.check()
             attempt { withContext(Dispatchers.IO) { services.store.record(result) } }
                 .onFailure { Log.w(TAG, "Could not remember the check result", it) }
             val lastCheck = readLastCheck()
@@ -138,9 +137,8 @@ class UpdateViewModel(
         if (_state.value.busy) return
         job = viewModelScope.launch {
             setPhase(UpdatePhase.Downloading(release, progress = null, received = 0, total = release.apk.size))
-            val token = readToken() ?: return@launch setPhase(UpdatePhase.Failed(UpdateError.NO_TOKEN, release))
             val download = attempt {
-                services.downloader.download(release, token) { progress ->
+                services.downloader.download(release) { progress ->
                     _state.update { current ->
                         if (current.phase is UpdatePhase.Downloading) {
                             current.copy(
@@ -240,12 +238,6 @@ class UpdateViewModel(
             }
         }
     }
-
-    private suspend fun readToken(): String? =
-        attempt { container.settings.token() }
-            .onFailure { Log.w(TAG, "Token unreadable", it) }
-            .getOrNull()
-            ?.takeIf { it.isNotBlank() }
 
     private suspend fun readLastCheck(): Long? =
         attempt { withContext(Dispatchers.IO) { services.store.lastCheckAt() } }.getOrNull()

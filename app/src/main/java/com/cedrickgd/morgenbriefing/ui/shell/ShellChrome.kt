@@ -105,7 +105,7 @@ private class BottomPadding(private val bottom: () -> Dp) : PaddingValues {
  *
  * @param indicatorVisible pager on top and the chrome not hidden by scrolling.
  * @param playerAllowed false on screens with their own bottom controls (chat input).
- * @param onOpenArticle the mini player was tapped: open the article being read.
+ * @param onOpenArticle the mini player was tapped: open the article being read (its link).
  */
 @Composable
 internal fun BoxScope.FloatingChrome(
@@ -115,7 +115,7 @@ internal fun BoxScope.FloatingChrome(
     playerAllowed: Boolean,
     navScrim: Boolean,
     onSelectPage: (Int) -> Unit,
-    onOpenArticle: (date: String, key: String) -> Unit,
+    onOpenArticle: (url: String) -> Unit,
 ) {
     if (navScrim) ButtonBarScrim()
     val lift = animateFloatAsState(

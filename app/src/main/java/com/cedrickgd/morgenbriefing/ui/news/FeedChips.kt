@@ -1,13 +1,8 @@
 package com.cedrickgd.morgenbriefing.ui.news
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,11 +41,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -64,7 +59,6 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.ui.components.Emoji
-import com.cedrickgd.morgenbriefing.ui.components.motionDisabled
 import com.cedrickgd.morgenbriefing.ui.components.pressScale
 import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
@@ -80,15 +74,14 @@ private val ChipButtonGap: Dp = 8.dp
 internal val ChipRowHeight: Dp = 56.dp
 
 /**
- * The feed's chip row: "Für dich", "Top", "⚡ Live" and one chip per visible topic, as glass
- * pills scrolling horizontally (they win over the page swipe until their end), and a round
- * glass "Themen" button floating at the right end.
+ * The feed's chip row: "Für dich", "Neueste" and one chip per visible topic, as glass pills
+ * scrolling horizontally (they win over the page swipe until their end), and a round glass
+ * "Themen" button floating at the right end.
  *
  * Inner horizontal scrolling wins over the page swipe (docs/DESIGN.md §3): whatever the row
  * cannot use itself — the rest of a flick at its start or end — is swallowed instead of being
  * handed on to the page pager.
  *
- * @param liveRunning shows a pulsing dot on the "⚡ Live" chip while a live research runs.
  * @param rowState hoist it to keep the scroll position when the row moves (e.g. into the top bar).
  * @param onGlass the row sits on a glass bar: chips get a quiet fill and rim instead of their own glass.
  */
@@ -96,7 +89,6 @@ internal val ChipRowHeight: Dp = 56.dp
 fun FeedChipRow(
     chips: List<FeedChip>,
     selected: FeedFilter,
-    liveRunning: Boolean,
     onSelect: (FeedFilter) -> Unit,
     onOpenTopics: () -> Unit,
     modifier: Modifier = Modifier,
@@ -151,7 +143,6 @@ fun FeedChipRow(
                 FeedChipPill(
                     chip = chip,
                     selected = chip.filter == selected,
-                    pulsing = liveRunning && chip.filter == FeedFilter.Live,
                     onGlass = onGlass,
                     onClick = { onSelect(chip.filter) },
                 )
@@ -168,15 +159,11 @@ fun FeedChipRow(
 }
 
 @Composable
-private fun FeedChipPill(chip: FeedChip, selected: Boolean, pulsing: Boolean, onGlass: Boolean, onClick: () -> Unit) {
+private fun FeedChipPill(chip: FeedChip, selected: Boolean, onGlass: Boolean, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     val topicColors = chip.topic?.let { rememberTopicColors(it) }
-    val selectedFill = when {
-        chip.filter == FeedFilter.Live -> LiveColors.fill
-        topicColors != null -> topicColors.strong
-        else -> colors.primary
-    }
-    val selectedText = if (chip.topic == null && chip.filter != FeedFilter.Live) colors.onPrimary else Color.White
+    val selectedFill = topicColors?.strong ?: colors.primary
+    val selectedText = if (chip.topic == null) colors.onPrimary else Color.White
     val fill by animateColorAsState(
         targetValue = if (selected) selectedFill else selectedFill.copy(alpha = 0f),
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
@@ -228,33 +215,8 @@ private fun FeedChipPill(chip: FeedChip, selected: Boolean, pulsing: Boolean, on
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            if (pulsing) {
-                Spacer(Modifier.width(8.dp))
-                PulsingDot(color = if (selected) Color.White else LiveColors.fill)
-            }
         }
     }
-}
-
-@Composable
-private fun PulsingDot(color: Color) {
-    val still = motionDisabled()
-    val pulse = if (still) {
-        null
-    } else {
-        rememberInfiniteTransition(label = "livePulse").animateFloat(
-            initialValue = 0.35f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(tween(700), RepeatMode.Reverse),
-            label = "livePulseAlpha",
-        )
-    }
-    Box(
-        Modifier
-            .size(7.dp)
-            .graphicsLayer { alpha = pulse?.value ?: 1f }
-            .background(color, CircleShape),
-    )
 }
 
 /** Round glass button with a heart and a plus — opens the topic sheet. */

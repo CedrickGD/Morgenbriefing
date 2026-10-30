@@ -1,5 +1,6 @@
 package com.cedrickgd.morgenbriefing.data.model
 
+import com.cedrickgd.morgenbriefing.data.news.Regions
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,10 +10,13 @@ data class Place(
     val lon: Double,
     /** e.g. "Sachsen, Deutschland" — only for display in the picker. */
     val region: String = "",
+    /** ISO 3166-1 alpha-2 (`DE`), for the little flag; empty when unknown. */
+    val countryCode: String = "",
 ) {
     companion object {
-        val BAD_DUEBEN = Place("Bad Düben", 51.5928, 12.5853, "Sachsen, Deutschland")
-        val LEIPZIG = Place("Leipzig", 51.3397, 12.3731, "Sachsen, Deutschland")
+        val BERLIN = Place("Berlin", 52.5244, 13.4105, "Berlin, Deutschland", "DE")
+        val LEIPZIG = Place("Leipzig", 51.3397, 12.3731, "Sachsen, Deutschland", "DE")
+        val BAD_DUEBEN = Place("Bad Düben", 51.5928, 12.5853, "Sachsen, Deutschland", "DE")
     }
 }
 
@@ -33,31 +37,70 @@ enum class AccentId(val label: String, val seed: Long) {
     GRAPHIT("Graphit", 0xFF5F6B7A),
 }
 
+/** How far back the feed reaches. */
+enum class NewsAge(val label: String, val hours: Int) {
+    /** The last 24 hours — "tagesaktuell". */
+    DAY("Heute", 24),
+    TWO_DAYS("2 Tage", 48),
+    WEEK("Eine Woche", 24 * 7),
+    ALL("Alles, was die Quellen liefern", 0),
+    ;
+
+    companion object {
+        fun fromName(name: String?): NewsAge? = entries.firstOrNull { it.name == name }
+    }
+}
+
+/** The weather blocks of "Heute" the user can switch off (the hero stays). */
+enum class WeatherCard(val label: String, val description: String) {
+    WARNINGS("Warnungen", "Glätte, Sturm, Hitze – wenn etwas ansteht"),
+    CURVE("Tagesverlauf", "Temperatur und Regen über den Tag"),
+    CLOTHING("Anziehen", "Was du heute anziehen solltest"),
+    ;
+
+    companion object {
+        val ALL: Set<WeatherCard> = entries.toSet()
+    }
+}
+
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val accent: AccentId = AccentId.DYNAMIC,
     val notificationsEnabled: Boolean = true,
-    val notifyHour: Int = 5,
+    val notifyHour: Int = 6,
     val notifyMinute: Int = 30,
-    val home: Place = Place.BAD_DUEBEN,
-    val day: Place = Place.LEIPZIG,
-    val dayStartHour: Int = 10,
+    val home: Place = Place.BERLIN,
+    val day: Place = Place.BERLIN,
+    val dayStartHour: Int = 9,
     val dayEndHour: Int = 18,
-    /** A GitHub token is stored (the value itself never leaves SettingsRepository). */
-    val hasToken: Boolean = false,
     val onboardingDone: Boolean = false,
     /** `YYYY-MM-DD` of the last morning notification, to avoid duplicates. */
     val lastNotifiedDate: String? = null,
-    /** Topic ids in the user's preferred order (see [Topics]). */
+    /** Topic ids in the user's preferred order (see [Topics]); custom topics included. */
     val topicOrder: List<String> = Topics.DEFAULT_ORDER,
     /** Topic ids the user switched off. */
     val hiddenTopics: Set<String> = emptySet(),
-    /** Article reader text size factor, 0.85–1.4. */
-    val readerTextScale: Float = 1f,
-    /** AI provider, keys (as flags; the values never leave SettingsRepository) and models. */
-    val ai: AiSettings = AiSettings(),
-    /** Monthly AI spending cap in US dollars for all providers together; 0 = no cap. */
-    val aiMonthlyLimitUsd: Double = 5.0,
-    /** Run a live news update automatically when "⚡ Live" is opened and the last one is > 30 min old. */
-    val liveAutoRefresh: Boolean = false,
-)
+    /** Topics the user created; their sources are in [customFeeds]. */
+    val customTopics: List<Topic> = emptyList(),
+    /** Feeds the user added (to built-in or custom topics). */
+    val customFeeds: List<FeedSource> = emptyList(),
+    /** Ids of feeds (built-in or custom) the user switched off. */
+    val disabledFeeds: Set<String> = emptySet(),
+    /** Key of the [Regions] preset behind the "Region" topic. */
+    val region: String = Regions.DEFAULT,
+    /** The user picked the region by hand (a new home place then no longer moves it). */
+    val regionChosenByUser: Boolean = false,
+    /** Articles a topic shows in "Für dich" before "Mehr zu …". */
+    val sectionSize: Int = DEFAULT_SECTION_SIZE,
+    /** Pictures in the feed (off: quiet typographic covers, less data). */
+    val showImages: Boolean = true,
+    val newsAge: NewsAge = NewsAge.DAY,
+    /** Weather blocks shown on "Heute" besides the hero. */
+    val weatherCards: Set<WeatherCard> = WeatherCard.ALL,
+) {
+    companion object {
+        const val DEFAULT_SECTION_SIZE = 4
+        const val MIN_SECTION_SIZE = 2
+        const val MAX_SECTION_SIZE = 10
+    }
+}

@@ -13,15 +13,4 @@
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
         <item name="postSplashScreenTheme">@style/Theme.Morgenbriefing</item>
     </style>
-
-    <!-- Gemini's Search Suggestions (ui/chat/SearchSuggestions.kt): a WebView reports
-         prefers-color-scheme from isLightTheme, so it is created with the scheme the app shows,
-         whatever the system and the activity theme say. -->
-    <style name="Theme.Morgenbriefing.WebLight" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:isLightTheme" tools:targetApi="q">true</item>
-    </style>
-
-    <style name="Theme.Morgenbriefing.WebDark" parent="android:Theme.Material.NoActionBar">
-        <item name="android:isLightTheme" tools:targetApi="q">false</item>
-    </style>
 </resources>

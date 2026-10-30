@@ -1,9 +1,9 @@
 package com.cedrickgd.morgenbriefing.ui.news
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,11 +17,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.DragIndicator
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -30,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -39,45 +39,49 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.customActions
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.cedrickgd.morgenbriefing.data.model.Topic
+import com.cedrickgd.morgenbriefing.ui.components.GlassPillButton
 import com.cedrickgd.morgenbriefing.ui.components.GlassSheet
 import com.cedrickgd.morgenbriefing.ui.glass.GlassShapes
 import com.cedrickgd.morgenbriefing.ui.theme.OverlineLetterSpacing
-import com.cedrickgd.morgenbriefing.ui.theme.Reading
 
 /**
  * "Themen": glass sheet to show, hide and sort the topics of the feed (docs/DESIGN.md §7). Every
- * catalogue topic in the user's order, tinted with its color, with today's article count and a
- * switch; the handle (or a long press on the row) drags it to a new place. The order is stored
- * when the finger lifts.
+ * topic in the user's order, tinted with its color, with today's article count and a switch;
+ * the handle (or a long press on the row) drags it to a new place. The order is stored when
+ * the finger lifts. "Quellen & eigene Themen" leads to the settings.
  *
- * @param counts articles per topic id in the brief on screen.
+ * @param counts articles per topic id on screen.
  * @param onSetVisible shows/hides a topic; the last visible one cannot be switched off here.
  * @param onSetOrder stores a new order of topic ids.
  */
 @Composable
 fun TopicsSheet(
-    prefs: TopicPrefs,
+    prefs: FeedPrefs,
     counts: Map<String, Int>,
     onSetVisible: (topicId: String, visible: Boolean) -> Unit,
     onSetOrder: (List<String>) -> Unit,
+    onOpenSettings: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val haptics = LocalHapticFeedback.current
     val density = LocalDensity.current
     val stepPx = with(density) { (TopicRowHeight + TopicRowGap).toPx() }
-    var order by remember(prefs.order) { mutableStateOf(prefs.catalogueOrder()) }
+    val gapPx = with(density) { TopicRowGap.toPx() }
+    // Measured heights: a wrapped title or a large font makes a row taller than the minimum.
+    val rowHeights = remember { mutableStateMapOf<String, Int>() }
+    var order by remember(prefs.catalogue) { mutableStateOf(prefs.catalogue) }
     var dragging by remember { mutableStateOf<String?>(null) }
     var dragOffset by remember { mutableFloatStateOf(0f) }
     val visibleCount = order.count { it.id !in prefs.hidden }
@@ -97,22 +101,27 @@ fun TopicsSheet(
         },
         onDrag = { id, dy ->
             dragOffset += dy
-            // Swap with the neighbour once the row has travelled half a row towards it.
-            while (dragOffset > stepPx / 2f && order.indexOfFirst { it.id == id } < order.lastIndex) {
+            // The distance to the neighbour in [direction]: its measured height plus the gap.
+            fun pitch(direction: Int): Float {
+                val neighbour = order.getOrNull(order.indexOfFirst { it.id == id } + direction) ?: return stepPx
+                return (rowHeights[neighbour.id]?.toFloat() ?: (stepPx - gapPx)) + gapPx
+            }
+            // Swap with the neighbour once the row has travelled half of its height towards it.
+            while (order.indexOfFirst { it.id == id } < order.lastIndex && dragOffset > pitch(1) / 2f) {
+                dragOffset -= pitch(1)
                 moveBy(id, 1)
-                dragOffset -= stepPx
                 haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
             }
-            while (dragOffset < -stepPx / 2f && order.indexOfFirst { it.id == id } > 0) {
+            while (order.indexOfFirst { it.id == id } > 0 && dragOffset < -pitch(-1) / 2f) {
+                dragOffset += pitch(-1)
                 moveBy(id, -1)
-                dragOffset += stepPx
                 haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
             }
         },
         onEnd = {
             dragging = null
             dragOffset = 0f
-            if (order.map { it.id } != prefs.catalogueOrder().map { it.id }) onSetOrder(order.map { it.id })
+            if (order.map { it.id } != prefs.catalogue.map { it.id }) onSetOrder(order.map { it.id })
         },
     )
 
@@ -150,9 +159,17 @@ fun TopicsSheet(
                             onSetOrder(order.map { it.id })
                         },
                         drag = dragCallbacks,
+                        onHeight = { rowHeights[topic.id] = it },
                     )
                 }
             }
+        }
+        Row(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
+            GlassPillButton(
+                text = "Quellen & eigene Themen",
+                onClick = onOpenSettings,
+                icon = Icons.Rounded.Tune,
+            )
         }
     }
 }
@@ -180,6 +197,8 @@ private fun TopicToggleRow(
     onToggle: () -> Unit,
     onMoveBy: (Int) -> Unit,
     drag: DragCallbacks,
+    /** Reports the row's measured height, so dragging knows how far the neighbours really are. */
+    onHeight: (Int) -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
     val topicColors = rememberTopicColors(topic)
@@ -212,6 +231,7 @@ private fun TopicToggleRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .onSizeChanged { onHeight(it.height) }
             .zIndex(if (lifted) 1f else 0f)
             .graphicsLayer {
                 translationY = offset()
@@ -243,8 +263,8 @@ private fun TopicToggleRow(
             Text(
                 text = when {
                     !enabled -> "Ein Thema bleibt immer an"
-                    count > 0 -> "Heute ${articleCountLabel(count)}"
-                    else -> "Heute keine Meldungen"
+                    count > 0 -> articleCountLabel(count)
+                    else -> "Gerade keine Meldungen"
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = colors.onSurfaceVariant,
@@ -269,79 +289,8 @@ private fun TopicToggleRow(
     }
 }
 
-/**
- * "Quellen anzeigen": the sources an article is based on, each opening in the in-app browser.
- */
 @Composable
-fun SourcesSheet(article: FeedArticle, onOpenLink: (String) -> Unit, onDismiss: () -> Unit) {
-    val sources = remember(article.item) { sourcesOf(article.item) }
-    val colors = MaterialTheme.colorScheme
-    val topicColors = rememberTopicColors(article.topic)
-    GlassSheet(onDismissRequest = onDismiss) {
-        SheetTitle(overline = if (sources.size == 1) "1 Quelle" else "${sources.size} Quellen", title = article.item.headline, serif = true)
-        Column(
-            Modifier
-                .weight(1f, fill = false)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 8.dp),
-        ) {
-            if (sources.isEmpty()) {
-                Text(
-                    text = "Für diese Meldung sind keine Quellen hinterlegt.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = colors.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                )
-            }
-            sources.forEach { source ->
-                val host = hostOf(source.url)
-                val label = sourceLabel(source)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 60.dp)
-                        .clickable(enabled = source.url.isNotBlank(), role = Role.Button, onClickLabel = "Quelle öffnen") {
-                            onOpenLink(source.url)
-                        }
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(
-                        Modifier
-                            .size(40.dp)
-                            .background(topicColors.container, CircleShape),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = label.firstOrNull()?.uppercase() ?: "?",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = topicColors.onContainer,
-                        )
-                    }
-                    Spacer(Modifier.width(14.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(label, style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        if (host.isNotEmpty() && !host.equals(label, ignoreCase = true)) {
-                            Text(host, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        }
-                    }
-                    if (source.url.isNotBlank()) {
-                        Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null, tint = colors.primary, modifier = Modifier.size(20.dp))
-                    }
-                }
-            }
-        }
-        Text(
-            text = "Der Artikel in der App ist in eigenen Worten aus diesen Quellen geschrieben.",
-            style = MaterialTheme.typography.bodySmall,
-            color = colors.onSurfaceVariant,
-            modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 8.dp),
-        )
-    }
-}
-
-@Composable
-private fun SheetTitle(overline: String, title: String, serif: Boolean = false) {
+private fun SheetTitle(overline: String, title: String) {
     Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 16.dp)) {
         Text(
             text = overline.uppercase(),
@@ -351,10 +300,8 @@ private fun SheetTitle(overline: String, title: String, serif: Boolean = false) 
         Spacer(Modifier.height(4.dp))
         Text(
             text = title,
-            style = if (serif) Reading.feedHeadline().copy(fontSize = MaterialTheme.typography.headlineSmall.fontSize) else MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.semantics { heading() },
         )
     }

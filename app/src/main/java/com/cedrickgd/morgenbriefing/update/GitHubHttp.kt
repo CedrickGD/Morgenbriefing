@@ -27,22 +27,15 @@ internal fun HttpUrl.repoUrl(owner: String, repo: String, vararg segments: Strin
         .apply { segments.forEach { addPathSegment(it) } }
         .build()
 
-/**
- * An authenticated GitHub API GET. Returns null when OkHttp rejects the header value (e.g. a
- * pasted line break) — deliberately without the exception, whose message could quote the token.
- */
-internal fun gitHubRequest(url: HttpUrl, token: String, accept: String): Request? = try {
+/** A GitHub API GET for the public repo (no authentication). */
+internal fun gitHubRequest(url: HttpUrl, accept: String): Request =
     Request.Builder()
         .url(url)
         .header("Accept", accept)
-        .header("Authorization", "Bearer $token")
         .header("X-GitHub-Api-Version", GITHUB_API_VERSION)
         .header("User-Agent", USER_AGENT)
         .get()
         .build()
-} catch (_: IllegalArgumentException) {
-    null
-}
 
 /** 429, or 403 with an exhausted rate limit (GitHub's way of saying "slow down"). */
 internal fun Response.isRateLimited(): Boolean =

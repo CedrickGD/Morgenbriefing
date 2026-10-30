@@ -119,11 +119,11 @@ fun ListenState.showsMiniPlayer(): Boolean = speaking || paused || issue != null
  * Fills the width it gets (max 560 dp, centred) with 16 dp side margins; the shell positions
  * it above the page indicator, on pushed screens above the navigation bar.
  *
- * Tapping the pill opens the article being read ([onOpenArticle] with its brief date and key);
+ * Tapping the pill opens the article being read ([onOpenArticle] with its link);
  * taps never fall through to the content underneath.
  */
 @Composable
-fun ListenMiniPlayer(modifier: Modifier = Modifier, onOpenArticle: ((date: String, key: String) -> Unit)? = null) {
+fun ListenMiniPlayer(modifier: Modifier = Modifier, onOpenArticle: ((url: String) -> Unit)? = null) {
     if (LocalInspectionMode.current) return
     val context = LocalContext.current
     val controller = remember(context) { context.listen }
@@ -137,9 +137,8 @@ fun ListenMiniPlayer(modifier: Modifier = Modifier, onOpenArticle: ((date: Strin
         onOpen = onOpenArticle?.let { open ->
             {
                 val current = controller.state.value
-                val date = current.articleDate
-                val key = current.articleKey
-                if (date != null && key != null) open(date, key)
+                val url = current.articleUrl
+                if (!url.isNullOrBlank()) open(url)
             }
         },
     )
@@ -181,7 +180,7 @@ internal fun ListenMiniPlayerContent(
                 .fillMaxWidth(),
         ) {
             // Only a reading whose article is known can be opened (not the "no voice" hint).
-            val open = onOpen?.takeIf { shown.issue == null && shown.articleDate != null }
+            val open = onOpen?.takeIf { shown.issue == null && !shown.articleUrl.isNullOrBlank() }
             val title = shown.title.orEmpty()
             CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
                 Row(

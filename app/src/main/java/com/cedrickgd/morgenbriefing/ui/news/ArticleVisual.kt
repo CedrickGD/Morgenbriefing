@@ -35,27 +35,27 @@ enum class ImageStatus {
 internal fun coverKey(item: NewsItem): String = item.key.ifBlank { item.headline }
 
 /**
- * The article's free picture (Wikimedia Commons only, see [safeUrl]) or its generated
- * [CoverArt]. The cover is drawn underneath while the picture loads, so the picture fades in
- * over it and a failed download simply leaves the cover. Size it with [modifier].
+ * The article's picture (https only, see [safeUrl]) or its generated [CoverArt]. The cover is
+ * drawn underneath while the picture loads, so the picture fades in over it and a failed
+ * download simply leaves the cover. Size it with [modifier].
  *
+ * @param showImage false ("Bilder anzeigen" off): only the cover, no download.
  * @param contentDescription null for decorative use (cards: the headline says it all).
- * @param coverBadgeAlignment where the generated cover puts its topic badge.
- * @param showCoverBadge false where the caller shows the topic on top itself.
- * @param onStatus reports whether the picture is shown — used to show its credit only then.
+ * @param onStatus reports whether the picture is shown.
  */
 @Composable
 fun ArticleVisual(
     item: NewsItem,
     topic: Topic,
     modifier: Modifier = Modifier,
+    showImage: Boolean = true,
     contentDescription: String? = null,
     coverBadgeAlignment: Alignment = Alignment.BottomStart,
     coverBadgePadding: PaddingValues = PaddingValues(14.dp),
     showCoverBadge: Boolean = true,
     onStatus: ((ImageStatus) -> Unit)? = null,
 ) {
-    val url = remember(item.image) { item.image?.safeUrl() }
+    val url = remember(item.image, showImage) { if (showImage) item.image?.safeUrl() else null }
     val latestOnStatus by rememberUpdatedState(onStatus)
 
     Box(modifier) {

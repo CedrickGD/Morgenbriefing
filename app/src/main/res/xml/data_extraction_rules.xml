@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Nothing secret is stored any more: everything may be backed up and transferred. -->
 <data-extraction-rules>
-    <cloud-backup>
-        <exclude domain="file" path="datastore/settings.preferences_pb" />
-    </cloud-backup>
-    <device-transfer>
-        <exclude domain="file" path="datastore/settings.preferences_pb" />
-    </device-transfer>
+    <cloud-backup />
+    <device-transfer />
 </data-extraction-rules>

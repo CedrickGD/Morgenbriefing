@@ -51,16 +51,13 @@ class ApkDownloader(
      * attempt is reused; every other file in [directory] is deleted first.
      *
      * @param onProgress called on the IO thread, at most about every [PROGRESS_STEP] of the file.
-     * @throws UpdateException with NO_TOKEN, UNAUTHORIZED, NOT_FOUND, RATE_LIMITED, NETWORK, SERVER,
+     * @throws UpdateException with UNAUTHORIZED, NOT_FOUND, RATE_LIMITED, NETWORK, SERVER,
      *   INCOMPLETE_DOWNLOAD or STORAGE.
      */
     suspend fun download(
         release: ReleaseInfo,
-        token: String,
         onProgress: (DownloadProgress) -> Unit,
     ): File = withContext(Dispatchers.IO) {
-        val clean = token.trim()
-        if (clean.isEmpty()) throw UpdateException(UpdateError.NO_TOKEN)
         val target = targetFile(release)
         prepareDirectory(keep = target)
 
@@ -72,8 +69,7 @@ class ApkDownloader(
         target.delete()
 
         val url = apiUrl.repoUrl(owner, repo, "releases", "assets", release.apk.id.toString())
-        val request = gitHubRequest(url, clean, accept = "application/octet-stream")
-            ?: throw UpdateException(UpdateError.UNAUTHORIZED, "Token header rejected")
+        val request = gitHubRequest(url, accept = "application/octet-stream")
 
         val partial = File(directory, "${target.name}.part")
         val call = client.newCall(request)

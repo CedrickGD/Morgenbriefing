@@ -28,10 +28,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.currentStateAsState
 import androidx.navigation.NavBackStackEntry
-import com.cedrickgd.morgenbriefing.ui.history.HistoryScreen
-import com.cedrickgd.morgenbriefing.ui.nav.ArticleRoute
-import com.cedrickgd.morgenbriefing.ui.nav.ChatRoute
-import com.cedrickgd.morgenbriefing.ui.nav.DayRoute
 import com.cedrickgd.morgenbriefing.ui.settings.SettingsScreen
 import com.cedrickgd.morgenbriefing.ui.today.TodayScreen
 import com.cedrickgd.morgenbriefing.ui.today.TodayViewModel
@@ -55,13 +51,13 @@ private const val NEIGHBOR_DIM = 0.55f
 private const val BACK_PEEK = 0.14f
 
 /**
- * The three main pages side by side (Verlauf ← Heute → Einstellungen) over the shared sky.
- * Pages are transparent; while swiping, the neighbours shrink to 0.94 and fade a little, the
- * settled page gives a light haptic tick, and the back gesture on Verlauf/Einstellungen glides
- * to "Heute" (following the predictive back gesture on Android 14+).
+ * The main pages side by side (Heute → Einstellungen) over the shared sky. Pages are
+ * transparent; while swiping, the neighbours shrink to 0.94 and fade a little, the settled page
+ * gives a light haptic tick, and the back gesture on Einstellungen glides to "Heute" (following
+ * the predictive back gesture on Android 14+).
  *
- * @param entry the MainRoute back stack entry (guards against double taps during transitions).
- * @param onTop the MainRoute entry is the top of the back stack (also while a pop still animates).
+ * @param entry the MainRoute back stack entry.
+ * @param onTop the MainRoute entry is the top of the back stack.
  * @param todayViewModel the activity-scoped instance the shell also uses for the sky.
  */
 @Composable
@@ -93,9 +89,6 @@ internal fun MainPager(
             .collect { chrome.show() }
     }
 
-    // Only while the pager is the top screen: during a push, back must reach the navigation
-    // graph. While a pop still animates (the entry is only STARTED then) the pager is already on
-    // top and the graph has nothing left to pop, so back is handled here – or it would leave the app.
     val lifecycle by entry.lifecycle.currentStateAsState()
     BackToToday(pagerState, scope, enabled = onTop && lifecycle.isAtLeast(Lifecycle.State.STARTED))
 
@@ -120,45 +113,18 @@ internal fun MainPager(
                 .chromeScrollSource(chrome),
         ) {
             ChromeScrollReported {
-                MainPageContent(
-                    page = MainPage.ofIndex(page),
-                    navigator = navigator,
-                    entry = entry,
-                    contentPadding = contentPadding,
-                    openTodaySignal = openTodaySignal,
-                    todayViewModel = todayViewModel,
-                )
+                when (MainPage.ofIndex(page)) {
+                    MainPage.TODAY -> TodayScreen(
+                        contentPadding = contentPadding,
+                        openTodaySignal = openTodaySignal,
+                        onOpenSettings = { navigator.showPage(MainPage.SETTINGS) },
+                        viewModel = todayViewModel,
+                    )
+
+                    MainPage.SETTINGS -> SettingsScreen(contentPadding = contentPadding)
+                }
             }
         }
-    }
-}
-
-@Composable
-private fun MainPageContent(
-    page: MainPage,
-    navigator: ShellNavigator,
-    entry: NavBackStackEntry,
-    contentPadding: PaddingValues,
-    openTodaySignal: Int,
-    todayViewModel: TodayViewModel,
-) {
-    when (page) {
-        MainPage.HISTORY -> HistoryScreen(
-            contentPadding = contentPadding,
-            onOpenDay = { date -> navigator.push(entry, DayRoute(date.toString())) },
-        )
-
-        MainPage.TODAY -> TodayScreen(
-            contentPadding = contentPadding,
-            openTodaySignal = openTodaySignal,
-            onOpenSettings = { navigator.showPage(MainPage.SETTINGS) },
-            onOpenArticle = { date, key -> navigator.push(entry, ArticleRoute(date, key)) },
-            onAskBriefing = { date -> navigator.push(entry, ChatRoute(date, null)) },
-            onAskAboutArticle = { date, key -> navigator.push(entry, ChatRoute(date, key)) },
-            viewModel = todayViewModel,
-        )
-
-        MainPage.SETTINGS -> SettingsScreen(contentPadding = contentPadding)
     }
 }
 
@@ -183,8 +149,8 @@ private fun Modifier.pageDepth(state: PagerState, page: Int, dim: Color): Modifi
     }
 
 /**
- * Back on Verlauf or Einstellungen returns to "Heute". With predictive back the page leans
- * towards "Heute" as the gesture progresses; a cancelled gesture springs back.
+ * Back on Einstellungen returns to "Heute". With predictive back the page leans towards "Heute"
+ * as the gesture progresses; a cancelled gesture springs back.
  */
 @Composable
 private fun BackToToday(pagerState: PagerState, scope: CoroutineScope, enabled: Boolean) {

@@ -32,7 +32,6 @@ class TopicColorsTest {
                 assertTrue("seed ${seed.toString(16)} dark=$dark: $ratio", ratio >= MIN_TEXT_CONTRAST)
             }
         }
-        assertTrue(ColorMath.contrastRatio(Color.White, LiveColors.fill) >= MIN_TEXT_CONTRAST)
     }
 
     @Test

@@ -6,13 +6,9 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
-import androidx.lifecycle.Lifecycle
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
-import androidx.navigation.toRoute
-import com.cedrickgd.morgenbriefing.ui.nav.ArticleRoute
 import com.cedrickgd.morgenbriefing.ui.nav.MainRoute
+import com.cedrickgd.morgenbriefing.ui.nav.isMain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -27,8 +23,8 @@ data class PageRequest(val page: MainPage, val id: Long)
 internal val PageSpring: AnimationSpec<Float> = spring(dampingRatio = 0.86f, stiffness = Spring.StiffnessMediumLow)
 
 /**
- * The shell's navigation actions: switching pager pages and pushing/popping the screens that
- * open over the pager. Event handlers only – nothing here is read during composition.
+ * The shell's navigation actions: switching pager pages. Event handlers only – nothing here is
+ * read during composition.
  */
 @Stable
 class ShellNavigator internal constructor(
@@ -43,7 +39,7 @@ class ShellNavigator internal constructor(
         get() = navController.currentBackStackEntry?.isMain() ?: true
 
     /**
-     * Shows [page]: animates the pager when it is visible, otherwise closes the pushed screens
+     * Shows [page]: animates the pager when it is visible, otherwise closes any pushed screen
      * and lets the pager reappear on that page. [scrollTodayToTop] also scrolls "Heute" back up
      * (notification tap, tapping the already selected sun icon).
      */
@@ -63,40 +59,4 @@ class ShellNavigator internal constructor(
 
     /** Handles a [PageRequest] (always lands on the page; "Heute" also scrolls to the top). */
     fun handle(request: PageRequest) = showPage(request.page, scrollTodayToTop = request.page == MainPage.TODAY)
-
-    /**
-     * Pushes [route] over the current screen. [from] is the entry asking: taps that arrive while
-     * it is no longer resumed (a transition is already running) are ignored, so a double tap
-     * never opens a screen twice.
-     */
-    fun push(from: NavBackStackEntry, route: Any) {
-        if (from.lifecycle.currentState != Lifecycle.State.RESUMED) return
-        navController.navigate(route) { launchSingleTop = true }
-    }
-
-    /**
-     * Opens the article [key] of the brief [date] in the reader (the mini player was tapped).
-     * Already reading it: nothing happens. Another article open in the reader: it is replaced,
-     * so Back still leads to where the user came from.
-     */
-    fun openArticle(date: String, key: String) {
-        val top = navController.currentBackStackEntry
-        if (top != null && top.destination.hasRoute<ArticleRoute>()) {
-            val shown = runCatching { top.toRoute<ArticleRoute>() }.getOrNull()
-            if (shown?.date == date && shown.key == key) return
-            navController.navigate(ArticleRoute(date, key)) {
-                popUpTo<ArticleRoute> { inclusive = true }
-            }
-        } else {
-            navController.navigate(ArticleRoute(date, key)) { launchSingleTop = true }
-        }
-    }
-
-    /** Closes the screen [from] (ignored when it is not the resumed top entry). */
-    fun back(from: NavBackStackEntry) {
-        if (from.lifecycle.currentState != Lifecycle.State.RESUMED) return
-        navController.popBackStack()
-    }
 }
-
-internal fun NavBackStackEntry.isMain(): Boolean = destination.hasRoute<MainRoute>()

@@ -10,7 +10,6 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.cedrickgd.morgenbriefing.container
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,19 +17,15 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Background check for a new app release, every 12 hours while online. A newer release is
- * remembered for the settings screen and announced once per tag with a notification. Without
- * a GitHub token there is nothing to check, so it ends silently.
+ * remembered for the settings screen and announced once per tag with a notification.
  */
 class UpdateWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
         val context = applicationContext
         return try {
-            val token = context.container.settings.token()
-            if (token.isNullOrBlank()) return Result.success()
-
             val services = context.updates
-            val result = services.checker.check(token)
+            val result = services.checker.check()
             withContext(Dispatchers.IO) { services.store.record(result) }
             when (result) {
                 is UpdateCheckResult.Available -> announce(context, services, result.release)

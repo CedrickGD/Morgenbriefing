@@ -8,17 +8,14 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 /** A place in the settings that another screen can send the user to. */
 enum class SettingsTarget {
-    /** "News-Quelle", with the GitHub token dialog open. */
-    NEWS_TOKEN,
+    /** "Orte & Zeitfenster", with the picker for the home place open. */
+    HOME_PLACE,
 
-    /** The "KI" section (model, monthly limit, usage). */
-    AI,
+    /** The "Themen" section (custom topics live there too). */
+    TOPICS,
 
-    /** The "KI" section with the provider picker open ("Anbieter wählen", e.g. Claude below Android 8). */
-    AI_PROVIDER,
-
-    /** The "KI" section with the picker of the Live provider open ("Live-Anbieter wählen"). */
-    AI_LIVE_PROVIDER,
+    /** The "Quellen" section (feeds per topic, region, own feeds). */
+    SOURCES,
 }
 
 /**

@@ -45,8 +45,7 @@ import com.cedrickgd.morgenbriefing.domain.Condition
 import com.cedrickgd.morgenbriefing.ui.glass.AmbientSky
 import com.cedrickgd.morgenbriefing.ui.glass.LocalGlassState
 import com.cedrickgd.morgenbriefing.ui.nav.AppNavHost
-import com.cedrickgd.morgenbriefing.ui.nav.coversSky
-import com.cedrickgd.morgenbriefing.ui.nav.hasOwnBottomBar
+import com.cedrickgd.morgenbriefing.ui.nav.isMain
 import com.cedrickgd.morgenbriefing.ui.news.newsImageLoader
 import com.cedrickgd.morgenbriefing.ui.shell.ChromeController
 import com.cedrickgd.morgenbriefing.ui.shell.FloatingChrome
@@ -56,11 +55,11 @@ import com.cedrickgd.morgenbriefing.ui.shell.MainPage
 import com.cedrickgd.morgenbriefing.ui.shell.PageRequest
 import com.cedrickgd.morgenbriefing.ui.shell.SettingsLink
 import com.cedrickgd.morgenbriefing.ui.shell.ShellNavigator
-import com.cedrickgd.morgenbriefing.ui.shell.isMain
 import com.cedrickgd.morgenbriefing.ui.shell.rememberShellInsets
 import com.cedrickgd.morgenbriefing.ui.theme.MorgenbriefingTheme
 import com.cedrickgd.morgenbriefing.ui.today.TodayUiState
 import com.cedrickgd.morgenbriefing.ui.today.TodayViewModel
+import com.cedrickgd.morgenbriefing.util.rememberLinkActions
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -77,8 +76,8 @@ private val DarkNavScrim = Color.argb(0xB3, 0x15, 0x14, 0x12)
 
 /**
  * Root of the UI (docs/DESIGN.md §1–§3): theme from the stored settings → one blur source →
- * the [AmbientSky] behind everything → the navigation graph (page pager + pushed screens) →
- * the floating glass chrome.
+ * the [AmbientSky] behind everything → the navigation graph (page pager) → the floating glass
+ * chrome.
  *
  * @param initialPage the page the pager opens on in a fresh activity (notification links).
  * @param pageRequest a page to show now (notification tap while the app is open); reported
@@ -151,11 +150,10 @@ private fun AppShell(
         ShellNavigator(navController, pagerState, chrome, scope, onTodayRequested = { openTodaySignal++ })
     }
     val insets = rememberShellInsets()
+    val links = rememberLinkActions()
 
     val topEntry by navController.currentBackStackEntryAsState()
     val mainOnTop = topEntry?.isMain() ?: true
-    val playerAllowed = topEntry?.hasOwnBottomBar() != true
-    val readerOnTop = topEntry?.coversSky() == true
     LaunchedEffect(mainOnTop) { if (mainOnTop) chrome.show() }
     // The chrome returns once scrolling has come to rest (docs/DESIGN.md §3).
     LaunchedEffect(chrome) { chrome.watchScrollRest() }
@@ -183,9 +181,7 @@ private fun AppShell(
             parallax = { pagerState.currentPage + pagerState.currentPageOffsetFraction - MainPage.TODAY.index },
             // The aurora holds still while content scrolls or pages glide: every frame goes to them.
             paused = { chrome.scrolling || pagerState.isScrollInProgress },
-            // The reader is opaque: nothing of the sky shows, so nothing of it needs to move (and
-            // the glass above the article is not re-blurred every frame).
-            covered = readerOnTop,
+            covered = false,
         )
         CompositionLocalProvider(
             LocalGlassState provides hazeState,
@@ -196,7 +192,6 @@ private fun AppShell(
                 navController = navController,
                 navigator = navigator,
                 pagePadding = insets.pagePadding,
-                pushedPadding = insets.pushedPadding,
                 openTodaySignal = openTodaySignal,
                 todayViewModel = todayViewModel,
                 modifier = Modifier.fillMaxSize(),
@@ -205,9 +200,9 @@ private fun AppShell(
                 pagerState = pagerState,
                 insets = insets,
                 indicatorVisible = mainOnTop && chrome.indicatorVisible && !keyboardOpen,
-                playerAllowed = playerAllowed,
+                playerAllowed = true,
                 navScrim = mainOnTop,
-                onOpenArticle = navigator::openArticle,
+                onOpenArticle = links::open,
                 onSelectPage = { index ->
                     val page = MainPage.ofIndex(index)
                     // Tapping the sun while already on "Heute" scrolls it back to the top.

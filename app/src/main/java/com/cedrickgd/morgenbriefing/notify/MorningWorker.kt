@@ -17,8 +17,7 @@ import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.container
 import com.cedrickgd.morgenbriefing.data.BERLIN
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
-import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
-import com.cedrickgd.morgenbriefing.data.model.BriefLoad
+import com.cedrickgd.morgenbriefing.data.model.Topics
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
@@ -31,9 +30,9 @@ import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
 /**
- * Runs at the morning alarm (or "Test-Benachrichtigung"): fetches live weather + latest
- * brief, stores today's morning snapshot, posts the notification. If today's brief is not
- * published yet, it notifies with the weather and enqueues [NewsFollowUpWorker].
+ * Runs at the morning alarm (or "Test-Benachrichtigung"): fetches live weather and the feeds
+ * of the visible topics, then posts the notification with the weather, the clothing tip and
+ * the top headlines. Both fetches are cached, so the app opens on fresh content right away.
  */
 class MorningWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
@@ -57,8 +56,7 @@ class MorningWorker(context: Context, params: WorkerParameters) : CoroutineWorke
         val context = applicationContext
         val container = context.container
         val settings = container.settings.current()
-        val today = LocalDate.now(BERLIN)
-        val todayIso = today.toString()
+        val todayIso = LocalDate.now(BERLIN).toString()
 
         if (!force) {
             if (settings.lastNotifiedDate == todayIso) return Result.success()
@@ -66,23 +64,21 @@ class MorningWorker(context: Context, params: WorkerParameters) : CoroutineWorke
             if (!settings.notificationsEnabled) return Result.success()
         }
 
-        // Weather.load also stores the morning snapshot for the history (04:00–11:59).
-        val (liveWeather, load) = coroutineScope {
+        val (liveWeather, newsReached) = coroutineScope {
             val weather = async { fetchWeather(container, settings) }
-            val brief = async { fetchBrief(container) }
-            weather.await() to brief.await()
+            val news = async { fetchNews(container, settings) }
+            weather.await() to news.await()
         }
         currentCoroutineContext().ensureActive()
 
-        if (liveWeather == null && load is BriefLoad.Failed && runAttemptCount < MAX_RETRIES) {
-            Log.i(TAG, "Neither weather nor news reachable (${load.error}), retrying")
+        if (liveWeather == null && !newsReached && runAttemptCount < MAX_RETRIES) {
+            Log.i(TAG, "Neither weather nor news reachable, retrying")
             return Result.retry()
         }
 
         val snapshot = liveWeather ?: cachedWeather(container)
-        // Promise "Die News kommen gleich" only when a follow-up will actually bring them.
-        val followUp = needsNewsFollowUp(load, settings.hasToken, today)
-        val text = morningText(snapshot, load.shownBrief(), todayIso, newsPending = followUp)
+        val headlines = topHeadlines(container.news.state.value.topics, settings)
+        val text = morningText(snapshot, headlines)
         if (!Notifications.canPost(context)) {
             // Data is fetched and cached for the app; there is just nothing we may show.
             Log.i(TAG, "Notifications are blocked, briefing prepared without notification")
@@ -90,14 +86,6 @@ class MorningWorker(context: Context, params: WorkerParameters) : CoroutineWorke
         }
         Notifications.showMorning(context, text)
         if (!force) markNotified(container, todayIso)
-
-        if (followUp) {
-            try {
-                NewsFollowUpWorker.enqueue(context, attempt = 1)
-            } catch (e: IllegalStateException) {
-                Log.w(TAG, "Could not schedule the news follow-up", e)
-            }
-        }
         return Result.success()
     }
 
@@ -113,14 +101,17 @@ class MorningWorker(context: Context, params: WorkerParameters) : CoroutineWorke
             null
         }
 
-    private suspend fun fetchBrief(container: AppContainer): BriefLoad =
+    /** Refreshes the visible topics; true when at least one source answered (or nothing had to be fetched). */
+    private suspend fun fetchNews(container: AppContainer, settings: AppSettings): Boolean =
         try {
-            container.briefs.latest()
+            container.news.warm()
+            val outcome = container.news.refresh(Topics.visible(settings).map { it.id }, settings)
+            !outcome.allFailed
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Loading the brief failed", e)
-            BriefLoad.Failed(BriefErrorKind.UNKNOWN, cached = null)
+            Log.w(TAG, "Loading the news failed", e)
+            false
         }
 
     private suspend fun cachedWeather(container: AppContainer): WeatherSnapshot? =

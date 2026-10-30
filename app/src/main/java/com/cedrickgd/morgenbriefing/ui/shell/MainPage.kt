@@ -1,18 +1,16 @@
 package com.cedrickgd.morgenbriefing.ui.shell
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.cedrickgd.morgenbriefing.ui.glass.PageSpec
 
 /**
- * The three pages of the main pager, in swipe order (docs/DESIGN.md §3):
- * Verlauf ← **Heute** → Einstellungen. [index] is the pager page.
+ * The two pages of the main pager, in swipe order (docs/DESIGN.md §3):
+ * **Heute** → Einstellungen. [index] is the pager page.
  */
 enum class MainPage(val label: String, val icon: ImageVector, val link: String) {
-    HISTORY("Verlauf", Icons.Rounded.History, AppLinks.PAGE_HISTORY),
     TODAY("Heute", Icons.Rounded.WbSunny, AppLinks.PAGE_TODAY),
     SETTINGS("Einstellungen", Icons.Rounded.Settings, AppLinks.PAGE_SETTINGS),
     ;
@@ -34,7 +32,7 @@ enum class MainPage(val label: String, val icon: ImageVector, val link: String) 
         /**
          * The page a new intent for the running app asks for. Only an intent that carries
          * [AppLinks.EXTRA_OPEN_PAGE] (the notifications) navigates; without it (the launcher
-         * icon) null: the app stays where it is, reader and chat included.
+         * icon) null: the app stays where it is.
          */
         fun requestedBy(value: String?): MainPage? = value?.let(::fromLink)
     }

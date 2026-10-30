@@ -49,8 +49,8 @@ data class ListenState(
     val title: String? = null,
     /** `NewsItem.key` of the article being read. */
     val articleKey: String? = null,
-    /** Brief date (`YYYY-MM-DD`) of that article, when the caller knew it — lets the mini player open it. */
-    val articleDate: String? = null,
+    /** Link of that article; the mini player opens it. */
+    val articleUrl: String? = null,
     /** 0f..1f over the whole article. */
     val progress: Float = 0f,
     /** The speech engine is still starting; reading begins in a moment. */
@@ -164,10 +164,9 @@ class ListenController(context: Context) {
 
     /**
      * Reads [item] aloud. Another article that is being read is replaced; the same article
-     * keeps reading (or resumes when it was paused). [date] is the brief's date (`YYYY-MM-DD`);
-     * with it, tapping the mini player opens the article in the reader.
+     * keeps reading (or resumes when it was paused). Tapping the mini player opens the article.
      */
-    fun play(item: NewsItem, date: String? = null) = onMain {
+    fun play(item: NewsItem) = onMain {
         val key = item.key
         val current = mutableState.value
         if (script != null && current.articleKey == key) {
@@ -189,7 +188,7 @@ class ListenController(context: Context) {
             speaking = true,
             title = item.headline.trim().ifEmpty { "Artikel" },
             articleKey = key,
-            articleDate = date,
+            articleUrl = item.url,
             preparing = engine != Engine.READY,
             onlineVoiceOnly = voiceOnlineOnly,
             estimatedSeconds = next.estimatedSeconds,

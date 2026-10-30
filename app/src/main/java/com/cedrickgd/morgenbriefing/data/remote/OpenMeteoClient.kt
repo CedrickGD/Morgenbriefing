@@ -94,6 +94,7 @@ class OpenMeteoClient(
                     .mapNotNull { it?.trim() }
                     .filter { it.isNotEmpty() }
                     .joinToString(", "),
+                countryCode = r.countryCode?.trim()?.uppercase().orEmpty(),
             )
         }
     }
@@ -324,6 +325,7 @@ class OpenMeteoClient(
         val longitude: Double? = null,
         val admin1: String? = null,
         val country: String? = null,
+        @SerialName("country_code") val countryCode: String? = null,
     )
 
     private companion object {

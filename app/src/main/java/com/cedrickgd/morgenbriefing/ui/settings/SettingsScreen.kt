@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.SnackbarDuration
@@ -16,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,29 +31,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.foundation.lazy.LazyListState
-import com.cedrickgd.morgenbriefing.BuildConfig
-import com.cedrickgd.morgenbriefing.ai.AiSupport
-import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
-import com.cedrickgd.morgenbriefing.ai.provider.ProviderCatalog
-import com.cedrickgd.morgenbriefing.data.model.AccentId
-import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
-import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
-import com.cedrickgd.morgenbriefing.data.model.OpenRouterTier
-import com.cedrickgd.morgenbriefing.data.model.ThemeMode
+import com.cedrickgd.morgenbriefing.data.model.Topics
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
 import com.cedrickgd.morgenbriefing.notify.MorningWorker
 import com.cedrickgd.morgenbriefing.ui.glass.PageTitle
 import com.cedrickgd.morgenbriefing.ui.glass.TopGlassBar
 import com.cedrickgd.morgenbriefing.ui.glass.glassContent
-import com.cedrickgd.morgenbriefing.ui.settings.email.EmailBriefingSection
 import com.cedrickgd.morgenbriefing.ui.shell.LocalSettingsLink
 import com.cedrickgd.morgenbriefing.ui.shell.SettingsTarget
 import com.cedrickgd.morgenbriefing.ui.shell.reportChromeScroll
 import com.cedrickgd.morgenbriefing.ui.theme.rememberReduceMotion
 import com.cedrickgd.morgenbriefing.util.KeepListEndAboveChrome
-import com.cedrickgd.morgenbriefing.util.Links
 import com.cedrickgd.morgenbriefing.util.SystemIntents
 import com.cedrickgd.morgenbriefing.util.SystemStatus
 import com.cedrickgd.morgenbriefing.util.bottomContentInset
@@ -67,14 +56,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 
-/**
- * Dialogs of the settings page; saveable so they survive rotation. The AI dialogs about one
- * provider (key, removal, own model, base URL) keep that provider next to it.
- */
-private enum class SettingsDialog {
-    TIME, HOME_PLACE, DAY_PLACE, TOKEN, REMOVE_TOKEN,
-    AI_PROVIDERS, AI_LIVE_PROVIDERS, AI_KEY, REMOVE_AI_KEY, AI_CUSTOM_MODEL, AI_DEBUG_URL,
-}
+/** Dialogs and sheets of the settings page; saveable so they survive rotation. */
+private enum class SettingsDialog { TIME, HOME_PLACE, DAY_PLACE, ADD_FEED, NEW_TOPIC, EDIT_TOPIC, DELETE_TOPIC, REGION }
 
 /** Lazy-list keys of the page, in display order. */
 private object Block {
@@ -83,20 +66,17 @@ private object Block {
     const val HERO = "hero"
     const val H_BRIEFING = "h-briefing"
     const val BRIEFING = "briefing"
-    const val H_EMAIL = "h-email"
-    const val EMAIL = "email"
-    const val H_LOOK = "h-look"
-    const val LOOK = "look"
     const val H_TOPICS = "h-topics"
     const val TOPICS = "topics"
+    const val H_SOURCES = "h-sources"
+    const val SOURCES = "sources"
+    const val H_FEED = "h-feed"
+    const val FEED = "feed"
+    const val H_LOOK = "h-look"
+    const val LOOK = "look"
     const val H_PLACES = "h-places"
     const val PLACES = "places"
-    const val H_READING = "h-reading"
-    const val READING = "reading"
-    const val H_AI = "h-ai"
-    const val AI = "ai"
-    const val H_SOURCE = "h-source"
-    const val SOURCE = "source"
+    const val WEATHER_CARDS = "weather-cards"
     const val H_APP = "h-app"
     const val APP = "app"
     const val UPDATE = "update"
@@ -104,15 +84,15 @@ private object Block {
     const val FOOTER = "footer"
 
     val ALL = listOf(
-        TITLE, HERO, H_BRIEFING, BRIEFING, H_EMAIL, EMAIL, H_LOOK, LOOK, H_TOPICS, TOPICS, H_PLACES,
-        PLACES, H_READING, READING, H_AI, AI, H_SOURCE, SOURCE, H_APP, APP, UPDATE, LINKS, FOOTER,
+        TITLE, HERO, H_BRIEFING, BRIEFING, H_TOPICS, TOPICS, H_SOURCES, SOURCES, H_FEED, FEED, H_LOOK, LOOK,
+        H_PLACES, PLACES, WEATHER_CARDS, H_APP, APP, UPDATE, LINKS, FOOTER,
     )
 }
 
 /**
  * Page "Einstellungen" (docs/DESIGN.md §4, §7): transparent over the sky, page title under the
  * status bar and a frosted top bar once it scrolled away. Sections: status hero, Morgenbriefing,
- * E-Mail-Briefing, Darstellung, Themen, Orte & Zeitfenster, Lesen, KI, News-Quelle, App. Every
+ * Themen, Quellen, Feed, Darstellung, Orte & Zeitfenster (with the weather blocks), App. Every
  * change is saved immediately.
  */
 @Composable
@@ -123,13 +103,9 @@ fun SettingsScreen(
     updateViewModel: UpdateViewModel = viewModel(factory = UpdateViewModel.Factory),
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
-    val tokenCheck by viewModel.tokenCheck.collectAsStateWithLifecycle()
     val placeSearch by viewModel.placeSearch.collectAsStateWithLifecycle()
-    val source by viewModel.source.collectAsStateWithLifecycle()
-    val aiKey by viewModel.aiKey.collectAsStateWithLifecycle()
-    val usage by viewModel.usage.collectAsStateWithLifecycle()
-    val serverModels by viewModel.serverModels.collectAsStateWithLifecycle()
-    val freeModels by viewModel.freeModels.collectAsStateWithLifecycle()
+    val location by viewModel.location.collectAsStateWithLifecycle()
+    val addFeed by viewModel.addFeed.collectAsStateWithLifecycle()
     val weather by viewModel.weather.collectAsStateWithLifecycle()
     val weatherLoading by viewModel.weatherLoading.collectAsStateWithLifecycle()
     val update by updateViewModel.state.collectAsStateWithLifecycle()
@@ -143,12 +119,9 @@ fun SettingsScreen(
     val stagger = rememberStagger(enabled = !reduceMotion)
     val now = rememberMinuteClock()
     var dialog by rememberSaveable { mutableStateOf<SettingsDialog?>(null) }
-    // The provider an AI dialog is about (AiProviderId.key), saveable like the dialog itself.
-    var dialogProvider by rememberSaveable { mutableStateOf<String?>(null) }
-    // The key dialog's preselected OpenRouter tariff (OpenRouterTier.key) and whether a stored key
-    // makes the provider the chat provider (OpenRouter as the way out of a refused Gemini key).
-    var dialogTier by rememberSaveable { mutableStateOf<String?>(null) }
-    var dialogSelect by rememberSaveable { mutableStateOf(false) }
+    // The topic a dialog is about (its id), saveable like the dialog itself.
+    var dialogTopicId by rememberSaveable { mutableStateOf<String?>(null) }
+    var expandedSources by rememberSaveable { mutableStateOf(emptySet<String>()) }
 
     val density = LocalDensity.current
     val topBarPx = with(density) { (statusBarTop() + TOP_BAR_HEIGHT).toPx() }
@@ -184,36 +157,13 @@ fun SettingsScreen(
         }
     }
 
-    fun openTokenDialog() {
-        viewModel.resetTokenCheck()
-        dialog = SettingsDialog.TOKEN
+    fun openPlacePicker(target: PlaceTarget) {
+        viewModel.resetPlaceSearch()
+        dialog = if (target == PlaceTarget.HOME) SettingsDialog.HOME_PLACE else SettingsDialog.DAY_PLACE
     }
 
-    fun openAiDialog(kind: SettingsDialog, provider: AiProviderId, openRouterTier: OpenRouterTier? = null, select: Boolean = false) {
-        if (kind == SettingsDialog.AI_KEY) viewModel.resetAiKeyState()
-        dialogProvider = provider.key
-        dialogTier = openRouterTier?.key
-        dialogSelect = select
-        dialog = kind
-    }
-
-    /**
-     * The key (own server: address) dialog of [provider]; by default the chat provider.
-     * [openRouterTier] preselects OpenRouter's tariff, [select] makes the provider the chat
-     * provider once its key is stored.
-     */
-    fun openAiKeyDialog(provider: AiProviderId? = null, openRouterTier: OpenRouterTier? = null, select: Boolean = false) {
-        openAiDialog(SettingsDialog.AI_KEY, provider ?: settings?.ai?.provider ?: return, openRouterTier, select)
-    }
-
-    /** The KI pill: a provider that cannot run here leads to the picker, everything else to its key. */
-    fun fixAi() {
-        val ai = settings?.ai ?: return
-        if (AiSupport.supports(ai.provider)) openAiKeyDialog(ai.provider) else dialog = SettingsDialog.AI_PROVIDERS
-    }
-
-    // Sent here from another screen ("Token eintragen", Live's monthly limit): glide to the
-    // right section once the page is on screen, and open its dialog.
+    // Sent here from another screen (onboarding, the topic sheet): glide to the right section
+    // once the page is on screen, and open its dialog.
     val settingsLink = LocalSettingsLink.current
     val ready = settings != null
     LaunchedEffect(settingsLink, ready) {
@@ -222,19 +172,12 @@ fun SettingsScreen(
             delay(LINK_SETTLE_MS)
             settingsLink.consume(target)
             when (target) {
-                SettingsTarget.NEWS_TOKEN -> {
-                    scrollTo(Block.H_SOURCE)
-                    openTokenDialog()
+                SettingsTarget.HOME_PLACE -> {
+                    scrollTo(Block.H_PLACES)
+                    openPlacePicker(PlaceTarget.HOME)
                 }
-                SettingsTarget.AI -> scrollTo(Block.H_AI)
-                SettingsTarget.AI_PROVIDER -> {
-                    scrollTo(Block.H_AI)
-                    dialog = SettingsDialog.AI_PROVIDERS
-                }
-                SettingsTarget.AI_LIVE_PROVIDER -> {
-                    scrollTo(Block.H_AI)
-                    dialog = SettingsDialog.AI_LIVE_PROVIDERS
-                }
+                SettingsTarget.TOPICS -> scrollTo(Block.H_TOPICS)
+                SettingsTarget.SOURCES -> scrollTo(Block.H_SOURCES)
             }
         }
     }
@@ -270,25 +213,8 @@ fun SettingsScreen(
                 StatusKind.NOTIFICATIONS -> requestNotifications()
                 StatusKind.EXACT_ALARM -> SystemIntents.requestExactAlarms(context)
                 StatusKind.BATTERY -> SystemIntents.requestIgnoreBatteryOptimizations(context)
-                StatusKind.NEWS -> {
-                    val failed = source as? SourceStatus.Failed
-                    if (failed != null && failed.kind == BriefErrorKind.NETWORK) {
-                        viewModel.checkSource(force = true)
-                        scrollTo(Block.H_SOURCE)
-                    } else {
-                        openTokenDialog()
-                    }
-                }
-                StatusKind.AI -> fixAi()
             }
-            StatusLevel.NEUTRAL -> if (item.kind == StatusKind.AI) fixAi() else scrollTo(Block.H_SOURCE)
-            StatusLevel.OK -> scrollTo(
-                when (item.kind) {
-                    StatusKind.NEWS -> Block.H_SOURCE
-                    StatusKind.AI -> Block.H_AI
-                    else -> Block.H_BRIEFING
-                },
-            )
+            StatusLevel.NEUTRAL, StatusLevel.OK -> scrollTo(Block.H_BRIEFING)
         }
     }
 
@@ -303,25 +229,26 @@ fun SettingsScreen(
             }
         },
         onDismissError = updateViewModel::dismissError,
-        onGoToToken = {
-            scrollTo(Block.H_SOURCE)
-            openTokenDialog()
-        },
     )
 
-    val chatProvider = settings?.ai?.provider ?: AiProviderId.ANTHROPIC
-    val aiActions = AiActions(
-        onPickProvider = { dialog = SettingsDialog.AI_PROVIDERS },
-        onEditKey = { openAiKeyDialog(chatProvider) },
-        onModel = { id -> viewModel.setAiModel(chatProvider, id) },
-        onCustomModel = { openAiDialog(SettingsDialog.AI_CUSTOM_MODEL, chatProvider) },
-        onLoadServerModels = viewModel::loadServerModels,
-        onGeminiTier = viewModel::setGeminiTier,
-        onPickLiveProvider = { dialog = SettingsDialog.AI_LIVE_PROVIDERS },
-        onEditDebugBaseUrl = { dialog = SettingsDialog.AI_DEBUG_URL },
-        onLimit = viewModel::setAiMonthlyLimit,
-        onLiveAuto = viewModel::setLiveAutoRefresh,
-        onOpenRouterTier = viewModel::setOpenRouterTier,
+    val sourcesActions = SourcesActions(
+        onSourceEnabled = viewModel::setSourceEnabled,
+        onEnableAll = viewModel::enableAllSources,
+        onAddFeed = { topic ->
+            viewModel.resetAddFeed()
+            dialogTopicId = topic.id
+            dialog = SettingsDialog.ADD_FEED
+        },
+        onRemoveFeed = viewModel::removeCustomFeed,
+        onEditTopic = { topic ->
+            dialogTopicId = topic.id
+            dialog = SettingsDialog.EDIT_TOPIC
+        },
+        onDeleteTopic = { topic ->
+            dialogTopicId = topic.id
+            dialog = SettingsDialog.DELETE_TOPIC
+        },
+        onPickRegion = { dialog = SettingsDialog.REGION },
     )
 
     val current = settings
@@ -337,8 +264,7 @@ fun SettingsScreen(
             state = if (current == null) loadingListState else listState,
             modifier = Modifier
                 .fillMaxSize()
-                // Edge-to-edge, the window no longer shrinks for the keyboard: the list does, so
-                // a focused field (the e-mail address) is scrolled into view above it.
+                // Edge-to-edge, the window no longer shrinks for the keyboard: the list does.
                 .imePadding()
                 .reportChromeScroll()
                 // The floating glass above (bar, indicator, player) blurs this content.
@@ -370,15 +296,12 @@ fun SettingsScreen(
                     modifier = enter,
                     content = BlockContent(
                         status = status,
-                        source = source,
                         now = now,
                         weather = weather,
                         weatherLoading = weatherLoading,
-                        usage = usage,
-                        serverModels = serverModels,
-                        freeModels = freeModels,
                         update = update,
                         reduceMotion = reduceMotion,
+                        expandedSources = expandedSources,
                     ),
                     callbacks = BlockCallbacks(
                         onPill = onPill,
@@ -394,16 +317,18 @@ fun SettingsScreen(
                         onTopicVisible = viewModel::setTopicVisible,
                         onTopicOrder = viewModel::setTopicOrder,
                         onResetTopics = viewModel::resetTopics,
-                        onEditPlace = { target ->
-                            viewModel.resetPlaceSearch()
-                            dialog = if (target == PlaceTarget.HOME) SettingsDialog.HOME_PLACE else SettingsDialog.DAY_PLACE
+                        onAddTopic = {
+                            dialogTopicId = null
+                            dialog = SettingsDialog.NEW_TOPIC
                         },
+                        sources = sourcesActions,
+                        onToggleSourcesExpanded = { id -> expandedSources = if (id in expandedSources) expandedSources - id else expandedSources + id },
+                        onSectionSize = viewModel::setSectionSize,
+                        onNewsAge = viewModel::setNewsAge,
+                        onShowImages = viewModel::setShowImages,
+                        onWeatherCard = viewModel::setWeatherCard,
+                        onEditPlace = ::openPlacePicker,
                         onDayWindow = viewModel::setDayWindow,
-                        onReaderScale = viewModel::setReaderTextScale,
-                        ai = aiActions,
-                        onEditToken = ::openTokenDialog,
-                        onRemoveToken = { dialog = SettingsDialog.REMOVE_TOKEN },
-                        onRecheckSource = { viewModel.checkSource(force = true) },
                         update = updateActions,
                         onOpenLink = links::open,
                     ),
@@ -427,6 +352,7 @@ fun SettingsScreen(
     }
 
     current ?: return
+    val dialogTopic = dialogTopicId?.let { Topics.resolve(it, current) }
     when (dialog) {
         SettingsDialog.TIME -> NotifyTimeDialog(
             hour = current.notifyHour,
@@ -440,121 +366,84 @@ fun SettingsScreen(
 
         SettingsDialog.HOME_PLACE, SettingsDialog.DAY_PLACE -> {
             val target = if (dialog == SettingsDialog.HOME_PLACE) PlaceTarget.HOME else PlaceTarget.DAY
-            PlacePickerDialog(
+            PlacePickerSheet(
                 target = target,
                 current = if (target == PlaceTarget.HOME) current.home else current.day,
                 search = placeSearch,
+                location = location,
                 onQueryChange = viewModel::onPlaceQueryChange,
+                onUseLocation = {
+                    viewModel.useCurrentLocation { place ->
+                        dialog = null
+                        viewModel.setPlace(target, place)
+                    }
+                },
                 onPick = { place ->
                     dialog = null
                     viewModel.setPlace(target, place)
                 },
-                onDismiss = { dialog = null },
+                onDismiss = {
+                    dialog = null
+                    // Also stops a running "Mein Standort" lookup, so the place cannot change later.
+                    viewModel.resetPlaceSearch()
+                },
             )
         }
 
-        SettingsDialog.TOKEN -> TokenDialog(
-            hasToken = current.hasToken,
-            check = tokenCheck,
-            onSaveAndTest = viewModel::saveAndTestToken,
-            onOpenTokenPage = { links.open(Links.NEW_GITHUB_TOKEN) },
-            onDismiss = {
-                dialog = null
-                viewModel.resetTokenCheck()
-            },
-        )
+        SettingsDialog.ADD_FEED -> dialogTopic?.let { topic ->
+            AddFeedDialog(
+                topic = topic,
+                state = addFeed,
+                onLookUp = viewModel::lookUpFeed,
+                onSave = { name -> viewModel.saveFoundFeed(topic.id, name) },
+                onDismiss = {
+                    dialog = null
+                    viewModel.resetAddFeed()
+                },
+            )
+        }
 
-        SettingsDialog.REMOVE_TOKEN -> RemoveTokenDialog(
-            onConfirm = {
+        SettingsDialog.NEW_TOPIC -> CustomTopicDialog(
+            topic = null,
+            onConfirm = { title, emoji, seed ->
                 dialog = null
-                viewModel.removeToken()
+                viewModel.addCustomTopic(title, emoji, seed)
+                scrollTo(Block.H_SOURCES)
             },
             onDismiss = { dialog = null },
         )
 
-        SettingsDialog.AI_PROVIDERS, SettingsDialog.AI_LIVE_PROVIDERS -> {
-            val liveOnly = dialog == SettingsDialog.AI_LIVE_PROVIDERS
-            AiProviderPicker(
-                ai = current.ai,
-                sdkAvailable = AiSupport.sdkAvailable,
-                liveOnly = liveOnly,
-                onPick = { picked ->
-                    if (liveOnly) viewModel.setLiveProvider(picked) else picked?.let(viewModel::setAiProvider)
-                    // A provider without key is set up right away — for Live also OpenRouter on its
-                    // free tariff, which researches only with credits; the rest is done.
-                    val setup = picked != null && if (liveOnly) liveNeedsSetup(current.ai, picked) else !current.ai.isConfigured(picked)
-                    if (setup && picked != null) {
-                        openAiKeyDialog(picked, openRouterTier = OpenRouterTier.CREDITS.takeIf { liveOnly && picked == AiProviderId.OPENROUTER })
-                    } else {
-                        dialog = null
-                    }
+        SettingsDialog.EDIT_TOPIC -> dialogTopic?.let { topic ->
+            CustomTopicDialog(
+                topic = topic,
+                onConfirm = { title, emoji, seed ->
+                    dialog = null
+                    viewModel.updateCustomTopic(topic.id, title, emoji, seed)
                 },
                 onDismiss = { dialog = null },
             )
         }
 
-        SettingsDialog.AI_KEY -> key(dialogProvider) {
-            val provider = AiProviderId.fromKey(dialogProvider) ?: current.ai.provider
-            AiKeyDialog(
-                spec = ProviderCatalog.spec(provider),
-                stored = current.ai.of(provider),
-                state = aiKey,
-                onSave = { submission -> viewModel.saveAndTestAiKey(provider, submission) },
-                onOpenLink = links::open,
-                onRemove = { dialog = SettingsDialog.REMOVE_AI_KEY },
-                onDismiss = {
-                    dialog = null
-                    viewModel.resetAiKeyState()
-                },
-                initialOpenRouterTier = OpenRouterTier.fromKey(dialogTier),
-                selectOnSave = dialogSelect,
-                // Google refuses the Gemini key: OpenRouter's free tariff, the chat provider once it works.
-                onSetUpOpenRouter = { openAiKeyDialog(AiProviderId.OPENROUTER, openRouterTier = OpenRouterTier.FREE, select = true) },
-            )
-        }
-
-        SettingsDialog.REMOVE_AI_KEY -> {
-            val provider = AiProviderId.fromKey(dialogProvider) ?: current.ai.provider
-            RemoveAiKeyDialog(
-                spec = ProviderCatalog.spec(provider),
+        SettingsDialog.DELETE_TOPIC -> dialogTopic?.let { topic ->
+            DeleteTopicDialog(
+                topic = topic,
                 onConfirm = {
                     dialog = null
-                    viewModel.resetAiKeyState()
-                    viewModel.removeAiKey(provider)
-                },
-                onDismiss = { openAiKeyDialog(provider) },
-            )
-        }
-
-        SettingsDialog.AI_CUSTOM_MODEL -> {
-            val provider = AiProviderId.fromKey(dialogProvider) ?: current.ai.provider
-            val today = now.toLocalDate()
-            CustomModelDialog(
-                spec = ProviderCatalog.spec(provider),
-                current = current.ai.of(provider).model,
-                priceHint = { model -> customModelPriceHint(current.ai, provider, model, today) },
-                onConfirm = { model ->
-                    dialog = null
-                    viewModel.setAiModel(provider, model)
+                    expandedSources = expandedSources - topic.id
+                    viewModel.deleteCustomTopic(topic.id)
                 },
                 onDismiss = { dialog = null },
-                blockedHint = { model -> customModelBlockedHint(current.ai, provider, model) },
             )
         }
 
-        SettingsDialog.AI_DEBUG_URL -> {
-            // Debug builds only: in a release build the row (and with it this dialog) never shows.
-            if (BuildConfig.DEBUG) {
-                DebugBaseUrlDialog(
-                    ai = current.ai,
-                    onSave = { urls ->
-                        dialog = null
-                        viewModel.setDebugBaseUrls(urls)
-                    },
-                    onDismiss = { dialog = null },
-                )
-            }
-        }
+        SettingsDialog.REGION -> RegionPickerDialog(
+            current = current.region,
+            onPick = { region ->
+                dialog = null
+                viewModel.setRegion(region.key)
+            },
+            onDismiss = { dialog = null },
+        )
 
         null -> Unit
     }
@@ -563,15 +452,12 @@ fun SettingsScreen(
 /** Values every block may need, bundled to keep [SettingsBlock]'s signature readable. */
 private class BlockContent(
     val status: SystemStatus,
-    val source: SourceStatus,
     val now: ZonedDateTime,
     val weather: WeatherSnapshot?,
     val weatherLoading: Boolean,
-    val usage: UsageSnapshot,
-    val serverModels: ServerModels,
-    val freeModels: FreeModels,
     val update: UpdatePanelState,
     val reduceMotion: Boolean,
+    val expandedSources: Set<String>,
 )
 
 /** Callbacks of the blocks. */
@@ -581,18 +467,20 @@ private class BlockCallbacks(
     val onNotificationsToggle: (Boolean) -> Unit,
     val onEditTime: () -> Unit,
     val onTestNotification: () -> Unit,
-    val onThemeMode: (ThemeMode) -> Unit,
-    val onAccent: (AccentId) -> Unit,
+    val onThemeMode: (com.cedrickgd.morgenbriefing.data.model.ThemeMode) -> Unit,
+    val onAccent: (com.cedrickgd.morgenbriefing.data.model.AccentId) -> Unit,
     val onTopicVisible: (String, Boolean) -> Unit,
     val onTopicOrder: (List<String>) -> Unit,
     val onResetTopics: () -> Unit,
+    val onAddTopic: () -> Unit,
+    val sources: SourcesActions,
+    val onToggleSourcesExpanded: (String) -> Unit,
+    val onSectionSize: (Int) -> Unit,
+    val onNewsAge: (com.cedrickgd.morgenbriefing.data.model.NewsAge) -> Unit,
+    val onShowImages: (Boolean) -> Unit,
+    val onWeatherCard: (com.cedrickgd.morgenbriefing.data.model.WeatherCard, Boolean) -> Unit,
     val onEditPlace: (PlaceTarget) -> Unit,
     val onDayWindow: (Int, Int) -> Unit,
-    val onReaderScale: (Float) -> Unit,
-    val ai: AiActions,
-    val onEditToken: () -> Unit,
-    val onRemoveToken: () -> Unit,
-    val onRecheckSource: () -> Unit,
     val update: UpdateCardActions,
     val onOpenLink: (String) -> Unit,
 )
@@ -610,7 +498,7 @@ private fun SettingsBlock(
 ) {
     when (key) {
         Block.HERO -> {
-            val items = statusItems(content.status, content.source, settings.ai, AiSupport.supports(settings.ai.provider))
+            val items = statusItems(content.status)
             val next = nextBriefingAt(content.now, settings.notifyHour, settings.notifyMinute)
             val hero = heroText(
                 enabled = settings.notificationsEnabled,
@@ -638,19 +526,10 @@ private fun SettingsBlock(
             onTest = callbacks.onTestNotification,
             modifier = modifier,
         )
-        Block.H_EMAIL -> SectionHeading("Dein Postfach", "E-Mail-Briefing", modifier)
-        Block.EMAIL -> EmailBriefingSection(modifier = modifier, onGoToToken = callbacks.update.onGoToToken)
-        Block.H_LOOK -> SectionHeading("Dein Look", "Darstellung", modifier)
-        Block.LOOK -> AppearanceCard(
-            themeMode = settings.themeMode,
-            accent = settings.accent,
-            onThemeMode = callbacks.onThemeMode,
-            onAccent = callbacks.onAccent,
-            modifier = modifier,
-        )
         Block.H_TOPICS -> SectionHeading("Dein Feed", "Themen", modifier)
         Block.TOPICS -> TopicGrid(
-            storedOrder = remember(settings.topicOrder) { TopicList.normalize(settings.topicOrder) },
+            topics = remember(settings) { Topics.catalogue(settings) },
+            defaultOrder = remember(settings.customTopics) { Topics.DEFAULT_ORDER + settings.customTopics.map { it.id } },
             hidden = settings.hiddenTopics,
             reduceMotion = content.reduceMotion,
             listState = listState,
@@ -659,6 +538,31 @@ private fun SettingsBlock(
             onToggle = callbacks.onTopicVisible,
             onOrder = callbacks.onTopicOrder,
             onReset = callbacks.onResetTopics,
+            onAddTopic = callbacks.onAddTopic,
+            modifier = modifier,
+        )
+        Block.H_SOURCES -> SectionHeading("Woher die News kommen", "Quellen", modifier)
+        Block.SOURCES -> SourcesSection(
+            settings = settings,
+            expanded = content.expandedSources,
+            onToggleExpanded = callbacks.onToggleSourcesExpanded,
+            actions = callbacks.sources,
+            modifier = modifier,
+        )
+        Block.H_FEED -> SectionHeading("So liest sich dein Feed", "Feed", modifier)
+        Block.FEED -> FeedCard(
+            settings = settings,
+            onSectionSize = callbacks.onSectionSize,
+            onNewsAge = callbacks.onNewsAge,
+            onShowImages = callbacks.onShowImages,
+            modifier = modifier,
+        )
+        Block.H_LOOK -> SectionHeading("Dein Look", "Darstellung", modifier)
+        Block.LOOK -> AppearanceCard(
+            themeMode = settings.themeMode,
+            accent = settings.accent,
+            onThemeMode = callbacks.onThemeMode,
+            onAccent = callbacks.onAccent,
             modifier = modifier,
         )
         Block.H_PLACES -> SectionHeading("Dein Wetter", "Orte & Zeitfenster", modifier)
@@ -676,41 +580,15 @@ private fun SettingsBlock(
                 modifier = modifier,
             )
         }
-        Block.H_READING -> SectionHeading("Artikel", "Lesen", modifier)
-        Block.READING -> ReadingCard(
-            scale = settings.readerTextScale,
-            onCommit = callbacks.onReaderScale,
-            reduceMotion = content.reduceMotion,
-            modifier = modifier,
-        )
-        Block.H_AI -> SectionHeading("Dein Erklärer", "KI", modifier)
-        Block.AI -> AiCard(
+        Block.WEATHER_CARDS -> WeatherCardsCard(
             settings = settings,
-            usage = content.usage,
-            serverModels = content.serverModels,
-            freeModels = content.freeModels,
-            today = content.now.toLocalDate(),
-            sdkAvailable = AiSupport.sdkAvailable,
-            debugTools = BuildConfig.DEBUG,
-            reduceMotion = content.reduceMotion,
-            actions = callbacks.ai,
-            modifier = modifier,
-        )
-        Block.H_SOURCE -> SectionHeading("Deine News", "News-Quelle", modifier)
-        Block.SOURCE -> NewsSourceCard(
-            hasToken = settings.hasToken,
-            status = content.source,
-            now = content.now,
-            onEditToken = callbacks.onEditToken,
-            onRemoveToken = callbacks.onRemoveToken,
-            onRecheck = callbacks.onRecheckSource,
-            modifier = modifier,
+            onToggle = callbacks.onWeatherCard,
+            modifier = modifier.padding(top = 14.dp),
         )
         Block.H_APP -> SectionHeading("Über", "App", modifier)
         Block.APP -> AppHeaderCard(installedVersion = content.update.installedVersion, modifier = modifier)
         Block.UPDATE -> UpdateCard(
             state = content.update,
-            hasToken = settings.hasToken,
             reduceMotion = content.reduceMotion,
             actions = callbacks.update,
             modifier = modifier.padding(top = 14.dp),

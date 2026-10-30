@@ -44,19 +44,17 @@ import com.cedrickgd.morgenbriefing.util.rememberNotificationPermissionRequester
 import kotlinx.coroutines.launch
 
 /**
- * First-start sheet on Today: two quick steps (notifications, GitHub token) and "Los geht's".
+ * First-start sheet on Today: two quick steps (notifications, your place) and "Los geht's".
  * Swiping it away also counts as done — it should welcome, not nag.
  *
- * @param hasToken step 2 is shown as done when a token is already stored.
  * @param onDone persist `onboardingDone = true`.
- * @param onOpenSettings close the sheet and go to the settings (token entry).
+ * @param onChoosePlace close the sheet and open the place picker in the settings.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingSheet(
-    hasToken: Boolean,
     onDone: () -> Unit,
-    onOpenSettings: () -> Unit,
+    onChoosePlace: () -> Unit,
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
@@ -98,8 +96,8 @@ fun OnboardingSheet(
                 modifier = Modifier.semantics { heading() },
             )
             Text(
-                text = "Jeden Morgen um halb sechs: das Wetter vor der Tür, dein Tagesverlauf, was du " +
-                    "anziehen solltest – und frisch recherchierte News. Zwei kurze Schritte, dann läuft's.",
+                text = "Das Wetter vor deiner Tür, dein Tag auf einen Blick und die Nachrichten aus deinen " +
+                    "Themen – frisch aus den Redaktionen, direkt auf dein Handy. Zwei kurze Schritte, dann läuft's.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -119,13 +117,12 @@ fun OnboardingSheet(
             )
             OnboardingStep(
                 number = 2,
-                title = "GitHub-Token eintragen",
-                text = "Dann landen hier jeden Morgen deine echten News statt des Demo-Briefings. " +
-                    "Dauert zwei Minuten.",
-                done = hasToken,
-                doneLabel = "Token gespeichert",
-                actionLabel = "Zu den Einstellungen",
-                onAction = { closeThen(onOpenSettings) },
+                title = "Deinen Ort festlegen",
+                text = "Wetter und Regionalnachrichten richten sich nach deinem Ort. Suche ihn oder nimm deinen Standort.",
+                done = false,
+                doneLabel = "",
+                actionLabel = "Ort wählen",
+                onAction = { closeThen(onChoosePlace) },
             )
 
             Button(

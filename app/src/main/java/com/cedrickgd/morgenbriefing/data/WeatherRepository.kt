@@ -1,6 +1,6 @@
 package com.cedrickgd.morgenbriefing.data
 
-import com.cedrickgd.morgenbriefing.data.local.BriefStore
+import com.cedrickgd.morgenbriefing.data.local.WeatherStore
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.data.model.WeatherSnapshot
@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.io.IOException
 import java.time.ZonedDateTime
 
-/** Live weather from Open-Meteo plus the offline copies kept in [BriefStore]. */
+/** Live weather from Open-Meteo plus the offline copy kept in [WeatherStore]. */
 class WeatherRepository(
     private val client: OpenMeteoClient,
-    private val store: BriefStore,
+    private val store: WeatherStore,
 ) {
     private val _latest = MutableStateFlow<WeatherSnapshot?>(null)
 
@@ -26,10 +26,7 @@ class WeatherRepository(
      */
     val latest: StateFlow<WeatherSnapshot?> = _latest.asStateFlow()
 
-    /**
-     * Live fetch (one retry after 1.5 s on failure). On success also saves it as latest and,
-     * between 04:00 and 11:59 local time, as today's morning snapshot (first one wins).
-     */
+    /** Live fetch (one retry after 1.5 s on failure); a success is also saved for an offline start. */
     suspend fun load(settings: AppSettings): Result<WeatherSnapshot> {
         val snapshot = try {
             fetch(settings)
@@ -53,7 +50,7 @@ class WeatherRepository(
     /** Last successful snapshot, for offline start. */
     suspend fun cached(): WeatherSnapshot? {
         _latest.value?.let { return it }
-        val stored = store.loadLatestWeather() ?: return null
+        val stored = store.loadLatest() ?: return null
         _latest.compareAndSet(null, stored)
         return _latest.value ?: stored
     }
@@ -74,24 +71,13 @@ class WeatherRepository(
     /** Storage problems must never turn a successful live fetch into a failure. */
     private suspend fun persist(snapshot: WeatherSnapshot) {
         try {
-            store.saveLatestWeather(snapshot)
+            store.saveLatest(snapshot)
         } catch (_: IOException) {
             // Offline start simply falls back to an older copy.
-        }
-        val now = ZonedDateTime.now(BERLIN)
-        if (now.hour in MORNING_HOURS) {
-            try {
-                store.saveDayWeather(now.toLocalDate(), snapshot, overwrite = false)
-            } catch (_: IOException) {
-                // The history just lacks this morning's weather.
-            }
         }
     }
 
     private companion object {
         const val RETRY_DELAY_MS = 1_500L
-
-        /** 04:00–11:59 Berlin time counts as "this morning". */
-        val MORNING_HOURS = 4..11
     }
 }

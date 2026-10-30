@@ -50,10 +50,10 @@ class UpdateCheckerTest {
     """.trimIndent()
 
     @Test
-    fun `newer release is available and the request is authenticated`() = runTest {
+    fun `newer release is available`() = runTest {
         server.enqueue(MockResponse().setBody(release("v1.2.0")))
 
-        val result = checker().check("  github_pat_abc  ")
+        val result = checker().check()
 
         val release = (result as UpdateCheckResult.Available).release
         assertEquals("v1.2.0", release.tag)
@@ -66,7 +66,7 @@ class UpdateCheckerTest {
         val request = server.takeRequest()
         assertEquals("GET", request.method)
         assertEquals("/repos/CedrickGD/Morgenbriefing/releases/latest", request.path)
-        assertEquals("Bearer github_pat_abc", request.getHeader("Authorization"))
+        assertNull("public repo: no token is ever sent", request.getHeader("Authorization"))
         assertEquals("application/vnd.github+json", request.getHeader("Accept"))
         assertEquals("2022-11-28", request.getHeader("X-GitHub-Api-Version"))
     }
@@ -74,40 +74,40 @@ class UpdateCheckerTest {
     @Test
     fun `same or older release means up to date`() = runTest {
         server.enqueue(MockResponse().setBody(release("v1.2.0")))
-        assertEquals(UpdateCheckResult.UpToDate("1.2.0"), checker(installed = "1.2.0").check(TOKEN))
+        assertEquals(UpdateCheckResult.UpToDate("1.2.0"), checker(installed = "1.2.0").check())
 
         server.enqueue(MockResponse().setBody(release("v1.1.0")))
-        assertEquals(UpdateCheckResult.UpToDate("1.1.0"), checker(installed = "1.2.0-debug").check(TOKEN))
+        assertEquals(UpdateCheckResult.UpToDate("1.1.0"), checker(installed = "1.2.0-debug").check())
     }
 
     @Test
     fun `debug suffix of the installed version is ignored`() = runTest {
         server.enqueue(MockResponse().setBody(release("v1.0.1")))
-        assertTrue(checker(installed = "1.0.0-debug").check(TOKEN) is UpdateCheckResult.Available)
+        assertTrue(checker(installed = "1.0.0-debug").check() is UpdateCheckResult.Available)
     }
 
     @Test
     fun `pre-release tags are skipped for release installs`() = runTest {
         server.enqueue(MockResponse().setBody(release("v1.2.0-beta.1")))
-        assertEquals(UpdateCheckResult.UpToDate("1.2.0-beta.1"), checker(installed = "1.1.0").check(TOKEN))
+        assertEquals(UpdateCheckResult.UpToDate("1.2.0-beta.1"), checker(installed = "1.1.0").check())
 
         server.enqueue(MockResponse().setBody(release("v1.2.0", prerelease = true)))
-        assertEquals(UpdateCheckResult.UpToDate("1.2.0"), checker(installed = "1.1.0").check(TOKEN))
+        assertEquals(UpdateCheckResult.UpToDate("1.2.0"), checker(installed = "1.1.0").check())
 
         server.enqueue(MockResponse().setBody(release("v1.2.0-beta.2")))
-        assertTrue(checker(installed = "1.2.0-beta.1").check(TOKEN) is UpdateCheckResult.Available)
+        assertTrue(checker(installed = "1.2.0-beta.1").check() is UpdateCheckResult.Available)
     }
 
     @Test
     fun `newer release without apk is reported`() = runTest {
         server.enqueue(MockResponse().setBody(release("v1.2.0", assets = "[]")))
-        assertEquals(UpdateCheckResult.Failed(UpdateError.NO_APK), checker().check(TOKEN))
+        assertEquals(UpdateCheckResult.Failed(UpdateError.NO_APK), checker().check())
     }
 
     @Test
     fun `tag that is not a version is invalid`() = runTest {
         server.enqueue(MockResponse().setBody(release("nightly")))
-        assertEquals(UpdateCheckResult.Failed(UpdateError.INVALID_RELEASE), checker().check(TOKEN))
+        assertEquals(UpdateCheckResult.Failed(UpdateError.INVALID_RELEASE), checker().check())
     }
 
     @Test
@@ -123,21 +123,8 @@ class UpdateCheckerTest {
         )
         cases.forEach { (response, expected) ->
             server.enqueue(response)
-            assertEquals(response.toString(), UpdateCheckResult.Failed(expected), checker().check(TOKEN))
+            assertEquals(response.toString(), UpdateCheckResult.Failed(expected), checker().check())
         }
-    }
-
-    @Test
-    fun `no token means no request`() = runTest {
-        assertEquals(UpdateCheckResult.Failed(UpdateError.NO_TOKEN), checker().check(null))
-        assertEquals(UpdateCheckResult.Failed(UpdateError.NO_TOKEN), checker().check("   "))
-        assertEquals(0, server.requestCount)
-    }
-
-    @Test
-    fun `token with a line break is refused without a request`() = runTest {
-        assertEquals(UpdateCheckResult.Failed(UpdateError.UNAUTHORIZED), checker().check("abc\ndef"))
-        assertEquals(0, server.requestCount)
     }
 
     @Test
@@ -146,7 +133,7 @@ class UpdateCheckerTest {
         val url = gone.url("/")
         gone.shutdown()
         val checker = UpdateChecker(OkHttpClient(), AppJson, "CedrickGD", "Morgenbriefing", "1.0.0", apiUrl = url)
-        assertEquals(UpdateCheckResult.Failed(UpdateError.NETWORK), checker.check(TOKEN))
+        assertEquals(UpdateCheckResult.Failed(UpdateError.NETWORK), checker.check())
     }
 
     @Test
@@ -203,9 +190,7 @@ class UpdateCheckerTest {
         assertEquals(SemVer(1, 2, 0), info.semVer)
     }
 
-    private companion object {
-        const val TOKEN = "github_pat_test"
-        const val APK_ASSET = """[
+    private companion object {        const val APK_ASSET = """[
             { "id": 41, "name": "SHA256SUMS.txt", "size": 120, "state": "uploaded", "content_type": "text/plain" },
             { "id": 42, "name": "Morgenbriefing-v1.2.0.apk", "size": 12345678, "state": "uploaded",
               "content_type": "application/vnd.android.package-archive",

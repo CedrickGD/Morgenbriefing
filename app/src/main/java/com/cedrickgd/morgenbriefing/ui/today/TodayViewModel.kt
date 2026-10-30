@@ -10,27 +10,18 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.cedrickgd.morgenbriefing.AppContainer
 import com.cedrickgd.morgenbriefing.MorgenbriefingApp
-import com.cedrickgd.morgenbriefing.ai.AiBlock
-import com.cedrickgd.morgenbriefing.ai.AiPurpose
-import com.cedrickgd.morgenbriefing.ai.AiSupport
-import com.cedrickgd.morgenbriefing.ai.LiveNewsService
-import com.cedrickgd.morgenbriefing.ai.UsageSnapshot
-import com.cedrickgd.morgenbriefing.ai.aiBlock
 import com.cedrickgd.morgenbriefing.data.BERLIN
-import com.cedrickgd.morgenbriefing.data.model.AiProviderId
 import com.cedrickgd.morgenbriefing.data.model.AppSettings
-import com.cedrickgd.morgenbriefing.data.model.Brief
-import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
-import com.cedrickgd.morgenbriefing.data.model.BriefLoad
 import com.cedrickgd.morgenbriefing.data.model.Place
+import com.cedrickgd.morgenbriefing.data.model.Topics
+import com.cedrickgd.morgenbriefing.data.model.WeatherCard
+import com.cedrickgd.morgenbriefing.data.news.FeedCatalog
 import com.cedrickgd.morgenbriefing.ui.brief.WeatherUi
-import com.cedrickgd.morgenbriefing.ui.brief.isBriefFor
 import com.cedrickgd.morgenbriefing.ui.brief.toWeatherUi
-import com.cedrickgd.morgenbriefing.ui.news.TopicPrefs
+import com.cedrickgd.morgenbriefing.ui.news.FeedPrefs
+import com.cedrickgd.morgenbriefing.ui.news.NewsFeed
+import com.cedrickgd.morgenbriefing.ui.news.buildNewsFeed
 import com.cedrickgd.morgenbriefing.ui.settings.TopicList
-import com.cedrickgd.morgenbriefing.ui.news.topicPrefs
-import com.cedrickgd.morgenbriefing.ui.news.withTopicVisible
-import com.cedrickgd.morgenbriefing.util.AppSignals
 import com.cedrickgd.morgenbriefing.util.attempt
 import com.cedrickgd.morgenbriefing.util.flatten
 import com.cedrickgd.morgenbriefing.util.isOlderThan
@@ -38,18 +29,16 @@ import com.cedrickgd.morgenbriefing.util.isWithin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
@@ -70,85 +59,71 @@ data class TodayUiState(
     val weatherLoading: Boolean = true,
     /** The last weather refresh failed (the shown snapshot, if any, is older). */
     val weatherFailed: Boolean = false,
-    /** Null until the first brief (cached, demo or live) is known. */
-    val brief: BriefLoad? = null,
-    val briefLoading: Boolean = true,
+    /** Weather blocks the user wants besides the hero. */
+    val weatherCards: Set<WeatherCard> = WeatherCard.ALL,
+    /** The feed settings; null until the settings are known. */
+    val prefs: FeedPrefs? = null,
+    /** The feed built from the repository and [prefs]; null until both are known. */
+    val feed: NewsFeed? = null,
+    /** Topic ids whose refresh is running. */
+    val loadingTopics: Set<String> = emptySet(),
+    /** The news cache was read (so an empty feed really is empty). */
+    val newsWarmed: Boolean = false,
     /** User-initiated pull-to-refresh is running. */
     val refreshing: Boolean = false,
+    /** The last news refresh reached not a single source (offline). */
+    val offline: Boolean = false,
+    /** A news refresh finished at least once in this process. */
+    val newsAttempted: Boolean = false,
 ) {
     val today: LocalDate get() = now.toLocalDate()
+    val newsLoading: Boolean get() = loadingTopics.isNotEmpty()
 }
 
-/** Content of the onboarding sheet; null = sheet hidden. */
-@Immutable
-data class OnboardingUi(val hasToken: Boolean)
-
 /**
- * Today: shows cached weather and the last brief instantly, then refreshes both in parallel.
- * Weather is refreshed again on resume once it is older than 10 minutes; the brief whenever
- * the one on screen is not today's (e.g. the app stayed open overnight or the routine was late).
- * Also drives "⚡ Live" (docs/AI.md §2) and showing/hiding topics from the feed.
- *
- * @param liveService the live research service (every API level; null only in tests or when it
- *   cannot be created).
+ * Today: shows cached weather and the cached feed instantly, then refreshes both in parallel.
+ * Weather is refreshed again on resume once it is older than 10 minutes, the news once they
+ * are older than 15 minutes — and whenever the sources of a visible topic change in the
+ * settings. Also drives showing/hiding topics and sources from the feed.
  */
 class TodayViewModel(
     private val container: AppContainer,
     private val clock: () -> ZonedDateTime = { ZonedDateTime.now(BERLIN) },
-    liveService: () -> LiveNewsService? = { null },
 ) : ViewModel() {
-
-    /** Resolved once; a service that cannot be created (should not happen) disables Live quietly. */
-    private val live: LiveNewsService? = try {
-        liveService()
-    } catch (e: Exception) {
-        Log.w(TAG, "Live news unavailable", e)
-        null
-    } catch (e: LinkageError) {
-        // An SDK class that does not load on this device must never take the Today page down.
-        Log.w(TAG, "Live news unavailable on this device", e)
-        null
-    }
 
     private val _state = MutableStateFlow(TodayUiState(now = clock()))
     val state: StateFlow<TodayUiState> = _state.asStateFlow()
 
-    /** Onboarding sheet content while `onboardingDone` is false. Starts hidden: no flash. */
-    val onboarding: StateFlow<OnboardingUi?> = container.settings.settings
-        .map { settings -> if (settings.onboardingDone) null else OnboardingUi(settings.hasToken) }
+    /** Onboarding sheet shown while `onboardingDone` is false. Starts hidden: no flash. */
+    val onboarding: StateFlow<Boolean> = container.settings.settings
+        .map { settings -> !settings.onboardingDone }
         .distinctUntilChanged()
         .catch { e -> Log.w(TAG, "Settings unavailable for onboarding", e) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
-
-    /** Topic order and switched-off topics; they arrange the brief's sections on screen. */
-    val topicPrefs: StateFlow<TopicPrefs> = container.settings.topicPrefs()
-        .catch { e -> Log.w(TAG, "Settings unavailable for topics", e) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, TopicPrefs())
-
-    /** "⚡ Live": service state, today's live articles and the AI settings in one. */
-    val liveUi: StateFlow<LiveUi> = liveUiFlow()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), if (live == null) LiveUnavailable else LiveUi())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
 
     private var weatherJob: Job? = null
-    private var briefJob: Job? = null
+    private var newsJob: Job? = null
     private var lastWeatherAttempt: Instant? = null
-    private var lastBriefAttempt: Instant? = null
+    private var lastNewsAttempt: Instant? = null
 
     init {
         viewModelScope.launch { showCachedWeather() }
-        viewModelScope.launch { showCachedBrief() }
         refreshWeather()
-        refreshBrief()
+        observeFeed()
+        viewModelScope.launch {
+            attempt { container.news.warm() }.onFailure { Log.w(TAG, "News cache unavailable", it) }
+            refreshNews(force = false)
+        }
         observeInputs()
     }
 
-    /** Pull-to-refresh: weather and brief in parallel; joins refreshes that are already running. */
+    /** Pull-to-refresh: weather and news in parallel; joins refreshes that are already running. */
     fun refresh() {
         if (_state.value.refreshing) return
         _state.update { it.copy(refreshing = true, now = clock()) }
         viewModelScope.launch {
             try {
-                joinAll(refreshWeather(), refreshBrief())
+                joinAll(refreshWeather(), refreshNews(force = true))
             } finally {
                 _state.update { it.copy(refreshing = false) }
             }
@@ -166,45 +141,15 @@ class TodayViewModel(
             isOlderThan(current.weather.snapshot.fetchedAt, instant, WEATHER_MAX_AGE)
         if (weatherStale && !isWithin(lastWeatherAttempt, instant, WEATHER_MAX_AGE)) refreshWeather()
 
-        val brief = current.brief
-        val briefIsToday = when (brief) {
-            is BriefLoad.Loaded -> isBriefFor(brief.brief, now.toLocalDate())
-            is BriefLoad.Demo -> true // nothing newer to fetch without a token
-            is BriefLoad.Failed, null -> false
-        }
-        if (!briefIsToday && !isWithin(lastBriefAttempt, instant, BRIEF_RETRY_AFTER)) refreshBrief()
+        if (!isWithin(lastNewsAttempt, instant, NEWS_RETRY_AFTER)) refreshNews(force = false)
     }
 
     fun retryWeather() {
         refreshWeather(force = true)
     }
 
-    fun retryBrief() {
-        refreshBrief(force = true)
-    }
-
-    /** "Jetzt aktualisieren": live research for [topicIds] (the visible topics). */
-    fun refreshLive(topicIds: List<String>) {
-        val service = live ?: return
-        if (!liveUi.value.canRefresh || topicIds.isEmpty()) return
-        try {
-            service.refresh(topicIds)
-        } catch (e: Exception) {
-            Log.w(TAG, "Live refresh could not start", e)
-        }
-    }
-
-    fun cancelLive() {
-        try {
-            live?.cancel()
-        } catch (e: Exception) {
-            Log.w(TAG, "Live refresh could not be cancelled", e)
-        }
-    }
-
-    /** "⚡ Live" was opened: refresh by itself when the user allowed it and the last run is old. */
-    fun onLiveOpened(topicIds: List<String>) {
-        if (shouldAutoRefresh(liveUi.value, clock().toInstant())) refreshLive(topicIds)
+    fun retryNews() {
+        refreshNews(force = true)
     }
 
     /** Shows or hides a topic in the feed (same setting as in Einstellungen → Themen). */
@@ -212,8 +157,9 @@ class TodayViewModel(
         viewModelScope.launch {
             attempt {
                 container.settings.update { settings ->
-                    val next = TopicPrefs(settings).withTopicVisible(topicId, visible) ?: return@update settings
-                    settings.copy(hiddenTopics = next.hidden)
+                    val catalogue = Topics.catalogue(settings).map { it.id }
+                    val order = TopicList.normalize(settings.topicOrder, catalogue)
+                    settings.copy(hiddenTopics = TopicList.setVisible(order, settings.hiddenTopics, topicId, visible))
                 }
             }.onFailure { Log.w(TAG, "Could not store topic visibility", it) }
         }
@@ -222,8 +168,22 @@ class TodayViewModel(
     /** Stores a new topic order (the "Themen" sheet; same setting as in Einstellungen → Themen). */
     fun setTopicOrder(order: List<String>) {
         viewModelScope.launch {
-            attempt { container.settings.update { it.copy(topicOrder = TopicList.normalize(order)) } }
-                .onFailure { Log.w(TAG, "Could not store topic order", it) }
+            attempt {
+                container.settings.update { settings ->
+                    settings.copy(topicOrder = TopicList.normalize(order, Topics.catalogue(settings).map { it.id }))
+                }
+            }.onFailure { Log.w(TAG, "Could not store topic order", it) }
+        }
+    }
+
+    /** Switches a source off (⋮ → "„tagesschau“ ausblenden"); [setSourceEnabled] undoes it. */
+    fun setSourceEnabled(sourceId: String, enabled: Boolean) {
+        viewModelScope.launch {
+            attempt {
+                container.settings.update { settings ->
+                    settings.copy(disabledFeeds = if (enabled) settings.disabledFeeds - sourceId else settings.disabledFeeds + sourceId)
+                }
+            }.onFailure { Log.w(TAG, "Could not store source state", it) }
         }
     }
 
@@ -262,30 +222,42 @@ class TodayViewModel(
         }.also { weatherJob = it }
     }
 
-    /** Fetches `latest.json` (or the demo brief without a token). Same reuse rules as weather. */
-    private fun refreshBrief(force: Boolean = false): Job {
-        briefJob?.let { running ->
-            if (running.isActive) {
-                if (!force) return running
-                running.cancel()
-            }
-        }
-        lastBriefAttempt = clock().toInstant()
+    /**
+     * Fetches the sources of the visible topics ([topicIds]: only these). Without [force] only
+     * topics whose articles are older than 15 minutes (or missing) are fetched. The repository
+     * skips topics that are already being refreshed, so overlapping calls are harmless.
+     */
+    private fun refreshNews(force: Boolean, topicIds: Collection<String>? = null): Job {
+        val running = newsJob?.takeIf { it.isActive }
+        if (!force && running != null) return running
+        lastNewsAttempt = clock().toInstant()
         return viewModelScope.launch {
-            _state.update { it.copy(briefLoading = true) }
-            val load = attempt { container.briefs.latest() }.getOrElse { e ->
-                Log.w(TAG, "Brief refresh failed", e)
-                BriefLoad.Failed(BriefErrorKind.UNKNOWN, cached = null)
-            }
+            // A forced refresh (changed sources, pull-to-refresh) waits for a running one: the
+            // repository skips topics that are mid-fetch, and that fetch still uses the old settings.
+            running?.join()
+            val settings = attempt { container.settings.current() }.getOrNull() ?: return@launch
+            val visible = Topics.visible(settings).map { it.id }
+            val wanted = (topicIds?.filter { it in visible } ?: visible)
+                .filter { force || container.news.isStale(it, NEWS_MAX_AGE) }
+            if (wanted.isEmpty()) return@launch
+            val outcome = attempt { container.news.refresh(wanted, settings) }
+                .onFailure { Log.w(TAG, "News refresh failed", it) }
+                .getOrNull() ?: return@launch
             ensureActive()
-            _state.update { current ->
-                current.copy(
-                    brief = mergeBriefLoad(current.brief, load),
-                    briefLoading = false,
+            // Only a round over every visible topic can say "offline"; one failing topic is just that.
+            val coversAll = wanted.toSet() == visible.toSet()
+            _state.update {
+                it.copy(
+                    offline = when {
+                        coversAll -> outcome.allFailed
+                        outcome.refreshed.isNotEmpty() -> false
+                        else -> it.offline
+                    },
+                    newsAttempted = true,
                     now = clock(),
                 )
             }
-        }.also { briefJob = it }
+        }.also { newsJob = it }
     }
 
     private suspend fun showCachedWeather() {
@@ -297,28 +269,31 @@ class TodayViewModel(
         _state.update { if (it.weather == null) it.copy(weather = ui) else it }
     }
 
-    private suspend fun showCachedBrief() {
-        val hasToken = attempt { container.settings.current().hasToken }.getOrNull() ?: return
-        val instant: BriefLoad? = if (hasToken) {
-            newestCachedBrief()?.let { BriefLoad.Loaded(it, fromCache = true) }
-        } else {
-            attempt { withContext(Dispatchers.IO) { container.briefs.sampleBrief() } }
-                .onFailure { Log.w(TAG, "Sample brief unavailable", it) }
-                .getOrNull()
-                ?.let { BriefLoad.Demo(it) }
+    /** The feed on screen: repository state × feed settings, rebuilt off the main thread. */
+    private fun observeFeed() {
+        val prefs = container.settings.settings
+            .map { FeedPrefs(it) to it.weatherCards }
+            .distinctUntilChanged()
+            .catch { e -> Log.w(TAG, "Settings unavailable for the feed", e) }
+        viewModelScope.launch {
+            combine(container.news.state, prefs) { news, p -> news to p }
+                .collectLatest { (news, p) ->
+                    val (feedPrefs, cards) = p
+                    val feed = withContext(Dispatchers.Default) { buildNewsFeed(news.topics, feedPrefs, clock()) }
+                    _state.update {
+                        it.copy(
+                            prefs = feedPrefs,
+                            weatherCards = cards,
+                            feed = feed,
+                            loadingTopics = news.loading,
+                            newsWarmed = news.warmed,
+                        )
+                    }
+                }
         }
-        if (instant != null) _state.update { if (it.brief == null) it.copy(brief = instant) else it }
     }
 
-    private suspend fun newestCachedBrief(): Brief? {
-        val days = attempt { container.store.listDays() }.getOrDefault(emptyList())
-        for (day in days.take(CACHE_LOOKBACK_DAYS)) {
-            attempt { container.store.loadBrief(day) }.getOrNull()?.let { return it }
-        }
-        return null
-    }
-
-    /** Reloads when the user changes places/time window or the token in the settings. */
+    /** Reloads when the user changes places/time window or the sources of a visible topic. */
     private fun observeInputs() {
         viewModelScope.launch {
             container.settings.settings
@@ -329,52 +304,20 @@ class TodayViewModel(
                 .collect { refreshWeather(force = true) }
         }
         viewModelScope.launch {
+            var previous: Map<String, List<String>>? = null
             container.settings.settings
-                .map { it.hasToken }
+                .map { settings -> Topics.visible(settings).associate { t -> t.id to FeedCatalog.sourcesFor(t.id, settings).map { it.id } } }
                 .distinctUntilChanged()
-                .drop(1)
                 .catch { e -> Log.w(TAG, "Settings unavailable", e) }
-                .collect { refreshBrief(force = true) }
-        }
-        viewModelScope.launch {
-            AppSignals.briefSourceChanged.collect { refreshBrief(force = true) }
-        }
-    }
-
-    private fun liveUiFlow(): Flow<LiveUi> {
-        val service = live ?: return flowOf(LiveUnavailable)
-        // The block as the settings see it (the service adds the monthly limit), the Live
-        // provider and the auto-refresh switch.
-        val aiSettings = container.settings.settings
-            .map { settings ->
-                val ai = settings.ai
-                LiveSettings(
-                    blocked = aiBlock(ai, AiPurpose.LIVE, AiSupport.sdkAvailable, UsageSnapshot()),
-                    provider = ai.effectiveLiveProvider,
-                    autoRefresh = settings.liveAutoRefresh,
-                )
-            }
-            .distinctUntilChanged()
-            .catch { e ->
-                Log.w(TAG, "Settings unavailable for live news", e)
-                emit(LiveSettings(blocked = AiBlock.NO_KEY, provider = AiProviderId.ANTHROPIC, autoRefresh = false))
-            }
-        val articles = service.todayArticles
-            .onStart { emit(emptyList()) }
-            .catch { e ->
-                Log.w(TAG, "Live articles unavailable", e)
-                emit(emptyList())
-            }
-        return combine(service.state, articles, aiSettings) { state, list, s ->
-            liveUi(state, list, s.blocked, s.autoRefresh, s.provider)
-        }.catch { e ->
-            Log.w(TAG, "Live state unavailable", e)
-            emit(LiveUi())
+                .collect { signatures ->
+                    val before = previous
+                    previous = signatures
+                    if (before == null) return@collect
+                    val changed = signatures.filter { (id, sources) -> before[id] != sources }.keys
+                    if (changed.isNotEmpty()) refreshNews(force = true, topicIds = changed)
+                }
         }
     }
-
-    /** What "⚡ Live" takes from the settings. */
-    private data class LiveSettings(val blocked: AiBlock?, val provider: AiProviderId, val autoRefresh: Boolean)
 
     /** The settings that change what the weather call returns. */
     private data class WeatherInputs(val home: Place, val day: Place, val start: Int, val end: Int) {
@@ -385,21 +328,14 @@ class TodayViewModel(
     companion object {
         private const val TAG = "TodayViewModel"
         private const val STOP_TIMEOUT_MS = 5_000L
-        private const val CACHE_LOOKBACK_DAYS = 14
         private val WEATHER_MAX_AGE: Duration = Duration.ofMinutes(10)
-        private val BRIEF_RETRY_AFTER: Duration = Duration.ofMinutes(10)
-
-        /** "⚡ Live" without a service (it could not be created): nothing can run, nothing is offered. */
-        private val LiveUnavailable = LiveUi(blocked = AiBlock.UNSUPPORTED_DEVICE)
+        private val NEWS_MAX_AGE: Duration = Duration.ofMinutes(15)
+        private val NEWS_RETRY_AFTER: Duration = Duration.ofMinutes(3)
 
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as MorgenbriefingApp
-                TodayViewModel(
-                    container = app.container,
-                    // Safe on every API level: only Claude needs Android 8, and it explains itself.
-                    liveService = { app.ai.live },
-                )
+                TodayViewModel(container = app.container)
             }
         }
     }

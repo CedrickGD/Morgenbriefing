@@ -3,12 +3,9 @@ package com.cedrickgd.morgenbriefing.ui.settings
 import android.os.Build
 import androidx.compose.runtime.Immutable
 import com.cedrickgd.morgenbriefing.data.model.AccentId
-import com.cedrickgd.morgenbriefing.data.model.BriefErrorKind
-import com.cedrickgd.morgenbriefing.data.model.BriefSourceException
 import com.cedrickgd.morgenbriefing.data.model.Place
 import com.cedrickgd.morgenbriefing.domain.Fmt
 import com.cedrickgd.morgenbriefing.notify.AlarmScheduler
-import java.io.IOException
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
@@ -192,9 +189,9 @@ internal fun Place.sameSpotAs(other: Place): Boolean =
 private const val SAME_SPOT_DEGREES = 0.01
 
 /** Which place the picker edits. */
-enum class PlaceTarget(val title: String) {
-    HOME("Ort für „Vor der Tür“"),
-    DAY("Ort für „Tagsüber“"),
+enum class PlaceTarget(val title: String, val overline: String, val question: String) {
+    HOME("Ort für „Vor der Tür“", "Vor der Tür", "Wo bist du morgens?"),
+    DAY("Ort für „Tagsüber“", "Tagsüber", "Wo verbringst du den Tag?"),
 }
 
 /** Place search inside the picker dialog. */
@@ -212,33 +209,3 @@ data class PlaceSearchState(
 
 internal const val PLACE_QUERY_MIN_LENGTH = 2
 
-/** Result of "Speichern & testen" in the token dialog. */
-@Immutable
-sealed interface TokenCheck {
-    data object Idle : TokenCheck
-    data object Checking : TokenCheck
-    data object Success : TokenCheck
-    data object SaveFailed : TokenCheck
-    data class Failed(val kind: BriefErrorKind) : TokenCheck
-}
-
-/** German feedback line for a [TokenCheck]; null while idle. Pure, unit-tested. */
-internal fun tokenCheckMessage(check: TokenCheck): String? = when (check) {
-    TokenCheck.Idle -> null
-    TokenCheck.Checking -> "Prüfe die Verbindung zu GitHub …"
-    TokenCheck.Success -> "✓ Verbindung klappt – ab morgen kommen deine News."
-    TokenCheck.SaveFailed -> "✗ Der Token konnte nicht gespeichert werden. Versuch's nochmal."
-    is TokenCheck.Failed -> when (check.kind) {
-        BriefErrorKind.UNAUTHORIZED, BriefErrorKind.NO_TOKEN -> "✗ Token ungültig oder abgelaufen"
-        BriefErrorKind.NOT_FOUND -> "✗ Repo nicht gefunden – hat der Token Zugriff auf Morgenbriefing?"
-        BriefErrorKind.NETWORK -> "✗ Keine Verbindung"
-        BriefErrorKind.PARSE, BriefErrorKind.UNKNOWN -> "✗ GitHub hat unerwartet geantwortet – versuch's gleich nochmal."
-    }
-}
-
-/** Maps anything thrown by the access check to a [BriefErrorKind]. */
-internal fun Throwable.toBriefErrorKind(): BriefErrorKind = when (this) {
-    is BriefSourceException -> kind
-    is IOException -> BriefErrorKind.NETWORK
-    else -> BriefErrorKind.UNKNOWN
-}

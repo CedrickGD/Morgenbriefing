@@ -1,16 +1,5 @@
 package com.cedrickgd.morgenbriefing.ui.news
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.snap
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -28,23 +17,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -52,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import com.cedrickgd.morgenbriefing.data.model.Topic
 import com.cedrickgd.morgenbriefing.ui.components.Emoji
 import com.cedrickgd.morgenbriefing.ui.components.entrance
-import com.cedrickgd.morgenbriefing.ui.components.motionDisabled
 import com.cedrickgd.morgenbriefing.ui.components.pressScale
 import com.cedrickgd.morgenbriefing.ui.components.rememberEntrance
 import com.cedrickgd.morgenbriefing.ui.glass.GlassLevel
@@ -69,8 +55,7 @@ private val EntryGap = 14.dp
 
 /**
  * Opens a topic in the feed like a newspaper section: a hairline, then "🤖 KI & TECH" in the
- * topic's color on the left and "3 Meldungen" on the right — straight on the sky, light enough
- * to keep the Discover-like flow of pictures and headlines.
+ * topic's color on the left and "37 Meldungen" on the right — straight on the sky.
  */
 @Composable
 fun FeedSectionHeader(topic: Topic, count: Int, modifier: Modifier = Modifier) {
@@ -117,105 +102,47 @@ fun FeedSectionHeader(topic: Topic, count: Int, modifier: Modifier = Modifier) {
     }
 }
 
-/**
- * A topic's "more" articles behind a glass "+ Mehr zu … (n)" button. Expanding springs them
- * open above the button (compact rows), which then reads "Weniger anzeigen".
- */
+/** Glass pill "Alle 37 Meldungen zu KI & Tech →" that opens the topic's own, endless view. */
 @Composable
-fun MoreArticles(
-    section: SectionUi,
-    date: String,
-    expanded: Boolean,
-    now: ZonedDateTime,
-    onToggle: () -> Unit,
-    onOpen: (FeedArticle) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val still = motionDisabled()
+fun AllArticlesButton(section: SectionUi, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val topicColors = rememberTopicColors(section.topic)
-    val dark = isDarkTheme()
-    val labelColor = if (dark) topicColors.onContainer else topicColors.strong
-    val rotation by animateFloatAsState(
-        targetValue = if (expanded) 180f else 0f,
-        animationSpec = if (still) snap() else spring(dampingRatio = 0.75f, stiffness = Spring.StiffnessMediumLow),
-        label = "moreChevron",
-    )
-    val articles = remember(section, date) { section.more.map { FeedArticle(it, section.topic, date) } }
+    val labelColor = if (isDarkTheme()) topicColors.onContainer else topicColors.strong
     val interaction = remember { MutableInteractionSource() }
-
-    Column(modifier.fillMaxWidth()) {
-        AnimatedVisibility(
-            visible = expanded,
-            enter = if (still) {
-                EnterTransition.None
-            } else {
-                expandVertically(spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMediumLow), expandFrom = Alignment.Top) +
-                    fadeIn(spring(stiffness = Spring.StiffnessLow))
-            },
-            exit = if (still) {
-                ExitTransition.None
-            } else {
-                shrinkVertically(spring(dampingRatio = 1f, stiffness = Spring.StiffnessMedium), shrinkTowards = Alignment.Top) +
-                    fadeOut(spring(stiffness = Spring.StiffnessMedium))
-            },
-            label = "moreArticles",
-        ) {
-            Column(Modifier.padding(bottom = 12.dp)) {
-                articles.forEachIndexed { index, article ->
-                    key(index, article.item.key) {
-                        if (index > 0) {
-                            Box(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.14f)),
-                            )
-                        }
-                        val entrance = rememberEntrance(delayMillis = 50 * index, durationMillis = 420)
-                        FeedRow(article = article, now = now, onOpen = onOpen, modifier = Modifier.entrance(entrance, distance = 10.dp))
-                    }
-                }
-            }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 52.dp)
-                .pressScale(interaction, pressedScale = 0.98f)
-                .glass(shape = GlassShapes.pill, level = GlassLevel.Thin)
-                .clickable(
-                    interactionSource = interaction,
-                    indication = ripple(),
-                    role = Role.Button,
-                    onClick = onToggle,
-                )
-                .semantics { stateDescription = if (expanded) "ausgeklappt" else "eingeklappt" }
-                .padding(horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = moreButtonLabel(section.topic.title, section.more.size, expanded),
-                style = MaterialTheme.typography.labelLarge,
-                color = labelColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false),
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 52.dp)
+            .pressScale(interaction, pressedScale = 0.98f)
+            .glass(shape = GlassShapes.pill, level = GlassLevel.Thin)
+            .clickable(
+                interactionSource = interaction,
+                indication = ripple(),
+                role = Role.Button,
+                onClick = onClick,
             )
-            Spacer(Modifier.width(6.dp))
-            Icon(
-                imageVector = Icons.Rounded.ExpandMore,
-                contentDescription = null,
-                tint = labelColor,
-                modifier = Modifier
-                    .size(20.dp)
-                    .graphicsLayer { rotationZ = rotation },
-            )
-        }
+            .padding(horizontal = 20.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = moreButtonLabel(section.topic.title, section.count),
+            style = MaterialTheme.typography.labelLarge,
+            color = labelColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f, fill = false),
+        )
+        Spacer(Modifier.width(6.dp))
+        Icon(
+            imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+            contentDescription = null,
+            tint = labelColor,
+            modifier = Modifier.size(20.dp),
+        )
     }
 }
 
-/** A small overline + serif title introducing a feed view ("Top", a topic). */
+/** A small overline + serif title introducing a feed view ("Neueste", a topic). */
 @Composable
 fun FeedViewIntro(overline: String, title: String, modifier: Modifier = Modifier) {
     Column(modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
@@ -234,22 +161,56 @@ fun FeedViewIntro(overline: String, title: String, modifier: Modifier = Modifier
     }
 }
 
+/** A quiet line inside a section that has nothing to show right now. */
+@Composable
+fun EmptySectionNote(text: String, loading: Boolean, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (loading) {
+            CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+            Spacer(Modifier.width(10.dp))
+        }
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/** The calm end of an endless list: "Das war's · 128 Meldungen aus 9 Quellen". */
+@Composable
+fun ListEndNote(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 20.dp),
+    )
+}
+
 /**
- * "Für dich": every visible topic with a glass header, its top articles as editorial entries
- * and the expandable "more" block.
+ * "Für dich": every visible topic with its header, its first articles as editorial entries
+ * and the "Alle … Meldungen" pill that opens the topic's own chip.
  *
- * @param date the brief's date (opens the reader).
- * @param listening the article being read aloud (or paused), if any.
+ * @param loadingTopics topics whose refresh is running (empty sections say "lade …").
  * @param keyPrefix keeps keys unique when several feeds share a list.
  */
 internal fun LazyListScope.forYouItems(
     sections: List<SectionUi>,
-    date: String,
+    loadingTopics: Set<String>,
     now: ZonedDateTime,
-    expanded: Set<String>,
     listening: NowListening?,
     actions: FeedActions,
-    onToggleSection: (String) -> Unit,
+    showImages: Boolean,
+    onShowAll: (SectionUi) -> Unit,
     keyPrefix: String,
 ) {
     sections.forEach { section ->
@@ -264,21 +225,33 @@ internal fun LazyListScope.forYouItems(
                     .padding(top = 12.dp),
             )
         }
+        if (section.isEmpty) {
+            item(key = "$sectionKey-empty", contentType = "feed-empty") {
+                val loading = section.id in loadingTopics
+                EmptySectionNote(
+                    text = when {
+                        loading -> "Hole die Meldungen …"
+                        section.failedSources.isNotEmpty() -> "Gerade nicht erreichbar: ${section.failedSources.joinToString(", ")}"
+                        section.fetchedAt == null -> "Noch nichts geladen – zieh nach unten zum Aktualisieren."
+                        else -> "Heute noch nichts Neues."
+                    },
+                    loading = loading,
+                    modifier = Modifier.animateItem().padding(horizontal = FeedGutter),
+                )
+            }
+            return@forEach
+        }
         section.top.forEachIndexed { index, item ->
             item(key = "$sectionKey-top-$index-${item.key}", contentType = "feed-entry") {
-                val article = remember(item, section.topic, date) { FeedArticle(item, section.topic, date) }
-                AnimatedFeedEntry(article, now, listening.reading(item.key), listening.pausedOn(item.key), actions)
+                val article = remember(item, section.topic) { FeedArticle(item, section.topic) }
+                AnimatedFeedEntry(article, now, listening.reading(item.key), listening.pausedOn(item.key), actions, showImages)
             }
         }
         if (section.hasMore) {
             item(key = "$sectionKey-more", contentType = "feed-more") {
-                MoreArticles(
+                AllArticlesButton(
                     section = section,
-                    date = date,
-                    expanded = section.isExpanded(expanded),
-                    now = now,
-                    onToggle = { onToggleSection(section.id) },
-                    onOpen = actions.onOpen,
+                    onClick = { onShowAll(section) },
                     modifier = Modifier
                         .animateItem()
                         .padding(horizontal = FeedGutter)
@@ -290,23 +263,22 @@ internal fun LazyListScope.forYouItems(
 }
 
 /**
- * A plain list of editorial entries ("Top", a topic, "⚡ Live").
+ * A plain list of editorial entries ("Neueste", a topic).
  *
  * @param showTopic topic overline above each headline (mixed views).
- * @param badge per-article meta badge, e.g. "⚡ neu · vor 12 Min.".
  */
 internal fun LazyListScope.articleItems(
     articles: List<FeedArticle>,
     now: ZonedDateTime,
     listening: NowListening?,
     actions: FeedActions,
+    showImages: Boolean,
     keyPrefix: String,
     showTopic: Boolean,
-    badge: (FeedArticle) -> String? = { null },
 ) {
     articles.forEachIndexed { index, article ->
         item(key = "$keyPrefix-$index-${article.feedKey}", contentType = "feed-entry") {
-            AnimatedFeedEntry(article, now, listening.reading(article.item.key), listening.pausedOn(article.item.key), actions, showTopic, badge(article))
+            AnimatedFeedEntry(article, now, listening.reading(article.item.key), listening.pausedOn(article.item.key), actions, showImages, showTopic)
         }
     }
 }
@@ -319,8 +291,8 @@ private fun LazyItemScope.AnimatedFeedEntry(
     listening: Boolean,
     paused: Boolean,
     actions: FeedActions,
+    showImage: Boolean,
     showTopic: Boolean = false,
-    badge: String? = null,
 ) {
     val entrance = rememberEntrance(durationMillis = 460)
     FeedEntry(
@@ -330,7 +302,7 @@ private fun LazyItemScope.AnimatedFeedEntry(
         paused = paused,
         actions = actions,
         showTopic = showTopic,
-        badge = badge,
+        showImage = showImage,
         modifier = Modifier
             .animateItem()
             .padding(horizontal = FeedGutter)

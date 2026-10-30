@@ -45,7 +45,7 @@ $DefaultSdk = 'C:/Users/cedri/AppData/Local/Android/Sdk'
 $DefaultGh = 'C:/Users/cedri/AppData/Local/Microsoft/WinGet/Links/gh.exe'
 $ExpectedSignerCn = 'CedrickGD'
 $PackageName = 'com.cedrickgd.morgenbriefing'
-$CoAuthor = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
+$CoAuthor = 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>'
 $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 $Root = Split-Path -Parent $PSScriptRoot

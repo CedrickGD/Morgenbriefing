@@ -11,10 +11,9 @@ object UpdateText {
 
     /** Friendly German explanation for [error]; [debugBuild] tailors the wrong-package case. */
     fun errorMessage(error: UpdateError, debugBuild: Boolean = false): String = when (error) {
-        UpdateError.NO_TOKEN -> "Für Updates braucht die App deinen GitHub-Token – das Repo ist privat."
         UpdateError.UNAUTHORIZED ->
-            "GitHub lässt den Token nicht an die Releases. Ist er noch gültig und hat Zugriff auf Morgenbriefing?"
-        UpdateError.NOT_FOUND -> "Noch kein Release gefunden – oder der Token sieht das Repo nicht."
+            "GitHub lässt die Anfrage gerade nicht durch. Versuch's in ein paar Minuten nochmal."
+        UpdateError.NOT_FOUND -> "Noch kein Release auf GitHub gefunden. Sobald eins veröffentlicht ist, taucht es hier auf."
         UpdateError.RATE_LIMITED -> "GitHub bremst gerade. Versuch's in ein paar Minuten nochmal."
         UpdateError.NETWORK -> "Keine Verbindung zu GitHub – bist du online?"
         UpdateError.SERVER -> "GitHub hat unerwartet geantwortet. Versuch's gleich nochmal."

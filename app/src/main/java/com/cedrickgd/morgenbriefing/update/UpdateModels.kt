@@ -47,13 +47,10 @@ sealed interface UpdateCheckResult {
 
 /** Everything that can go wrong between "Nach Updates suchen" and the system installer. */
 enum class UpdateError {
-    /** No GitHub token stored – the repo is private. */
-    NO_TOKEN,
-
-    /** 401/403: token invalid, expired or without access to the repo. */
+    /** 401/403: GitHub refused the request (a secondary rate limit, or the repo is not public). */
     UNAUTHORIZED,
 
-    /** 404: no release published yet (or the token cannot see the repo). */
+    /** 404: no release published yet. */
     NOT_FOUND,
 
     /** GitHub's API rate limit is exhausted (403/429 with `x-ratelimit-remaining: 0`). */

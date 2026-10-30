@@ -75,7 +75,7 @@ class ApkDownloaderTest {
     }
 
     @Test
-    fun `follows the redirect to storage without leaking the token`() = runTest {
+    fun `follows the redirect to storage`() = runTest {
         val apk = ByteArray(300_000) { (it % 251).toByte() }
         api.enqueue(
             MockResponse()
@@ -85,7 +85,7 @@ class ApkDownloaderTest {
         storage.enqueue(MockResponse().setBody(Buffer().write(apk)))
 
         val progress = mutableListOf<DownloadProgress>()
-        val file = downloader().download(release(apk.size.toLong()), " github_pat_secret ") { progress += it }
+        val file = downloader().download(release(apk.size.toLong())) { progress += it }
 
         assertEquals("Morgenbriefing-v1.2.0.apk", file.name)
         assertArrayEquals(apk, file.readBytes())
@@ -93,27 +93,14 @@ class ApkDownloaderTest {
 
         val apiRequest = api.takeRequest()
         assertEquals("/repos/CedrickGD/Morgenbriefing/releases/assets/42", apiRequest.path)
-        assertEquals("Bearer github_pat_secret", apiRequest.getHeader("Authorization"))
         assertEquals("application/octet-stream", apiRequest.getHeader("Accept"))
 
         val storageRequest = storage.takeRequest()
         assertEquals("/github-production-release-asset/42?sig=abc", storageRequest.path)
-        assertNull("token must not reach the storage host", storageRequest.getHeader("Authorization"))
 
         assertEquals(1f, progress.last().fraction)
         assertEquals(apk.size.toLong(), progress.last().received)
         assertTrue(progress.zipWithNext().all { (a, b) -> b.received >= a.received })
-    }
-
-    @Test
-    fun `okhttp drops the token on a redirect to another port of the same host`() = runTest {
-        api.enqueue(MockResponse().setResponseCode(302).addHeader("Location", storage.url("/blob")))
-        storage.enqueue(MockResponse().setBody("apk"))
-
-        downloader().download(release(3), "github_pat_secret") { }
-
-        assertEquals("Bearer github_pat_secret", api.takeRequest().getHeader("Authorization"))
-        assertNull(storage.takeRequest().getHeader("Authorization"))
     }
 
     @Test
@@ -158,7 +145,7 @@ class ApkDownloaderTest {
         api.enqueue(MockResponse().setBody("short"))
 
         expectError(UpdateError.INCOMPLETE_DOWNLOAD) {
-            downloader().download(release(size = 1_000), "token") { }
+            downloader().download(release(size = 1_000)) { }
         }
         assertTrue("no partial file stays behind", directory.listFiles().orEmpty().isEmpty())
     }
@@ -173,7 +160,7 @@ class ApkDownloaderTest {
         )
         cases.forEach { (code, expected) ->
             api.enqueue(MockResponse().setResponseCode(code))
-            expectError(expected) { downloader().download(release(10), "token") { } }
+            expectError(expected) { downloader().download(release(10)) { } }
         }
         assertTrue(directory.listFiles().orEmpty().isEmpty())
     }
@@ -185,7 +172,7 @@ class ApkDownloaderTest {
         val broken = File(directory, "Morgenbriefing-v1.2.0.apk.part").apply { writeText("half") }
         val complete = File(directory, "Morgenbriefing-v1.2.0.apk").apply { writeBytes(ByteArray(5) { 1 }) }
 
-        val file = downloader().download(release(size = 5), "token") { }
+        val file = downloader().download(release(size = 5)) { }
 
         assertEquals(complete, file)
         assertFalse(stale.exists())
@@ -194,17 +181,11 @@ class ApkDownloaderTest {
     }
 
     @Test
-    fun `without a token nothing is requested`() = runTest {
-        expectError(UpdateError.NO_TOKEN) { downloader().download(release(10), "  ") { } }
-        assertEquals(0, api.requestCount)
-    }
-
-    @Test
     fun `unknown size still downloads`() = runTest {
         api.enqueue(MockResponse().setChunkedBody("chunked-apk-bytes", 4))
 
         val progress = mutableListOf<DownloadProgress>()
-        val file = downloader().download(release(size = 0), "token") { progress += it }
+        val file = downloader().download(release(size = 0)) { progress += it }
 
         assertEquals("chunked-apk-bytes", file.readText())
         assertNull(progress.first().fraction)

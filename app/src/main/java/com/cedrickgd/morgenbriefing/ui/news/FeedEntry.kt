@@ -21,24 +21,21 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Headphones
-import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.VisibilityOff
+import androidx.compose.material.icons.rounded.VolumeOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -62,11 +59,11 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Constraints
@@ -85,19 +82,18 @@ import kotlin.math.PI
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-/** Feed pictures: 16:10 like the reference, 22 dp corners (docs/DESIGN.md §7). */
+/** Feed pictures: 16:10, 22 dp corners (docs/DESIGN.md §7). */
 private const val FEED_IMAGE_RATIO = 16f / 10f
 
 /** In a short window (landscape) a feed picture takes at most this share of its height. */
 private const val FEED_IMAGE_MAX_WINDOW_SHARE = 0.45f
 
-/** The tappable suffix of a feed lead (docs/DESIGN.md §7). */
-internal const val MORE_LABEL = "Mehr anzeigen"
+/** The tappable suffix of a feed lead: the full article is one tap away, on the newsroom's site. */
+internal const val MORE_LABEL = "Weiterlesen"
 
 /**
- * Everything a feed entry can do. Null callbacks hide their menu item (e.g. "Frag nach" below
- * Android 8, "Thema ausblenden" where it makes no sense). Create it once per screen
- * (`remember`) so entries stay skippable.
+ * Everything a feed entry can do. Null callbacks hide their menu item. Create it once per
+ * screen (`remember`) so entries stay skippable.
  */
 @Stable
 class FeedActions(
@@ -105,22 +101,21 @@ class FeedActions(
     val onListen: (FeedArticle) -> Unit,
     val onStopListening: () -> Unit,
     val onShare: (FeedArticle) -> Unit,
-    val onShowSources: (FeedArticle) -> Unit,
     val onCopyLink: (FeedArticle) -> Unit,
     val onHideTopic: ((FeedArticle) -> Unit)? = null,
-    val onAsk: ((FeedArticle) -> Unit)? = null,
+    val onHideSource: ((FeedArticle) -> Unit)? = null,
 )
 
 /**
- * One article in the editorial feed, without a card frame, directly on the sky (the user's
- * reference): a full-width picture (or generated cover) with a tiny credit, the headline big
- * in serif, the serif lead with an inline "… Mehr anzeigen" and a meta row with "Zuhören",
- * share and a ⋮ menu. Picture, headline and lead open the reader.
+ * One article in the editorial feed, without a card frame, directly on the sky: a full-width
+ * picture (or generated cover), the headline big in serif, the serif lead with an inline
+ * "… Weiterlesen" and a meta row with "Zuhören", share and a ⋮ menu. Picture, headline and
+ * lead open the article on the newsroom's site (in-app browser).
  *
  * @param listening this article is being read aloud right now — the button turns into "Stopp".
  * @param paused this article is loaded in the player but paused — the button offers "Weiter".
- * @param showTopic adds a small topic overline (mixed views: "Top", "⚡ Live").
- * @param badge replaces the meta line, e.g. "⚡ neu · vor 12 Min." for live articles.
+ * @param showTopic adds a small topic overline (mixed views: "Neueste").
+ * @param showImage false: only the typographic cover (Einstellungen → Feed → Bilder).
  */
 @Composable
 fun FeedEntry(
@@ -131,14 +126,11 @@ fun FeedEntry(
     modifier: Modifier = Modifier,
     paused: Boolean = false,
     showTopic: Boolean = false,
-    badge: String? = null,
+    showImage: Boolean = true,
 ) {
     val item = article.item
     val interaction = remember { MutableInteractionSource() }
-    var imageStatus by remember(item.image) {
-        mutableStateOf(if (item.image?.safeUrl() != null) ImageStatus.LOADING else ImageStatus.NONE)
-    }
-    val meta = remember(item, now, badge) { if (badge != null) FeedMetaParts(null, null) else feedMetaParts(item, now) }
+    val meta = remember(item, now) { feedMetaParts(item, now) }
     val maxImageHeight = windowHeight() * FEED_IMAGE_MAX_WINDOW_SHARE
 
     Column(modifier.fillMaxWidth()) {
@@ -149,7 +141,7 @@ fun FeedEntry(
                     interactionSource = interaction,
                     indication = null,
                     role = Role.Button,
-                    onClickLabel = "Artikel lesen",
+                    onClickLabel = "Artikel öffnen",
                     onClick = { actions.onOpen(article) },
                 ),
         ) {
@@ -163,14 +155,9 @@ fun FeedEntry(
                     item = item,
                     topic = article.topic,
                     modifier = Modifier.matchParentSize(),
+                    showImage = showImage,
                     contentDescription = item.image?.alt?.takeIf { it.isNotBlank() },
-                    onStatus = { imageStatus = it },
                 )
-                val image = item.image
-                if (image != null && imageStatus == ImageStatus.SHOWN) {
-                    CreditTag(image.creditLine(), Modifier.align(Alignment.BottomEnd))
-                }
-                if (article.live) LiveTag(Modifier.align(Alignment.TopStart))
             }
             Spacer(Modifier.height(16.dp))
             if (showTopic) {
@@ -192,57 +179,10 @@ fun FeedEntry(
         FeedMetaRow(
             article = article,
             meta = meta,
-            badge = badge,
             listening = listening,
             paused = paused,
             actions = actions,
             modifier = Modifier.padding(top = 4.dp),
-        )
-    }
-}
-
-/**
- * Compact entry for the "more" articles of a topic: serif headline and meta on the left,
- * a small picture on the right. Opens the reader.
- */
-@Composable
-fun FeedRow(article: FeedArticle, now: ZonedDateTime, onOpen: (FeedArticle) -> Unit, modifier: Modifier = Modifier) {
-    val item = article.item
-    val interaction = remember { MutableInteractionSource() }
-    val meta = remember(item, now) { feedMeta(item, now) }
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .pressScale(interaction, pressedScale = 0.98f)
-            .clickable(
-                interactionSource = interaction,
-                indication = ripple(),
-                role = Role.Button,
-                onClickLabel = "Artikel lesen",
-                onClick = { onOpen(article) },
-            )
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = item.headline,
-                style = Reading.feedHeadline().copy(fontSize = 19.sp, lineHeight = 25.sp),
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-            )
-            if (meta.isNotEmpty()) {
-                Spacer(Modifier.height(8.dp))
-                Text(text = meta, style = Reading.meta(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-            }
-        }
-        Spacer(Modifier.width(14.dp))
-        ArticleVisual(
-            item = item,
-            topic = article.topic,
-            modifier = Modifier
-                .size(96.dp)
-                .clip(RoundedCornerShape(18.dp)),
         )
     }
 }
@@ -266,54 +206,14 @@ private fun TopicOverline(article: FeedArticle) {
 }
 
 /**
- * Attribution on the picture ("Bild: Ank Kumar · CC BY-SA 4.0"), tiny and quiet — on a dark,
- * fully rounded scrim, so the white text stays legible on bright skies and façades.
- */
-@Composable
-private fun CreditTag(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, lineHeight = 13.sp, letterSpacing = 0.2.sp),
-        color = Color.White,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = modifier
-            .padding(8.dp)
-            .widthIn(max = 260.dp)
-            .background(Color.Black.copy(alpha = 0.55f), CircleShape)
-            .padding(horizontal = 9.dp, vertical = 3.dp),
-    )
-}
-
-/** "⚡ NEU" on the picture of a live-researched article. */
-@Composable
-private fun LiveTag(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .padding(10.dp)
-            .background(LiveColors.fill, RoundedCornerShape(10.dp))
-            .padding(horizontal = 9.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Emoji("⚡", size = 12.sp)
-        Spacer(Modifier.width(4.dp))
-        Text(
-            text = "NEU",
-            style = MaterialTheme.typography.labelMedium.copy(letterSpacing = OverlineLetterSpacing, fontWeight = FontWeight.Bold),
-            color = Color.White,
-        )
-    }
-}
-
-/**
- * The lead in serif with "… Mehr anzeigen" appended inline: the lead is cut at a word so that
- * the suffix still fits into [maxLines] lines; a lead that fits gets " Mehr anzeigen" without
+ * The lead in serif with "… Weiterlesen" appended inline: the lead is cut at a word so that
+ * the suffix still fits into [maxLines] lines; a lead that fits gets " Weiterlesen" without
  * the ellipsis. Measured once per text and width.
  */
 @Composable
 internal fun LeadText(text: String, modifier: Modifier = Modifier, maxLines: Int = 3) {
     val style = Reading.feedLead()
-    // A quiet continuation like in the reference: lighter than the lead, never bolder.
+    // A quiet continuation: lighter than the lead, never bolder.
     val suffix = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f), fontWeight = FontWeight.Medium)
     val measurer = rememberTextMeasurer(cacheSize = 8)
     BoxWithConstraints(modifier.fillMaxWidth()) {
@@ -364,14 +264,13 @@ private fun leadWithMore(
 private const val MAX_CUT_STEPS = 24
 
 /**
- * Meta line + "Zuhören" + share + ⋮ menu (with "Thema ausblenden", sources, copy, ask). The time
- * stays whole and only the source is shortened, on one line — the row never wraps or jumps.
+ * Meta line + "Zuhören" + share + ⋮ menu. The time stays whole and only the source is
+ * shortened, on one line — the row never wraps or jumps.
  */
 @Composable
 private fun FeedMetaRow(
     article: FeedArticle,
     meta: FeedMetaParts,
-    badge: String?,
     listening: Boolean,
     paused: Boolean,
     actions: FeedActions,
@@ -385,27 +284,17 @@ private fun FeedMetaRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-            if (badge != null) {
-                // Live articles show only their badge here; the source is one tap away (⋮ → Quellen).
+            meta.time?.let { time ->
+                Text(text = time, style = Reading.meta(), maxLines = 1, softWrap = false)
+            }
+            meta.source?.let { source ->
                 Text(
-                    text = badge,
-                    style = Reading.meta().copy(color = colors.primary, fontWeight = FontWeight.SemiBold),
+                    text = if (meta.time != null) " · $source" else source,
+                    style = Reading.meta(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
                 )
-            } else {
-                meta.time?.let { time ->
-                    Text(text = time, style = Reading.meta(), maxLines = 1, softWrap = false)
-                }
-                meta.source?.let { source ->
-                    Text(
-                        text = if (meta.time != null) " · $source" else source,
-                        style = Reading.meta(),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f, fill = false),
-                    )
-                }
             }
         }
         ListenButton(
@@ -507,6 +396,7 @@ private fun Equalizer(color: Color, modifier: Modifier = Modifier) {
 private fun FeedMenu(article: FeedArticle, actions: FeedActions) {
     var open by remember { mutableStateOf(false) }
     val colors = MaterialTheme.colorScheme
+    val source = article.item.source.ifBlank { hostOf(article.item.url) }
     Box {
         IconButton(onClick = { open = true }) {
             Icon(Icons.Rounded.MoreVert, contentDescription = "Weitere Optionen", tint = colors.onSurfaceVariant)
@@ -519,13 +409,13 @@ private fun FeedMenu(article: FeedArticle, actions: FeedActions) {
             tonalElevation = 0.dp,
             shadowElevation = 12.dp,
         ) {
-            actions.onHideTopic?.let { hide ->
-                MenuItem("Thema ausblenden", Icons.Rounded.VisibilityOff) { open = false; hide(article) }
-            }
-            MenuItem("Quellen anzeigen", Icons.Rounded.Link) { open = false; actions.onShowSources(article) }
+            MenuItem("Artikel öffnen", Icons.AutoMirrored.Rounded.OpenInNew) { open = false; actions.onOpen(article) }
             MenuItem("Link kopieren", Icons.Rounded.ContentCopy) { open = false; actions.onCopyLink(article) }
-            actions.onAsk?.let { ask ->
-                MenuItem("Frag nach", Icons.Rounded.AutoAwesome, tint = colors.primary) { open = false; ask(article) }
+            actions.onHideSource?.let { hide ->
+                MenuItem("„$source“ ausblenden", Icons.Rounded.VolumeOff) { open = false; hide(article) }
+            }
+            actions.onHideTopic?.let { hide ->
+                MenuItem("Thema „${article.topic.title}“ ausblenden", Icons.Rounded.VisibilityOff) { open = false; hide(article) }
             }
         }
     }
@@ -534,16 +424,11 @@ private fun FeedMenu(article: FeedArticle, actions: FeedActions) {
 @Composable
 private fun MenuItem(label: String, icon: ImageVector, tint: Color = MaterialTheme.colorScheme.onSurfaceVariant, onClick: () -> Unit) {
     DropdownMenuItem(
-        text = { Text(label, style = MaterialTheme.typography.bodyLarge) },
+        text = { Text(label, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         onClick = onClick,
         leadingIcon = { Icon(icon, contentDescription = null, tint = tint) },
         modifier = Modifier.heightIn(min = 48.dp),
     )
-}
-
-/** Accent for everything "⚡ Live": a deep amber that carries white text (5:1) in light and dark. */
-internal object LiveColors {
-    val fill: Color = Color(0xFFB4530F)
 }
 
 /**

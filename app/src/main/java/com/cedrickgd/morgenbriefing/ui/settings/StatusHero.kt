@@ -239,11 +239,11 @@ private fun StatusPill(item: StatusItem, onClick: () -> Unit) {
         StatusLevel.ATTENTION -> StatusPalette.attention()
         StatusLevel.NEUTRAL -> colors.onSurfaceVariant
     }
-    val checking = item.level == StatusLevel.NEUTRAL && item.kind == StatusKind.NEWS
+    val checking = false
     val action = when (item.level) {
         StatusLevel.ATTENTION -> "Beheben"
         StatusLevel.OK -> "Zum Abschnitt"
-        StatusLevel.NEUTRAL -> if (item.kind == StatusKind.AI) "Einrichten" else "Zum Abschnitt"
+        StatusLevel.NEUTRAL -> "Zum Abschnitt"
     }
     val attentionWash = StatusPalette.attentionFill().copy(alpha = if (isGlassDark()) 0.16f else 0.14f)
     Row(

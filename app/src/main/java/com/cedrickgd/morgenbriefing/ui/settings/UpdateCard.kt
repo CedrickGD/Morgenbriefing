@@ -22,7 +22,6 @@ import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.InstallMobile
-import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.NewReleases
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.SystemUpdate
@@ -63,18 +62,16 @@ internal class UpdateCardActions(
     val onInstall: (UpdatePhase.ReadyToInstall) -> Unit,
     val onAllowInstall: () -> Unit,
     val onDismissError: () -> Unit,
-    val onGoToToken: () -> Unit,
 )
 
 /**
  * Settings → "App" → update: last check and the updater's current step (check, "Version x
- * verfügbar" with release notes, download progress, verification, permission, install). Needs
- * the GitHub token; without it only a hint is shown.
+ * verfügbar" with release notes, download progress, verification, permission, install). Reads the
+ * GitHub Releases of the public repo; no account or token needed.
  */
 @Composable
 internal fun UpdateCard(
     state: UpdatePanelState,
-    hasToken: Boolean,
     reduceMotion: Boolean,
     actions: UpdateCardActions,
     modifier: Modifier = Modifier,
@@ -93,7 +90,7 @@ internal fun UpdateCard(
             Column(Modifier.weight(1f)) {
                 Overline("App-Update")
                 Text(
-                    text = headline(state.phase, hasToken),
+                    text = headline(state.phase),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
@@ -107,19 +104,13 @@ internal fun UpdateCard(
                 .padding(top = 12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            if (!hasToken) {
-                Caption("Für Updates braucht die App deinen GitHub-Token – das Repo ist privat.")
-                GlassPillButton("Zum GitHub-Token", onClick = actions.onGoToToken, icon = Icons.Rounded.Key, style = PillStyle.Tonal)
-            } else {
-                PhaseContent(state = state, lastCheck = lastCheck, reduceMotion = reduceMotion, actions = actions)
-            }
+            PhaseContent(state = state, lastCheck = lastCheck, reduceMotion = reduceMotion, actions = actions)
         }
     }
 }
 
-private fun headline(phase: UpdatePhase, hasToken: Boolean): String = when {
-    !hasToken -> "Updates brauchen den Token"
-    else -> when (phase) {
+private fun headline(phase: UpdatePhase): String = run {
+    when (phase) {
         UpdatePhase.Idle -> "Nach neuen Versionen suchen"
         UpdatePhase.Checking -> "Suche nach Updates …"
         UpdatePhase.UpToDate -> "Du bist auf dem neuesten Stand"
